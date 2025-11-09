@@ -59,18 +59,18 @@
       <label for="track-name">Track name</label>
       <div class="name-color-group">
         <input
-          id="track-name"
-          type="text"
-          value={track.name}
-          on:change={(event) => handleChange('name', event.target.value)}
-        />
-        <input
           id="track-color"
           type="color"
           value={track.color}
           on:input={(event) => handleChange('color', event.target.value)}
           title="Track color"
           aria-label="Track color"
+        />
+        <input
+          id="track-name"
+          type="text"
+          value={track.name}
+          on:change={(event) => handleChange('name', event.target.value)}
         />
       </div>
     </div>
