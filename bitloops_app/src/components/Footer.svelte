@@ -147,13 +147,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
   }
 
   .field label {
-    color: rgba(255, 255, 255, 0.58);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .select-shell select {
@@ -173,14 +174,15 @@
 
   .library-actions button,
   .action-column button {
-    padding: 12px 16px;
+    padding: 14px 18px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
   }
@@ -188,7 +190,9 @@
   .library-actions button:hover,
   .action-column button:hover {
     transform: translateY(-2px);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(0, 0, 0, 0.45);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .library-actions button:disabled {
@@ -215,17 +219,24 @@
   }
 
   .export-toggle.icon-only {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
     padding: 0;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.7);
-    background: rgba(var(--color-accent-rgb), 0.28);
-    box-shadow: 0 18px 42px rgba(var(--color-accent-rgb), 0.35);
+    border: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    background: rgba(var(--color-accent-rgb), 0.35);
+    box-shadow: 0 20px 48px rgba(var(--color-accent-rgb), 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .export-toggle.icon-only:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 56px rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.45);
   }
 
   .export-toggle.icon-only span {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
   }
 
   .export-dropdown {
@@ -246,8 +257,8 @@
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 14px;
+    padding: 16px 18px;
     background: transparent;
     border: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -255,7 +266,8 @@
     text-align: left;
     cursor: pointer;
     transition: background 0.2s ease;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
     letter-spacing: 0.04em;
   }
 
@@ -264,12 +276,12 @@
   }
 
   .menu-item:hover {
-    background: rgba(var(--color-accent-rgb), 0.15);
+    background: rgba(var(--color-accent-rgb), 0.2);
   }
 
   .menu-icon {
-    font-size: 1.2rem;
-    width: 24px;
+    font-size: 1.3rem;
+    width: 28px;
     text-align: center;
   }
 
@@ -301,25 +313,27 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
+    font-weight: 600;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.7);
-    padding: 12px 14px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 14px 16px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.38);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .share-feedback.copied,
   .share-feedback.shared,
   .share-feedback.loaded {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.08);
     color: #fff;
   }
 
   .share-feedback.error {
-    border-color: rgba(255, 99, 132, 0.7);
-    color: rgba(255, 199, 206, 0.95);
+    border-color: rgba(255, 99, 132, 0.8);
+    color: rgba(255, 199, 206, 1);
   }
 
   .share-link {

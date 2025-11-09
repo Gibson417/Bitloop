@@ -857,16 +857,17 @@
 
   .rail-stats .label {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.7);
     margin-bottom: 6px;
+    font-weight: 600;
   }
 
   .rail-stats .value {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #fff;
   }
 
@@ -923,8 +924,9 @@
   .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.48);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .project-name-input {
@@ -968,13 +970,13 @@
   }
 
   .icon-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -984,13 +986,15 @@
   }
 
   .icon-btn:hover:not(:disabled) {
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(var(--color-accent-rgb), 0.1);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.15);
     color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .icon-btn:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
     cursor: not-allowed;
   }
 
@@ -1011,25 +1015,28 @@
   }
 
   .pill {
-    padding: 8px 14px;
+    padding: 10px 16px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
-    font-size: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.75);
   }
 
   .pill.playing,
   .pill.following {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.12);
     color: #fff;
   }
 
   .pill.saving {
-    border-color: rgba(var(--color-accent-rgb), 0.35);
-    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.08);
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .grid-shell {

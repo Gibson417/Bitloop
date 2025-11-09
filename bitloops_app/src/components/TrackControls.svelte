@@ -452,7 +452,8 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.75);
   }
 
   .name-color-group {
@@ -531,13 +532,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 60px;
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    min-width: 70px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #fff;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     border-radius: 10px;
     letter-spacing: 0.04em;
   }
@@ -606,10 +607,13 @@
   }
 
   .slider-field span {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.65);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
     white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
   }
 
   .effect-card {
@@ -625,12 +629,12 @@
 
   .effect-toggle {
     width: 100%;
-    padding: 10px 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -643,8 +647,9 @@
   }
 
   .effect-toggle:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
   }
 
   .effect-toggle span {
@@ -659,8 +664,9 @@
     align-items: center;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .effect-header select {
@@ -676,13 +682,14 @@
   }
 
   .effect-row label {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 600;
   }
 
   .effect-row.compact label {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 </style>

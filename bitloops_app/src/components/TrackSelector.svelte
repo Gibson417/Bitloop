@@ -149,9 +149,9 @@
   .selector-title {
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 600;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
   }
 
   .header-actions {
@@ -160,13 +160,13 @@
   }
 
   .action-button {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 10px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
-    background: rgba(var(--color-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.15);
     color: var(--color-accent);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -176,12 +176,14 @@
   }
 
   .action-button:hover:not(:disabled) {
-    background: rgba(var(--color-accent-rgb), 0.2);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.25);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .action-button:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
@@ -206,27 +208,28 @@
   .track-item {
     display: flex;
     align-items: center;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    background: rgba(17, 20, 29, 0.4);
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(17, 20, 29, 0.5);
     color: #fff;
     text-align: left;
-    gap: 6px;
+    gap: 8px;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 42px;
+    min-height: 48px;
   }
 
   .track-item:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.3);
-    background: rgba(17, 20, 29, 0.8);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(17, 20, 29, 0.85);
+    transform: translateY(-1px);
   }
 
   .track-item.selected {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.08);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.15);
+    border-color: rgba(var(--color-accent-rgb), 0.7);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    box-shadow: 0 4px 16px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .track-strip {
@@ -253,7 +256,7 @@
 
   .track-name {
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     letter-spacing: 0.02em;
     white-space: nowrap;
     overflow: hidden;
@@ -261,20 +264,20 @@
   }
 
   .track-meta {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     text-transform: capitalize;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .toggle-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.7);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -284,29 +287,32 @@
   }
 
   .toggle-btn:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
   }
 
   .toggle-btn.active {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.2);
+    border-color: rgba(var(--color-accent-rgb), 0.7);
+    background: rgba(var(--color-accent-rgb), 0.25);
     color: #fff;
+    box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.3);
   }
 
   .toggle-btn.mute.active {
-    border-color: rgba(255, 100, 100, 0.6);
-    background: rgba(255, 100, 100, 0.2);
+    border-color: rgba(255, 100, 100, 0.7);
+    background: rgba(255, 100, 100, 0.25);
+    box-shadow: 0 0 8px rgba(255, 100, 100, 0.3);
   }
 
   .remove-button {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
     line-height: 1;
     cursor: pointer;
     display: flex;
@@ -317,7 +323,9 @@
   }
 
   .remove-button:hover {
-    background: rgba(255, 80, 80, 0.25);
+    background: rgba(255, 80, 80, 0.3);
+    border-color: rgba(255, 80, 80, 0.5);
     color: #fff;
+    transform: scale(1.05);
   }
 </style>

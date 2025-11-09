@@ -57,25 +57,25 @@
   }
 
   .play-button {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.32);
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(22, 26, 36, 0.85));
+    border-radius: 14px;
+    border: 2px solid rgba(var(--color-accent-rgb), 0.4);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.22), rgba(22, 26, 36, 0.85));
     color: #fff;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 16px 36px rgba(var(--color-accent-rgb), 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 16px 36px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .play-button .icon {
     display: grid;
     place-items: center;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
   .play-button:hover {
@@ -89,15 +89,15 @@
   }
 
   .control-button {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -105,20 +105,21 @@
 
   .control-button:hover:not(:disabled) {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
     color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
   .control-button:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
     cursor: not-allowed;
   }
 
   .control-button .icon {
     display: grid;
     place-items: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .transport-controls {
@@ -132,21 +133,24 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 14px;
+    padding: 12px 16px;
     border-radius: 12px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     position: relative;
   }
 
   .follow:hover {
     color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   .follow .indicator {
@@ -174,6 +178,8 @@
 
   .follow.active {
     color: #fff;
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.1);
   }
 
   .follow.active .indicator {
