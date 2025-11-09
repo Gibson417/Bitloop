@@ -79,6 +79,7 @@ const normalizeTracks = (tracks, rows, steps) => {
     const name = track.name ?? `Track ${index + 1}`;
     const customShape = sanitizeCustomShape(track.customShape);
     const effects = sanitizeEffects(track.effects);
+    const rootNote = clamp(track.rootNote ?? 0, 0, 11);
     return resizeTrack(
       {
         id,
@@ -90,6 +91,7 @@ const normalizeTracks = (tracks, rows, steps) => {
         volume,
         customShape,
         effects,
+        rootNote,
         mute: !!track.mute,
         solo: !!track.solo,
         notes: track.notes ?? createEmptyPattern(rows, steps)
@@ -112,6 +114,7 @@ const createTrack = (index, rows, steps) =>
       volume: 0.7,
       customShape: DEFAULT_CUSTOM_SHAPE,
       effects: { ...DEFAULT_EFFECTS },
+      rootNote: 0,
       mute: false,
       solo: false,
       notes: createEmptyPattern(rows, steps)
@@ -151,6 +154,7 @@ const snapshotTracks = (tracks) =>
     volume: track.volume,
     customShape: track.customShape,
     effects: { ...track.effects },
+    rootNote: track.rootNote,
     mute: track.mute,
     solo: track.solo,
     notes: track.notes.map((row) => row.slice())
