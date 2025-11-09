@@ -1,0 +1,82 @@
+{
+  "$schema": "https://design-tokens.org/schemas/1.0/design-tokens.json",
+  "tokens": {
+    "color": {
+      "background": {
+        "base": { "value": "#0C0F1A" },
+        "surface": { "value": "#151B2D" },
+        "surfaceAlt": { "value": "#1F2740" }
+      },
+      "accent": {
+        "primary": { "value": "#7A5CFF" },
+        "secondary": { "value": "#00E0B8" },
+        "warning": { "value": "#FFB84D" },
+        "danger": { "value": "#FF5F7A" }
+      },
+      "content": {
+        "primary": { "value": "#F5F8FF" },
+        "secondary": { "value": "#B5BEDD" },
+        "muted": { "value": "#6E7794" }
+      },
+      "grid": {
+        "lineMajor": { "value": "rgba(122, 92, 255, 0.5)" },
+        "lineMinor": { "value": "rgba(122, 92, 255, 0.25)" },
+        "noteActive": { "value": "#00E0B8" },
+        "noteGhost": { "value": "rgba(0, 224, 184, 0.35)" }
+      }
+    },
+    "typography": {
+      "family": {
+        "sans": { "value": "'Inter', 'Helvetica Neue', Arial, sans-serif" },
+        "mono": { "value": "'JetBrains Mono', 'SFMono-Regular', 'Roboto Mono', monospace" }
+      },
+      "size": {
+        "xs": { "value": "12px" },
+        "sm": { "value": "14px" },
+        "md": { "value": "16px" },
+        "lg": { "value": "20px" },
+        "xl": { "value": "24px" },
+        "display": { "value": "32px" }
+      },
+      "weight": {
+        "regular": { "value": 400 },
+        "medium": { "value": 500 },
+        "semibold": { "value": 600 }
+      },
+      "lineHeight": {
+        "tight": { "value": 1.25 },
+        "normal": { "value": 1.5 },
+        "relaxed": { "value": 1.75 }
+      }
+    },
+    "spacing": {
+      "xxs": { "value": "4px" },
+      "xs": { "value": "8px" },
+      "sm": { "value": "12px" },
+      "md": { "value": "16px" },
+      "lg": { "value": "24px" },
+      "xl": { "value": "32px" },
+      "xxl": { "value": "48px" }
+    },
+    "radius": {
+      "sm": { "value": "4px" },
+      "md": { "value": "8px" },
+      "lg": { "value": "12px" }
+    },
+    "shadow": {
+      "elevation1": { "value": "0 4px 16px rgba(12, 15, 26, 0.45)" },
+      "elevation2": { "value": "0 12px 32px rgba(12, 15, 26, 0.55)" }
+    },
+    "motion": {
+      "duration": {
+        "fast": { "value": "120ms" },
+        "base": { "value": "200ms" },
+        "slow": { "value": "320ms" }
+      },
+      "easing": {
+        "enter": { "value": "cubic-bezier(0.34, 1.56, 0.64, 1)" },
+        "exit": { "value": "cubic-bezier(0.3, 0, 0.4, 1)" }
+      }
+    }
+  }
+}
