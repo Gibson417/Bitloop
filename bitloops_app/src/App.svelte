@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from 'svelte';
   import { get } from 'svelte/store';
   import Grid from './components/Grid.svelte';
-  import TrackBar from './components/TrackBar.svelte';
+  import TrackSelector from './components/TrackSelector.svelte';
+  import TrackControls from './components/TrackControls.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
   import { Scheduler } from './lib/scheduler.js';
@@ -72,8 +73,9 @@
     const indexFromBottom = rows - 1 - row;
     const octaveOffset = Math.floor(indexFromBottom / degrees);
     const degree = scalePattern[indexFromBottom % degrees];
+    const rootNote = track.rootNote ?? 0; // Default to C (0)
     const octave = track.octave + octaveOffset;
-    const midi = 12 * (octave + 1) + degree; // C0 = MIDI 12
+    const midi = 12 * (octave + 1) + degree + rootNote; // C0 = MIDI 12, add rootNote offset
     return Math.min(Math.max(midi, 21), 108);
   };
 
@@ -490,6 +492,14 @@
         on:togglefollow={handleFollowToggle}
         on:changebpm={handleBpmChange}
       />
+      <TrackSelector
+        tracks={projectState?.tracks ?? []}
+        selected={projectState?.selectedTrack ?? 0}
+        maxTracks={TRACK_LIMIT}
+        on:select={handleTrackSelect}
+        on:add={handleTrackAdd}
+        on:remove={handleTrackRemove}
+      />
       <div class="rail-stats">
         <div>
           <span class="label">Loop length</span>
@@ -536,14 +546,10 @@
         </span>
       </div>
     </div>
-    <TrackBar
-      tracks={projectState?.tracks ?? []}
-      selected={projectState?.selectedTrack ?? 0}
-      maxTracks={TRACK_LIMIT}
-      on:select={handleTrackSelect}
+    <TrackControls
+      track={activeTrack}
+      trackIndex={projectState?.selectedTrack ?? 0}
       on:update={handleTrackUpdate}
-      on:add={handleTrackAdd}
-      on:remove={handleTrackRemove}
     />
     <div class="grid-shell">
       <div class="grid-backdrop">
@@ -644,6 +650,8 @@
     background: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
       radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%),
       var(--color-background);
+    background-attachment: fixed;
+    background-size: 100% 100%;
     color: #fff;
     min-height: 100vh;
   }
