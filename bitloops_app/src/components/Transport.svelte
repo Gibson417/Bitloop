@@ -35,8 +35,8 @@
   }
 
   .play-button {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -44,21 +44,21 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.32);
     background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(22, 26, 36, 0.85));
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 18px 40px rgba(var(--color-accent-rgb), 0.2);
+    box-shadow: 0 16px 36px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .play-button .icon {
     display: grid;
     place-items: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 
   .play-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 22px 44px rgba(var(--color-accent-rgb), 0.28);
+    box-shadow: 0 20px 40px rgba(var(--color-accent-rgb), 0.28);
   }
 
   .play-button.active {

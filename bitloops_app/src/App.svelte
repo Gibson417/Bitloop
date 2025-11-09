@@ -872,7 +872,7 @@
     letter-spacing: 0.04em;
     background: rgba(255, 255, 255, 0.08);
     border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
+    border-radius: 10px;
     color: #fff;
     font-family: inherit;
     transition: all 0.2s ease;
@@ -905,7 +905,7 @@
   .icon-btn {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.75);
@@ -941,7 +941,7 @@
 
   .status-pills {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
   }
 
@@ -979,7 +979,7 @@
     padding: 20px;
     background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
     border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
-    box-shadow: 0 30px 80px rgba(12, 14, 20, 0.6);
+    box-shadow: 0 20px 60px rgba(12, 14, 20, 0.4);
   }
 
   .grid-backdrop :global(.grid-wrapper) {

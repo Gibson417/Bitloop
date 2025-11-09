@@ -270,8 +270,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 24px;
+    border-radius: 16px;
     background: linear-gradient(130deg, rgba(20, 24, 32, 0.95), rgba(14, 16, 22, 0.92));
     border: 1px solid rgba(255, 255, 255, 0.04);
   }
@@ -305,7 +305,7 @@
     width: 48px;
     height: 36px;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 0;
     background: none;
     cursor: pointer;
@@ -322,7 +322,7 @@
   input[type='text'] {
     background: rgba(0, 0, 0, 0.35);
     color: #fff;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
     font-size: 0.95rem;
@@ -367,14 +367,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 56px;
-    padding: 6px 10px;
+    min-width: 60px;
+    padding: 6px 12px;
     font-size: 0.85rem;
     font-weight: 600;
     color: #fff;
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
-    border-radius: 8px;
+    border-radius: 10px;
     letter-spacing: 0.04em;
   }
 
@@ -454,7 +454,7 @@
     flex-direction: column;
     gap: 14px;
     padding: 18px;
-    border-radius: 18px;
+    border-radius: 14px;
     background: rgba(9, 11, 16, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }

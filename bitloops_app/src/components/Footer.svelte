@@ -122,8 +122,8 @@
 <style>
   .footer {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
+    grid-template-columns: 1fr auto;
+    gap: 28px;
     padding: 24px 32px 32px;
     color: rgba(255, 255, 255, 0.85);
   }
@@ -152,7 +152,7 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 10px 14px;
     color: #fff;
     font-size: 0.95rem;
@@ -166,7 +166,7 @@
   .library-actions button,
   .action-column button {
     padding: 12px 16px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.3);
     color: #fff;
@@ -228,7 +228,7 @@
     margin-top: 8px;
     background: rgba(14, 16, 22, 0.98);
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     z-index: 100;
@@ -297,7 +297,7 @@
     letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.7);
     padding: 12px 14px;
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(0, 0, 0, 0.38);
     border: 1px solid rgba(255, 255, 255, 0.14);
   }
