@@ -1001,11 +1001,17 @@
   .grid-shell {
     flex: 1;
     padding: 0 32px 32px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .grid-backdrop {
     position: relative;
-    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     border-radius: 24px;
     padding: 20px;
     background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
@@ -1013,8 +1019,9 @@
     box-shadow: 0 20px 60px rgba(12, 14, 20, 0.4);
   }
 
-  .grid-backdrop :global(.grid-wrapper) {
-    height: 100%;
+  .grid-backdrop :global(.grid-container) {
+    flex: 1;
+    min-height: 0;
   }
 
   @media (max-width: 960px) {

@@ -416,8 +416,8 @@
 <style>
   .track-controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
     padding: 24px;
     border-radius: 16px;
     background: linear-gradient(130deg, rgba(20, 24, 32, 0.95), rgba(14, 16, 22, 0.92));
@@ -430,6 +430,14 @@
     gap: 10px;
     color: #fff;
     font-size: 0.8rem;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .control:last-of-type,
+  .control.volume,
+  .control.effect-card {
+    border-right: none;
   }
 
   .control label {
