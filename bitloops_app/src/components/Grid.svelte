@@ -11,6 +11,7 @@ export let stepsPerBar = 16;
   export let trackColor = colors.accent;
   export let follow = true;
   export let isPlaying = false;
+  export let noteLabels = [];
 
   const dispatch = createEventDispatcher();
 
@@ -246,22 +247,62 @@ export let stepsPerBar = 16;
   }
 </script>
 
-<div class="grid-wrapper" bind:this={scroller}>
-  <canvas
-    class="grid-canvas"
-    bind:this={canvas}
-    on:pointerdown={handlePointerDown}
-    on:pointermove={handlePointerMove}
-    on:pointerup={handlePointerUp}
-    on:pointerleave={handlePointerCancel}
-    on:pointercancel={handlePointerCancel}
-  ></canvas>
+<div class="grid-container">
+  <div class="note-labels">
+    {#each noteLabels as label, index (index)}
+      <div class="note-label" style="color: {hexToRgba(trackColor, 0.8)};">
+        {label}
+      </div>
+    {/each}
+  </div>
+  <div class="grid-wrapper" bind:this={scroller}>
+    <canvas
+      class="grid-canvas"
+      bind:this={canvas}
+      on:pointerdown={handlePointerDown}
+      on:pointermove={handlePointerMove}
+      on:pointerup={handlePointerUp}
+      on:pointerleave={handlePointerCancel}
+      on:pointercancel={handlePointerCancel}
+    ></canvas>
+  </div>
 </div>
 
 <style>
+  .grid-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    gap: 8px;
+  }
+
+  .note-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 8px 0;
+    min-width: 48px;
+    background: rgba(22, 26, 36, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .note-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: center;
+    flex: 1;
+    min-height: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
   .grid-wrapper {
     position: relative;
-    width: 100%;
+    flex: 1;
     height: 100%;
     overflow-x: auto;
     overflow-y: hidden;

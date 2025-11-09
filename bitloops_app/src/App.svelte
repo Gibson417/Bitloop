@@ -13,6 +13,7 @@
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
+  import { getRowNoteNames } from './lib/notes.js';
 
   let projectState;
   let historyState;
@@ -237,6 +238,18 @@
   const handleTrackRemove = (event) => {
     const { index } = event.detail;
     project.removeTrack(index);
+  };
+
+  const handleTrackToggleMute = (event) => {
+    const { index } = event.detail;
+    const currentValue = projectState?.tracks?.[index]?.mute ?? false;
+    project.setTrackSetting(index, 'mute', !currentValue);
+  };
+
+  const handleTrackToggleSolo = (event) => {
+    const { index } = event.detail;
+    const currentValue = projectState?.tracks?.[index]?.solo ?? false;
+    project.setTrackSetting(index, 'solo', !currentValue);
   };
 
   const handleBarsChange = (event) => {
@@ -475,6 +488,7 @@
   $: projects = libraryState?.projects ?? [];
   $: currentProjectId = libraryState?.currentId ?? null;
   $: libraryLoading = libraryState?.loading ?? false;
+  $: noteLabels = activeTrack ? getRowNoteNames(activeTrack, rows, scales) : [];
 </script>
 
 <main class="app">
@@ -499,6 +513,8 @@
         on:select={handleTrackSelect}
         on:add={handleTrackAdd}
         on:remove={handleTrackRemove}
+        on:togglemute={handleTrackToggleMute}
+        on:togglesolo={handleTrackToggleSolo}
       />
       <div class="rail-stats">
         <div>
@@ -557,6 +573,7 @@
           {rows}
           {columns}
           notes={gridNotes}
+          noteLabels={noteLabels}
           playheadStep={projectState?.playheadStep ?? 0}
           playheadProgress={projectState?.playheadProgress ?? 0}
           trackColor={trackColor}
