@@ -265,9 +265,19 @@
     }
   };
 
+  const NOTE_LENGTH_OPTIONS = [
+    { label: '1/16', value: 16 },
+    { label: '1/8', value: 8 },
+    { label: '1/4', value: 4 },
+    { label: '1/2', value: 2 },
+    { label: '1', value: 1 }
+  ];
+
+  let selectedNoteLength = `${NOTE_LENGTH_OPTIONS[0].value}`;
+
   const handleNoteChange = (event) => {
-    const { row, step, value } = event.detail;
-    project.toggleNote(projectState?.selectedTrack ?? 0, row, step, value);
+    const { row, start, length, value } = event.detail;
+    project.setNoteRange(projectState?.selectedTrack ?? 0, row, start, length, value);
   };
 
   const handleTrackSelect = (event) => {
@@ -562,6 +572,8 @@
   $: currentProjectId = libraryState?.currentId ?? null;
   $: libraryLoading = libraryState?.loading ?? false;
   $: noteLabels = activeTrack ? getRowNoteNames(activeTrack, rows, scales) : [];
+  $: selectedNoteLengthValue = Number(selectedNoteLength) || 1;
+  $: noteLengthSteps = Math.max(1, Math.round((stepsPerBar || 1) / selectedNoteLengthValue));
 </script>
 
 <main class="app">
@@ -710,6 +722,18 @@
       on:update={handleTrackUpdate}
     />
     <div class="grid-shell">
+      <div class="grid-toolbar">
+        <label for="note-length-select">Note length</label>
+        <select
+          id="note-length-select"
+          bind:value={selectedNoteLength}
+        >
+          {#each NOTE_LENGTH_OPTIONS as option}
+            <option value={option.value}>{option.label}</option>
+          {/each}
+        </select>
+        <span class="note-length-hint">{noteLengthSteps} step{noteLengthSteps === 1 ? '' : 's'}</span>
+      </div>
       <div class="grid-backdrop">
         <Grid
           {rows}
@@ -722,6 +746,7 @@
           follow={isFollowing}
           isPlaying={isPlaying}
           stepsPerBar={stepsPerBar}
+          noteLengthSteps={noteLengthSteps}
           on:notechange={handleNoteChange}
         />
       </div>
@@ -1080,6 +1105,46 @@
     padding: 0 32px 32px;
   }
 
+  .grid-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: rgba(12, 14, 20, 0.6);
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+  }
+
+  .grid-toolbar label {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .grid-toolbar select {
+    background: rgba(120, 210, 255, 0.12);
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.35);
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+  }
+
+  .grid-toolbar select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--color-note-active-rgb), 0.35);
+  }
+
+  .note-length-hint {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
   .grid-backdrop {
     position: relative;
     height: 100%;
@@ -1127,6 +1192,13 @@
 
     .grid-shell {
       padding: 0 16px 16px;
+    }
+
+    .grid-toolbar {
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .grid-backdrop {

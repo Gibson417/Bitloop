@@ -290,47 +290,79 @@ const createProjectStore = () => {
     updateHistoryStatus();
   };
 
+  const applyNoteRange = (trackIndex, row, start, length, value) => {
+    const prevSnapshot = toSnapshot(get(store));
+    let changed = false;
+    update((state) => {
+      const totalSteps = state.bars * state.stepsPerBar;
+      if (
+        trackIndex < 0 ||
+        trackIndex >= state.tracks.length ||
+        row < 0 ||
+        row >= state.rows ||
+        totalSteps <= 0
+      ) {
+        return state;
+      }
+
+      const safeStart = clamp(start ?? 0, 0, Math.max(totalSteps - 1, 0));
+      const rawLength = Number.isFinite(length) ? Math.round(length) : 1;
+      const clampedLength = Math.max(1, Math.min(Math.abs(rawLength) || 1, totalSteps - safeStart));
+      const track = state.tracks[trackIndex];
+      const rowNotes = track.notes?.[row] ?? [];
+      const sliceEnd = safeStart + clampedLength;
+      const currentSlice = rowNotes.slice(safeStart, sliceEnd);
+      let nextValue = value;
+      if (nextValue === undefined) {
+        const allActive = currentSlice.length > 0 && currentSlice.every(Boolean);
+        nextValue = !allActive;
+      }
+
+      const desiredValue = !!nextValue;
+      const noChange =
+        currentSlice.length === clampedLength &&
+        currentSlice.every((cell) => cell === desiredValue);
+
+      if (noChange) {
+        return state;
+      }
+
+      const tracks = state.tracks.map((t, idx) => {
+        if (idx !== trackIndex) return t;
+        const notes = t.notes.map((rowNotes, rowIdx) => {
+          if (rowIdx !== row) return rowNotes.slice();
+          const rowCopy = rowNotes.slice();
+          for (let offset = 0; offset < clampedLength; offset += 1) {
+            const targetIndex = safeStart + offset;
+            if (targetIndex < rowCopy.length) {
+              rowCopy[targetIndex] = desiredValue;
+            }
+          }
+          return rowCopy;
+        });
+        return { ...t, notes };
+      });
+
+      changed = true;
+      return { ...state, tracks };
+    });
+
+    if (changed) {
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
+    }
+  };
+
   return {
     subscribe,
     historyStatus: { subscribe: historyStatusStore.subscribe },
     toggleNote(trackIndex, row, step, value) {
-      const prevSnapshot = toSnapshot(get(store));
-      let changed = false;
-      update((state) => {
-        const totalSteps = state.bars * state.stepsPerBar;
-        if (
-          trackIndex < 0 ||
-          trackIndex >= state.tracks.length ||
-          row < 0 ||
-          row >= state.rows ||
-          step < 0 ||
-          step >= totalSteps
-        ) {
-          return state;
-        }
-        const track = state.tracks[trackIndex];
-        const current = track.notes?.[row]?.[step];
-        const nextValue = value ?? !current;
-        if (current === nextValue) return state;
-        const tracks = state.tracks.map((t, idx) => {
-          if (idx !== trackIndex) return t;
-          const notes = t.notes.map((rowNotes, rowIdx) => {
-            if (rowIdx !== row) return rowNotes.slice();
-            const rowCopy = rowNotes.slice();
-            rowCopy[step] = nextValue;
-            return rowCopy;
-          });
-          return { ...t, notes };
-        });
-        changed = true;
-        return { ...state, tracks };
-      });
-      if (changed) {
-        const nextSnapshot = toSnapshot(get(store));
-        if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
-          pushHistory(prevSnapshot);
-        }
-      }
+      applyNoteRange(trackIndex, row, step, 1, value);
+    },
+    setNoteRange(trackIndex, row, start, length, value) {
+      applyNoteRange(trackIndex, row, start, length, value);
     },
     setPlaying(playing) {
       update((state) => ({ ...state, playing }));
