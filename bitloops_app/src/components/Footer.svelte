@@ -251,6 +251,8 @@
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     z-index: 100;
+    min-width: 200px;
+    max-width: 250px;
   }
 
   .menu-item {

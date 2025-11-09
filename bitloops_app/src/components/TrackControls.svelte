@@ -625,6 +625,7 @@
     border-radius: 14px;
     background: rgba(9, 11, 16, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.06);
+    max-width: 600px;
   }
 
   .effect-toggle {

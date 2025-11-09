@@ -828,7 +828,7 @@
   .logo-svg {
     width: 100%;
     height: auto;
-    max-width: 200px;
+    max-width: 220px;
     color: var(--color-accent);
   }
 
@@ -843,6 +843,7 @@
     margin: 0;
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
+    padding-left: 34px;
   }
 
   .rail-stats {
