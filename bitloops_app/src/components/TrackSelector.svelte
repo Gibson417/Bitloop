@@ -206,16 +206,16 @@
   .track-item {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(17, 20, 29, 0.6);
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(17, 20, 29, 0.4);
     color: #fff;
     text-align: left;
-    gap: 8px;
+    gap: 6px;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 52px;
+    min-height: 42px;
   }
 
   .track-item:hover {
@@ -230,10 +230,10 @@
   }
 
   .track-strip {
-    width: 8px;
+    width: 6px;
     height: 100%;
-    min-height: 40px;
-    border-radius: 4px;
+    min-height: 32px;
+    border-radius: 3px;
     flex-shrink: 0;
   }
 
@@ -253,7 +253,7 @@
 
   .track-name {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     letter-spacing: 0.02em;
     white-space: nowrap;
     overflow: hidden;

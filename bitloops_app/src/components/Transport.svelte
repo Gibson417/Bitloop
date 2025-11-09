@@ -10,15 +10,31 @@
     dispatch('toggleplay');
   };
 
+  const handlePauseClick = () => {
+    dispatch('pause');
+  };
+
+  const handleSkipClick = () => {
+    dispatch('skip');
+  };
+
   const handleFollowClick = () => {
     dispatch('togglefollow', { value: !follow });
   };
 </script>
 
 <div class="transport">
-  <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button" aria-label={playing ? 'Stop' : 'Play'}>
-    <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
-  </button>
+  <div class="transport-buttons">
+    <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button" aria-label={playing ? 'Stop' : 'Play'}>
+      <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
+    </button>
+    <button class="control-button" on:click={handlePauseClick} type="button" aria-label="Pause" disabled={!playing}>
+      <span class="icon" aria-hidden="true">⏸</span>
+    </button>
+    <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
+      <span class="icon" aria-hidden="true">⏭</span>
+    </button>
+  </div>
   <div class="transport-controls">
     <button class="follow" class:active={follow} on:click={handleFollowClick} type="button">
       <span>Follow</span>
@@ -32,6 +48,12 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+  }
+
+  .transport-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
   }
 
   .play-button {
@@ -64,6 +86,39 @@
   .play-button.active {
     background: linear-gradient(135deg, rgba(246, 142, 175, 0.25), rgba(22, 26, 36, 0.85));
     border-color: rgba(246, 142, 175, 0.32);
+  }
+
+  .control-button {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .control-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .control-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .control-button .icon {
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
   }
 
   .transport-controls {

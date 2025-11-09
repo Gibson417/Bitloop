@@ -211,6 +211,34 @@
     }
   };
 
+  const handlePause = () => {
+    if (projectState?.playing && scheduler) {
+      scheduler.stop();
+      project.setPlaying(false);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+    }
+  };
+
+  const handleSkip = () => {
+    if (projectState) {
+      const stepsPerBar = projectState.stepsPerBar || 16;
+      const totalSteps = projectState.bars * stepsPerBar;
+      const currentStep = projectState.playheadStep || 0;
+      const nextBarStep = Math.floor(currentStep / stepsPerBar) * stepsPerBar + stepsPerBar;
+      const targetStep = nextBarStep >= totalSteps ? 0 : nextBarStep;
+      
+      project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
+      
+      if (projectState.playing && scheduler) {
+        scheduler.stop();
+        scheduler.start();
+      }
+    }
+  };
+
   const handleFollowToggle = (event) => {
     const nextValue = event.detail?.value ?? !projectState?.follow;
     project.setFollow(nextValue);
@@ -553,6 +581,8 @@
         playing={isPlaying}
         follow={isFollowing}
         on:toggleplay={handleTogglePlay}
+        on:pause={handlePause}
+        on:skip={handleSkip}
         on:togglefollow={handleFollowToggle}
       />
       <TrackSelector

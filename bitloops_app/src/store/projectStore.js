@@ -468,6 +468,25 @@ const createProjectStore = () => {
         }
       }
     },
+    setAllTracksScale(scaleName) {
+      if (!scales[scaleName]) return;
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
+      update((state) => {
+        const nextTracks = state.tracks.map((track) => {
+          if (track.scale === scaleName) return track;
+          changed = true;
+          return { ...track, scale: scaleName };
+        });
+        return { ...state, tracks: nextTracks };
+      });
+      if (changed) {
+        const nextSnapshot = toSnapshot(get(store));
+        if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+          pushHistory(prevSnapshot);
+        }
+      }
+    },
     addTrack() {
       const prevSnapshot = toSnapshot(get(store));
       let changed = false;
