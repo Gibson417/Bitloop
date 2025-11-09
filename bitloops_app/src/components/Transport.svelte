@@ -95,9 +95,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+    background: rgba(var(--color-accent-rgb), 0.14);
+    color: rgba(var(--color-accent-rgb), 0.95);
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -105,15 +105,18 @@
 
   .control-button:hover:not(:disabled) {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--color-accent-rgb), 0.24);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .control-button:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .control-button .icon {
@@ -135,9 +138,9 @@
     gap: 12px;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+    background: rgba(var(--color-accent-rgb), 0.14);
+    color: rgba(var(--color-accent-rgb), 0.95);
     font-size: 0.9rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -149,15 +152,15 @@
 
   .follow:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--color-accent-rgb), 0.24);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
   .follow .indicator {
     width: 36px;
     height: 20px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(var(--color-accent-rgb), 0.2);
     position: relative;
     transition: background 0.3s ease;
     flex-shrink: 0;
@@ -178,8 +181,8 @@
 
   .follow.active {
     color: #fff;
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(var(--color-accent-rgb), 0.1);
+    border-color: rgba(var(--color-accent-rgb), 0.55);
+    background: rgba(var(--color-accent-rgb), 0.22);
   }
 
   .follow.active .indicator {
