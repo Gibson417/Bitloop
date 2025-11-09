@@ -59,18 +59,18 @@
       <label for="track-name">Track name</label>
       <div class="name-color-group">
         <input
-          id="track-name"
-          type="text"
-          value={track.name}
-          on:change={(event) => handleChange('name', event.target.value)}
-        />
-        <input
           id="track-color"
           type="color"
           value={track.color}
           on:input={(event) => handleChange('color', event.target.value)}
           title="Track color"
           aria-label="Track color"
+        />
+        <input
+          id="track-name"
+          type="text"
+          value={track.name}
+          on:change={(event) => handleChange('name', event.target.value)}
         />
       </div>
     </div>
@@ -336,16 +336,6 @@
     outline-offset: 2px;
   }
 
-  input[type='color'] {
-    width: 48px;
-    height: 36px;
-    border: none;
-    border-radius: 12px;
-    padding: 0;
-    background: none;
-    cursor: pointer;
-  }
-
   .number-field input {
     width: 72px;
     text-align: center;
@@ -386,6 +376,59 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
     border-radius: 8px;
     letter-spacing: 0.04em;
+  }
+
+  /* Volume slider custom styling */
+  .volume-field input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .volume-field input[type='range']::-webkit-slider-track {
+    background: rgba(0, 0, 0, 0.35);
+    height: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .volume-field input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
+    margin-top: -5px;
+  }
+
+  .volume-field input[type='range']::-webkit-slider-thumb:hover {
+    background: rgba(var(--color-accent-rgb), 1.2);
+    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
+  }
+
+  .volume-field input[type='range']::-moz-range-track {
+    background: rgba(0, 0, 0, 0.35);
+    height: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .volume-field input[type='range']::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
+  }
+
+  .volume-field input[type='range']::-moz-range-thumb:hover {
+    background: rgba(var(--color-accent-rgb), 1.2);
+    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
 
   .slider-field {

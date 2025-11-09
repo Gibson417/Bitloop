@@ -500,7 +500,24 @@
   <aside class="app-rail">
     <div class="rail-inner">
       <div class="brand">
-        <span class="brand-mark text-accent">BitLoops</span>
+        <div class="brand-logo">
+          <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+            <!-- Stylized "B" made of dots -->
+            <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="8" cy="16" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="8" cy="24" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="8" cy="32" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="16" cy="8" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="16" cy="20" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="16" cy="32" r="3" fill="currentColor" opacity="0.9"/>
+            <circle cx="24" cy="10" r="3" fill="currentColor" opacity="0.8"/>
+            <circle cx="24" cy="18" r="3" fill="currentColor" opacity="0.8"/>
+            <circle cx="24" cy="30" r="3" fill="currentColor" opacity="0.8"/>
+            
+            <!-- Text -->
+            <text x="34" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" letter-spacing="0.08em" fill="currentColor">BITLOOPS</text>
+          </svg>
+        </div>
         <p class="brand-tag">Dot grid sequencer</p>
       </div>
       <Transport
@@ -637,7 +654,6 @@
       </div>
     </div>
     <Footer
-      loopSeconds={loopDurationValue ?? 0}
       projects={projects}
       currentId={currentProjectId}
       shareStatus={shareStatus}
@@ -741,6 +757,18 @@
     gap: 4px;
   }
 
+  .brand-logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-svg {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+    color: var(--color-accent);
+  }
+
   .brand-mark {
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -842,8 +870,8 @@
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    background: transparent;
-    border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     color: #fff;
     font-family: inherit;
@@ -853,14 +881,14 @@
   }
 
   .project-name-input:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
   }
 
   .project-name-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(var(--color-accent-rgb), 0.7);
   }
 
   .header-actions {

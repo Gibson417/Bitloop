@@ -1,7 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let loopSeconds = 0;
   export let projects = [];
   export let currentId = null;
   export let shareStatus = 'idle';
@@ -76,14 +75,6 @@
       </div>
     </div>
   </div>
-  <div class="timeline-column">
-    <div class="timing">
-      <div class="loop-card">
-        <span class="loop-label">Loop</span>
-        <span class="loop-value">{loopSeconds.toFixed(1)} s</span>
-      </div>
-    </div>
-  </div>
   <div class="action-column">
     <div class="export-menu-container">
       <button class="export-toggle icon-only" type="button" on:click={toggleExportMenu} title="Share or Export" aria-label="Share or Export">
@@ -138,7 +129,6 @@
   }
 
   .project-column,
-  .timeline-column,
   .action-column {
     display: flex;
     flex-direction: column;
@@ -197,75 +187,6 @@
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
-  }
-
-  .timing {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .input-shell {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .input-shell input {
-    width: 72px;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 600;
-    appearance: textfield;
-    outline: none;
-  }
-
-  .input-shell input::-webkit-outer-spin-button,
-  .input-shell input::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
-  }
-
-  .hint {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.45);
-    letter-spacing: 0.08em;
-  }
-
-  .loop-card {
-    display: grid;
-    gap: 4px;
-    padding: 16px 18px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(var(--color-note-active-rgb), 0.18), rgba(14, 16, 22, 0.9));
-    border: 1px solid rgba(var(--color-note-active-rgb), 0.25);
-    min-width: 150px;
-  }
-
-  .loop-label {
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.55);
-  }
-
-  .loop-value {
-    font-size: 1.4rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .loop-sub {
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.55);
-    letter-spacing: 0.12em;
   }
 
   .action-column {
@@ -414,12 +335,8 @@
       order: 1;
     }
 
-    .timeline-column {
-      order: 2;
-    }
-
     .action-column {
-      order: 3;
+      order: 2;
       flex-direction: column;
       gap: 16px;
     }
