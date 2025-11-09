@@ -9,11 +9,21 @@ const DEFAULT_BARS = 4;
 const DEFAULT_STEPS_PER_BAR = 16;
 const DEFAULT_BPM = 120;
 const DEFAULT_FOLLOW = true;
-const MAX_TRACKS = 10;
+const MAX_TRACKS = 16; // Increased from 10 to 16
 const MAX_HISTORY = 100;
-const TRACK_COLORS = ['#78D2B9', '#A88EF6', '#F6C58E', '#F68EAF', '#8EF6D1'];
+const TRACK_COLORS = [
+  '#78D2B9', '#A88EF6', '#F6C58E', '#F68EAF', '#8EF6D1', '#F6E58E',
+  '#8EAFF6', '#F68E8E', '#D18EF6', '#8EF6AF', '#F6AF8E', '#AF8EF6',
+  '#8ED1F6', '#F6D18E', '#8EF68E', '#F68ED1'
+];
 const DEFAULT_CUSTOM_SHAPE = 0.5;
 const EFFECT_FILTER_TYPES = new Set(['none', 'lowpass', 'highpass', 'bandpass']);
+const DEFAULT_ADSR = {
+  attack: 0.01,
+  decay: 0.1,
+  sustain: 0.7,
+  release: 0.3
+};
 const DEFAULT_EFFECTS = {
   filterType: 'none',
   filterCutoff: 1800,
@@ -54,6 +64,18 @@ const sanitizeEffects = (effects = {}) => {
   return { filterType, filterCutoff, filterQ, delayMix, delayTime, delayFeedback };
 };
 
+const sanitizeAdsr = (adsr = {}) => {
+  const attackValue = Number.parseFloat(adsr.attack);
+  const attack = clamp(Number.isFinite(attackValue) ? attackValue : DEFAULT_ADSR.attack, 0.001, 2);
+  const decayValue = Number.parseFloat(adsr.decay);
+  const decay = clamp(Number.isFinite(decayValue) ? decayValue : DEFAULT_ADSR.decay, 0.001, 2);
+  const sustainValue = Number.parseFloat(adsr.sustain);
+  const sustain = clamp(Number.isFinite(sustainValue) ? sustainValue : DEFAULT_ADSR.sustain, 0, 1);
+  const releaseValue = Number.parseFloat(adsr.release);
+  const release = clamp(Number.isFinite(releaseValue) ? releaseValue : DEFAULT_ADSR.release, 0.001, 5);
+  return { attack, decay, sustain, release };
+};
+
 const resizeTrack = (track, rows, steps) => {
   const notes = Array.from({ length: rows }, (_, rowIndex) => {
     const row = track.notes?.[rowIndex] ?? [];
@@ -79,6 +101,7 @@ const normalizeTracks = (tracks, rows, steps) => {
     const name = track.name ?? `Track ${index + 1}`;
     const customShape = sanitizeCustomShape(track.customShape);
     const effects = sanitizeEffects(track.effects);
+    const adsr = sanitizeAdsr(track.adsr);
     const rootNote = clamp(track.rootNote ?? 0, 0, 11);
     return resizeTrack(
       {
@@ -91,6 +114,7 @@ const normalizeTracks = (tracks, rows, steps) => {
         volume,
         customShape,
         effects,
+        adsr,
         rootNote,
         mute: !!track.mute,
         solo: !!track.solo,
@@ -114,6 +138,7 @@ const createTrack = (index, rows, steps) =>
       volume: 0.7,
       customShape: DEFAULT_CUSTOM_SHAPE,
       effects: { ...DEFAULT_EFFECTS },
+      adsr: { ...DEFAULT_ADSR },
       rootNote: 0,
       mute: false,
       solo: false,
@@ -154,6 +179,7 @@ const snapshotTracks = (tracks) =>
     volume: track.volume,
     customShape: track.customShape,
     effects: { ...track.effects },
+    adsr: { ...track.adsr },
     rootNote: track.rootNote,
     mute: track.mute,
     solo: track.solo,
@@ -369,6 +395,17 @@ const createProjectStore = () => {
             if (same) return track;
             changed = true;
             return { ...track, effects: nextEffects };
+          }
+          if (key === 'adsr') {
+            const nextAdsr = sanitizeAdsr({ ...track.adsr, ...(value || {}) });
+            const same =
+              nextAdsr.attack === track.adsr.attack &&
+              nextAdsr.decay === track.adsr.decay &&
+              nextAdsr.sustain === track.adsr.sustain &&
+              nextAdsr.release === track.adsr.release;
+            if (same) return track;
+            changed = true;
+            return { ...track, adsr: nextAdsr };
           }
           if (key === 'mute' || key === 'solo') {
             const next = !!value;

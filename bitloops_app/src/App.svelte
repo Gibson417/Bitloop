@@ -87,13 +87,20 @@
     if (track.waveform !== 'noise' && !Number.isFinite(frequency)) return;
 
     const voiceGain = audioContext.createGain();
+    
+    // Apply ADSR envelope
+    const adsr = track.adsr ?? { attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.3 };
+    const attack = Math.min(adsr.attack, duration * 0.3);
+    const decay = Math.min(adsr.decay, duration * 0.3);
+    const release = Math.min(adsr.release, duration * 0.5);
+    const sustainLevel = track.volume * adsr.sustain;
+    
     voiceGain.gain.setValueAtTime(0, time);
-    const attack = 0.01;
-    const release = Math.min(0.3, duration * 0.8);
-    const sustainTime = time + Math.max(attack, duration * 0.4);
-    const releaseStart = time + duration - release;
     voiceGain.gain.linearRampToValueAtTime(track.volume, time + attack);
-    voiceGain.gain.setValueAtTime(track.volume, sustainTime);
+    voiceGain.gain.linearRampToValueAtTime(sustainLevel, time + attack + decay);
+    
+    const releaseStart = time + duration - release;
+    voiceGain.gain.setValueAtTime(sustainLevel, releaseStart);
     voiceGain.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
 
     connectTrackEffects(audioContext, track, voiceGain, masterGain, time);
