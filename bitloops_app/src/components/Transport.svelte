@@ -1,29 +1,61 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+
   export let playing = false;
   export let follow = false;
 
+  const dispatch = createEventDispatcher();
+
   const togglePlay = () => {
-    const event = new CustomEvent('toggleplay');
-    dispatchEvent(event);
+    dispatch('toggleplay');
   };
+
   const toggleFollow = () => {
-    const event = new CustomEvent('togglefollow');
-    dispatchEvent(event);
+    dispatch('togglefollow');
   };
 </script>
 
-<div class="flex flex-col items-center space-y-2 p-2 bg-panel">
-  <button class="bg-accent text-panel px-4 py-2 rounded" on:click={togglePlay}>
+<div class="transport bg-panel text-white p-4 flex md:flex-col gap-3 items-center md:items-stretch" {...$$restProps}>
+  <button class="btn btn--primary" type="button" on:click={togglePlay}>
     {playing ? 'Stop' : 'Play'}
   </button>
-  <button class="bg-panel text-accent border border-accent px-2 py-1 rounded" on:click={toggleFollow}>
+  <button class="btn btn--outline" type="button" on:click={toggleFollow}>
     {follow ? 'Following' : 'Free'}
   </button>
 </div>
 
 <style>
-  .bg-panel { background-color: var(--panel); }
-  .text-panel { color: var(--panel); }
-  .bg-accent { background-color: var(--accent); }
-  .text-accent { color: var(--accent); }
+  .transport {
+    min-width: 12rem;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .btn--primary {
+    background-color: var(--accent);
+    color: #0e1016;
+  }
+
+  .btn--outline {
+    background-color: transparent;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 </style>

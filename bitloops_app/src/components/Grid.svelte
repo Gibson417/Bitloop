@@ -1,38 +1,59 @@
 <script>
-  // Props: activeNotes is a 2D boolean array
+  import { createEventDispatcher } from 'svelte';
+
   export let activeNotes = [];
   export let rows = 8;
   export let columns = 16;
-  /**
-   * Emit an event when a note is toggled
-   * @param {number} row
-   * @param {number} col
-   */
+
+  const dispatch = createEventDispatcher();
+
   const toggleNote = (row, col) => {
-    const event = new CustomEvent('toggle', { detail: { row, col } });
-    dispatchEvent(event);
+    dispatch('toggle', { row, col });
   };
 </script>
 
-<!--
-  This component will eventually render a canvas and handle hit testing.
-  For the stub, we show a simple grid of buttons.
--->
-<div class="grid" style="display: grid; grid-template-columns: repeat({columns}, 1fr); gap: 2px;">
-  {#each Array(rows) as _, row}
-    {#each Array(columns) as __, col}
+<div class="grid" style={`grid-template-columns: repeat(${columns}, minmax(0, 1fr));`}>
+  {#each Array.from({ length: rows }) as _, row}
+    {#each Array.from({ length: columns }) as __, col}
       <button
-        class="w-4 h-4 rounded-full border-0 focus:outline-none {activeNotes[row] && activeNotes[row][col] ? 'bg-accent' : 'bg-noteInactive'}"
+        class="cell"
+        class:bg-accent={activeNotes[row]?.[col]}
+        class:bg-noteInactive={!activeNotes[row]?.[col]}
         on:click={() => toggleNote(row, col)}
+        aria-pressed={activeNotes[row]?.[col] ? 'true' : 'false'}
       ></button>
     {/each}
   {/each}
 </div>
 
 <style>
+  .grid {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .cell {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  .cell:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .cell:hover {
+    transform: scale(1.05);
+  }
+
   .bg-accent {
     background-color: var(--accent);
   }
+
   .bg-noteInactive {
     background-color: var(--note-inactive);
   }
