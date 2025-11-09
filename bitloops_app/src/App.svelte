@@ -637,7 +637,6 @@
       </div>
     </div>
     <Footer
-      loopSeconds={loopDurationValue ?? 0}
       projects={projects}
       currentId={currentProjectId}
       shareStatus={shareStatus}
