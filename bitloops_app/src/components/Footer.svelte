@@ -41,6 +41,10 @@
     dispatch('render');
     showExportMenu = false;
   };
+  const handleRenderMidi = () => {
+    dispatch('rendermidi');
+    showExportMenu = false;
+  };
   const handleShare = () => {
     dispatch('share');
     showExportMenu = false;
@@ -89,6 +93,10 @@
           <button class="menu-item" type="button" on:click={handleRender}>
             <span class="menu-icon">🎵</span>
             <span>Render WAV</span>
+          </button>
+          <button class="menu-item" type="button" on:click={handleRenderMidi}>
+            <span class="menu-icon">🎹</span>
+            <span>Render MIDI</span>
           </button>
           <button class="menu-item" type="button" on:click={handleExport}>
             <span class="menu-icon">📄</span>

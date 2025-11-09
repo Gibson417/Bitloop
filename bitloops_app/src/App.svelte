@@ -6,12 +6,14 @@
   import TrackControls from './components/TrackControls.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
+  import ThemeSelector from './components/ThemeSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
+  import { renderProjectToMidi } from './lib/midiExporter.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
   import { getRowNoteNames } from './lib/notes.js';
 
@@ -358,6 +360,26 @@
     }
   };
 
+  const handleRenderMidi = async () => {
+    try {
+      const snapshot = project.toSnapshot();
+      const blob = renderProjectToMidi(snapshot);
+      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.mid`;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to render MIDI', error);
+      // eslint-disable-next-line no-alert
+      alert('Unable to render MIDI at this time.');
+    }
+  };
+
   const clearShareFeedback = () => {
     if (shareFeedbackTimer) {
       clearTimeout(shareFeedbackTimer);
@@ -579,6 +601,7 @@
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
         </div>
+        <ThemeSelector />
       </div>
     </div>
   </aside>
@@ -666,6 +689,7 @@
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
       on:render={handleRenderWav}
+      on:rendermidi={handleRenderMidi}
       on:share={handleShare}
     />
   </section>
@@ -724,7 +748,7 @@
       var(--color-background);
     background-attachment: fixed;
     background-size: 100% 100%;
-    color: #fff;
+    color: var(--color-text, #fff);
     min-height: 100vh;
   }
 

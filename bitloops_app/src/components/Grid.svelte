@@ -132,18 +132,39 @@ export let stepsPerBar = 16;
     const playheadX = (playheadStep + playheadProgress) * layout.cellSize;
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
-    const playheadGlow = ctx.createLinearGradient(playheadX - layout.cellSize, 0, playheadX + layout.cellSize, 0);
+    
+    // Enhanced playhead with animated glow
+    const glowIntensity = isPlaying ? 0.3 + Math.sin(Date.now() * 0.003) * 0.1 : 0.2;
+    const glowWidth = layout.cellSize * (isPlaying ? 2.5 : 1.5);
+    
+    const playheadGlow = ctx.createLinearGradient(playheadX - glowWidth, 0, playheadX + glowWidth, 0);
     playheadGlow.addColorStop(0, 'transparent');
-    playheadGlow.addColorStop(0.5, hexToRgba(trackColor, 0.2));
+    playheadGlow.addColorStop(0.5, hexToRgba(trackColor, glowIntensity));
     playheadGlow.addColorStop(1, 'transparent');
     ctx.fillStyle = playheadGlow;
-    ctx.fillRect(playheadX - layout.cellSize, 0, layout.cellSize * 2, layout.height);
+    ctx.fillRect(playheadX - glowWidth, 0, glowWidth * 2, layout.height);
+    
+    // Playhead line with enhanced visibility
     ctx.strokeStyle = styles.playhead;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = isPlaying ? 3 : 2;
     ctx.beginPath();
     ctx.moveTo(playheadX, 0);
     ctx.lineTo(playheadX, layout.height);
     ctx.stroke();
+    
+    // Add subtle shadow for depth
+    if (isPlaying) {
+      ctx.shadowColor = hexToRgba(trackColor, 0.5);
+      ctx.shadowBlur = 8;
+      ctx.strokeStyle = hexToRgba(trackColor, 0.8);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(playheadX, 0);
+      ctx.lineTo(playheadX, layout.height);
+      ctx.stroke();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+    }
   };
 
   const getCellFromEvent = (event) => {
