@@ -3,7 +3,6 @@
 
   export let playing = false;
   export let follow = true;
-  export let bpm = 120;
 
   const dispatch = createEventDispatcher();
 
@@ -14,13 +13,6 @@
   const handleFollowClick = () => {
     dispatch('togglefollow', { value: !follow });
   };
-
-  const handleBpmChange = (event) => {
-    const value = Number(event.target.value);
-    if (!Number.isNaN(value)) {
-      dispatch('changebpm', { value });
-    }
-  };
 </script>
 
 <div class="transport">
@@ -29,16 +21,9 @@
   </button>
   <div class="transport-controls">
     <button class="follow" class:active={follow} on:click={handleFollowClick} type="button">
-      <span class="indicator" aria-hidden="true"></span>
       <span>Follow</span>
+      <span class="indicator" aria-hidden="true"></span>
     </button>
-    <label class="tempo">
-      <span class="tempo-label">Tempo</span>
-      <div class="tempo-field">
-        <input type="number" min="30" max="260" value={bpm} on:input={handleBpmChange} />
-        <span class="suffix">BPM</span>
-      </div>
-    </label>
   </div>
 </div>
 
@@ -55,7 +40,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 12px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.32);
     background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(22, 26, 36, 0.85));
     color: #fff;
@@ -68,7 +53,7 @@
   .play-button .icon {
     display: grid;
     place-items: center;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
   }
 
   .play-button:hover {
@@ -142,52 +127,5 @@
 
   .follow.active .indicator::after {
     transform: translateX(16px);
-  }
-
-  .tempo {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .tempo-label {
-    font-weight: 600;
-  }
-
-  .tempo-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .tempo-field input {
-    appearance: textfield;
-    width: 72px;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    outline: none;
-  }
-
-  .tempo-field input::-webkit-outer-spin-button,
-  .tempo-field input::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
-  }
-
-  .suffix {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.45);
-    letter-spacing: 0.1em;
   }
 </style>
