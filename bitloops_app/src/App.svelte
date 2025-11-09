@@ -501,7 +501,7 @@
     <div class="rail-inner">
       <div class="brand">
         <div class="brand-logo">
-          <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+          <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
             <!-- Stylized "B" made of dots -->
             <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.9"/>
             <circle cx="8" cy="16" r="3" fill="currentColor" opacity="0.9"/>
@@ -515,7 +515,7 @@
             <circle cx="24" cy="30" r="3" fill="currentColor" opacity="0.8"/>
             
             <!-- Text -->
-            <text x="34" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" letter-spacing="0.1em" fill="currentColor">BITLOOPS</text>
+            <text x="34" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" letter-spacing="0.08em" fill="currentColor">BITLOOPS</text>
           </svg>
         </div>
         <p class="brand-tag">Dot grid sequencer</p>
