@@ -13,6 +13,7 @@
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
+  import { getRowNoteNames } from './lib/notes.js';
 
   let projectState;
   let historyState;
@@ -237,6 +238,18 @@
   const handleTrackRemove = (event) => {
     const { index } = event.detail;
     project.removeTrack(index);
+  };
+
+  const handleTrackToggleMute = (event) => {
+    const { index } = event.detail;
+    const currentValue = projectState?.tracks?.[index]?.mute ?? false;
+    project.setTrackSetting(index, 'mute', !currentValue);
+  };
+
+  const handleTrackToggleSolo = (event) => {
+    const { index } = event.detail;
+    const currentValue = projectState?.tracks?.[index]?.solo ?? false;
+    project.setTrackSetting(index, 'solo', !currentValue);
   };
 
   const handleBarsChange = (event) => {
@@ -475,6 +488,7 @@
   $: projects = libraryState?.projects ?? [];
   $: currentProjectId = libraryState?.currentId ?? null;
   $: libraryLoading = libraryState?.loading ?? false;
+  $: noteLabels = activeTrack ? getRowNoteNames(activeTrack, rows, scales) : [];
 </script>
 
 <main class="app">
@@ -499,6 +513,8 @@
         on:select={handleTrackSelect}
         on:add={handleTrackAdd}
         on:remove={handleTrackRemove}
+        on:togglemute={handleTrackToggleMute}
+        on:togglesolo={handleTrackToggleSolo}
       />
       <div class="rail-stats">
         <div>
@@ -520,7 +536,14 @@
     <div class="workspace-header">
       <div class="session-info">
         <span class="eyebrow">Project</span>
-        <h1>{projectName}</h1>
+        <input
+          class="project-name-input"
+          type="text"
+          value={projectName}
+          on:change={handleProjectRename}
+          on:blur={handleProjectRename}
+          placeholder="Untitled loop"
+        />
         <p class="session-meta project-meta">
           {libraryLoading
             ? 'Loading workspace…'
@@ -534,16 +557,40 @@
             : 'Scale, octave, and volume controls will appear when a track is selected.'}
         </p>
       </div>
-      <div class="status-pills">
-        <span class={`pill ${isPlaying ? 'playing' : ''}`}>
-          {isPlaying ? 'Playing' : 'Stopped'}
-        </span>
-        <span class={`pill ${isFollowing ? 'following' : ''}`}>
-          {isFollowing ? 'Follow on' : 'Follow off'}
-        </span>
-        <span class={`pill ${isSaving ? 'saving' : ''}`}>
-          {isSaving ? 'Saving…' : 'Saved'}
-        </span>
+      <div class="header-actions">
+        <div class="history-buttons">
+          <button
+            type="button"
+            class="icon-btn"
+            on:click={handleUndo}
+            disabled={!canUndo}
+            title="Undo"
+            aria-label="Undo"
+          >
+            ↶
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            on:click={handleRedo}
+            disabled={!canRedo}
+            title="Redo"
+            aria-label="Redo"
+          >
+            ↷
+          </button>
+        </div>
+        <div class="status-pills">
+          <span class={`pill ${isPlaying ? 'playing' : ''}`}>
+            {isPlaying ? 'Playing' : 'Stopped'}
+          </span>
+          <span class={`pill ${isFollowing ? 'following' : ''}`}>
+            {isFollowing ? 'Follow on' : 'Follow off'}
+          </span>
+          <span class={`pill ${isSaving ? 'saving' : ''}`}>
+            {isSaving ? 'Saving…' : 'Saved'}
+          </span>
+        </div>
       </div>
     </div>
     <TrackControls
@@ -557,6 +604,7 @@
           {rows}
           {columns}
           notes={gridNotes}
+          noteLabels={noteLabels}
           playheadStep={projectState?.playheadStep ?? 0}
           playheadProgress={projectState?.playheadProgress ?? 0}
           trackColor={trackColor}
@@ -568,17 +616,13 @@
       </div>
     </div>
     <Footer
-      name={projectName}
       bars={totalBars}
       stepsPerBar={stepsPerBar}
       bpm={projectState?.bpm ?? 0}
       loopSeconds={loopDurationValue ?? 0}
       maxBars={maxBarsValue ?? 0}
-      canUndo={canUndo}
-      canRedo={canRedo}
       projects={projects}
       currentId={currentProjectId}
-      isSaving={isSaving}
       shareStatus={shareStatus}
       shareMessage={shareMessage}
       shareLink={shareLink}
@@ -586,9 +630,6 @@
       on:changesteps={handleStepsChange}
       on:export={handleExport}
       on:import={handleImport}
-      on:undo={handleUndo}
-      on:redo={handleRedo}
-      on:renameproject={handleProjectRename}
       on:selectproject={handleProjectSelect}
       on:newproject={handleNewProject}
       on:duplicateproject={handleDuplicateProject}
@@ -750,10 +791,69 @@
     color: rgba(255, 255, 255, 0.48);
   }
 
-  .session-info h1 {
+  .project-name-input {
     margin: 0;
+    padding: 4px 8px;
     font-size: 1.8rem;
+    font-weight: 700;
     letter-spacing: 0.04em;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .project-name-input:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .project-name-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .history-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .icon-btn:hover:not(:disabled) {
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.1);
+    color: #fff;
+  }
+
+  .icon-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 
   .project-meta {
@@ -857,10 +957,6 @@
   @media (max-width: 560px) {
     .app {
       padding: 12px;
-    }
-
-    .workspace-header h1 {
-      font-size: 1.4rem;
     }
 
     .grid-backdrop {

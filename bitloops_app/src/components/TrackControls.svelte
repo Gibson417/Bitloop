@@ -27,6 +27,8 @@
     { value: 11, label: 'B' }
   ];
 
+  let showEffects = false;
+
   const handleChange = (key, value) => {
     dispatch('update', { index: trackIndex, key, value });
   };
@@ -42,6 +44,10 @@
       key: 'effects',
       value: { ...currentEffects, ...updates }
     });
+  };
+
+  const toggleEffects = () => {
+    showEffects = !showEffects;
   };
 
   $: currentEffects = track?.effects ?? {};
@@ -155,112 +161,104 @@
     </div>
 
     <div class="control effect-card">
-      <div class="effect-header">
-        <span>Filter</span>
-        <select
-          id="filter-type"
-          on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
-          value={currentEffects.filterType ?? 'none'}
-        >
-          {#each filterOptions as option}
-            <option value={option}>{option}</option>
-          {/each}
-        </select>
-      </div>
-      <div class="effect-row">
-        <label for="filter-cutoff">Cutoff</label>
-        <div class="slider-field">
-          <input
-            id="filter-cutoff"
-            type="range"
-            min="80"
-            max="8000"
-            step="10"
-            value={currentEffects.filterCutoff ?? 1800}
-            on:input={(event) => handleEffectsChange({ filterCutoff: Number(event.target.value) })}
-          />
-          <span>{Math.round(currentEffects.filterCutoff ?? 1800)} Hz</span>
-        </div>
-      </div>
-      <div class="effect-row">
-        <label for="filter-q">Resonance</label>
-        <div class="slider-field">
-          <input
-            id="filter-q"
-            type="range"
-            min="0.1"
-            max="20"
-            step="0.1"
-            value={currentEffects.filterQ ?? 0.7}
-            on:input={(event) => handleEffectsChange({ filterQ: Number(event.target.value) })}
-          />
-          <span>{(currentEffects.filterQ ?? 0.7).toFixed(1)}</span>
-        </div>
-      </div>
-      <div class="effect-row">
-        <label for="delay-mix">Delay mix</label>
-        <div class="slider-field">
-          <input
-            id="delay-mix"
-            type="range"
-            min="0"
-            max="0.9"
-            step="0.01"
-            value={currentEffects.delayMix ?? 0}
-            on:input={(event) => handleEffectsChange({ delayMix: Number(event.target.value) })}
-          />
-          <span>{Math.round((currentEffects.delayMix ?? 0) * 100)}%</span>
-        </div>
-      </div>
-      <div class="effect-row compact">
-        <label for="delay-time">Delay time</label>
-        <div class="slider-field">
-          <input
-            id="delay-time"
-            type="range"
-            min="0.05"
-            max="0.8"
-            step="0.01"
-            value={currentEffects.delayTime ?? 0.28}
-            on:input={(event) => handleEffectsChange({ delayTime: Number(event.target.value) })}
-          />
-          <span>{Math.round((currentEffects.delayTime ?? 0.28) * 1000)} ms</span>
-        </div>
-      </div>
-      <div class="effect-row compact">
-        <label for="delay-feedback">Feedback</label>
-        <div class="slider-field">
-          <input
-            id="delay-feedback"
-            type="range"
-            min="0"
-            max="0.9"
-            step="0.01"
-            value={currentEffects.delayFeedback ?? 0.35}
-            on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
-          />
-          <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="control toggles">
       <button
         type="button"
-        class="toggle-btn mute {track.mute ? 'active' : ''}"
-        on:click={() => toggleBoolean('mute', track.mute)}
-        title={track.mute ? 'Unmute track' : 'Mute track'}
+        class="effect-toggle"
+        on:click={toggleEffects}
+        aria-expanded={showEffects}
       >
-        M
+        <span>Effects {showEffects ? '▼' : '▶'}</span>
       </button>
-      <button
-        type="button"
-        class="toggle-btn solo {track.solo ? 'active' : ''}"
-        on:click={() => toggleBoolean('solo', track.solo)}
-        title={track.solo ? 'Unsolo track' : 'Solo track'}
-      >
-        S
-      </button>
+      
+      {#if showEffects}
+        <div class="effect-header">
+          <span>Filter</span>
+          <select
+            id="filter-type"
+            on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
+            value={currentEffects.filterType ?? 'none'}
+          >
+            {#each filterOptions as option}
+              <option value={option}>{option}</option>
+            {/each}
+          </select>
+        </div>
+        <div class="effect-row">
+          <label for="filter-cutoff">Cutoff</label>
+          <div class="slider-field">
+            <input
+              id="filter-cutoff"
+              type="range"
+              min="80"
+              max="8000"
+              step="10"
+              value={currentEffects.filterCutoff ?? 1800}
+              on:input={(event) => handleEffectsChange({ filterCutoff: Number(event.target.value) })}
+            />
+            <span>{Math.round(currentEffects.filterCutoff ?? 1800)} Hz</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="filter-q">Resonance</label>
+          <div class="slider-field">
+            <input
+              id="filter-q"
+              type="range"
+              min="0.1"
+              max="20"
+              step="0.1"
+              value={currentEffects.filterQ ?? 0.7}
+              on:input={(event) => handleEffectsChange({ filterQ: Number(event.target.value) })}
+            />
+            <span>{(currentEffects.filterQ ?? 0.7).toFixed(1)}</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="delay-mix">Delay mix</label>
+          <div class="slider-field">
+            <input
+              id="delay-mix"
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.01"
+              value={currentEffects.delayMix ?? 0}
+              on:input={(event) => handleEffectsChange({ delayMix: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayMix ?? 0) * 100)}%</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="delay-time">Delay time</label>
+          <div class="slider-field">
+            <input
+              id="delay-time"
+              type="range"
+              min="0.05"
+              max="0.8"
+              step="0.01"
+              value={currentEffects.delayTime ?? 0.28}
+              on:input={(event) => handleEffectsChange({ delayTime: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayTime ?? 0.28) * 1000)} ms</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="delay-feedback">Feedback</label>
+          <div class="slider-field">
+            <input
+              id="delay-feedback"
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.01"
+              value={currentEffects.delayFeedback ?? 0.35}
+              on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
@@ -378,6 +376,36 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
+  .effect-toggle {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .effect-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .effect-toggle span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .effect-header {
     display: flex;
     justify-content: space-between;
@@ -409,44 +437,5 @@
 
   .effect-row.compact label {
     font-size: 0.65rem;
-  }
-
-  .toggles {
-    display: flex;
-    gap: 10px;
-  }
-
-  .toggle-btn {
-    flex: 1;
-    padding: 0;
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.75);
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .toggle-btn:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .toggle-btn.active {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.2);
-    color: #fff;
-  }
-
-  .toggle-btn.mute.active {
-    border-color: rgba(255, 100, 100, 0.6);
-    background: rgba(255, 100, 100, 0.2);
   }
 </style>

@@ -24,6 +24,16 @@
     if (!canRemoveTrack(idx)) return;
     dispatch('remove', { index: idx });
   };
+
+  const handleToggleMute = (event, idx) => {
+    event.stopPropagation();
+    dispatch('togglemute', { index: idx });
+  };
+
+  const handleToggleSolo = (event, idx) => {
+    event.stopPropagation();
+    dispatch('togglesolo', { index: idx });
+  };
 </script>
 
 <div class="track-selector">
@@ -54,6 +64,24 @@
           <span class="track-name">{track.name}</span>
           <span class="track-meta">{track.waveform}</span>
         </span>
+        <button
+          type="button"
+          class="toggle-btn mute {track.mute ? 'active' : ''}"
+          aria-label={track.mute ? `Unmute ${track.name}` : `Mute ${track.name}`}
+          title={track.mute ? 'Unmute' : 'Mute'}
+          on:click={(event) => handleToggleMute(event, idx)}
+        >
+          M
+        </button>
+        <button
+          type="button"
+          class="toggle-btn solo {track.solo ? 'active' : ''}"
+          aria-label={track.solo ? `Unsolo ${track.name}` : `Solo ${track.name}`}
+          title={track.solo ? 'Unsolo' : 'Solo'}
+          on:click={(event) => handleToggleSolo(event, idx)}
+        >
+          S
+        </button>
         {#if canRemoveTrack(idx)}
           <button
             type="button"
@@ -190,6 +218,39 @@
     font-size: 0.7rem;
     text-transform: capitalize;
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  .toggle-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .toggle-btn:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .toggle-btn.active {
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.2);
+    color: #fff;
+  }
+
+  .toggle-btn.mute.active {
+    border-color: rgba(255, 100, 100, 0.6);
+    background: rgba(255, 100, 100, 0.2);
   }
 
   .remove-button {
