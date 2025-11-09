@@ -46,11 +46,25 @@
     });
   };
 
+  const handleAdsrChange = (updates) => {
+    const currentAdsr = track?.adsr ?? {};
+    dispatch('update', {
+      index: trackIndex,
+      key: 'adsr',
+      value: { ...currentAdsr, ...updates }
+    });
+  };
+
   const toggleEffects = () => {
     showEffects = !showEffects;
   };
 
+  const toggleAdsr = () => {
+    showEffects = showEffects === 'adsr' ? false : 'adsr';
+  };
+
   $: currentEffects = track?.effects ?? {};
+  $: currentAdsr = track?.adsr ?? { attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.3 };
 </script>
 
 {#if track}
@@ -167,12 +181,12 @@
         type="button"
         class="effect-toggle"
         on:click={toggleEffects}
-        aria-expanded={showEffects}
+        aria-expanded={showEffects === true}
       >
-        <span>Effects {showEffects ? '▼' : '▶'}</span>
+        <span>Effects {showEffects === true ? '▼' : '▶'}</span>
       </button>
       
-      {#if showEffects}
+      {#if showEffects === true}
         <div class="effect-header">
           <span>Filter</span>
           <select
@@ -258,6 +272,140 @@
               on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
             />
             <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="reverb-mix">Reverb mix</label>
+          <div class="slider-field">
+            <input
+              id="reverb-mix"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={currentEffects.reverbMix ?? 0}
+              on:input={(event) => handleEffectsChange({ reverbMix: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.reverbMix ?? 0) * 100)}%</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="reverb-time">Reverb time</label>
+          <div class="slider-field">
+            <input
+              id="reverb-time"
+              type="range"
+              min="0.1"
+              max="5"
+              step="0.1"
+              value={currentEffects.reverbTime ?? 1}
+              on:input={(event) => handleEffectsChange({ reverbTime: Number(event.target.value) })}
+            />
+            <span>{(currentEffects.reverbTime ?? 1).toFixed(1)}s</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="bitcrush-bits">Bit depth</label>
+          <div class="slider-field">
+            <input
+              id="bitcrush-bits"
+              type="range"
+              min="1"
+              max="16"
+              step="1"
+              value={currentEffects.bitcrushBits ?? 16}
+              on:input={(event) => handleEffectsChange({ bitcrushBits: Number(event.target.value) })}
+            />
+            <span>{Math.round(currentEffects.bitcrushBits ?? 16)} bits</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="bitcrush-rate">Sample rate reduction</label>
+          <div class="slider-field">
+            <input
+              id="bitcrush-rate"
+              type="range"
+              min="1"
+              max="50"
+              step="1"
+              value={currentEffects.bitcrushRate ?? 1}
+              on:input={(event) => handleEffectsChange({ bitcrushRate: Number(event.target.value) })}
+            />
+            <span>{Math.round(currentEffects.bitcrushRate ?? 1)}x</span>
+          </div>
+        </div>
+      {/if}
+    </div>
+
+    <div class="control effect-card">
+      <button
+        type="button"
+        class="effect-toggle"
+        on:click={toggleAdsr}
+        aria-expanded={showEffects === 'adsr'}
+      >
+        <span>ADSR Envelope {showEffects === 'adsr' ? '▼' : '▶'}</span>
+      </button>
+      
+      {#if showEffects === 'adsr'}
+        <div class="effect-row">
+          <label for="adsr-attack">Attack</label>
+          <div class="slider-field">
+            <input
+              id="adsr-attack"
+              type="range"
+              min="0.001"
+              max="2"
+              step="0.001"
+              value={currentAdsr.attack}
+              on:input={(event) => handleAdsrChange({ attack: Number(event.target.value) })}
+            />
+            <span>{(currentAdsr.attack * 1000).toFixed(0)} ms</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="adsr-decay">Decay</label>
+          <div class="slider-field">
+            <input
+              id="adsr-decay"
+              type="range"
+              min="0.001"
+              max="2"
+              step="0.001"
+              value={currentAdsr.decay}
+              on:input={(event) => handleAdsrChange({ decay: Number(event.target.value) })}
+            />
+            <span>{(currentAdsr.decay * 1000).toFixed(0)} ms</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="adsr-sustain">Sustain</label>
+          <div class="slider-field">
+            <input
+              id="adsr-sustain"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={currentAdsr.sustain}
+              on:input={(event) => handleAdsrChange({ sustain: Number(event.target.value) })}
+            />
+            <span>{Math.round(currentAdsr.sustain * 100)}%</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="adsr-release">Release</label>
+          <div class="slider-field">
+            <input
+              id="adsr-release"
+              type="range"
+              min="0.001"
+              max="5"
+              step="0.001"
+              value={currentAdsr.release}
+              on:input={(event) => handleAdsrChange({ release: Number(event.target.value) })}
+            />
+            <span>{(currentAdsr.release * 1000).toFixed(0)} ms</span>
           </div>
         </div>
       {/if}

@@ -40,6 +40,34 @@ export const connectTrackEffects = (context, track, sourceNode, destinationNode,
   const effects = track?.effects ?? {};
   let currentNode = sourceNode;
 
+  // Bitcrusher effect (bit reduction and sample rate reduction)
+  if (effects.bitcrushBits && effects.bitcrushBits < 16) {
+    const bitcrush = context.createScriptProcessor(256, 1, 1);
+    const bits = clamp(effects.bitcrushBits ?? 16, 1, 16);
+    const sampleRateReduction = clamp(effects.bitcrushRate ?? 1, 1, 50);
+    let lastSample = 0;
+    let sampleCounter = 0;
+    
+    bitcrush.onaudioprocess = (e) => {
+      const input = e.inputBuffer.getChannelData(0);
+      const output = e.outputBuffer.getChannelData(0);
+      const step = Math.pow(0.5, bits);
+      
+      for (let i = 0; i < input.length; i++) {
+        sampleCounter++;
+        if (sampleCounter >= sampleRateReduction) {
+          sampleCounter = 0;
+          lastSample = Math.floor(input[i] / step) * step;
+        }
+        output[i] = lastSample;
+      }
+    };
+    
+    currentNode.connect(bitcrush);
+    currentNode = bitcrush;
+  }
+
+  // Filter effect
   if (effects.filterType && effects.filterType !== 'none') {
     const filter = context.createBiquadFilter();
     filter.type = effects.filterType;
@@ -49,6 +77,38 @@ export const connectTrackEffects = (context, track, sourceNode, destinationNode,
     currentNode = filter;
   }
 
+  // Reverb effect (simple convolver-based reverb)
+  const reverbMix = clamp(effects.reverbMix ?? 0, 0, 1);
+  if (reverbMix > 0) {
+    const dryGain = context.createGain();
+    dryGain.gain.setValueAtTime(1 - reverbMix, startTime);
+    currentNode.connect(dryGain);
+    dryGain.connect(destinationNode);
+
+    // Create simple reverb using multiple delays
+    const reverbTime = clamp(effects.reverbTime ?? 1, 0.1, 5);
+    const wetGain = context.createGain();
+    wetGain.gain.setValueAtTime(reverbMix, startTime);
+    
+    // Create a simple reverb with multiple delay lines
+    const delays = [0.037, 0.041, 0.043, 0.047];
+    delays.forEach((delayTime, index) => {
+      const delay = context.createDelay(5);
+      delay.delayTime.setValueAtTime(delayTime * reverbTime, startTime);
+      const feedback = context.createGain();
+      feedback.gain.setValueAtTime(0.5 - (index * 0.1), startTime);
+      
+      currentNode.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay);
+      delay.connect(wetGain);
+    });
+    
+    wetGain.connect(destinationNode);
+    return;
+  }
+
+  // Delay effect
   const mix = clamp(effects.delayMix ?? 0, 0, 0.9);
   if (mix > 0) {
     const dryGain = context.createGain();

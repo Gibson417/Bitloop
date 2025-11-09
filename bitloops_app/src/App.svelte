@@ -6,12 +6,14 @@
   import TrackControls from './components/TrackControls.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
+  import ThemeSelector from './components/ThemeSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
+  import { renderProjectToMidi } from './lib/midiExporter.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
   import { getRowNoteNames } from './lib/notes.js';
 
@@ -85,13 +87,20 @@
     if (track.waveform !== 'noise' && !Number.isFinite(frequency)) return;
 
     const voiceGain = audioContext.createGain();
+    
+    // Apply ADSR envelope
+    const adsr = track.adsr ?? { attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.3 };
+    const attack = Math.min(adsr.attack, duration * 0.3);
+    const decay = Math.min(adsr.decay, duration * 0.3);
+    const release = Math.min(adsr.release, duration * 0.5);
+    const sustainLevel = track.volume * adsr.sustain;
+    
     voiceGain.gain.setValueAtTime(0, time);
-    const attack = 0.01;
-    const release = Math.min(0.3, duration * 0.8);
-    const sustainTime = time + Math.max(attack, duration * 0.4);
-    const releaseStart = time + duration - release;
     voiceGain.gain.linearRampToValueAtTime(track.volume, time + attack);
-    voiceGain.gain.setValueAtTime(track.volume, sustainTime);
+    voiceGain.gain.linearRampToValueAtTime(sustainLevel, time + attack + decay);
+    
+    const releaseStart = time + duration - release;
+    voiceGain.gain.setValueAtTime(sustainLevel, releaseStart);
     voiceGain.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
 
     connectTrackEffects(audioContext, track, voiceGain, masterGain, time);
@@ -358,6 +367,26 @@
     }
   };
 
+  const handleRenderMidi = async () => {
+    try {
+      const snapshot = project.toSnapshot();
+      const blob = renderProjectToMidi(snapshot);
+      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.mid`;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to render MIDI', error);
+      // eslint-disable-next-line no-alert
+      alert('Unable to render MIDI at this time.');
+    }
+  };
+
   const clearShareFeedback = () => {
     if (shareFeedbackTimer) {
       clearTimeout(shareFeedbackTimer);
@@ -579,6 +608,7 @@
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
         </div>
+        <ThemeSelector />
       </div>
     </div>
   </aside>
@@ -666,6 +696,7 @@
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
       on:render={handleRenderWav}
+      on:rendermidi={handleRenderMidi}
       on:share={handleShare}
     />
   </section>
@@ -724,7 +755,7 @@
       var(--color-background);
     background-attachment: fixed;
     background-size: 100% 100%;
-    color: #fff;
+    color: var(--color-text, #fff);
     min-height: 100vh;
   }
 
@@ -995,6 +1026,14 @@
       border-right: none;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
+    
+    .rail-inner {
+      max-width: 100%;
+    }
+    
+    .rail-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 720px) {
@@ -1025,6 +1064,20 @@
     .trackbar {
       padding: 20px 20px 12px;
     }
+    
+    .project-name-input {
+      font-size: 1.4rem;
+      max-width: 100%;
+    }
+    
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .history-buttons {
+      flex-shrink: 0;
+    }
   }
 
   @media (max-width: 560px) {
@@ -1034,6 +1087,49 @@
 
     .grid-backdrop {
       border-radius: 14px;
+    }
+    
+    .app-rail {
+      padding: 12px;
+    }
+    
+    .rail-stats {
+      grid-template-columns: 1fr;
+    }
+    
+    .brand-logo {
+      max-width: 160px;
+    }
+    
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+    }
+    
+    .pill {
+      padding: 6px 10px;
+      font-size: 0.7rem;
+    }
+  }
+  
+  /* Touch improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .icon-btn,
+    button,
+    select,
+    input[type="range"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .play-button {
+      width: 72px;
+      height: 72px;
+    }
+    
+    .follow {
+      padding: 12px 16px;
     }
   }
 </style>
