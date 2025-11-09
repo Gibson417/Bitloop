@@ -788,11 +788,13 @@
   :global(body) {
     margin: 0;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
-      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%),
-      var(--color-background);
-    background-attachment: fixed;
-    background-size: 100% 100%;
+    background-image: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
+      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%);
+    background-color: var(--color-background);
+    background-attachment: fixed, fixed;
+    background-repeat: no-repeat, no-repeat;
+    background-size: 160% 160%, 140% 140%;
+    background-position: top left, bottom right;
     color: var(--color-text, #fff);
     min-height: 100vh;
   }
