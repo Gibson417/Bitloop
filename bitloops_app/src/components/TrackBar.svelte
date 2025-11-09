@@ -438,6 +438,11 @@
     gap: 10px;
     color: #fff;
     font-size: 0.8rem;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 0;
   }
 
   .control label {
@@ -457,6 +462,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
     font-size: 0.95rem;
+    width: 100%;
   }
 
   select:focus,
@@ -467,14 +473,27 @@
     outline-offset: 2px;
   }
 
+  input[type='text'] {
+    min-width: 0;
+  }
+
   input[type='color'] {
     width: 48px;
     height: 36px;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.18);
     border-radius: 10px;
     padding: 0;
     background: none;
     cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  input[type='color']:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.55);
+  }
+
+  .control.toggles {
+    padding: 16px;
   }
 
   .number-field input {
@@ -496,6 +515,7 @@
 
   .volume input[type='range'] {
     width: 100%;
+    cursor: pointer;
   }
 
   .volume-value {
@@ -514,6 +534,7 @@
 
   .slider-field input[type='range'] {
     flex: 1;
+    cursor: pointer;
   }
 
   .slider-field span {

@@ -557,25 +557,25 @@
   <aside class="app-rail">
     <div class="rail-inner">
       <div class="brand">
-        <div class="brand-logo">
-          <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
             <!-- Stylized "B" made of dots -->
-            <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="8" cy="16" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="8" cy="24" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="8" cy="32" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="16" cy="8" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="16" cy="20" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="16" cy="32" r="3" fill="currentColor" opacity="0.9"/>
-            <circle cx="24" cy="10" r="3" fill="currentColor" opacity="0.8"/>
-            <circle cx="24" cy="18" r="3" fill="currentColor" opacity="0.8"/>
-            <circle cx="24" cy="30" r="3" fill="currentColor" opacity="0.8"/>
-            
-            <!-- Text -->
-            <text x="34" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" letter-spacing="0.08em" fill="currentColor">BITLOOPS</text>
+            <circle cx="8" cy="8" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="8" cy="20" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="8" cy="32" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="8" cy="44" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="20" cy="8" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="20" cy="24" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="20" cy="40" r="4" fill="currentColor" opacity="0.9" />
+            <circle cx="32" cy="12" r="4" fill="currentColor" opacity="0.8" />
+            <circle cx="32" cy="24" r="4" fill="currentColor" opacity="0.8" />
+            <circle cx="32" cy="36" r="4" fill="currentColor" opacity="0.8" />
           </svg>
         </div>
-        <p class="brand-tag">Dot grid sequencer</p>
+        <div class="brand-text">
+          <h1 class="brand-mark">Bitloop</h1>
+          <p class="brand-tag">Dot grid sequencer</p>
+        </div>
       </div>
       <Transport
         playing={isPlaying}
@@ -779,16 +779,79 @@
     border-color: var(--color-accent);
   }
 
+  :global(*),
+  :global(*::before),
+  :global(*::after) {
+    box-sizing: border-box;
+  }
+
   :global(body) {
     margin: 0;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
-      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%),
-      var(--color-background);
-    background-attachment: fixed;
-    background-size: 100% 100%;
+    background-image: radial-gradient(circle at -10% -20%, rgba(var(--color-accent-rgb), 0.28), transparent 55%),
+      radial-gradient(circle at 120% 0%, rgba(var(--color-note-active-rgb), 0.2), transparent 50%),
+      linear-gradient(180deg, #0c1018 0%, #0b0f19 42%, #111826 100%);
+    background-color: var(--color-background);
+    background-attachment: fixed, fixed, fixed;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-size: 220% 220%, 220% 220%, 100% 100%;
+    background-position: -10% -20%, 120% 10%, center;
     color: var(--color-text, #fff);
     min-height: 100vh;
+  }
+
+  :global(input[type='range']) {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  :global(input[type='range']::-webkit-slider-track) {
+    background: rgba(0, 0, 0, 0.35);
+    height: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  :global(input[type='range']::-webkit-slider-thumb) {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
+    margin-top: -5px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  :global(input[type='range']::-webkit-slider-thumb:hover) {
+    background: rgba(var(--color-accent-rgb), 1);
+    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
+  }
+
+  :global(input[type='range']::-moz-range-track) {
+    background: rgba(0, 0, 0, 0.35);
+    height: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  :global(input[type='range']::-moz-range-thumb) {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  :global(input[type='range']::-moz-range-thumb:hover) {
+    background: rgba(var(--color-accent-rgb), 1);
+    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
 
   .app {
@@ -817,32 +880,45 @@
   .brand {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .brand-logo {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
   }
 
-  .logo-svg {
-    width: 100%;
+  .logo-icon {
+    width: 108px;
     height: auto;
-    max-width: 200px;
     color: var(--color-accent);
   }
 
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+  }
+
   .brand-mark {
+    margin: 0;
+    padding: 0;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     font-size: 2.4rem;
+    line-height: 1.1;
   }
 
   .brand-tag {
     margin: 0;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .rail-stats {
@@ -887,6 +963,7 @@
     font-weight: 600;
     appearance: textfield;
     width: 100%;
+    display: block;
   }
 
   .stat-input::-webkit-outer-spin-button,
@@ -973,9 +1050,9 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
     font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -986,8 +1063,8 @@
   }
 
   .icon-btn:hover:not(:disabled) {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-    background: rgba(var(--color-accent-rgb), 0.15);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.26);
     color: #fff;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
@@ -996,6 +1073,9 @@
   .icon-btn:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .project-meta {

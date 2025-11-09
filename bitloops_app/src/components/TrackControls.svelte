@@ -440,6 +440,7 @@
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.03);
+    min-width: 0;
   }
 
   .control.effect-card {
@@ -458,27 +459,33 @@
 
   .name-color-group {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
+    padding: 6px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .name-color-group input[type='text'] {
     flex: 1;
+    min-width: 0;
   }
 
   .name-color-group input[type='color'] {
     width: 48px;
     height: 36px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.22);
     border-radius: 10px;
     padding: 0;
     background: none;
     cursor: pointer;
     flex-shrink: 0;
+    transition: border-color 0.2s ease;
   }
 
   .name-color-group input[type='color']:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    border-color: rgba(var(--color-accent-rgb), 0.55);
   }
 
   select,
@@ -491,6 +498,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
     font-size: 0.95rem;
+    width: 100%;
   }
 
   select:focus,
@@ -524,10 +532,6 @@
     gap: 12px;
   }
 
-  .volume-field input[type='range'] {
-    flex: 1;
-  }
-
   .volume-box {
     display: inline-flex;
     align-items: center;
@@ -543,67 +547,17 @@
     letter-spacing: 0.04em;
   }
 
-  /* Volume slider custom styling */
-  .volume-field input[type='range'] {
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
+  .volume-field input[type='range'],
+  .slider-field input[type='range'] {
+    flex: 1;
+    min-width: 0;
     cursor: pointer;
-  }
-
-  .volume-field input[type='range']::-webkit-slider-track {
-    background: rgba(0, 0, 0, 0.35);
-    height: 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .volume-field input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    border: 2px solid rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
-    margin-top: -5px;
-  }
-
-  .volume-field input[type='range']::-webkit-slider-thumb:hover {
-    background: rgba(var(--color-accent-rgb), 1.2);
-    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
-  }
-
-  .volume-field input[type='range']::-moz-range-track {
-    background: rgba(0, 0, 0, 0.35);
-    height: 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .volume-field input[type='range']::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    border: 2px solid rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
-  }
-
-  .volume-field input[type='range']::-moz-range-thumb:hover {
-    background: rgba(var(--color-accent-rgb), 1.2);
-    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
 
   .slider-field {
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-
-  .slider-field input[type='range'] {
-    flex: 1;
   }
 
   .slider-field span {
