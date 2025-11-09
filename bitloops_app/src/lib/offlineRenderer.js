@@ -1,0 +1,143 @@
+import { scales } from './scales.js';
+
+const midiToFrequency = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
+
+const getMidiForCell = (track, rowIndex, totalRows) => {
+  const scalePattern = scales[track.scale] ?? scales.major;
+  const degrees = scalePattern.length;
+  const indexFromBottom = totalRows - 1 - rowIndex;
+  const octaveOffset = Math.floor(indexFromBottom / degrees);
+  const degree = scalePattern[indexFromBottom % degrees];
+  const octave = Math.min(Math.max((track.octave ?? 4) + octaveOffset, 1), 7);
+  const midi = 12 * (octave + 1) + degree;
+  return Math.min(Math.max(midi, 21), 108);
+};
+
+const createNoiseBuffer = (context, duration) => {
+  const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * (duration + 0.05)), context.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i += 1) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  return buffer;
+};
+
+const addTone = (context, destination, track, frequency, startTime, duration) => {
+  const gainNode = context.createGain();
+  const attack = 0.01;
+  const release = Math.min(0.3, duration * 0.8);
+  const releaseStart = startTime + duration - release;
+  gainNode.gain.setValueAtTime(0, startTime);
+  gainNode.gain.linearRampToValueAtTime(track.volume ?? 0.7, startTime + attack);
+  gainNode.gain.setValueAtTime(track.volume ?? 0.7, releaseStart);
+  gainNode.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
+  gainNode.connect(destination);
+
+  if (track.waveform === 'noise') {
+    const source = context.createBufferSource();
+    source.buffer = createNoiseBuffer(context, duration);
+    source.connect(gainNode);
+    source.start(startTime);
+    source.stop(releaseStart + release);
+    return;
+  }
+
+  const oscillator = context.createOscillator();
+  oscillator.type = track.waveform ?? 'square';
+  oscillator.frequency.setValueAtTime(frequency, startTime);
+  oscillator.connect(gainNode);
+  oscillator.start(startTime);
+  oscillator.stop(releaseStart + release);
+};
+
+const encodeWav = (audioBuffer) => {
+  const { numberOfChannels, length, sampleRate } = audioBuffer;
+  const dataLength = length * numberOfChannels * 2;
+  const buffer = new ArrayBuffer(44 + dataLength);
+  const view = new DataView(buffer);
+
+  const writeString = (offset, string) => {
+    for (let i = 0; i < string.length; i += 1) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  const writeUint32 = (offset, value) => {
+    view.setUint32(offset, value, true);
+  };
+
+  const writeUint16 = (offset, value) => {
+    view.setUint16(offset, value, true);
+  };
+
+  writeString(0, 'RIFF');
+  writeUint32(4, 36 + dataLength);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  writeUint32(16, 16);
+  writeUint16(20, 1);
+  writeUint16(22, numberOfChannels);
+  writeUint32(24, sampleRate);
+  writeUint32(28, sampleRate * numberOfChannels * 2);
+  writeUint16(32, numberOfChannels * 2);
+  writeUint16(34, 16);
+  writeString(36, 'data');
+  writeUint32(40, dataLength);
+
+  let offset = 44;
+  for (let channel = 0; channel < numberOfChannels; channel += 1) {
+    const channelData = audioBuffer.getChannelData(channel);
+    for (let i = 0; i < length; i += 1) {
+      const sample = Math.max(-1, Math.min(1, channelData[i]));
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+};
+
+export const renderProjectToWav = async (snapshot) => {
+  if (!snapshot) throw new Error('No project snapshot provided');
+  if (typeof OfflineAudioContext === 'undefined') {
+    throw new Error('Offline audio rendering is not supported in this environment');
+  }
+  const bars = snapshot.bars ?? 1;
+  const stepsPerBar = snapshot.stepsPerBar ?? 16;
+  const bpm = snapshot.bpm ?? 120;
+  const rows = snapshot.rows ?? 8;
+  const totalSteps = bars * stepsPerBar;
+  const secondsPerBar = (240 / bpm) || 2;
+  const stepDuration = secondsPerBar / stepsPerBar;
+  const loopSeconds = secondsPerBar * bars;
+  const sampleRate = 44100;
+  const frameCount = Math.ceil(loopSeconds * sampleRate);
+  const context = new OfflineAudioContext(2, frameCount, sampleRate);
+
+  const masterGain = context.createGain();
+  masterGain.gain.setValueAtTime(0.8, 0);
+  masterGain.connect(context.destination);
+
+  const audibleTracks = snapshot.tracks?.some((track) => track.solo)
+    ? snapshot.tracks.filter((track) => track.solo)
+    : snapshot.tracks?.filter((track) => !track.mute) ?? [];
+
+  audibleTracks.forEach((track) => {
+    const trackGain = context.createGain();
+    trackGain.gain.setValueAtTime(track.volume ?? 0.7, 0);
+    trackGain.connect(masterGain);
+
+    for (let row = 0; row < rows; row += 1) {
+      for (let step = 0; step < totalSteps; step += 1) {
+        if (!track.notes?.[row]?.[step]) continue;
+        const frequency = midiToFrequency(getMidiForCell(track, row, rows));
+        const startTime = step * stepDuration;
+        addTone(context, trackGain, track, frequency, startTime, stepDuration * 0.95);
+      }
+    }
+  });
+
+  const buffer = await context.startRendering();
+  return encodeWav(buffer);
+};
+
