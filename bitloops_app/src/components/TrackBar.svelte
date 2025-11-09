@@ -11,8 +11,9 @@
 
   const dispatch = createEventDispatcher();
 
-  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise'];
+  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise', 'custom'];
   const scaleOptions = Object.keys(scales);
+  const filterOptions = ['none', 'lowpass', 'highpass', 'bandpass'];
 
   const handleSelect = (idx) => {
     dispatch('select', { index: idx });
@@ -36,6 +37,18 @@
   const toggleBoolean = (key, current) => {
     dispatch('update', { index: selected, key, value: !current });
   };
+
+  const handleEffectsChange = (updates) => {
+    const current = tracks[selected] ?? {};
+    dispatch('update', {
+      index: selected,
+      key: 'effects',
+      value: { ...(current.effects ?? {}), ...updates }
+    });
+  };
+
+  $: currentTrack = tracks?.[selected] ?? null;
+  $: currentEffects = currentTrack?.effects ?? {};
 </script>
 
 <div class="trackbar">
@@ -82,14 +95,14 @@
     </button>
   </div>
 
-  {#if tracks && tracks[selected]}
+  {#if currentTrack}
     <div class="control-panel">
       <div class="control">
         <label for="track-name">Track name</label>
         <input
           id="track-name"
           type="text"
-          value={tracks[selected].name}
+          value={currentTrack.name}
           on:change={(event) => handleChange('name', event.target.value)}
         />
       </div>
@@ -99,7 +112,7 @@
         <select
           id="waveform"
           on:change={(event) => handleChange('waveform', event.target.value)}
-          value={tracks[selected].waveform}
+          value={currentTrack.waveform}
         >
           {#each waveformOptions as option}
             <option value={option}>{option}</option>
@@ -107,12 +120,30 @@
         </select>
       </div>
 
+      {#if currentTrack.waveform === 'custom'}
+        <div class="control">
+          <label for="custom-shape">Custom shape</label>
+          <div class="slider-field">
+            <input
+              id="custom-shape"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={currentTrack.customShape ?? 0.5}
+              on:input={(event) => handleChange('customShape', Number(event.target.value))}
+            />
+            <span>{Math.round((currentTrack.customShape ?? 0.5) * 100)}%</span>
+          </div>
+        </div>
+      {/if}
+
       <div class="control">
         <label for="scale">Scale</label>
         <select
           id="scale"
           on:change={(event) => handleChange('scale', event.target.value)}
-          value={tracks[selected].scale}
+          value={currentTrack.scale}
         >
           {#each scaleOptions as option}
             <option value={option}>{option}</option>
@@ -128,7 +159,7 @@
             type="number"
             min="1"
             max="7"
-            value={tracks[selected].octave}
+            value={currentTrack.octave}
             on:change={(event) => handleChange('octave', Number(event.target.value))}
           />
         </div>
@@ -139,7 +170,7 @@
         <input
           id="track-color"
           type="color"
-          value={tracks[selected].color}
+          value={currentTrack.color}
           on:input={(event) => handleChange('color', event.target.value)}
         />
       </div>
@@ -152,26 +183,116 @@
           min="0"
           max="1"
           step="0.01"
-          value={tracks[selected].volume}
+          value={currentTrack.volume}
           on:input={(event) => handleChange('volume', Number(event.target.value))}
         />
-        <span class="volume-value">{Math.round(tracks[selected].volume * 100)}%</span>
+        <span class="volume-value">{Math.round(currentTrack.volume * 100)}%</span>
+      </div>
+
+      <div class="control effect-card">
+        <div class="effect-header">
+          <span>Filter</span>
+          <select
+            id="filter-type"
+            on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
+            value={currentEffects.filterType ?? 'none'}
+          >
+            {#each filterOptions as option}
+              <option value={option}>{option}</option>
+            {/each}
+          </select>
+        </div>
+        <div class="effect-row">
+          <label for="filter-cutoff">Cutoff</label>
+          <div class="slider-field">
+            <input
+              id="filter-cutoff"
+              type="range"
+              min="80"
+              max="8000"
+              step="10"
+              value={currentEffects.filterCutoff ?? 1800}
+              on:input={(event) => handleEffectsChange({ filterCutoff: Number(event.target.value) })}
+            />
+            <span>{Math.round(currentEffects.filterCutoff ?? 1800)} Hz</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="filter-q">Resonance</label>
+          <div class="slider-field">
+            <input
+              id="filter-q"
+              type="range"
+              min="0.1"
+              max="20"
+              step="0.1"
+              value={currentEffects.filterQ ?? 0.7}
+              on:input={(event) => handleEffectsChange({ filterQ: Number(event.target.value) })}
+            />
+            <span>{(currentEffects.filterQ ?? 0.7).toFixed(1)}</span>
+          </div>
+        </div>
+        <div class="effect-row">
+          <label for="delay-mix">Delay mix</label>
+          <div class="slider-field">
+            <input
+              id="delay-mix"
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.01"
+              value={currentEffects.delayMix ?? 0}
+              on:input={(event) => handleEffectsChange({ delayMix: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayMix ?? 0) * 100)}%</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="delay-time">Delay time</label>
+          <div class="slider-field">
+            <input
+              id="delay-time"
+              type="range"
+              min="0.05"
+              max="0.8"
+              step="0.01"
+              value={currentEffects.delayTime ?? 0.28}
+              on:input={(event) => handleEffectsChange({ delayTime: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayTime ?? 0.28) * 1000)} ms</span>
+          </div>
+        </div>
+        <div class="effect-row compact">
+          <label for="delay-feedback">Feedback</label>
+          <div class="slider-field">
+            <input
+              id="delay-feedback"
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.01"
+              value={currentEffects.delayFeedback ?? 0.35}
+              on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
+            />
+            <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
+          </div>
+        </div>
       </div>
 
       <div class="control toggles">
         <button
           type="button"
-          class:active={tracks[selected].mute}
-          on:click={() => toggleBoolean('mute', tracks[selected].mute)}
+          class:active={currentTrack.mute}
+          on:click={() => toggleBoolean('mute', currentTrack.mute)}
         >
-          {tracks[selected].mute ? 'Muted' : 'Mute'}
+          {currentTrack.mute ? 'Muted' : 'Mute'}
         </button>
         <button
           type="button"
-          class:active={tracks[selected].solo}
-          on:click={() => toggleBoolean('solo', tracks[selected].solo)}
+          class:active={currentTrack.solo}
+          on:click={() => toggleBoolean('solo', currentTrack.solo)}
         >
-          {tracks[selected].solo ? 'Soloing' : 'Solo'}
+          {currentTrack.solo ? 'Soloing' : 'Solo'}
         </button>
       </div>
     </div>
@@ -383,6 +504,67 @@
     right: 0;
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
+  }
+
+  .slider-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slider-field input[type='range'] {
+    flex: 1;
+  }
+
+  .slider-field span {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+  }
+
+  .effect-card {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(9, 11, 16, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .effect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .effect-header select {
+    min-width: 120px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .effect-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .effect-row label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .effect-row.compact label {
+    font-size: 0.65rem;
   }
 
   .toggles {

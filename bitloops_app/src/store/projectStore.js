@@ -12,6 +12,16 @@ const DEFAULT_FOLLOW = true;
 const MAX_TRACKS = 10;
 const MAX_HISTORY = 100;
 const TRACK_COLORS = ['#78D2B9', '#A88EF6', '#F6C58E', '#F68EAF', '#8EF6D1'];
+const DEFAULT_CUSTOM_SHAPE = 0.5;
+const EFFECT_FILTER_TYPES = new Set(['none', 'lowpass', 'highpass', 'bandpass']);
+const DEFAULT_EFFECTS = {
+  filterType: 'none',
+  filterCutoff: 1800,
+  filterQ: 0.7,
+  delayMix: 0,
+  delayTime: 0.28,
+  delayFeedback: 0.35
+};
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -22,6 +32,27 @@ const sanitizeName = (name) => {
 
 const createEmptyPattern = (rows, steps) =>
   Array.from({ length: rows }, () => Array.from({ length: steps }, () => false));
+
+const sanitizeCustomShape = (value) => {
+  const numeric = Number.isFinite(value) ? value : parseFloat(value);
+  if (!Number.isFinite(numeric)) return DEFAULT_CUSTOM_SHAPE;
+  return clamp(numeric, 0, 1);
+};
+
+const sanitizeEffects = (effects = {}) => {
+  const filterType = EFFECT_FILTER_TYPES.has(effects.filterType) ? effects.filterType : DEFAULT_EFFECTS.filterType;
+  const cutoffValue = Number.parseFloat(effects.filterCutoff);
+  const filterCutoff = clamp(Number.isFinite(cutoffValue) ? cutoffValue : DEFAULT_EFFECTS.filterCutoff, 80, 8000);
+  const qValue = Number.parseFloat(effects.filterQ);
+  const filterQ = clamp(Number.isFinite(qValue) ? qValue : DEFAULT_EFFECTS.filterQ, 0.1, 20);
+  const mixValue = Number.parseFloat(effects.delayMix);
+  const delayMix = clamp(Number.isFinite(mixValue) ? mixValue : DEFAULT_EFFECTS.delayMix, 0, 0.9);
+  const timeValue = Number.parseFloat(effects.delayTime);
+  const delayTime = clamp(Number.isFinite(timeValue) ? timeValue : DEFAULT_EFFECTS.delayTime, 0.05, 0.8);
+  const feedbackValue = Number.parseFloat(effects.delayFeedback);
+  const delayFeedback = clamp(Number.isFinite(feedbackValue) ? feedbackValue : DEFAULT_EFFECTS.delayFeedback, 0, 0.9);
+  return { filterType, filterCutoff, filterQ, delayMix, delayTime, delayFeedback };
+};
 
 const resizeTrack = (track, rows, steps) => {
   const notes = Array.from({ length: rows }, (_, rowIndex) => {
@@ -46,6 +77,8 @@ const normalizeTracks = (tracks, rows, steps) => {
     const volume = clamp(track.volume ?? 0.7, 0, 1);
     const id = track.id ?? index + 1;
     const name = track.name ?? `Track ${index + 1}`;
+    const customShape = sanitizeCustomShape(track.customShape);
+    const effects = sanitizeEffects(track.effects);
     return resizeTrack(
       {
         id,
@@ -55,6 +88,8 @@ const normalizeTracks = (tracks, rows, steps) => {
         scale: scaleName,
         octave,
         volume,
+        customShape,
+        effects,
         mute: !!track.mute,
         solo: !!track.solo,
         notes: track.notes ?? createEmptyPattern(rows, steps)
@@ -75,6 +110,8 @@ const createTrack = (index, rows, steps) =>
       scale: 'major',
       octave: 4,
       volume: 0.7,
+      customShape: DEFAULT_CUSTOM_SHAPE,
+      effects: { ...DEFAULT_EFFECTS },
       mute: false,
       solo: false,
       notes: createEmptyPattern(rows, steps)
@@ -112,13 +149,15 @@ const snapshotTracks = (tracks) =>
     scale: track.scale,
     octave: track.octave,
     volume: track.volume,
+    customShape: track.customShape,
+    effects: { ...track.effects },
     mute: track.mute,
     solo: track.solo,
     notes: track.notes.map((row) => row.slice())
   }));
 
 const toSnapshot = (state) => ({
-  version: 2,
+  version: 3,
   name: state.name,
   rows: state.rows,
   bars: state.bars,
@@ -307,6 +346,25 @@ const createProjectStore = () => {
             if (octave === track.octave) return track;
             changed = true;
             return { ...track, octave };
+          }
+          if (key === 'customShape') {
+            const customShape = sanitizeCustomShape(value);
+            if (customShape === track.customShape) return track;
+            changed = true;
+            return { ...track, customShape };
+          }
+          if (key === 'effects') {
+            const nextEffects = sanitizeEffects({ ...track.effects, ...(value || {}) });
+            const same =
+              nextEffects.filterType === track.effects.filterType &&
+              nextEffects.filterCutoff === track.effects.filterCutoff &&
+              nextEffects.filterQ === track.effects.filterQ &&
+              nextEffects.delayMix === track.effects.delayMix &&
+              nextEffects.delayTime === track.effects.delayTime &&
+              nextEffects.delayFeedback === track.effects.delayFeedback;
+            if (same) return track;
+            changed = true;
+            return { ...track, effects: nextEffects };
           }
           if (key === 'mute' || key === 'solo') {
             const next = !!value;

@@ -11,6 +11,7 @@
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
+  import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
 
   let projectState;
   let historyState;
@@ -32,6 +33,10 @@
   let scheduler;
   let masterGain;
   let animationId;
+  let shareStatus = 'idle';
+  let shareMessage = '';
+  let shareLink = '';
+  let shareFeedbackTimer;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -73,17 +78,20 @@
   };
 
   const playTone = (track, frequency, time, duration) => {
-    if (!audioContext || !masterGain || !Number.isFinite(frequency)) return;
-    const gainNode = audioContext.createGain();
-    gainNode.gain.setValueAtTime(0, time);
+    if (!audioContext || !masterGain) return;
+    if (track.waveform !== 'noise' && !Number.isFinite(frequency)) return;
+
+    const voiceGain = audioContext.createGain();
+    voiceGain.gain.setValueAtTime(0, time);
     const attack = 0.01;
     const release = Math.min(0.3, duration * 0.8);
     const sustainTime = time + Math.max(attack, duration * 0.4);
     const releaseStart = time + duration - release;
-    gainNode.gain.linearRampToValueAtTime(track.volume, time + attack);
-    gainNode.gain.setValueAtTime(track.volume, sustainTime);
-    gainNode.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
-    gainNode.connect(masterGain);
+    voiceGain.gain.linearRampToValueAtTime(track.volume, time + attack);
+    voiceGain.gain.setValueAtTime(track.volume, sustainTime);
+    voiceGain.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
+
+    connectTrackEffects(audioContext, track, voiceGain, masterGain, time);
 
     if (track.waveform === 'noise') {
       const buffer = audioContext.createBuffer(1, Math.floor(audioContext.sampleRate * (duration + 0.1)), audioContext.sampleRate);
@@ -93,17 +101,29 @@
       }
       const source = audioContext.createBufferSource();
       source.buffer = buffer;
-      source.connect(gainNode);
+      source.connect(voiceGain);
       source.start(time);
       source.stop(releaseStart + release + 0.05);
-    } else {
-      const osc = audioContext.createOscillator();
-      osc.type = track.waveform;
-      osc.frequency.setValueAtTime(frequency, time);
-      osc.connect(gainNode);
-      osc.start(time);
-      osc.stop(releaseStart + release + 0.05);
+      return;
     }
+
+    const osc = audioContext.createOscillator();
+    if (track.waveform === 'custom') {
+      const wave = getCustomWave(audioContext, track.customShape);
+      if (wave) {
+        osc.setPeriodicWave(wave);
+      } else {
+        osc.type = 'sine';
+      }
+    } else {
+      osc.type = track.waveform;
+    }
+    if (Number.isFinite(frequency)) {
+      osc.frequency.setValueAtTime(frequency, time);
+    }
+    osc.connect(voiceGain);
+    osc.start(time);
+    osc.stop(releaseStart + release + 0.05);
   };
 
   const scheduleAudio = (stepIndex, time, stepDuration, state) => {
@@ -318,9 +338,110 @@
     }
   };
 
+  const clearShareFeedback = () => {
+    if (shareFeedbackTimer) {
+      clearTimeout(shareFeedbackTimer);
+      shareFeedbackTimer = null;
+    }
+  };
+
+  const setShareFeedback = (status, message, link = '') => {
+    clearShareFeedback();
+    shareStatus = status;
+    shareMessage = message;
+    shareLink = link;
+    if (!['idle', 'ready'].includes(status)) {
+      shareFeedbackTimer = setTimeout(() => {
+        shareStatus = 'idle';
+        shareMessage = '';
+        shareLink = '';
+        shareFeedbackTimer = null;
+      }, 6000);
+    }
+  };
+
+  const copyToClipboard = async (text) => {
+    if (!text || typeof window === 'undefined') return false;
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (error) {
+      // fall through to manual copy fallback
+    }
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'absolute';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const result = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return result;
+    } catch (error) {
+      console.error('Clipboard copy failed', error);
+      return false;
+    }
+  };
+
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const snapshot = project.toSnapshot();
+      const url = buildShareUrl(snapshot);
+      if (!url) throw new Error('Share URL unavailable');
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: snapshot.name, text: SHARE_TEXT, url });
+        setShareFeedback('shared', 'Shared via system share sheet', url);
+      } else {
+        const copied = await copyToClipboard(url);
+        if (copied) {
+          setShareFeedback('copied', 'Share link copied to clipboard', url);
+        } else {
+          setShareFeedback('ready', 'Share link ready below', url);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to share project', error);
+      setShareFeedback('error', 'Unable to share right now. Please try again.');
+    }
+  };
+
+  const attemptLoadSharedSnapshot = async () => {
+    if (typeof window === 'undefined') return;
+    const currentUrl = new URL(window.location.href);
+    const token = currentUrl.searchParams.get('share');
+    if (!token) return;
+    currentUrl.searchParams.delete('share');
+    window.history.replaceState({}, document.title, currentUrl.toString());
+    const snapshot = decodeShareSnapshot(token);
+    if (!snapshot) {
+      setShareFeedback('error', 'Unable to load shared loop.');
+      return;
+    }
+    const loaded = project.load(snapshot);
+    if (loaded) {
+      await library.renameCurrent(snapshot.name);
+      setShareFeedback('loaded', `Loaded shared loop “${snapshot.name}”`);
+    } else {
+      setShareFeedback('error', 'Unable to load shared loop.');
+    }
+  };
+
   onMount(() => {
-    library.initialize();
+    let disposed = false;
+    const boot = async () => {
+      await library.initialize();
+      if (!disposed) {
+        await attemptLoadSharedSnapshot();
+      }
+    };
+    boot();
     return () => {
+      disposed = true;
       stopPlayback();
       if (audioContext) {
         audioContext.close?.();
@@ -331,6 +452,7 @@
   onDestroy(() => {
     library.dispose();
     unsubscribers.forEach((unsubscribe) => unsubscribe?.());
+    clearShareFeedback();
   });
 
   $: activeTrack = projectState?.tracks?.[projectState?.selectedTrack ?? 0];
@@ -451,6 +573,9 @@
       projects={projects}
       currentId={currentProjectId}
       isSaving={isSaving}
+      shareStatus={shareStatus}
+      shareMessage={shareMessage}
+      shareLink={shareLink}
       on:changebars={handleBarsChange}
       on:changesteps={handleStepsChange}
       on:export={handleExport}
@@ -463,6 +588,7 @@
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
       on:render={handleRenderWav}
+      on:share={handleShare}
     />
   </section>
 </main>
@@ -687,6 +813,50 @@
     .app-rail {
       border-right: none;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .workspace-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px 20px 12px;
+      gap: 16px;
+    }
+
+    .status-pills {
+      width: 100%;
+    }
+
+    .grid-shell {
+      padding: 0 16px 16px;
+    }
+
+    .grid-backdrop {
+      padding: 12px;
+      border-radius: 18px;
+    }
+
+    .app-rail {
+      padding: 18px;
+    }
+
+    .trackbar {
+      padding: 20px 20px 12px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .app {
+      padding: 12px;
+    }
+
+    .workspace-header h1 {
+      font-size: 1.4rem;
+    }
+
+    .grid-backdrop {
+      border-radius: 14px;
     }
   }
 </style>
