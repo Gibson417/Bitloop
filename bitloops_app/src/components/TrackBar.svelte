@@ -129,7 +129,7 @@
   .track-list {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(210px, 1fr);
+    grid-auto-columns: minmax(110px, 1fr);
     gap: 16px;
     overflow-x: auto;
     padding-bottom: 6px;
@@ -141,7 +141,7 @@
   }
 
   .track-list::-webkit-scrollbar-thumb {
-    background: rgba(120, 210, 185, 0.3);
+    background: rgba(var(--color-accent-rgb), 0.3);
     border-radius: 999px;
   }
 
@@ -158,18 +158,18 @@
     gap: 14px;
     cursor: pointer;
     transition: transform 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
-    min-width: 210px;
+    min-width: 110px;
   }
 
   .track-chip:hover {
     transform: translateY(-2px);
-    border-color: rgba(120, 210, 185, 0.4);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
     box-shadow: 0 14px 30px rgba(15, 18, 26, 0.55);
   }
 
   .track-chip.selected {
-    border-color: rgba(120, 210, 185, 0.6);
-    box-shadow: 0 18px 40px rgba(120, 210, 185, 0.2);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    box-shadow: 0 18px 40px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .chip-strip {
@@ -236,7 +236,7 @@
   select:focus,
   input[type='number']:focus,
   input[type='range']:focus {
-    outline: 2px solid rgba(120, 210, 185, 0.5);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
   }
 
@@ -289,8 +289,8 @@
   }
 
   .toggles button.active {
-    border-color: rgba(120, 210, 185, 0.6);
-    background: rgba(120, 210, 185, 0.2);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.2);
     color: #fff;
   }
 

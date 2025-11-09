@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+  import { colors } from '../lib/colorTokens.js';
 
   export let notes = [];
   export let rows = 8;
@@ -7,7 +8,7 @@ export let columns = 16;
 export let stepsPerBar = 16;
   export let playheadStep = 0;
   export let playheadProgress = 0;
-  export let trackColor = '#78D2B9';
+  export let trackColor = colors.accent;
   export let follow = true;
   export let isPlaying = false;
 
@@ -23,8 +24,8 @@ export let stepsPerBar = 16;
   let resizeObserver;
 
   const hexToRgba = (hex, alpha = 1) => {
-    if (!hex) return `rgba(120, 210, 185, ${alpha})`;
-    const clean = hex.replace('#', '');
+    const fallback = hex ?? colors.accent;
+    const clean = fallback.replace('#', '');
     const bigint = parseInt(clean.length === 3 ? clean.replace(/(.)/g, '$1$1') : clean, 16);
     const r = (bigint >> 16) & 255;
     const g = (bigint >> 8) & 255;
@@ -35,10 +36,12 @@ export let stepsPerBar = 16;
   const getStyles = () => {
     const style = getComputedStyle(canvas);
     return {
-      background: style.getPropertyValue('--panel')?.trim() || '#161A24',
-      grid: style.getPropertyValue('--grid-line')?.trim() || 'rgba(255,255,255,0.08)',
-      inactive: style.getPropertyValue('--note-inactive')?.trim() || '#3C4450',
-      playhead: style.getPropertyValue('--playhead')?.trim() || hexToRgba(trackColor, 0.9)
+      background: style.getPropertyValue('--color-panel')?.trim() || colors.panel,
+      grid: style.getPropertyValue('--color-grid-line')?.trim() || 'rgba(255,255,255,0.08)',
+      inactive:
+        style.getPropertyValue('--color-note-inactive')?.trim() || colors.noteInactive,
+      playhead:
+        style.getPropertyValue('--color-playhead')?.trim() || hexToRgba(trackColor, 0.9)
     };
   };
 
@@ -262,7 +265,7 @@ export let stepsPerBar = 16;
     height: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    background: var(--panel);
+    background: var(--color-panel);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
