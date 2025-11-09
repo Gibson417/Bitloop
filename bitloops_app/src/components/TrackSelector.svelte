@@ -162,7 +162,7 @@
   .action-button {
     width: 28px;
     height: 28px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
     background: rgba(var(--color-accent-rgb), 0.1);
     color: var(--color-accent);
@@ -207,7 +207,7 @@
     display: flex;
     align-items: center;
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(17, 20, 29, 0.6);
     color: #fff;
@@ -215,6 +215,7 @@
     gap: 8px;
     transition: all 0.2s ease;
     position: relative;
+    min-height: 52px;
   }
 
   .track-item:hover {
@@ -231,7 +232,7 @@
   .track-strip {
     width: 8px;
     height: 100%;
-    min-height: 48px;
+    min-height: 40px;
     border-radius: 4px;
     flex-shrink: 0;
   }

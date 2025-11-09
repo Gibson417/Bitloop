@@ -331,7 +331,7 @@
     grid-template-columns: 12px 1fr auto;
     align-items: center;
     padding: 12px 16px;
-    border-radius: 16px;
+    border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(17, 20, 29, 0.85);
     color: #fff;
@@ -426,8 +426,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 24px;
+    border-radius: 16px;
     background: linear-gradient(130deg, rgba(20, 24, 32, 0.95), rgba(14, 16, 22, 0.92));
     border: 1px solid rgba(255, 255, 255, 0.04);
   }
@@ -453,7 +453,7 @@
   input[type='text'] {
     background: rgba(0, 0, 0, 0.35);
     color: #fff;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
     font-size: 0.95rem;
@@ -471,7 +471,7 @@
     width: 48px;
     height: 36px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 0;
     background: none;
     cursor: pointer;
@@ -529,7 +529,7 @@
     flex-direction: column;
     gap: 14px;
     padding: 18px;
-    border-radius: 18px;
+    border-radius: 14px;
     background: rgba(9, 11, 16, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
@@ -575,7 +575,7 @@
   .toggles button {
     flex: 1;
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.75);
