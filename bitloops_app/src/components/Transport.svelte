@@ -95,9 +95,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.25);
-    background: rgba(var(--color-accent-rgb), 0.08);
-    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -105,8 +105,9 @@
 
   .control-button:hover:not(:disabled) {
     transform: translateY(-1px);
-    background: rgba(var(--color-accent-rgb), 0.15);
-    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
   }
 
   .control-button:disabled {

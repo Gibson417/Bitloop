@@ -422,6 +422,7 @@
     border-radius: 16px;
     background: linear-gradient(130deg, rgba(20, 24, 32, 0.95), rgba(14, 16, 22, 0.92));
     border: 1px solid rgba(255, 255, 255, 0.04);
+    column-gap: 24px;
   }
 
   .control {
@@ -430,6 +431,16 @@
     gap: 10px;
     color: #fff;
     font-size: 0.8rem;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .control.effect-card {
+    padding: 18px;
+    background: rgba(9, 11, 16, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .control label {

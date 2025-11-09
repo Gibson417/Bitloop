@@ -307,13 +307,6 @@
     }
   };
 
-  const handleGlobalScaleChange = (event) => {
-    const value = event.detail?.value ?? event.target?.value;
-    if (value && scales[value]) {
-      project.setAllTracksScale(value);
-    }
-  };
-
   const handleExport = () => {
     if (typeof window === 'undefined') return;
     const data = project.serialize();
@@ -641,20 +634,6 @@
             class="stat-input"
           />
         </div>
-        <div class="stat-field">
-          <label for="rail-global-scale" class="label">Scale (All Tracks)</label>
-          <select
-            id="rail-global-scale"
-            on:change={handleGlobalScaleChange}
-            class="stat-input"
-            title="Set scale for all tracks"
-          >
-            <option value="">Select scale...</option>
-            {#each Object.keys(scales) as scaleName}
-              <option value={scaleName}>{scaleName}</option>
-            {/each}
-          </select>
-        </div>
         <div>
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
@@ -905,16 +884,6 @@
     font-weight: 600;
     appearance: textfield;
     width: 100%;
-  }
-
-  select.stat-input {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 16px;
-    padding-right: 32px;
-    cursor: pointer;
   }
 
   .stat-input::-webkit-outer-spin-button,
