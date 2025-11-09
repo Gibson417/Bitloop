@@ -110,10 +110,10 @@ Bitloop/
 │   │   └── store/       # State management
 │   └── package.json
 ├── docs/                 # Documentation
-│   ├── quick_onboarding.md   # Developer quick start
-│   ├── mvp-scope.md         # Feature specifications
-│   ├── ISSUES.md            # GitHub issue templates
-│   └── ...                  # Additional docs
+│   ├── process/            # Developer workflow guides
+│   ├── product/            # Product planning artifacts
+│   ├── design/             # Visual identity tokens
+│   └── templates/          # Issue templates
 ├── CONTRIBUTING.md       # Contribution guidelines
 └── README.md            # This file
 ```
@@ -137,10 +137,10 @@ This ensures no jitter, no grid tearing, and no “off by one frame” desync.
 
 ## 📚 Documentation
 
-- [Quick Onboarding Guide](docs/quick_onboarding.md) - Get started as a developer
-- [MVP Scope](docs/mvp-scope.md) - Feature specifications
-- [Build Checklist](docs/build-checklist.md) - Implementation roadmap
-- [Design Tokens](docs/design-tokens.json) - UI design system
+- [Quick Onboarding Guide](docs/process/quick_onboarding.md) - Get started as a developer
+- [MVP Scope](docs/product/mvp-scope.md) - Feature specifications
+- [Build Checklist](docs/process/build-checklist.md) - Implementation roadmap
+- [Design Tokens](docs/design/design-tokens.json) - UI design system
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 
 ## 🪶 License
