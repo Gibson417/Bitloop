@@ -515,6 +515,7 @@
         on:remove={handleTrackRemove}
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
+        on:update={handleTrackUpdate}
       />
       <div class="rail-stats">
         <div>
@@ -544,18 +545,6 @@
           on:blur={handleProjectRename}
           placeholder="Untitled loop"
         />
-        <p class="session-meta project-meta">
-          {libraryLoading
-            ? 'Loading workspace…'
-            : activeTrack
-            ? `Editing ${activeTrack.name}`
-            : 'Select a track to edit settings'}
-        </p>
-        <p class="session-meta">
-          {activeTrack
-            ? `${activeTrack.scale} scale • octave ${activeTrack.octave} • ${Math.round(activeTrack.volume * 100)}% vol`
-            : 'Scale, octave, and volume controls will appear when a track is selected.'}
-        </p>
       </div>
       <div class="header-actions">
         <div class="history-buttons">
@@ -723,20 +712,27 @@
   .brand {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+    padding: 20px 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15), rgba(22, 26, 36, 0.6));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    box-shadow: 0 8px 24px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .brand-mark {
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-weight: 800;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    font-size: 1rem;
+    font-size: 1.6rem;
+    text-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.6);
   }
 
   .brand-tag {
     margin: 0;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.08em;
   }
 
   .rail-stats {

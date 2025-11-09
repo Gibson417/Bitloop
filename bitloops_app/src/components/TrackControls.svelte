@@ -148,16 +148,18 @@
 
     <div class="control volume">
       <label for="volume">Volume</label>
-      <input
-        id="volume"
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={track.volume}
-        on:input={(event) => handleChange('volume', Number(event.target.value))}
-      />
-      <span class="volume-value">{Math.round(track.volume * 100)}%</span>
+      <div class="volume-field">
+        <input
+          id="volume"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={track.volume}
+          on:input={(event) => handleChange('volume', Number(event.target.value))}
+        />
+        <span class="volume-box">{Math.round(track.volume * 100)}%</span>
+      </div>
     </div>
 
     <div class="control effect-card">
@@ -336,16 +338,29 @@
     position: relative;
   }
 
-  .volume input[type='range'] {
-    width: 100%;
+  .volume-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .volume-value {
-    position: absolute;
-    top: -20px;
-    right: 0;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
+  .volume-field input[type='range'] {
+    flex: 1;
+  }
+
+  .volume-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 8px;
+    letter-spacing: 0.04em;
   }
 
   .slider-field {

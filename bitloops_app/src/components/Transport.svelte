@@ -98,7 +98,8 @@
   .follow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 12px;
     padding: 10px 14px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -109,15 +110,30 @@
     letter-spacing: 0.08em;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
+    position: relative;
   }
 
   .follow .indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.35);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .follow .indicator::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .follow.active {
@@ -128,7 +144,10 @@
 
   .follow.active .indicator {
     background: var(--color-accent);
-    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.6);
+  }
+
+  .follow.active .indicator::after {
+    transform: translateX(16px);
   }
 
   .tempo {
