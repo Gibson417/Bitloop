@@ -1026,6 +1026,14 @@
       border-right: none;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
+    
+    .rail-inner {
+      max-width: 100%;
+    }
+    
+    .rail-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 720px) {
@@ -1056,6 +1064,20 @@
     .trackbar {
       padding: 20px 20px 12px;
     }
+    
+    .project-name-input {
+      font-size: 1.4rem;
+      max-width: 100%;
+    }
+    
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .history-buttons {
+      flex-shrink: 0;
+    }
   }
 
   @media (max-width: 560px) {
@@ -1065,6 +1087,49 @@
 
     .grid-backdrop {
       border-radius: 14px;
+    }
+    
+    .app-rail {
+      padding: 12px;
+    }
+    
+    .rail-stats {
+      grid-template-columns: 1fr;
+    }
+    
+    .brand-logo {
+      max-width: 160px;
+    }
+    
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+    }
+    
+    .pill {
+      padding: 6px 10px;
+      font-size: 0.7rem;
+    }
+  }
+  
+  /* Touch improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .icon-btn,
+    button,
+    select,
+    input[type="range"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .play-button {
+      width: 72px;
+      height: 72px;
+    }
+    
+    .follow {
+      padding: 12px 16px;
     }
   }
 </style>

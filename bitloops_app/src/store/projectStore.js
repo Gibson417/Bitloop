@@ -30,7 +30,11 @@ const DEFAULT_EFFECTS = {
   filterQ: 0.7,
   delayMix: 0,
   delayTime: 0.28,
-  delayFeedback: 0.35
+  delayFeedback: 0.35,
+  reverbMix: 0,
+  reverbTime: 1,
+  bitcrushBits: 16,
+  bitcrushRate: 1
 };
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -61,7 +65,20 @@ const sanitizeEffects = (effects = {}) => {
   const delayTime = clamp(Number.isFinite(timeValue) ? timeValue : DEFAULT_EFFECTS.delayTime, 0.05, 0.8);
   const feedbackValue = Number.parseFloat(effects.delayFeedback);
   const delayFeedback = clamp(Number.isFinite(feedbackValue) ? feedbackValue : DEFAULT_EFFECTS.delayFeedback, 0, 0.9);
-  return { filterType, filterCutoff, filterQ, delayMix, delayTime, delayFeedback };
+  const reverbMixValue = Number.parseFloat(effects.reverbMix);
+  const reverbMix = clamp(Number.isFinite(reverbMixValue) ? reverbMixValue : DEFAULT_EFFECTS.reverbMix, 0, 1);
+  const reverbTimeValue = Number.parseFloat(effects.reverbTime);
+  const reverbTime = clamp(Number.isFinite(reverbTimeValue) ? reverbTimeValue : DEFAULT_EFFECTS.reverbTime, 0.1, 5);
+  const bitcrushBitsValue = Number.parseFloat(effects.bitcrushBits);
+  const bitcrushBits = clamp(Number.isFinite(bitcrushBitsValue) ? bitcrushBitsValue : DEFAULT_EFFECTS.bitcrushBits, 1, 16);
+  const bitcrushRateValue = Number.parseFloat(effects.bitcrushRate);
+  const bitcrushRate = clamp(Number.isFinite(bitcrushRateValue) ? bitcrushRateValue : DEFAULT_EFFECTS.bitcrushRate, 1, 50);
+  return { 
+    filterType, filterCutoff, filterQ, 
+    delayMix, delayTime, delayFeedback,
+    reverbMix, reverbTime,
+    bitcrushBits, bitcrushRate
+  };
 };
 
 const sanitizeAdsr = (adsr = {}) => {
@@ -391,7 +408,11 @@ const createProjectStore = () => {
               nextEffects.filterQ === track.effects.filterQ &&
               nextEffects.delayMix === track.effects.delayMix &&
               nextEffects.delayTime === track.effects.delayTime &&
-              nextEffects.delayFeedback === track.effects.delayFeedback;
+              nextEffects.delayFeedback === track.effects.delayFeedback &&
+              nextEffects.reverbMix === track.effects.reverbMix &&
+              nextEffects.reverbTime === track.effects.reverbTime &&
+              nextEffects.bitcrushBits === track.effects.bitcrushBits &&
+              nextEffects.bitcrushRate === track.effects.bitcrushRate;
             if (same) return track;
             changed = true;
             return { ...track, effects: nextEffects };
