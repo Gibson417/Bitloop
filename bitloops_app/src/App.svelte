@@ -211,17 +211,6 @@
     }
   };
 
-  const handlePause = () => {
-    if (projectState?.playing && scheduler) {
-      scheduler.stop();
-      project.setPlaying(false);
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
-    }
-  };
-
   const handleSkip = () => {
     if (projectState) {
       const stepsPerBar = projectState.stepsPerBar || 16;
@@ -229,9 +218,31 @@
       const currentStep = projectState.playheadStep || 0;
       const nextBarStep = Math.floor(currentStep / stepsPerBar) * stepsPerBar + stepsPerBar;
       const targetStep = nextBarStep >= totalSteps ? 0 : nextBarStep;
-      
+
       project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
-      
+
+      if (projectState.playing && scheduler) {
+        scheduler.stop();
+        scheduler.start();
+      }
+    }
+  };
+
+  const handleSkipBack = () => {
+    if (projectState) {
+      const stepsPerBar = projectState.stepsPerBar || 16;
+      const totalSteps = projectState.bars * stepsPerBar;
+      const currentStep = projectState.playheadStep || 0;
+      const currentBarStart = Math.floor(currentStep / stepsPerBar) * stepsPerBar;
+
+      let targetStep = currentBarStart;
+
+      if (currentStep % stepsPerBar === 0) {
+        targetStep = currentBarStart === 0 ? Math.max(totalSteps - stepsPerBar, 0) : currentBarStart - stepsPerBar;
+      }
+
+      project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
+
       if (projectState.playing && scheduler) {
         scheduler.stop();
         scheduler.start();
@@ -581,7 +592,7 @@
         playing={isPlaying}
         follow={isFollowing}
         on:toggleplay={handleTogglePlay}
-        on:pause={handlePause}
+        on:skipback={handleSkipBack}
         on:skip={handleSkip}
         on:togglefollow={handleFollowToggle}
       />
