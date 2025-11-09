@@ -1,11 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let bars = 4;
-  export let stepsPerBar = 16;
   export let bpm = 120;
   export let loopSeconds = 0;
-  export let maxBars = 64;
   export let projects = [];
   export let currentId = null;
   export let shareStatus = 'idle';
@@ -15,23 +12,16 @@
   const dispatch = createEventDispatcher();
   let fileInput;
   let selectedProjectId = currentId ?? '';
-
-  const handleBarsChange = (event) => {
-    const value = Number(event.target.value);
-    dispatch('changebars', { value });
-  };
-
-  const handleStepsChange = (event) => {
-    const value = Number(event.target.value);
-    dispatch('changesteps', { value });
-  };
+  let showExportMenu = false;
 
   const handleExport = () => {
     dispatch('export');
+    showExportMenu = false;
   };
 
   const handleImportClick = () => {
     fileInput?.click();
+    showExportMenu = false;
   };
 
   const handleImport = async (event) => {
@@ -49,8 +39,18 @@
   const handleNewProject = () => dispatch('newproject');
   const handleDuplicateProject = () => dispatch('duplicateproject');
   const handleDeleteProject = () => dispatch('deleteproject');
-  const handleRender = () => dispatch('render');
-  const handleShare = () => dispatch('share');
+  const handleRender = () => {
+    dispatch('render');
+    showExportMenu = false;
+  };
+  const handleShare = () => {
+    dispatch('share');
+    showExportMenu = false;
+  };
+
+  const toggleExportMenu = () => {
+    showExportMenu = !showExportMenu;
+  };
 
   $: selectedProjectId = currentId ?? '';
 </script>
@@ -79,34 +79,6 @@
   </div>
   <div class="timeline-column">
     <div class="timing">
-      <div class="field">
-        <label for="bars">Bars</label>
-        <div class="input-shell">
-          <input
-            id="bars"
-            type="number"
-            min="1"
-            max={maxBars}
-            value={bars}
-            on:change={handleBarsChange}
-          />
-          <span class="hint">Max {maxBars}</span>
-        </div>
-      </div>
-      <div class="field">
-        <label for="steps">Steps / bar</label>
-        <div class="input-shell">
-          <input
-            id="steps"
-            type="number"
-            min="4"
-            max="64"
-            step="1"
-            value={stepsPerBar}
-            on:change={handleStepsChange}
-          />
-        </div>
-      </div>
       <div class="loop-card">
         <span class="loop-label">Loop</span>
         <span class="loop-value">{loopSeconds.toFixed(1)} s</span>
@@ -115,9 +87,31 @@
     </div>
   </div>
   <div class="action-column">
-    <div class="primary-actions">
-      <button class="primary" type="button" on:click={handleRender}>Render WAV</button>
-      <button class="secondary" type="button" on:click={handleShare}>Share loop</button>
+    <div class="export-menu-container">
+      <button class="primary export-toggle" type="button" on:click={toggleExportMenu}>
+        <span>⚙</span>
+        <span>Share / Export</span>
+      </button>
+      {#if showExportMenu}
+        <div class="export-dropdown">
+          <button class="menu-item" type="button" on:click={handleShare}>
+            <span class="menu-icon">🔗</span>
+            <span>Share loop</span>
+          </button>
+          <button class="menu-item" type="button" on:click={handleRender}>
+            <span class="menu-icon">🎵</span>
+            <span>Render WAV</span>
+          </button>
+          <button class="menu-item" type="button" on:click={handleExport}>
+            <span class="menu-icon">📄</span>
+            <span>Export JSON</span>
+          </button>
+          <button class="menu-item" type="button" on:click={handleImportClick}>
+            <span class="menu-icon">📥</span>
+            <span>Import JSON</span>
+          </button>
+        </div>
+      {/if}
     </div>
     {#if shareStatus !== 'idle'}
       <div class={`share-feedback ${shareStatus}`}>
@@ -133,10 +127,6 @@
         {/if}
       </div>
     {/if}
-    <div class="export-actions">
-      <button class="ghost" type="button" on:click={handleExport}>Export JSON</button>
-      <button class="ghost" type="button" on:click={handleImportClick}>Import</button>
-    </div>
     <input type="file" accept=".json,.bitloops.json" bind:this={fileInput} on:change={handleImport} hidden />
   </div>
 </footer>
@@ -284,6 +274,67 @@
   .action-column {
     align-items: stretch;
     gap: 16px;
+  }
+
+  .export-menu-container {
+    position: relative;
+  }
+
+  .export-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .export-toggle span:first-child {
+    font-size: 1.2rem;
+  }
+
+  .export-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: rgba(14, 16, 22, 0.98);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    z-index: 100;
+  }
+
+  .menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .menu-item:hover {
+    background: rgba(var(--color-accent-rgb), 0.15);
+  }
+
+  .menu-icon {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
   }
 
   .primary-actions,

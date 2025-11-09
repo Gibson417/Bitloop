@@ -24,14 +24,13 @@
 </script>
 
 <div class="transport">
-  <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button">
+  <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button" aria-label={playing ? 'Stop' : 'Play'}>
     <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
-    <span class="label">{playing ? 'Stop' : 'Play'}</span>
   </button>
   <div class="transport-controls">
     <button class="follow" class:active={follow} on:click={handleFollowClick} type="button">
       <span class="indicator" aria-hidden="true"></span>
-      <span>{follow ? 'Following' : 'Follow'}</span>
+      <span>Follow</span>
     </button>
     <label class="tempo">
       <span class="tempo-label">Tempo</span>
@@ -51,32 +50,25 @@
   }
 
   .play-button {
+    width: 64px;
+    height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 16px 20px;
-    border-radius: 18px;
+    border-radius: 50%;
     border: 1px solid rgba(var(--color-accent-rgb), 0.32);
     background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(22, 26, 36, 0.85));
     color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 18px 40px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .play-button .icon {
-    width: 24px;
-    height: 24px;
     display: grid;
     place-items: center;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.4);
-    font-size: 0.9rem;
+    font-size: 1.4rem;
   }
 
   .play-button:hover {
@@ -98,37 +90,58 @@
   .follow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 12px;
     padding: 10px 14px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    background: transparent;
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .follow:hover {
+    color: #fff;
   }
 
   .follow .indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.35);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .follow .indicator::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .follow.active {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-    background: rgba(var(--color-accent-rgb), 0.16);
     color: #fff;
   }
 
   .follow.active .indicator {
     background: var(--color-accent);
-    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.6);
+  }
+
+  .follow.active .indicator::after {
+    transform: translateX(16px);
   }
 
   .tempo {

@@ -424,6 +424,26 @@ const createProjectStore = () => {
         pushHistory(prevSnapshot);
       }
     },
+    duplicateTrack(index) {
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
+      update((state) => {
+        if (state.tracks.length >= MAX_TRACKS) return state;
+        if (index < 0 || index >= state.tracks.length) return state;
+        const trackToDuplicate = state.tracks[index];
+        const duplicatedTrack = {
+          ...trackToDuplicate,
+          name: `${trackToDuplicate.name} Copy`,
+          notes: trackToDuplicate.notes.map(row => [...row])
+        };
+        const tracks = [...state.tracks, duplicatedTrack];
+        changed = true;
+        return normalizeState({ ...state, tracks, selectedTrack: tracks.length - 1 });
+      });
+      if (changed) {
+        pushHistory(prevSnapshot);
+      }
+    },
     removeTrack(index) {
       const prevSnapshot = toSnapshot(get(store));
       let changed = false;

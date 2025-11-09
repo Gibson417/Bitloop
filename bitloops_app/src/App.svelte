@@ -235,6 +235,11 @@
     project.addTrack();
   };
 
+  const handleTrackDuplicate = (event) => {
+    const { index } = event.detail;
+    project.duplicateTrack(index);
+  };
+
   const handleTrackRemove = (event) => {
     const { index } = event.detail;
     project.removeTrack(index);
@@ -512,22 +517,40 @@
         maxTracks={TRACK_LIMIT}
         on:select={handleTrackSelect}
         on:add={handleTrackAdd}
+        on:duplicate={handleTrackDuplicate}
         on:remove={handleTrackRemove}
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
       />
       <div class="rail-stats">
+        <div class="stat-field">
+          <label for="rail-bars" class="label">Bars</label>
+          <input
+            id="rail-bars"
+            type="number"
+            min="1"
+            max={maxBarsValue}
+            value={totalBars}
+            on:change={handleBarsChange}
+            class="stat-input"
+          />
+        </div>
+        <div class="stat-field">
+          <label for="rail-steps" class="label">Steps / bar</label>
+          <input
+            id="rail-steps"
+            type="number"
+            min="4"
+            max="64"
+            step="1"
+            value={stepsPerBar}
+            on:change={handleStepsChange}
+            class="stat-input"
+          />
+        </div>
         <div>
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
-        </div>
-        <div>
-          <span class="label">Bars</span>
-          <span class="value">{totalBars}</span>
-        </div>
-        <div>
-          <span class="label">Steps / bar</span>
-          <span class="value">{stepsPerBar}</span>
         </div>
       </div>
     </div>
@@ -544,18 +567,6 @@
           on:blur={handleProjectRename}
           placeholder="Untitled loop"
         />
-        <p class="session-meta project-meta">
-          {libraryLoading
-            ? 'Loading workspace…'
-            : activeTrack
-            ? `Editing ${activeTrack.name}`
-            : 'Select a track to edit settings'}
-        </p>
-        <p class="session-meta">
-          {activeTrack
-            ? `${activeTrack.scale} scale • octave ${activeTrack.octave} • ${Math.round(activeTrack.volume * 100)}% vol`
-            : 'Scale, octave, and volume controls will appear when a track is selected.'}
-        </p>
       </div>
       <div class="header-actions">
         <div class="history-buttons">
@@ -616,18 +627,13 @@
       </div>
     </div>
     <Footer
-      bars={totalBars}
-      stepsPerBar={stepsPerBar}
       bpm={projectState?.bpm ?? 0}
       loopSeconds={loopDurationValue ?? 0}
-      maxBars={maxBarsValue ?? 0}
       projects={projects}
       currentId={currentProjectId}
       shareStatus={shareStatus}
       shareMessage={shareMessage}
       shareLink={shareLink}
-      on:changebars={handleBarsChange}
-      on:changesteps={handleStepsChange}
       on:export={handleExport}
       on:import={handleImport}
       on:selectproject={handleProjectSelect}
@@ -730,12 +736,12 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-size: 1rem;
+    font-size: 1.8rem;
   }
 
   .brand-tag {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
   }
 
@@ -755,12 +761,42 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 6px;
   }
 
   .rail-stats .value {
     font-size: 1.1rem;
     font-weight: 600;
     color: #fff;
+  }
+
+  .stat-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-input {
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    appearance: textfield;
+    width: 100%;
+  }
+
+  .stat-input::-webkit-outer-spin-button,
+  .stat-input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .stat-input:focus {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
+    outline-offset: 2px;
   }
 
   .workspace {

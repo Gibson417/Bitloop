@@ -19,6 +19,15 @@
     dispatch('add');
   };
 
+  const handleDuplicateTrack = () => {
+    dispatch('duplicate', { index: selected });
+  };
+
+  const handleDeleteTrack = () => {
+    if (tracks.length <= 1) return;
+    dispatch('remove', { index: selected });
+  };
+
   const handleRemoveTrack = (event, idx) => {
     event.stopPropagation();
     if (!canRemoveTrack(idx)) return;
@@ -39,31 +48,57 @@
 <div class="track-selector">
   <div class="selector-header">
     <span class="selector-title">Tracks</span>
-    <button
-      class="add-button"
-      type="button"
-      on:click={handleAddTrack}
-      disabled={!canAddMore()}
-      aria-label="Add track"
-      title="Add track"
-    >
-      +
-    </button>
+    <div class="header-actions">
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleAddTrack}
+        disabled={!canAddMore()}
+        aria-label="Add track"
+        title="Add track"
+      >
+        +
+      </button>
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleDuplicateTrack}
+        disabled={!canAddMore()}
+        aria-label="Duplicate track"
+        title="Duplicate track"
+      >
+        ⎘
+      </button>
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleDeleteTrack}
+        disabled={tracks.length <= 1}
+        aria-label="Delete track"
+        title="Delete track"
+      >
+        🗑
+      </button>
+    </div>
   </div>
   <div class="track-list" role="tablist" aria-label="Tracks">
     {#each tracks as track, idx}
-      <button
+      <div
         class="track-item {idx === selected ? 'selected' : ''}"
-        on:click={() => handleSelect(idx)}
-        type="button"
-        role="tab"
-        aria-selected={idx === selected}
       >
         <span class="track-strip" style={`background:${track.color}`}></span>
-        <span class="track-info">
-          <span class="track-name">{track.name}</span>
-          <span class="track-meta">{track.waveform}</span>
-        </span>
+        <div 
+          class="track-main" 
+          on:click={() => handleSelect(idx)} 
+          on:keydown={(e) => e.key === 'Enter' && handleSelect(idx)}
+          role="button" 
+          tabindex="0"
+        >
+          <span class="track-info">
+            <span class="track-name">{track.name}</span>
+            <span class="track-meta">{track.waveform}</span>
+          </span>
+        </div>
         <button
           type="button"
           class="toggle-btn mute {track.mute ? 'active' : ''}"
@@ -92,7 +127,7 @@
             ×
           </button>
         {/if}
-      </button>
+      </div>
     {/each}
   </div>
 </div>
@@ -119,14 +154,19 @@
     font-weight: 600;
   }
 
-  .add-button {
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .action-button {
     width: 28px;
     height: 28px;
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
     background: rgba(var(--color-accent-rgb), 0.1);
     color: var(--color-accent);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -135,12 +175,12 @@
     transition: all 0.2s ease;
   }
 
-  .add-button:hover:not(:disabled) {
+  .action-button:hover:not(:disabled) {
     background: rgba(var(--color-accent-rgb), 0.2);
     border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
-  .add-button:disabled {
+  .action-button:disabled {
     opacity: 0.3;
     cursor: not-allowed;
   }
@@ -172,8 +212,7 @@
     background: rgba(17, 20, 29, 0.6);
     color: #fff;
     text-align: left;
-    gap: 12px;
-    cursor: pointer;
+    gap: 8px;
     transition: all 0.2s ease;
     position: relative;
   }
@@ -192,9 +231,15 @@
   .track-strip {
     width: 8px;
     height: 100%;
-    min-height: 36px;
+    min-height: 48px;
     border-radius: 4px;
     flex-shrink: 0;
+  }
+
+  .track-main {
+    flex: 1;
+    cursor: pointer;
+    min-width: 0;
   }
 
   .track-info {
