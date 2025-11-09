@@ -43,13 +43,10 @@ Bitloop/
 │   ├── index.html
 │   └── package.json
 ├── docs/                  # Documentation
-│   ├── ISSUES.md         # GitHub issue templates
-│   ├── quick_onboarding.md  # Quick start guide
-│   ├── mvp-scope.md      # MVP feature specification
-│   ├── build-checklist.md   # Implementation checklist
-│   ├── design-tokens.json   # Design system tokens
-│   ├── user-stories.md      # User stories
-│   └── milestone-plan.md    # Project milestones
+│   ├── process/           # Quick start & delivery guides
+│   ├── product/           # MVP scope, milestones, user stories
+│   ├── design/            # Shared design tokens
+│   └── templates/         # Issue templates
 └── README.md             # Main project documentation
 ```
 
@@ -57,7 +54,7 @@ Bitloop/
 
 ### Build Order Priority
 
-When implementing features, follow this order (as specified in `docs/quick_onboarding.md`):
+When implementing features, follow this order (as specified in `docs/process/quick_onboarding.md`):
 
 1. Grid rendering (UI only)
 2. Note toggling
@@ -103,7 +100,7 @@ BitLoops prioritizes **feel** over features:
 
 ### UI/UX Guidelines
 
-- Use the design tokens defined in `docs/design-tokens.json`
+- Use the design tokens defined in `docs/design/design-tokens.json`
 - Maintain the dot-grid aesthetic (no square lattice)
 - Keep the interface dark, quiet, and gentle
 - Ensure controls are accessible and touch-friendly
