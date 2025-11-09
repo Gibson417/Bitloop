@@ -464,6 +464,7 @@
 
   .name-color-group input[type='text'] {
     flex: 1;
+    min-width: 0;
   }
 
   .name-color-group input[type='color'] {
@@ -491,6 +492,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
     font-size: 0.95rem;
+    width: 100%;
   }
 
   select:focus,
@@ -544,21 +546,24 @@
   }
 
   /* Volume slider custom styling */
-  .volume-field input[type='range'] {
+  .volume-field input[type='range'],
+  .slider-field input[type='range'] {
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
     cursor: pointer;
   }
 
-  .volume-field input[type='range']::-webkit-slider-track {
+  .volume-field input[type='range']::-webkit-slider-track,
+  .slider-field input[type='range']::-webkit-slider-track {
     background: rgba(0, 0, 0, 0.35);
     height: 8px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .volume-field input[type='range']::-webkit-slider-thumb {
+  .volume-field input[type='range']::-webkit-slider-thumb,
+  .slider-field input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 18px;
@@ -570,19 +575,22 @@
     margin-top: -5px;
   }
 
-  .volume-field input[type='range']::-webkit-slider-thumb:hover {
+  .volume-field input[type='range']::-webkit-slider-thumb:hover,
+  .slider-field input[type='range']::-webkit-slider-thumb:hover {
     background: rgba(var(--color-accent-rgb), 1.2);
     box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
 
-  .volume-field input[type='range']::-moz-range-track {
+  .volume-field input[type='range']::-moz-range-track,
+  .slider-field input[type='range']::-moz-range-track {
     background: rgba(0, 0, 0, 0.35);
     height: 8px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .volume-field input[type='range']::-moz-range-thumb {
+  .volume-field input[type='range']::-moz-range-thumb,
+  .slider-field input[type='range']::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -591,7 +599,8 @@
     box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
   }
 
-  .volume-field input[type='range']::-moz-range-thumb:hover {
+  .volume-field input[type='range']::-moz-range-thumb:hover,
+  .slider-field input[type='range']::-moz-range-thumb:hover {
     background: rgba(var(--color-accent-rgb), 1.2);
     box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }

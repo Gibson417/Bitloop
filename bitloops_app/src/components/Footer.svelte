@@ -223,16 +223,18 @@
     height: 52px;
     border-radius: 12px;
     padding: 0;
-    border: 2px solid rgba(var(--color-accent-rgb), 0.8);
-    background: rgba(var(--color-accent-rgb), 0.35);
-    box-shadow: 0 20px 48px rgba(var(--color-accent-rgb), 0.4);
-    transition: all 0.2s ease;
+    border: 2px solid rgba(var(--color-accent-rgb), 0.55);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.32), rgba(14, 16, 22, 0.92));
+    color: #fff;
+    box-shadow: 0 18px 44px rgba(var(--color-accent-rgb), 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .export-toggle.icon-only:hover {
     transform: translateY(-3px);
-    box-shadow: 0 24px 56px rgba(var(--color-accent-rgb), 0.5);
-    background: rgba(var(--color-accent-rgb), 0.45);
+    box-shadow: 0 24px 56px rgba(var(--color-accent-rgb), 0.55);
+    border-color: rgba(var(--color-accent-rgb), 0.75);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.42), rgba(14, 16, 22, 0.92));
   }
 
   .export-toggle.icon-only span {
