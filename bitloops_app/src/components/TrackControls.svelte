@@ -171,6 +171,11 @@
           step="0.01"
           value={track.volume}
           on:input={(event) => handleChange('volume', Number(event.target.value))}
+          aria-label="Volume"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={Math.round(track.volume * 100)}
+          aria-valuetext="{Math.round(track.volume * 100)} percent"
         />
         <span class="volume-box">{Math.round(track.volume * 100)}%</span>
       </div>

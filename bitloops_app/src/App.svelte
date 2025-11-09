@@ -653,6 +653,8 @@
           on:change={handleProjectRename}
           on:blur={handleProjectRename}
           placeholder="Untitled loop"
+          title="Click to edit project name"
+          aria-label="Project name"
         />
       </div>
       <div class="header-actions">
@@ -939,11 +941,13 @@
     transition: all 0.2s ease;
     width: 100%;
     max-width: 500px;
+    cursor: text;
   }
 
   .project-name-input:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.25);
+    cursor: text;
   }
 
   .project-name-input:focus {

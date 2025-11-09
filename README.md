@@ -87,14 +87,36 @@ src/
   main.js
 ```
 
-## 🛠 Setup & Run
+## 🛠 Quick Start
 
 ```bash
+cd bitloops_app
 npm install
 npm run dev
 ```
 
 Then open your browser at `http://localhost:5173` to access the app.
+
+For detailed setup and contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## 📁 Project Structure
+
+```
+Bitloop/
+├── bitloops_app/          # Main application
+│   ├── src/              # Source code
+│   │   ├── components/   # Svelte UI components
+│   │   ├── lib/         # Utilities and helpers
+│   │   └── store/       # State management
+│   └── package.json
+├── docs/                 # Documentation
+│   ├── quick_onboarding.md   # Developer quick start
+│   ├── mvp-scope.md         # Feature specifications
+│   ├── ISSUES.md            # GitHub issue templates
+│   └── ...                  # Additional docs
+├── CONTRIBUTING.md       # Contribution guidelines
+└── README.md            # This file
+```
 
 ## 🎧 Timing & Audio Notes
 
@@ -107,11 +129,19 @@ This ensures no jitter, no grid tearing, and no “off by one frame” desync.
 
 ## 🌱 Future Roadmap (Not in MVP Yet)
 
-- WAV export
-- Custom wave shapes
-- Per-track effects (bitcrush, LPF/HPF)
+- ~~WAV export~~ ✅ (Implemented)
+- ~~Custom wave shapes~~ ✅ (Implemented)
+- ~~Per-track effects (bitcrush, LPF/HPF)~~ ✅ (Implemented)
 - Record mode (turn tapping into notes)
-- Social sharing / embed snippets
+- ~~Social sharing / embed snippets~~ ✅ (Implemented)
+
+## 📚 Documentation
+
+- [Quick Onboarding Guide](docs/quick_onboarding.md) - Get started as a developer
+- [MVP Scope](docs/mvp-scope.md) - Feature specifications
+- [Build Checklist](docs/build-checklist.md) - Implementation roadmap
+- [Design Tokens](docs/design-tokens.json) - UI design system
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
 
 ## 🪶 License
 

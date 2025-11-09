@@ -82,7 +82,7 @@
   <div class="action-column">
     <div class="export-menu-container">
       <button class="export-toggle icon-only" type="button" on:click={toggleExportMenu} title="Share or Export" aria-label="Share or Export">
-        <span>⚙</span>
+        <span>📤</span>
       </button>
       {#if showExportMenu}
         <div class="export-dropdown">
