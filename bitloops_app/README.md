@@ -25,9 +25,9 @@ Then open your browser at `http://localhost:5173`.
 
 For full documentation, please see the [main repository README](../README.md) and the [docs directory](../docs/).
 
-- [Quick Onboarding Guide](../docs/quick_onboarding.md)
+- [Quick Onboarding Guide](../docs/process/quick_onboarding.md)
 - [Contributing Guidelines](../CONTRIBUTING.md)
-- [MVP Scope](../docs/mvp-scope.md)
+- [MVP Scope](../docs/product/mvp-scope.md)
 
 ## Project Structure
 

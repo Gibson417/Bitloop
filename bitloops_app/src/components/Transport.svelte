@@ -10,8 +10,8 @@
     dispatch('toggleplay');
   };
 
-  const handlePauseClick = () => {
-    dispatch('pause');
+  const handleBackClick = () => {
+    dispatch('skipback');
   };
 
   const handleSkipClick = () => {
@@ -28,8 +28,8 @@
     <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button" aria-label={playing ? 'Stop' : 'Play'}>
       <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
     </button>
-    <button class="control-button" on:click={handlePauseClick} type="button" aria-label="Pause" disabled={!playing}>
-      <span class="icon" aria-hidden="true">⏸</span>
+    <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
+      <span class="icon" aria-hidden="true">⏮</span>
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
       <span class="icon" aria-hidden="true">⏭</span>
