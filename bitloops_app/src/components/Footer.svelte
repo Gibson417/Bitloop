@@ -1,17 +1,13 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let name = 'Untitled loop';
   export let bars = 4;
   export let stepsPerBar = 16;
   export let bpm = 120;
   export let loopSeconds = 0;
   export let maxBars = 64;
-  export let canUndo = false;
-  export let canRedo = false;
   export let projects = [];
   export let currentId = null;
-  export let isSaving = false;
   export let shareStatus = 'idle';
   export let shareMessage = '';
   export let shareLink = '';
@@ -49,9 +45,6 @@
     }
   };
 
-  const handleUndo = () => dispatch('undo');
-  const handleRedo = () => dispatch('redo');
-  const handleRename = (event) => dispatch('renameproject', { value: event.target.value });
   const handleSelectProject = (event) => dispatch('selectproject', { id: event.target.value });
   const handleNewProject = () => dispatch('newproject');
   const handleDuplicateProject = () => dispatch('duplicateproject');
@@ -64,11 +57,6 @@
 
 <footer class="footer">
   <div class="project-column">
-    <div class="field name-field">
-      <label for="project-name">Project name</label>
-      <input id="project-name" type="text" value={name} on:change={handleRename} />
-      <span class={`status ${isSaving ? 'saving' : ''}`}>{isSaving ? 'Saving…' : 'Saved'}</span>
-    </div>
     <div class="field session-field">
       <label for="project-select">Sessions</label>
       <div class="select-shell">
@@ -87,10 +75,6 @@
         <button type="button" on:click={handleDuplicateProject} disabled={!selectedProjectId}>Duplicate</button>
         <button type="button" on:click={handleDeleteProject} disabled={projects.length <= 1}>Delete</button>
       </div>
-    </div>
-    <div class="history-actions">
-      <button type="button" on:click={handleUndo} disabled={!canUndo}>Undo</button>
-      <button type="button" on:click={handleRedo} disabled={!canRedo}>Redo</button>
     </div>
   </div>
   <div class="timeline-column">
@@ -187,30 +171,6 @@
     color: rgba(255, 255, 255, 0.58);
   }
 
-  .name-field input {
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 10px 14px;
-    color: #fff;
-    font-size: 1rem;
-  }
-
-  .name-field input:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
-    outline-offset: 2px;
-  }
-
-  .status {
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  .status.saving {
-    color: rgba(var(--color-accent-rgb), 0.85);
-  }
-
   .select-shell select {
     width: 100%;
     background: rgba(0, 0, 0, 0.35);
@@ -227,7 +187,6 @@
   }
 
   .library-actions button,
-  .history-actions button,
   .action-column button {
     padding: 12px 16px;
     border-radius: 12px;
@@ -242,22 +201,15 @@
   }
 
   .library-actions button:hover,
-  .history-actions button:hover,
   .action-column button:hover {
     transform: translateY(-2px);
     border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
-  .library-actions button:disabled,
-  .history-actions button:disabled {
+  .library-actions button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
-  }
-
-  .history-actions {
-    display: flex;
-    gap: 12px;
   }
 
   .timing {
