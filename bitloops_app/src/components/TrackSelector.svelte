@@ -19,6 +19,15 @@
     dispatch('add');
   };
 
+  const handleDuplicateTrack = () => {
+    dispatch('duplicate', { index: selected });
+  };
+
+  const handleDeleteTrack = () => {
+    if (tracks.length <= 1) return;
+    dispatch('remove', { index: selected });
+  };
+
   const handleRemoveTrack = (event, idx) => {
     event.stopPropagation();
     if (!canRemoveTrack(idx)) return;
@@ -34,31 +43,43 @@
     event.stopPropagation();
     dispatch('togglesolo', { index: idx });
   };
-
-  const handleTrackNameChange = (event, idx) => {
-    event.stopPropagation();
-    dispatch('update', { index: idx, key: 'name', value: event.target.value });
-  };
-
-  const handleColorChange = (event, idx) => {
-    event.stopPropagation();
-    dispatch('update', { index: idx, key: 'color', value: event.target.value });
-  };
 </script>
 
 <div class="track-selector">
   <div class="selector-header">
     <span class="selector-title">Tracks</span>
-    <button
-      class="add-button"
-      type="button"
-      on:click={handleAddTrack}
-      disabled={!canAddMore()}
-      aria-label="Add track"
-      title="Add track"
-    >
-      +
-    </button>
+    <div class="header-actions">
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleAddTrack}
+        disabled={!canAddMore()}
+        aria-label="Add track"
+        title="Add track"
+      >
+        +
+      </button>
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleDuplicateTrack}
+        disabled={!canAddMore()}
+        aria-label="Duplicate track"
+        title="Duplicate track"
+      >
+        ⎘
+      </button>
+      <button
+        class="action-button"
+        type="button"
+        on:click={handleDeleteTrack}
+        disabled={tracks.length <= 1}
+        aria-label="Delete track"
+        title="Delete track"
+      >
+        🗑
+      </button>
+    </div>
   </div>
   <div class="track-list" role="tablist" aria-label="Tracks">
     {#each tracks as track, idx}
@@ -74,26 +95,10 @@
           tabindex="0"
         >
           <span class="track-info">
-            <input
-              type="text"
-              class="track-name-input"
-              value={track.name}
-              on:change={(event) => handleTrackNameChange(event, idx)}
-              on:click={(event) => event.stopPropagation()}
-              placeholder="Track name"
-            />
+            <span class="track-name">{track.name}</span>
             <span class="track-meta">{track.waveform}</span>
           </span>
         </div>
-        <input
-          type="color"
-          class="color-picker"
-          value={track.color}
-          on:input={(event) => handleColorChange(event, idx)}
-          on:click={(event) => event.stopPropagation()}
-          title="Track color"
-          aria-label="Track color"
-        />
         <button
           type="button"
           class="toggle-btn mute {track.mute ? 'active' : ''}"
@@ -149,14 +154,19 @@
     font-weight: 600;
   }
 
-  .add-button {
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .action-button {
     width: 28px;
     height: 28px;
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.3);
     background: rgba(var(--color-accent-rgb), 0.1);
     color: var(--color-accent);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -165,12 +175,12 @@
     transition: all 0.2s ease;
   }
 
-  .add-button:hover:not(:disabled) {
+  .action-button:hover:not(:disabled) {
     background: rgba(var(--color-accent-rgb), 0.2);
     border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
-  .add-button:disabled {
+  .action-button:disabled {
     opacity: 0.3;
     cursor: not-allowed;
   }
@@ -236,54 +246,23 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
     overflow: hidden;
   }
 
-  .track-name-input {
+  .track-name {
     font-weight: 600;
     font-size: 0.9rem;
     letter-spacing: 0.02em;
-    background: transparent;
-    border: 1px solid transparent;
-    color: #fff;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-family: inherit;
-    width: 100%;
-    transition: all 0.2s ease;
-  }
-
-  .track-name-input:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .track-name-input:focus {
-    outline: none;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .track-meta {
     font-size: 0.7rem;
     text-transform: capitalize;
     color: rgba(255, 255, 255, 0.5);
-  }
-
-  .color-picker {
-    width: 32px;
-    height: 32px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 0;
-    background: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: border-color 0.2s ease;
-  }
-
-  .color-picker:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
   .toggle-btn {

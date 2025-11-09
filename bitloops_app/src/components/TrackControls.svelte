@@ -57,12 +57,22 @@
   <div class="track-controls">
     <div class="control">
       <label for="track-name">Track name</label>
-      <input
-        id="track-name"
-        type="text"
-        value={track.name}
-        on:change={(event) => handleChange('name', event.target.value)}
-      />
+      <div class="name-color-group">
+        <input
+          id="track-name"
+          type="text"
+          value={track.name}
+          on:change={(event) => handleChange('name', event.target.value)}
+        />
+        <input
+          id="track-color"
+          type="color"
+          value={track.color}
+          on:input={(event) => handleChange('color', event.target.value)}
+          title="Track color"
+          aria-label="Track color"
+        />
+      </div>
     </div>
 
     <div class="control">
@@ -134,16 +144,6 @@
           on:change={(event) => handleChange('octave', Number(event.target.value))}
         />
       </div>
-    </div>
-
-    <div class="control">
-      <label for="track-color">Track color</label>
-      <input
-        id="track-color"
-        type="color"
-        value={track.color}
-        on:input={(event) => handleChange('color', event.target.value)}
-      />
     </div>
 
     <div class="control volume">
@@ -289,6 +289,31 @@
     letter-spacing: 0.1em;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.6);
+  }
+
+  .name-color-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .name-color-group input[type='text'] {
+    flex: 1;
+  }
+
+  .name-color-group input[type='color'] {
+    width: 48px;
+    height: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .name-color-group input[type='color']:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
   select,

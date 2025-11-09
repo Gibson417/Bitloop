@@ -1,11 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let bars = 4;
-  export let stepsPerBar = 16;
   export let bpm = 120;
   export let loopSeconds = 0;
-  export let maxBars = 64;
   export let projects = [];
   export let currentId = null;
   export let shareStatus = 'idle';
@@ -16,16 +13,6 @@
   let fileInput;
   let selectedProjectId = currentId ?? '';
   let showExportMenu = false;
-
-  const handleBarsChange = (event) => {
-    const value = Number(event.target.value);
-    dispatch('changebars', { value });
-  };
-
-  const handleStepsChange = (event) => {
-    const value = Number(event.target.value);
-    dispatch('changesteps', { value });
-  };
 
   const handleExport = () => {
     dispatch('export');
@@ -92,34 +79,6 @@
   </div>
   <div class="timeline-column">
     <div class="timing">
-      <div class="field">
-        <label for="bars">Bars</label>
-        <div class="input-shell">
-          <input
-            id="bars"
-            type="number"
-            min="1"
-            max={maxBars}
-            value={bars}
-            on:change={handleBarsChange}
-          />
-          <span class="hint">Max {maxBars}</span>
-        </div>
-      </div>
-      <div class="field">
-        <label for="steps">Steps / bar</label>
-        <div class="input-shell">
-          <input
-            id="steps"
-            type="number"
-            min="4"
-            max="64"
-            step="1"
-            value={stepsPerBar}
-            on:change={handleStepsChange}
-          />
-        </div>
-      </div>
       <div class="loop-card">
         <span class="loop-label">Loop</span>
         <span class="loop-value">{loopSeconds.toFixed(1)} s</span>

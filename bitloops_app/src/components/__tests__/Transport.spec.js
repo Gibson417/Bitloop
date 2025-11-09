@@ -4,7 +4,7 @@ import Transport from '../Transport.svelte';
 
 describe('Transport component', () => {
   it('emits toggle events', async () => {
-    const { component, getByText } = render(Transport, {
+    const { component, getByLabelText, getByText } = render(Transport, {
       props: { playing: false, follow: true, bpm: 120 }
     });
 
@@ -16,10 +16,10 @@ describe('Transport component', () => {
     component.$on('togglefollow', toggleFollow);
     component.$on('changebpm', changeBpm);
 
-    await fireEvent.click(getByText('Play'));
+    await fireEvent.click(getByLabelText('Play'));
     expect(togglePlay).toHaveBeenCalled();
 
-    await fireEvent.click(getByText('Following'));
+    await fireEvent.click(getByText('Follow'));
     expect(toggleFollow).toHaveBeenCalledWith(expect.objectContaining({ detail: { value: false } }));
 
     const input = document.querySelector('input[type="number"]');
