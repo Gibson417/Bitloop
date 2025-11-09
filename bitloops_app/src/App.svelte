@@ -10,16 +10,16 @@
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
 
-  let $project;
-  let $totalSteps;
-  let $loopDuration;
-  let $maxBars;
+  let projectState;
+  let totalStepsValue = 0;
+  let loopDurationValue = 0;
+  let maxBarsValue = 0;
 
   const unsubscribers = [
-    project.subscribe((value) => ($project = value)),
-    totalSteps.subscribe((value) => ($totalSteps = value)),
-    loopDuration.subscribe((value) => ($loopDuration = value)),
-    maxBars.subscribe((value) => ($maxBars = value))
+    project.subscribe((value) => (projectState = value)),
+    totalSteps.subscribe((value) => (totalStepsValue = value)),
+    loopDuration.subscribe((value) => (loopDurationValue = value)),
+    maxBars.subscribe((value) => (maxBarsValue = value))
   ];
 
   let audioContext;
@@ -28,6 +28,7 @@
   let animationId;
 
   const ensureAudio = async () => {
+    if (!projectState) return false;
     if (typeof window === 'undefined') return false;
     if (!audioContext) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -39,11 +40,11 @@
     }
     await audioContext.resume();
     if (!scheduler) {
-      scheduler = new Scheduler(audioContext, $project.bpm, $project.stepsPerBar / 4);
+      scheduler = new Scheduler(audioContext, projectState.bpm, projectState.stepsPerBar / 4);
       scheduler.onStep = handleStep;
     } else {
-      scheduler.setTempo($project.bpm);
-      scheduler.setStepsPerBeat($project.stepsPerBar / 4);
+      scheduler.setTempo(projectState.bpm);
+      scheduler.setStepsPerBeat(projectState.stepsPerBar / 4);
       scheduler.onStep = handleStep;
     }
     return true;
@@ -52,9 +53,11 @@
   const midiToFrequency = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
   const getMidiForCell = (track, row) => {
+    const stateRows = projectState?.rows ?? 0;
+    if (!stateRows) return 60;
     const scalePattern = scales[track.scale] ?? scales.major;
     const degrees = scalePattern.length;
-    const rows = $project.rows;
+    const rows = stateRows;
     const indexFromBottom = rows - 1 - row;
     const octaveOffset = Math.floor(indexFromBottom / degrees);
     const degree = scalePattern[indexFromBottom % degrees];
@@ -126,7 +129,7 @@
   };
 
   const animatePlayhead = () => {
-    if (!$project?.playing || !audioContext) return;
+    if (!projectState?.playing || !audioContext) return;
     const state = get(project);
     const delta = state.nextStepTime - state.lastStepTime;
     if (delta > 0) {
@@ -143,8 +146,8 @@
     if (!(await ensureAudio())) return;
     project.resetPlayhead();
     project.setPlaying(true);
-    scheduler.setTempo($project.bpm);
-    scheduler.setStepsPerBeat($project.stepsPerBar / 4);
+    scheduler.setTempo(projectState.bpm);
+    scheduler.setStepsPerBeat(projectState.stepsPerBar / 4);
     scheduler.start();
     if (animationId) cancelAnimationFrame(animationId);
     animationId = requestAnimationFrame(animatePlayhead);
@@ -163,7 +166,7 @@
   };
 
   const handleTogglePlay = async () => {
-    if ($project.playing) {
+    if (projectState?.playing) {
       stopPlayback();
     } else {
       await startPlayback();
@@ -171,7 +174,7 @@
   };
 
   const handleFollowToggle = (event) => {
-    const nextValue = event.detail?.value ?? !$project.follow;
+    const nextValue = event.detail?.value ?? !projectState?.follow;
     project.setFollow(nextValue);
   };
 
@@ -187,7 +190,7 @@
 
   const handleNoteChange = (event) => {
     const { row, step, value } = event.detail;
-    project.toggleNote($project.selectedTrack, row, step, value);
+    project.toggleNote(projectState?.selectedTrack ?? 0, row, step, value);
   };
 
   const handleTrackSelect = (event) => {
@@ -260,24 +263,29 @@
     unsubscribers.forEach((unsubscribe) => unsubscribe?.());
   });
 
-  $: activeTrack = $project.tracks?.[$project.selectedTrack];
-  $: columns = $totalSteps;
-  $: rows = $project.rows;
+  $: activeTrack = projectState?.tracks?.[projectState?.selectedTrack ?? 0];
+  $: columns = totalStepsValue ?? 0;
+  $: rows = projectState?.rows ?? 0;
   $: gridNotes = activeTrack?.notes ?? [];
   $: trackColor = activeTrack?.color ?? colors.accent;
+  $: isPlaying = projectState?.playing ?? false;
+  $: isFollowing = projectState?.follow ?? false;
+  $: totalBars = projectState?.bars ?? 0;
+  $: stepsPerBar = projectState?.stepsPerBar ?? 0;
+  $: loopSecondsDisplay = (loopDurationValue ?? 0).toFixed(1);
 </script>
 
 <main class="app">
   <aside class="app-rail">
     <div class="rail-inner">
       <div class="brand">
-        <span class="brand-mark">BitLoops</span>
+        <span class="brand-mark text-accent">BitLoops</span>
         <p class="brand-tag">Dot grid sequencer</p>
       </div>
       <Transport
-        playing={$project.playing}
-        follow={$project.follow}
-        bpm={$project.bpm}
+        playing={isPlaying}
+        follow={isFollowing}
+        bpm={projectState?.bpm ?? 0}
         on:toggleplay={handleTogglePlay}
         on:togglefollow={handleFollowToggle}
         on:changebpm={handleBpmChange}
@@ -285,15 +293,15 @@
       <div class="rail-stats">
         <div>
           <span class="label">Loop length</span>
-          <span class="value">{$loopDuration.toFixed(1)}s</span>
+          <span class="value">{loopSecondsDisplay}s</span>
         </div>
         <div>
           <span class="label">Bars</span>
-          <span class="value">{$project.bars}</span>
+          <span class="value">{totalBars}</span>
         </div>
         <div>
           <span class="label">Steps / bar</span>
-          <span class="value">{$project.stepsPerBar}</span>
+          <span class="value">{stepsPerBar}</span>
         </div>
       </div>
     </div>
@@ -310,17 +318,17 @@
         </p>
       </div>
       <div class="status-pills">
-        <span class={`pill ${$project.playing ? 'playing' : ''}`}>
-          {$project.playing ? 'Playing' : 'Stopped'}
+        <span class={`pill ${isPlaying ? 'playing' : ''}`}>
+          {isPlaying ? 'Playing' : 'Stopped'}
         </span>
-        <span class={`pill ${$project.follow ? 'following' : ''}`}>
-          {$project.follow ? 'Follow on' : 'Follow off'}
+        <span class={`pill ${isFollowing ? 'following' : ''}`}>
+          {isFollowing ? 'Follow on' : 'Follow off'}
         </span>
       </div>
     </div>
     <TrackBar
-      tracks={$project.tracks}
-      selected={$project.selectedTrack}
+      tracks={projectState?.tracks ?? []}
+      selected={projectState?.selectedTrack ?? 0}
       on:select={handleTrackSelect}
       on:update={handleTrackUpdate}
     />
@@ -330,22 +338,22 @@
           {rows}
           {columns}
           notes={gridNotes}
-          playheadStep={$project.playheadStep}
-          playheadProgress={$project.playheadProgress}
+          playheadStep={projectState?.playheadStep ?? 0}
+          playheadProgress={projectState?.playheadProgress ?? 0}
           trackColor={trackColor}
-          follow={$project.follow}
-          isPlaying={$project.playing}
-          stepsPerBar={$project.stepsPerBar}
+          follow={isFollowing}
+          isPlaying={isPlaying}
+          stepsPerBar={stepsPerBar}
           on:notechange={handleNoteChange}
         />
       </div>
     </div>
     <Footer
-      bars={$project.bars}
-      stepsPerBar={$project.stepsPerBar}
-      bpm={$project.bpm}
-      loopSeconds={$loopDuration}
-      maxBars={$maxBars}
+      bars={totalBars}
+      stepsPerBar={stepsPerBar}
+      bpm={projectState?.bpm ?? 0}
+      loopSeconds={loopDurationValue ?? 0}
+      maxBars={maxBarsValue ?? 0}
       on:changebars={handleBarsChange}
       on:changesteps={handleStepsChange}
       on:export={handleExport}
@@ -356,20 +364,55 @@
 
 <style>
   :global(:root) {
-    --accent: #78d2b9;
-    --note-active: #78d2ff;
-    --note-inactive: #3c4450;
-    --bg: #0e1016;
-    --panel: #161a24;
-    --playhead: rgba(120, 210, 185, 0.85);
-    --grid-line: rgba(255, 255, 255, 0.08);
+    --color-accent: #78d2b9;
+    --color-accent-rgb: 120, 210, 185;
+    --color-note-active: #78d2ff;
+    --color-note-active-rgb: 120, 210, 255;
+    --color-note-inactive: #3c4450;
+    --color-background: #0e1016;
+    --color-panel: #161a24;
+    --color-playhead: rgba(var(--color-accent-rgb), 0.85);
+    --color-grid-line: rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.text-accent) {
+    color: var(--color-accent);
+  }
+
+  :global(.bg-accent) {
+    background-color: var(--color-accent);
+  }
+
+  :global(.text-panel) {
+    color: var(--color-panel);
+  }
+
+  :global(.bg-panel) {
+    background-color: var(--color-panel);
+  }
+
+  :global(.text-note-active) {
+    color: var(--color-note-active);
+  }
+
+  :global(.text-note-inactive) {
+    color: var(--color-note-inactive);
+  }
+
+  :global(.bg-background) {
+    background-color: var(--color-background);
+  }
+
+  :global(.border-accent) {
+    border-color: var(--color-accent);
   }
 
   :global(body) {
     margin: 0;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top left, rgba(120, 210, 185, 0.22), transparent 45%),
-      radial-gradient(circle at bottom right, rgba(120, 210, 255, 0.18), transparent 40%), var(--bg);
+    background: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
+      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%),
+      var(--color-background);
     color: #fff;
     min-height: 100vh;
   }
@@ -422,8 +465,8 @@
     gap: 16px;
     padding: 18px;
     border-radius: 16px;
-    background: linear-gradient(145deg, rgba(120, 210, 185, 0.12), rgba(22, 26, 36, 0.6));
-    border: 1px solid rgba(120, 210, 185, 0.24);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(22, 26, 36, 0.6));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.24);
   }
 
   .rail-stats .label {
@@ -499,7 +542,7 @@
 
   .pill.playing,
   .pill.following {
-    border-color: rgba(120, 210, 185, 0.5);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
     color: #fff;
   }
 
@@ -514,7 +557,7 @@
     border-radius: 24px;
     padding: 20px;
     background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
-    border: 1px solid rgba(120, 210, 255, 0.08);
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
     box-shadow: 0 30px 80px rgba(12, 14, 20, 0.6);
   }
 

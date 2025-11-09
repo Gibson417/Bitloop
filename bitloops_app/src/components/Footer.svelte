@@ -152,8 +152,8 @@
     gap: 4px;
     padding: 16px 18px;
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(120, 210, 255, 0.18), rgba(14, 16, 22, 0.9));
-    border: 1px solid rgba(120, 210, 255, 0.25);
+    background: linear-gradient(135deg, rgba(var(--color-note-active-rgb), 0.18), rgba(14, 16, 22, 0.9));
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.25);
     min-width: 150px;
   }
 
@@ -203,9 +203,9 @@
   }
 
   .primary {
-    border: 1px solid rgba(120, 210, 185, 0.6);
-    background: rgba(120, 210, 185, 0.22);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.22);
     color: #fff;
-    box-shadow: 0 16px 40px rgba(120, 210, 185, 0.3);
+    box-shadow: 0 16px 40px rgba(var(--color-accent-rgb), 0.3);
   }
 </style>

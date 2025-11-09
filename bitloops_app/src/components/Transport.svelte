@@ -57,8 +57,8 @@
     gap: 12px;
     padding: 16px 20px;
     border-radius: 18px;
-    border: 1px solid rgba(120, 210, 185, 0.32);
-    background: linear-gradient(135deg, rgba(120, 210, 185, 0.18), rgba(22, 26, 36, 0.85));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.32);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(22, 26, 36, 0.85));
     color: #fff;
     font-size: 1.1rem;
     font-weight: 600;
@@ -66,7 +66,7 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 18px 40px rgba(120, 210, 185, 0.2);
+    box-shadow: 0 18px 40px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .play-button .icon {
@@ -81,7 +81,7 @@
 
   .play-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 22px 44px rgba(120, 210, 185, 0.28);
+    box-shadow: 0 22px 44px rgba(var(--color-accent-rgb), 0.28);
   }
 
   .play-button.active {
@@ -116,19 +116,19 @@
     height: 10px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 0 0 0 rgba(120, 210, 185, 0.35);
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.35);
     transition: background 0.2s ease, box-shadow 0.2s ease;
   }
 
   .follow.active {
-    border-color: rgba(120, 210, 185, 0.5);
-    background: rgba(120, 210, 185, 0.16);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.16);
     color: #fff;
   }
 
   .follow.active .indicator {
-    background: var(--accent);
-    box-shadow: 0 0 12px rgba(120, 210, 185, 0.6);
+    background: var(--color-accent);
+    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.6);
   }
 
   .tempo {
