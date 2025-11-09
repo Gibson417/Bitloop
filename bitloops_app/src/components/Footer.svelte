@@ -1,7 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let bpm = 120;
   export let loopSeconds = 0;
   export let projects = [];
   export let currentId = null;
@@ -82,15 +81,13 @@
       <div class="loop-card">
         <span class="loop-label">Loop</span>
         <span class="loop-value">{loopSeconds.toFixed(1)} s</span>
-        <span class="loop-sub">{bpm} BPM</span>
       </div>
     </div>
   </div>
   <div class="action-column">
     <div class="export-menu-container">
-      <button class="primary export-toggle" type="button" on:click={toggleExportMenu}>
+      <button class="export-toggle icon-only" type="button" on:click={toggleExportMenu} title="Share or Export" aria-label="Share or Export">
         <span>⚙</span>
-        <span>Share / Export</span>
       </button>
       {#if showExportMenu}
         <div class="export-dropdown">
@@ -288,8 +285,18 @@
     justify-content: center;
   }
 
-  .export-toggle span:first-child {
-    font-size: 1.2rem;
+  .export-toggle.icon-only {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    padding: 0;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.7);
+    background: rgba(var(--color-accent-rgb), 0.28);
+    box-shadow: 0 18px 42px rgba(var(--color-accent-rgb), 0.35);
+  }
+
+  .export-toggle.icon-only span {
+    font-size: 1.4rem;
   }
 
   .export-dropdown {

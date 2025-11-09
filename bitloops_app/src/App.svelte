@@ -506,10 +506,8 @@
       <Transport
         playing={isPlaying}
         follow={isFollowing}
-        bpm={projectState?.bpm ?? 0}
         on:toggleplay={handleTogglePlay}
         on:togglefollow={handleFollowToggle}
-        on:changebpm={handleBpmChange}
       />
       <TrackSelector
         tracks={projectState?.tracks ?? []}
@@ -523,6 +521,18 @@
         on:togglesolo={handleTrackToggleSolo}
       />
       <div class="rail-stats">
+        <div class="stat-field">
+          <label for="rail-tempo" class="label">Tempo</label>
+          <input
+            id="rail-tempo"
+            type="number"
+            min="30"
+            max="260"
+            value={projectState?.bpm ?? 120}
+            on:input={handleBpmChange}
+            class="stat-input"
+          />
+        </div>
         <div class="stat-field">
           <label for="rail-bars" class="label">Bars</label>
           <input
@@ -627,7 +637,6 @@
       </div>
     </div>
     <Footer
-      bpm={projectState?.bpm ?? 0}
       loopSeconds={loopDurationValue ?? 0}
       projects={projects}
       currentId={currentProjectId}
@@ -736,7 +745,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-size: 1.8rem;
+    font-size: 2.4rem;
   }
 
   .brand-tag {
