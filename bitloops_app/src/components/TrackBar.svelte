@@ -4,6 +4,10 @@
 
   export let tracks = [];
   export let selected = 0;
+  export let maxTracks = 10;
+
+  const canAddMore = () => tracks.length < maxTracks;
+  const canRemoveTrack = (index) => tracks.length > 1 && index >= 0 && index < tracks.length;
 
   const dispatch = createEventDispatcher();
 
@@ -12,6 +16,17 @@
 
   const handleSelect = (idx) => {
     dispatch('select', { index: idx });
+  };
+
+  const handleAddTrack = () => {
+    if (!canAddMore()) return;
+    dispatch('add');
+  };
+
+  const handleRemoveTrack = (event, idx) => {
+    event.stopPropagation();
+    if (!canRemoveTrack(idx)) return;
+    dispatch('remove', { index: idx });
   };
 
   const handleChange = (key, value) => {
@@ -38,12 +53,47 @@
           <span class="chip-name">{track.name}</span>
           <span class="chip-meta">{track.waveform} • {track.scale}</span>
         </span>
+        {#if canRemoveTrack(idx)}
+          <span class="chip-actions">
+            <button
+              type="button"
+              class="chip-remove"
+              aria-label={`Remove ${track.name}`}
+              on:click={(event) => handleRemoveTrack(event, idx)}
+            >
+              ×
+            </button>
+          </span>
+        {/if}
       </button>
     {/each}
+    <button
+      class="track-chip add"
+      type="button"
+      on:click={handleAddTrack}
+      disabled={!canAddMore()}
+      aria-label="Add track"
+    >
+      <span class="chip-strip" aria-hidden="true">+</span>
+      <span class="chip-content">
+        <span class="chip-name">Add track</span>
+        <span class="chip-meta">{tracks.length}/{maxTracks}</span>
+      </span>
+    </button>
   </div>
 
   {#if tracks && tracks[selected]}
     <div class="control-panel">
+      <div class="control">
+        <label for="track-name">Track name</label>
+        <input
+          id="track-name"
+          type="text"
+          value={tracks[selected].name}
+          on:change={(event) => handleChange('name', event.target.value)}
+        />
+      </div>
+
       <div class="control">
         <label for="waveform">Waveform</label>
         <select
@@ -82,6 +132,16 @@
             on:change={(event) => handleChange('octave', Number(event.target.value))}
           />
         </div>
+      </div>
+
+      <div class="control">
+        <label for="track-color">Track color</label>
+        <input
+          id="track-color"
+          type="color"
+          value={tracks[selected].color}
+          on:input={(event) => handleChange('color', event.target.value)}
+        />
       </div>
 
       <div class="control volume">
@@ -147,7 +207,7 @@
 
   .track-chip {
     display: grid;
-    grid-template-columns: 12px 1fr;
+    grid-template-columns: 12px 1fr auto;
     align-items: center;
     padding: 12px 16px;
     border-radius: 16px;
@@ -176,12 +236,56 @@
     width: 12px;
     height: 100%;
     border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
   }
 
   .chip-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .chip-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .chip-remove {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .chip-remove:hover,
+  .chip-remove:focus {
+    background: rgba(255, 80, 80, 0.25);
+    color: #fff;
+    outline: none;
+  }
+
+  .track-chip.add {
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(17, 20, 29, 0.6);
+    min-width: 120px;
+  }
+
+  .track-chip.add:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   .chip-name {
@@ -224,7 +328,8 @@
 
   select,
   input[type='number'],
-  input[type='range'] {
+  input[type='range'],
+  input[type='text'] {
     background: rgba(0, 0, 0, 0.35);
     color: #fff;
     border-radius: 12px;
@@ -235,9 +340,20 @@
 
   select:focus,
   input[type='number']:focus,
-  input[type='range']:focus {
+  input[type='range']:focus,
+  input[type='text']:focus {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
+  }
+
+  input[type='color'] {
+    width: 48px;
+    height: 36px;
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    background: none;
+    cursor: pointer;
   }
 
   .number-field input {

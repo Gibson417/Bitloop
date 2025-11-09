@@ -6,11 +6,15 @@
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
   import { Scheduler } from './lib/scheduler.js';
-  import { project, totalSteps, loopDuration, maxBars } from './store/projectStore.js';
+  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
+  import { library } from './store/libraryStore.js';
+  import { renderProjectToWav } from './lib/offlineRenderer.js';
 
   let projectState;
+  let historyState;
+  let libraryState;
   let totalStepsValue = 0;
   let loopDurationValue = 0;
   let maxBarsValue = 0;
@@ -19,7 +23,9 @@
     project.subscribe((value) => (projectState = value)),
     totalSteps.subscribe((value) => (totalStepsValue = value)),
     loopDuration.subscribe((value) => (loopDurationValue = value)),
-    maxBars.subscribe((value) => (maxBarsValue = value))
+    maxBars.subscribe((value) => (maxBarsValue = value)),
+    historyStatus.subscribe((value) => (historyState = value)),
+    library.subscribe((value) => (libraryState = value))
   ];
 
   let audioContext;
@@ -202,6 +208,15 @@
     project.setTrackSetting(index, key, value);
   };
 
+  const handleTrackAdd = () => {
+    project.addTrack();
+  };
+
+  const handleTrackRemove = (event) => {
+    const { index } = event.detail;
+    project.removeTrack(index);
+  };
+
   const handleBarsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
     project.setBars(value);
@@ -242,6 +257,7 @@
           scheduler.setTempo(get(project).bpm);
           scheduler.setStepsPerBeat(get(project).stepsPerBar / 4);
         }
+        library.renameCurrent(project.getName());
       }
     } catch (error) {
       console.error('Failed to import project', error);
@@ -250,7 +266,60 @@
     }
   };
 
+  const handleUndo = () => {
+    project.undo();
+  };
+
+  const handleRedo = () => {
+    project.redo();
+  };
+
+  const handleProjectRename = (event) => {
+    const value = event.detail?.value ?? event.target?.value;
+    library.renameCurrent(value);
+  };
+
+  const handleProjectSelect = (event) => {
+    const id = event.detail?.id ?? event.target?.value;
+    if (id) {
+      library.selectProject(id);
+    }
+  };
+
+  const handleNewProject = () => {
+    library.createNew();
+  };
+
+  const handleDuplicateProject = () => {
+    library.duplicateCurrent();
+  };
+
+  const handleDeleteProject = () => {
+    library.deleteCurrent();
+  };
+
+  const handleRenderWav = async () => {
+    try {
+      const snapshot = project.toSnapshot();
+      const blob = await renderProjectToWav(snapshot);
+      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.wav`;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to render WAV', error);
+      // eslint-disable-next-line no-alert
+      alert('Unable to render audio at this time.');
+    }
+  };
+
   onMount(() => {
+    library.initialize();
     return () => {
       stopPlayback();
       if (audioContext) {
@@ -260,6 +329,7 @@
   });
 
   onDestroy(() => {
+    library.dispose();
     unsubscribers.forEach((unsubscribe) => unsubscribe?.());
   });
 
@@ -270,9 +340,17 @@
   $: trackColor = activeTrack?.color ?? colors.accent;
   $: isPlaying = projectState?.playing ?? false;
   $: isFollowing = projectState?.follow ?? false;
+  $: projectName = projectState?.name ?? 'Untitled loop';
   $: totalBars = projectState?.bars ?? 0;
   $: stepsPerBar = projectState?.stepsPerBar ?? 0;
   $: loopSecondsDisplay = (loopDurationValue ?? 0).toFixed(1);
+  $: canUndo = historyState?.canUndo ?? false;
+  $: canRedo = historyState?.canRedo ?? false;
+  $: autosaveStatus = libraryState?.status ?? 'idle';
+  $: isSaving = autosaveStatus === 'saving';
+  $: projects = libraryState?.projects ?? [];
+  $: currentProjectId = libraryState?.currentId ?? null;
+  $: libraryLoading = libraryState?.loading ?? false;
 </script>
 
 <main class="app">
@@ -309,12 +387,19 @@
   <section class="workspace">
     <div class="workspace-header">
       <div class="session-info">
-        <span class="eyebrow">Active track</span>
-        <h1>{activeTrack?.name ?? 'Untitled track'}</h1>
+        <span class="eyebrow">Project</span>
+        <h1>{projectName}</h1>
+        <p class="session-meta project-meta">
+          {libraryLoading
+            ? 'Loading workspace…'
+            : activeTrack
+            ? `Editing ${activeTrack.name}`
+            : 'Select a track to edit settings'}
+        </p>
         <p class="session-meta">
           {activeTrack
             ? `${activeTrack.scale} scale • octave ${activeTrack.octave} • ${Math.round(activeTrack.volume * 100)}% vol`
-            : 'Select a track to edit settings'}
+            : 'Scale, octave, and volume controls will appear when a track is selected.'}
         </p>
       </div>
       <div class="status-pills">
@@ -324,13 +409,19 @@
         <span class={`pill ${isFollowing ? 'following' : ''}`}>
           {isFollowing ? 'Follow on' : 'Follow off'}
         </span>
+        <span class={`pill ${isSaving ? 'saving' : ''}`}>
+          {isSaving ? 'Saving…' : 'Saved'}
+        </span>
       </div>
     </div>
     <TrackBar
       tracks={projectState?.tracks ?? []}
       selected={projectState?.selectedTrack ?? 0}
+      maxTracks={TRACK_LIMIT}
       on:select={handleTrackSelect}
       on:update={handleTrackUpdate}
+      on:add={handleTrackAdd}
+      on:remove={handleTrackRemove}
     />
     <div class="grid-shell">
       <div class="grid-backdrop">
@@ -349,15 +440,29 @@
       </div>
     </div>
     <Footer
+      name={projectName}
       bars={totalBars}
       stepsPerBar={stepsPerBar}
       bpm={projectState?.bpm ?? 0}
       loopSeconds={loopDurationValue ?? 0}
       maxBars={maxBarsValue ?? 0}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      projects={projects}
+      currentId={currentProjectId}
+      isSaving={isSaving}
       on:changebars={handleBarsChange}
       on:changesteps={handleStepsChange}
       on:export={handleExport}
       on:import={handleImport}
+      on:undo={handleUndo}
+      on:redo={handleRedo}
+      on:renameproject={handleProjectRename}
+      on:selectproject={handleProjectSelect}
+      on:newproject={handleNewProject}
+      on:duplicateproject={handleDuplicateProject}
+      on:deleteproject={handleDeleteProject}
+      on:render={handleRenderWav}
     />
   </section>
 </main>
@@ -517,6 +622,10 @@
     letter-spacing: 0.04em;
   }
 
+  .project-meta {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
   .session-meta {
     margin: 0;
     color: rgba(255, 255, 255, 0.6);
@@ -544,6 +653,11 @@
   .pill.following {
     border-color: rgba(var(--color-accent-rgb), 0.5);
     color: #fff;
+  }
+
+  .pill.saving {
+    border-color: rgba(var(--color-accent-rgb), 0.35);
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .grid-shell {

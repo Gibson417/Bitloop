@@ -3,14 +3,22 @@ import { scales } from '../lib/scales.js';
 
 export const MAX_LOOP_SECONDS = 300;
 
+const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
 const DEFAULT_BARS = 4;
 const DEFAULT_STEPS_PER_BAR = 16;
 const DEFAULT_BPM = 120;
 const DEFAULT_FOLLOW = true;
+const MAX_TRACKS = 10;
+const MAX_HISTORY = 100;
 const TRACK_COLORS = ['#78D2B9', '#A88EF6', '#F6C58E', '#F68EAF', '#8EF6D1'];
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const sanitizeName = (name) => {
+  const trimmed = typeof name === 'string' ? name.trim() : '';
+  return trimmed.length ? trimmed : DEFAULT_NAME;
+};
 
 const createEmptyPattern = (rows, steps) =>
   Array.from({ length: rows }, () => Array.from({ length: steps }, () => false));
@@ -18,26 +26,30 @@ const createEmptyPattern = (rows, steps) =>
 const resizeTrack = (track, rows, steps) => {
   const notes = Array.from({ length: rows }, (_, rowIndex) => {
     const row = track.notes?.[rowIndex] ?? [];
-    const padded = row.slice(0, steps);
-    if (padded.length < steps) {
-      padded.push(...Array.from({ length: steps - padded.length }, () => false));
+    const resized = row.slice(0, steps);
+    if (resized.length < steps) {
+      resized.push(...Array.from({ length: steps - resized.length }, () => false));
     }
-    return padded;
+    return resized;
   });
   return { ...track, notes };
 };
 
-const normalizeTracks = (tracks, rows, steps) =>
-  tracks.map((track, index) => {
+const normalizeTracks = (tracks, rows, steps) => {
+  const safeTracks = Array.isArray(tracks) && tracks.length > 0 ? tracks.slice(0, MAX_TRACKS) : [];
+  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, steps), createTrack(1, rows, steps)];
+  return fallback.map((track, index) => {
     const color = track.color ?? TRACK_COLORS[index % TRACK_COLORS.length];
     const waveform = track.waveform ?? 'square';
     const scaleName = scales[track.scale] ? track.scale : 'major';
     const octave = clamp(track.octave ?? 4, 1, 7);
     const volume = clamp(track.volume ?? 0.7, 0, 1);
+    const id = track.id ?? index + 1;
+    const name = track.name ?? `Track ${index + 1}`;
     return resizeTrack(
       {
-        id: track.id ?? index + 1,
-        name: track.name ?? `Track ${index + 1}`,
+        id,
+        name,
         color,
         waveform,
         scale: scaleName,
@@ -45,12 +57,13 @@ const normalizeTracks = (tracks, rows, steps) =>
         volume,
         mute: !!track.mute,
         solo: !!track.solo,
-        notes: track.notes ?? createEmptyPattern(DEFAULT_ROWS, DEFAULT_STEPS_PER_BAR * DEFAULT_BARS)
+        notes: track.notes ?? createEmptyPattern(rows, steps)
       },
       rows,
       steps
     );
   });
+};
 
 const createTrack = (index, rows, steps) =>
   resizeTrack(
@@ -70,49 +83,12 @@ const createTrack = (index, rows, steps) =>
     steps
   );
 
-const calculateSecondsPerBar = (bpm) => (240 / bpm);
+const calculateSecondsPerBar = (bpm) => 240 / bpm;
 
 const calculateMaxBars = (bpm) => {
   const secondsPerBar = calculateSecondsPerBar(bpm);
   return Math.max(1, Math.floor(MAX_LOOP_SECONDS / secondsPerBar));
 };
-
-const normalizeState = (state) => {
-  const steps = state.bars * state.stepsPerBar;
-  const rows = state.rows;
-  const tracks = normalizeTracks(state.tracks, rows, steps);
-  const selectedTrack = clamp(state.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0));
-  const playheadStep = state.playheadStep % (steps || 1);
-  return {
-    rows,
-    bars: state.bars,
-    stepsPerBar: state.stepsPerBar,
-    bpm: state.bpm,
-    follow: state.follow,
-    playing: state.playing,
-    selectedTrack,
-    playheadStep,
-    playheadProgress: state.playheadProgress ?? 0,
-    lastStepTime: state.lastStepTime ?? 0,
-    nextStepTime: state.nextStepTime ?? 0,
-    tracks
-  };
-};
-
-const initialState = normalizeState({
-  rows: DEFAULT_ROWS,
-  bars: DEFAULT_BARS,
-  stepsPerBar: DEFAULT_STEPS_PER_BAR,
-  bpm: DEFAULT_BPM,
-  follow: DEFAULT_FOLLOW,
-  playing: false,
-  selectedTrack: 0,
-  playheadStep: 0,
-  playheadProgress: 0,
-  lastStepTime: 0,
-  nextStepTime: 0,
-  tracks: [createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR), createTrack(1, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR)]
-});
 
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
   const maxBars = calculateMaxBars(bpm);
@@ -127,13 +103,113 @@ const ensurePositiveInteger = (value, fallback, min = 1, max = Number.POSITIVE_I
   return clamp(fallback, min, max);
 };
 
+const snapshotTracks = (tracks) =>
+  tracks.map((track) => ({
+    id: track.id,
+    name: track.name,
+    color: track.color,
+    waveform: track.waveform,
+    scale: track.scale,
+    octave: track.octave,
+    volume: track.volume,
+    mute: track.mute,
+    solo: track.solo,
+    notes: track.notes.map((row) => row.slice())
+  }));
+
+const toSnapshot = (state) => ({
+  version: 2,
+  name: state.name,
+  rows: state.rows,
+  bars: state.bars,
+  stepsPerBar: state.stepsPerBar,
+  bpm: state.bpm,
+  follow: state.follow,
+  selectedTrack: state.selectedTrack,
+  tracks: snapshotTracks(state.tracks)
+});
+
+const normalizeState = (state) => {
+  const bpm = clamp(state.bpm ?? DEFAULT_BPM, 30, 260);
+  const rows = ensurePositiveInteger(state.rows, DEFAULT_ROWS, 1, 32);
+  const stepsPerBar = ensurePositiveInteger(state.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
+  const desiredBars = ensurePositiveInteger(state.bars, DEFAULT_BARS, 1, 512);
+  const bars = ensureBarsWithinLimit(bpm, desiredBars);
+  const steps = bars * stepsPerBar;
+  const tracks = normalizeTracks(state.tracks, rows, steps);
+  const selectedTrack = clamp(state.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0));
+  return {
+    name: sanitizeName(state.name ?? DEFAULT_NAME),
+    rows,
+    bars,
+    stepsPerBar,
+    bpm,
+    follow: state.follow ?? DEFAULT_FOLLOW,
+    playing: state.playing ?? false,
+    selectedTrack,
+    playheadStep: state.playheadStep % (steps || 1),
+    playheadProgress: state.playheadProgress ?? 0,
+    lastStepTime: state.lastStepTime ?? 0,
+    nextStepTime: state.nextStepTime ?? 0,
+    tracks
+  };
+};
+
+const initialState = normalizeState({
+  name: DEFAULT_NAME,
+  rows: DEFAULT_ROWS,
+  bars: DEFAULT_BARS,
+  stepsPerBar: DEFAULT_STEPS_PER_BAR,
+  bpm: DEFAULT_BPM,
+  follow: DEFAULT_FOLLOW,
+  playing: false,
+  selectedTrack: 0,
+  playheadStep: 0,
+  playheadProgress: 0,
+  lastStepTime: 0,
+  nextStepTime: 0,
+  tracks: [
+    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR),
+    createTrack(1, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR)
+  ]
+});
+
+const snapshotSignature = (snapshot) => JSON.stringify(snapshot);
+
+const historyStatusStore = writable({ canUndo: false, canRedo: false });
+
 const createProjectStore = () => {
   const store = writable(initialState);
   const { subscribe, set, update } = store;
 
+  let historyPast = [];
+  let historyFuture = [];
+  let suppressHistory = false;
+
+  const updateHistoryStatus = () => {
+    historyStatusStore.set({ canUndo: historyPast.length > 0, canRedo: historyFuture.length > 0 });
+  };
+
+  const pushHistory = (snapshot) => {
+    if (suppressHistory) return;
+    historyPast = [...historyPast, snapshot].slice(-MAX_HISTORY);
+    historyFuture = [];
+    updateHistoryStatus();
+  };
+
+  const applySnapshot = (snapshot) => {
+    suppressHistory = true;
+    set(normalizeState({ ...snapshot, playing: false, follow: snapshot.follow ?? DEFAULT_FOLLOW }));
+    suppressHistory = false;
+    updateHistoryStatus();
+  };
+
   return {
     subscribe,
+    historyStatus: { subscribe: historyStatusStore.subscribe },
     toggleNote(trackIndex, row, step, value) {
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
       update((state) => {
         const totalSteps = state.bars * state.stepsPerBar;
         if (
@@ -146,14 +222,29 @@ const createProjectStore = () => {
         ) {
           return state;
         }
-        const tracks = state.tracks.map((track, idx) => {
-          if (idx !== trackIndex) return track;
-          const notes = track.notes.map((rowNotes) => rowNotes.slice());
-          notes[row][step] = value ?? !notes[row][step];
-          return { ...track, notes };
+        const track = state.tracks[trackIndex];
+        const current = track.notes?.[row]?.[step];
+        const nextValue = value ?? !current;
+        if (current === nextValue) return state;
+        const tracks = state.tracks.map((t, idx) => {
+          if (idx !== trackIndex) return t;
+          const notes = t.notes.map((rowNotes, rowIdx) => {
+            if (rowIdx !== row) return rowNotes.slice();
+            const rowCopy = rowNotes.slice();
+            rowCopy[step] = nextValue;
+            return rowCopy;
+          });
+          return { ...t, notes };
         });
+        changed = true;
         return { ...state, tracks };
       });
+      if (changed) {
+        const nextSnapshot = toSnapshot(get(store));
+        if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+          pushHistory(prevSnapshot);
+        }
+      }
     },
     setPlaying(playing) {
       update((state) => ({ ...state, playing }));
@@ -165,54 +256,126 @@ const createProjectStore = () => {
       update((state) => ({ ...state, selectedTrack: clamp(index, 0, Math.max(state.tracks.length - 1, 0)) }));
     },
     setBpm(value) {
+      const prevSnapshot = toSnapshot(get(store));
       update((state) => {
         const bpm = clamp(value, 30, 260);
         const bars = ensureBarsWithinLimit(bpm, state.bars);
-        const next = normalizeState({ ...state, bpm, bars });
-        return next;
+        return normalizeState({ ...state, bpm, bars });
       });
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
     },
     setBars(value) {
+      const prevSnapshot = toSnapshot(get(store));
       update((state) => {
         const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 1, 512));
-        const next = normalizeState({ ...state, bars });
-        return next;
+        return normalizeState({ ...state, bars });
       });
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
     },
     setStepsPerBar(value) {
+      const prevSnapshot = toSnapshot(get(store));
       update((state) => {
         const stepsPerBar = ensurePositiveInteger(value, state.stepsPerBar, 4, 64);
-        const next = normalizeState({ ...state, stepsPerBar });
-        return next;
+        return normalizeState({ ...state, stepsPerBar });
       });
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
     },
     setTrackSetting(trackIndex, key, value) {
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
       update((state) => {
         if (trackIndex < 0 || trackIndex >= state.tracks.length) return state;
         const nextTracks = state.tracks.map((track, idx) => {
           if (idx !== trackIndex) return track;
           if (key === 'volume') {
-            return { ...track, volume: clamp(value, 0, 1) };
+            const volume = clamp(value, 0, 1);
+            if (volume === track.volume) return track;
+            changed = true;
+            return { ...track, volume };
           }
           if (key === 'octave') {
-            return { ...track, octave: clamp(value, 1, 7) };
+            const octave = clamp(value, 1, 7);
+            if (octave === track.octave) return track;
+            changed = true;
+            return { ...track, octave };
           }
           if (key === 'mute' || key === 'solo') {
-            return { ...track, [key]: !!value };
+            const next = !!value;
+            if (track[key] === next) return track;
+            changed = true;
+            return { ...track, [key]: next };
           }
-          if (key === 'scale' && !scales[value]) {
-            return track;
+          if (key === 'scale') {
+            if (!scales[value] || value === track.scale) return track;
+            changed = true;
+            return { ...track, scale: value };
           }
+          if (key === 'name') {
+            const name = sanitizeName(value ?? track.name);
+            if (name === track.name) return track;
+            changed = true;
+            return { ...track, name };
+          }
+          if (key === 'color') {
+            const color = value || track.color;
+            if (color === track.color) return track;
+            changed = true;
+            return { ...track, color };
+          }
+          if (track[key] === value) return track;
+          changed = true;
           return { ...track, [key]: value };
         });
         let tracks = nextTracks;
         if (key === 'solo' && value) {
-          tracks = nextTracks.map((track, idx) =>
-            idx === trackIndex ? track : { ...track, solo: false }
-          );
+          tracks = nextTracks.map((track, idx) => (idx === trackIndex ? track : { ...track, solo: false }));
         }
         return { ...state, tracks };
       });
+      if (changed) {
+        const nextSnapshot = toSnapshot(get(store));
+        if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+          pushHistory(prevSnapshot);
+        }
+      }
+    },
+    addTrack() {
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
+      update((state) => {
+        if (state.tracks.length >= MAX_TRACKS) return state;
+        const steps = state.bars * state.stepsPerBar;
+        const tracks = [...state.tracks, createTrack(state.tracks.length, state.rows, steps)];
+        changed = true;
+        return normalizeState({ ...state, tracks, selectedTrack: tracks.length - 1 });
+      });
+      if (changed) {
+        pushHistory(prevSnapshot);
+      }
+    },
+    removeTrack(index) {
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
+      update((state) => {
+        if (state.tracks.length <= 1) return state;
+        if (index < 0 || index >= state.tracks.length) return state;
+        const tracks = state.tracks.filter((_, idx) => idx !== index);
+        changed = true;
+        const selectedTrack = clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1);
+        return normalizeState({ ...state, tracks, selectedTrack });
+      });
+      if (changed) {
+        pushHistory(prevSnapshot);
+      }
     },
     registerStep(step, stepTime, stepDuration) {
       update((state) => ({
@@ -229,27 +392,49 @@ const createProjectStore = () => {
     resetPlayhead() {
       update((state) => ({ ...state, playheadStep: 0, playheadProgress: 0, lastStepTime: 0, nextStepTime: 0 }));
     },
+    undo() {
+      if (!historyPast.length) return false;
+      const currentSnapshot = toSnapshot(get(store));
+      const previous = historyPast.pop();
+      historyFuture = [currentSnapshot, ...historyFuture].slice(0, MAX_HISTORY);
+      applySnapshot(previous);
+      updateHistoryStatus();
+      return true;
+    },
+    redo() {
+      if (!historyFuture.length) return false;
+      const currentSnapshot = toSnapshot(get(store));
+      const nextSnapshot = historyFuture.shift();
+      historyPast = [...historyPast, currentSnapshot].slice(-MAX_HISTORY);
+      applySnapshot(nextSnapshot);
+      updateHistoryStatus();
+      return true;
+    },
+    canUndo() {
+      return historyPast.length > 0;
+    },
+    canRedo() {
+      return historyFuture.length > 0;
+    },
+    toSnapshot() {
+      return toSnapshot(get(store));
+    },
+    defaultSnapshot() {
+      return toSnapshot(initialState);
+    },
     serialize() {
-      const snapshot = get(store);
-      return {
-        version: 1,
-        rows: snapshot.rows,
-        bars: snapshot.bars,
-        stepsPerBar: snapshot.stepsPerBar,
-        bpm: snapshot.bpm,
-        tracks: snapshot.tracks.map((track) => ({
-          id: track.id,
-          name: track.name,
-          color: track.color,
-          waveform: track.waveform,
-          scale: track.scale,
-          octave: track.octave,
-          volume: track.volume,
-          mute: track.mute,
-          solo: track.solo,
-          notes: track.notes
-        }))
-      };
+      return this.toSnapshot();
+    },
+    getName() {
+      return get(store).name;
+    },
+    setName(name) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => ({ ...state, name: sanitizeName(name) }));
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
     },
     load(payload) {
       if (!payload || typeof payload !== 'object') return false;
@@ -259,32 +444,38 @@ const createProjectStore = () => {
       const bars = clamp(payload.bars ?? DEFAULT_BARS, 1, maxBars);
       const stepsPerBar = ensurePositiveInteger(payload.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
-      const tracks = tracksPayload
-        ? normalizeTracks(tracksPayload, rows, bars * stepsPerBar)
-        : [createTrack(0, rows, bars * stepsPerBar)];
-      set(
-        normalizeState({
-          rows,
-          bars,
-          stepsPerBar,
-          bpm,
-          follow: payload.follow ?? DEFAULT_FOLLOW,
-          playing: false,
-          selectedTrack: clamp(payload.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0)),
-          playheadStep: 0,
-          playheadProgress: 0,
-          lastStepTime: 0,
-          nextStepTime: 0,
-          tracks
-        })
-      );
+      const snapshot = {
+        name: sanitizeName(payload.name ?? DEFAULT_NAME),
+        rows,
+        bars,
+        stepsPerBar,
+        bpm,
+        follow: payload.follow ?? DEFAULT_FOLLOW,
+        playing: false,
+        selectedTrack: clamp(payload.selectedTrack ?? 0, 0, Math.max((tracksPayload?.length ?? 1) - 1, 0)),
+        playheadStep: 0,
+        playheadProgress: 0,
+        lastStepTime: 0,
+        nextStepTime: 0,
+        tracks: tracksPayload ?? [createTrack(0, rows, bars * stepsPerBar)]
+      };
+      suppressHistory = true;
+      set(normalizeState(snapshot));
+      suppressHistory = false;
+      historyPast = [];
+      historyFuture = [];
+      updateHistoryStatus();
       return true;
     }
   };
 };
 
+export const TRACK_LIMIT = MAX_TRACKS;
+
 export const project = createProjectStore();
+export const historyStatus = historyStatusStore;
 
 export const totalSteps = derived(project, ($project) => $project.bars * $project.stepsPerBar);
 export const loopDuration = derived(project, ($project) => ($project.bars * 240) / $project.bpm);
 export const maxBars = derived(project, ($project) => calculateMaxBars($project.bpm));
+
