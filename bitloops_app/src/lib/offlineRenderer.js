@@ -1,4 +1,5 @@
 import { scales } from './scales.js';
+import { getCustomWave, connectTrackEffects } from './sound.js';
 
 const midiToFrequency = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
@@ -23,29 +24,43 @@ const createNoiseBuffer = (context, duration) => {
 };
 
 const addTone = (context, destination, track, frequency, startTime, duration) => {
-  const gainNode = context.createGain();
+  if (track.waveform !== 'noise' && !Number.isFinite(frequency)) return;
+  const voiceGain = context.createGain();
   const attack = 0.01;
   const release = Math.min(0.3, duration * 0.8);
   const releaseStart = startTime + duration - release;
-  gainNode.gain.setValueAtTime(0, startTime);
-  gainNode.gain.linearRampToValueAtTime(track.volume ?? 0.7, startTime + attack);
-  gainNode.gain.setValueAtTime(track.volume ?? 0.7, releaseStart);
-  gainNode.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
-  gainNode.connect(destination);
+  const targetVolume = track.volume ?? 0.7;
+  voiceGain.gain.setValueAtTime(0, startTime);
+  voiceGain.gain.linearRampToValueAtTime(targetVolume, startTime + attack);
+  voiceGain.gain.setValueAtTime(targetVolume, releaseStart);
+  voiceGain.gain.linearRampToValueAtTime(0.0001, releaseStart + release);
+
+  connectTrackEffects(context, track, voiceGain, destination, startTime);
 
   if (track.waveform === 'noise') {
     const source = context.createBufferSource();
     source.buffer = createNoiseBuffer(context, duration);
-    source.connect(gainNode);
+    source.connect(voiceGain);
     source.start(startTime);
     source.stop(releaseStart + release);
     return;
   }
 
   const oscillator = context.createOscillator();
-  oscillator.type = track.waveform ?? 'square';
-  oscillator.frequency.setValueAtTime(frequency, startTime);
-  oscillator.connect(gainNode);
+  if (track.waveform === 'custom') {
+    const wave = getCustomWave(context, track.customShape);
+    if (wave) {
+      oscillator.setPeriodicWave(wave);
+    } else {
+      oscillator.type = 'sine';
+    }
+  } else {
+    oscillator.type = track.waveform ?? 'square';
+  }
+  if (Number.isFinite(frequency)) {
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+  }
+  oscillator.connect(voiceGain);
   oscillator.start(startTime);
   oscillator.stop(releaseStart + release);
 };

@@ -18,8 +18,9 @@ The MVP centers on delivering a responsive, browser-based chiptune loop sequence
 - Loop length capped at five minutes regardless of BPM or resolution.
 
 ### Track Management
-- Up to ten simultaneous tracks with per-track mute, solo, and volume controls.
-- Instrument selector offering at least eight chiptune-inspired presets (e.g., pulse lead, triangle bass).
+- Up to ten simultaneous tracks with per-track mute, solo, volume, and expressive shape controls.
+- Instrument selector with classic waveforms plus a custom wave-shaping slider for bespoke timbres.
+- Built-in filter and delay effects per track for quick sound design without leaving the loop view.
 - Track color coding and naming for quick visual parsing.
 
 ### Scale & Harmony Tools
@@ -31,6 +32,7 @@ The MVP centers on delivering a responsive, browser-based chiptune loop sequence
 - Create, duplicate, and delete projects stored locally (IndexedDB) with export/import via JSON.
 - Auto-save on edit events with undo/redo history spanning the last 100 actions.
 - Shareable loop export as `.wav` (offline render) and `.json` (project data).
+- One-click share links that encode the project state for easy remixing and community circulation.
 
 ## Performance Targets
 - Consistent playback without audible jitter between 120–160 BPM on mid-range laptops and tablets.
@@ -39,7 +41,7 @@ The MVP centers on delivering a responsive, browser-based chiptune loop sequence
 
 ## Accessibility & Responsiveness
 - Keyboard navigable interface with focus indicators and ARIA labels on controls.
-- Responsive layout for desktop (≥1280px), tablet (≥768px), and compact laptop displays.
+- Responsive layout for desktop (≥1280px), tablet (≥768px), and a streamlined mobile editing lane (≥480px).
 - High-contrast theme with adjustable font scaling (90%–130%).
 
 ## Out of Scope for MVP

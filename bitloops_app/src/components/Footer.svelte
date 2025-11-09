@@ -12,6 +12,9 @@
   export let projects = [];
   export let currentId = null;
   export let isSaving = false;
+  export let shareStatus = 'idle';
+  export let shareMessage = '';
+  export let shareLink = '';
 
   const dispatch = createEventDispatcher();
   let fileInput;
@@ -54,6 +57,7 @@
   const handleDuplicateProject = () => dispatch('duplicateproject');
   const handleDeleteProject = () => dispatch('deleteproject');
   const handleRender = () => dispatch('render');
+  const handleShare = () => dispatch('share');
 
   $: selectedProjectId = currentId ?? '';
 </script>
@@ -127,9 +131,28 @@
     </div>
   </div>
   <div class="action-column">
-    <button class="primary" type="button" on:click={handleRender}>Render WAV</button>
-    <button class="ghost" type="button" on:click={handleExport}>Export JSON</button>
-    <button class="ghost" type="button" on:click={handleImportClick}>Import</button>
+    <div class="primary-actions">
+      <button class="primary" type="button" on:click={handleRender}>Render WAV</button>
+      <button class="secondary" type="button" on:click={handleShare}>Share loop</button>
+    </div>
+    {#if shareStatus !== 'idle'}
+      <div class={`share-feedback ${shareStatus}`}>
+        <span>{shareMessage}</span>
+        {#if shareLink}
+          <input
+            class="share-link"
+            type="text"
+            readonly
+            value={shareLink}
+            on:focus={(event) => event.target.select()}
+          />
+        {/if}
+      </div>
+    {/if}
+    <div class="export-actions">
+      <button class="ghost" type="button" on:click={handleExport}>Export JSON</button>
+      <button class="ghost" type="button" on:click={handleImportClick}>Import</button>
+    </div>
     <input type="file" accept=".json,.bitloops.json" bind:this={fileInput} on:change={handleImport} hidden />
   </div>
 </footer>
@@ -307,7 +330,15 @@
   }
 
   .action-column {
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .primary-actions,
+  .export-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .primary {
@@ -316,9 +347,56 @@
     box-shadow: 0 18px 42px rgba(var(--color-accent-rgb), 0.35);
   }
 
+  .secondary {
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.55);
+    background: rgba(var(--color-note-active-rgb), 0.18);
+    box-shadow: 0 14px 32px rgba(var(--color-note-active-rgb), 0.3);
+  }
+
   .ghost {
     border: 1px solid rgba(255, 255, 255, 0.25);
     background: rgba(255, 255, 255, 0.05);
+  }
+
+  .share-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .share-feedback.copied,
+  .share-feedback.shared,
+  .share-feedback.loaded {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    color: #fff;
+  }
+
+  .share-feedback.error {
+    border-color: rgba(255, 99, 132, 0.7);
+    color: rgba(255, 199, 206, 0.95);
+  }
+
+  .share-link {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: #fff;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .share-link:focus {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
+    outline-offset: 2px;
   }
 
   @media (max-width: 720px) {
@@ -332,9 +410,13 @@
 
     .action-column {
       order: 3;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 12px;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .primary-actions,
+    .export-actions {
+      width: 100%;
     }
   }
 </style>
