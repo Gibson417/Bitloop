@@ -12,6 +12,7 @@
   import { library } from './store/libraryStore.js';
   import { renderProjectToWav } from './lib/offlineRenderer.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
+  import logo from './assets/logo.svg';
 
   let projectState;
   let historyState;
@@ -479,7 +480,7 @@
   <aside class="app-rail">
     <div class="rail-inner">
       <div class="brand">
-        <span class="brand-mark text-accent">BitLoops</span>
+        <img src={logo} alt="BitLoops" class="brand-logo" />
         <p class="brand-tag">Dot grid sequencer</p>
       </div>
       <Transport
@@ -674,7 +675,12 @@
   .brand {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+  }
+
+  .brand-logo {
+    width: 140px;
+    height: auto;
   }
 
   .brand-mark {

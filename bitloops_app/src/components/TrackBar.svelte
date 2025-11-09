@@ -15,6 +15,12 @@
   const scaleOptions = Object.keys(scales);
   const filterOptions = ['none', 'lowpass', 'highpass', 'bandpass'];
 
+  let showFilters = false;
+
+  const toggleFilters = () => {
+    showFilters = !showFilters;
+  };
+
   const handleSelect = (idx) => {
     dispatch('select', { index: idx });
   };
@@ -189,95 +195,108 @@
         <span class="volume-value">{Math.round(currentTrack.volume * 100)}%</span>
       </div>
 
-      <div class="control effect-card">
-        <div class="effect-header">
-          <span>Filter</span>
-          <select
-            id="filter-type"
-            on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
-            value={currentEffects.filterType ?? 'none'}
-          >
-            {#each filterOptions as option}
-              <option value={option}>{option}</option>
-            {/each}
-          </select>
-        </div>
-        <div class="effect-row">
-          <label for="filter-cutoff">Cutoff</label>
-          <div class="slider-field">
-            <input
-              id="filter-cutoff"
-              type="range"
-              min="80"
-              max="8000"
-              step="10"
-              value={currentEffects.filterCutoff ?? 1800}
-              on:input={(event) => handleEffectsChange({ filterCutoff: Number(event.target.value) })}
-            />
-            <span>{Math.round(currentEffects.filterCutoff ?? 1800)} Hz</span>
-          </div>
-        </div>
-        <div class="effect-row">
-          <label for="filter-q">Resonance</label>
-          <div class="slider-field">
-            <input
-              id="filter-q"
-              type="range"
-              min="0.1"
-              max="20"
-              step="0.1"
-              value={currentEffects.filterQ ?? 0.7}
-              on:input={(event) => handleEffectsChange({ filterQ: Number(event.target.value) })}
-            />
-            <span>{(currentEffects.filterQ ?? 0.7).toFixed(1)}</span>
-          </div>
-        </div>
-        <div class="effect-row">
-          <label for="delay-mix">Delay mix</label>
-          <div class="slider-field">
-            <input
-              id="delay-mix"
-              type="range"
-              min="0"
-              max="0.9"
-              step="0.01"
-              value={currentEffects.delayMix ?? 0}
-              on:input={(event) => handleEffectsChange({ delayMix: Number(event.target.value) })}
-            />
-            <span>{Math.round((currentEffects.delayMix ?? 0) * 100)}%</span>
-          </div>
-        </div>
-        <div class="effect-row compact">
-          <label for="delay-time">Delay time</label>
-          <div class="slider-field">
-            <input
-              id="delay-time"
-              type="range"
-              min="0.05"
-              max="0.8"
-              step="0.01"
-              value={currentEffects.delayTime ?? 0.28}
-              on:input={(event) => handleEffectsChange({ delayTime: Number(event.target.value) })}
-            />
-            <span>{Math.round((currentEffects.delayTime ?? 0.28) * 1000)} ms</span>
-          </div>
-        </div>
-        <div class="effect-row compact">
-          <label for="delay-feedback">Feedback</label>
-          <div class="slider-field">
-            <input
-              id="delay-feedback"
-              type="range"
-              min="0"
-              max="0.9"
-              step="0.01"
-              value={currentEffects.delayFeedback ?? 0.35}
-              on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
-            />
-            <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
-          </div>
-        </div>
+      <div class="control effect-toggle">
+        <button
+          type="button"
+          class="toggle-filters-btn"
+          on:click={toggleFilters}
+        >
+          <span>{showFilters ? '▼' : '▶'}</span>
+          <span>{showFilters ? 'Hide Filters & Effects' : 'Show Filters & Effects'}</span>
+        </button>
       </div>
+
+      {#if showFilters}
+        <div class="control effect-card">
+          <div class="effect-header">
+            <span>Filter</span>
+            <select
+              id="filter-type"
+              on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
+              value={currentEffects.filterType ?? 'none'}
+            >
+              {#each filterOptions as option}
+                <option value={option}>{option}</option>
+              {/each}
+            </select>
+          </div>
+          <div class="effect-row">
+            <label for="filter-cutoff">Cutoff</label>
+            <div class="slider-field">
+              <input
+                id="filter-cutoff"
+                type="range"
+                min="80"
+                max="8000"
+                step="10"
+                value={currentEffects.filterCutoff ?? 1800}
+                on:input={(event) => handleEffectsChange({ filterCutoff: Number(event.target.value) })}
+              />
+              <span>{Math.round(currentEffects.filterCutoff ?? 1800)} Hz</span>
+            </div>
+          </div>
+          <div class="effect-row">
+            <label for="filter-q">Resonance</label>
+            <div class="slider-field">
+              <input
+                id="filter-q"
+                type="range"
+                min="0.1"
+                max="20"
+                step="0.1"
+                value={currentEffects.filterQ ?? 0.7}
+                on:input={(event) => handleEffectsChange({ filterQ: Number(event.target.value) })}
+              />
+              <span>{(currentEffects.filterQ ?? 0.7).toFixed(1)}</span>
+            </div>
+          </div>
+          <div class="effect-row">
+            <label for="delay-mix">Delay mix</label>
+            <div class="slider-field">
+              <input
+                id="delay-mix"
+                type="range"
+                min="0"
+                max="0.9"
+                step="0.01"
+                value={currentEffects.delayMix ?? 0}
+                on:input={(event) => handleEffectsChange({ delayMix: Number(event.target.value) })}
+              />
+              <span>{Math.round((currentEffects.delayMix ?? 0) * 100)}%</span>
+            </div>
+          </div>
+          <div class="effect-row compact">
+            <label for="delay-time">Delay time</label>
+            <div class="slider-field">
+              <input
+                id="delay-time"
+                type="range"
+                min="0.05"
+                max="0.8"
+                step="0.01"
+                value={currentEffects.delayTime ?? 0.28}
+                on:input={(event) => handleEffectsChange({ delayTime: Number(event.target.value) })}
+              />
+              <span>{Math.round((currentEffects.delayTime ?? 0.28) * 1000)} ms</span>
+            </div>
+          </div>
+          <div class="effect-row compact">
+            <label for="delay-feedback">Feedback</label>
+            <div class="slider-field">
+              <input
+                id="delay-feedback"
+                type="range"
+                min="0"
+                max="0.9"
+                step="0.01"
+                value={currentEffects.delayFeedback ?? 0.35}
+                on:input={(event) => handleEffectsChange({ delayFeedback: Number(event.target.value) })}
+              />
+              <span>{Math.round((currentEffects.delayFeedback ?? 0.35) * 100)}%</span>
+            </div>
+          </div>
+        </div>
+      {/if}
 
       <div class="control toggles">
         <button
@@ -590,6 +609,38 @@
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.2);
     color: #fff;
+  }
+
+  .effect-toggle {
+    grid-column: 1 / -1;
+  }
+
+  .toggle-filters-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-filters-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    transform: translateY(-1px);
+  }
+
+  .toggle-filters-btn span:first-child {
+    font-size: 0.7rem;
   }
 
   </style>
