@@ -12,6 +12,7 @@ export let stepsPerBar = 16;
   export let follow = true;
   export let isPlaying = false;
   export let noteLabels = [];
+  export let noteLengthSteps = 1;
 
   const dispatch = createEventDispatcher();
 
@@ -169,8 +170,14 @@ export let stepsPerBar = 16;
 
   const getCellFromEvent = (event) => {
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const clientX = Number.isFinite(event.clientX)
+      ? event.clientX
+      : (typeof event.offsetX === 'number' ? rect.left + event.offsetX : rect.left);
+    const clientY = Number.isFinite(event.clientY)
+      ? event.clientY
+      : (typeof event.offsetY === 'number' ? rect.top + event.offsetY : rect.top);
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
     const col = Math.floor(x / layout.cellSize);
     const row = Math.floor(y / layout.cellSize);
     if (row < 0 || row >= rows || col < 0 || col >= columns) {
@@ -179,22 +186,60 @@ export let stepsPerBar = 16;
     return { row, col };
   };
 
-  const emitNoteChange = (row, col, value) => {
-    dispatch('notechange', { row, step: col, value });
+  const clampColumn = (col) => Math.min(Math.max(col, 0), Math.max(columns - 1, 0));
+
+  const getPaintRange = (row, col, value) => {
+    const safeRow = Math.max(0, Math.min(row, rows - 1));
+    const safeCol = clampColumn(col);
+    if (value) {
+      const length = Math.max(1, Math.round(noteLengthSteps) || 1);
+      const end = clampColumn(safeCol + length - 1);
+      return { row: safeRow, start: safeCol, length: end - safeCol + 1 };
+    }
+    const rowNotes = notes?.[safeRow] ?? [];
+    let start = safeCol;
+    let end = safeCol;
+    while (start > 0 && rowNotes[start - 1]) {
+      start -= 1;
+    }
+    while (end + 1 < columns && rowNotes[end + 1]) {
+      end += 1;
+    }
+    return { row: safeRow, start, length: end - start + 1 };
+  };
+
+  const isRangePainted = (row, start, length) => {
+    for (let offset = 0; offset < length; offset += 1) {
+      const key = `${row}:${start + offset}`;
+      if (!paintedCells.has(key)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const markRangePainted = (row, start, length) => {
+    for (let offset = 0; offset < length; offset += 1) {
+      paintedCells.add(`${row}:${start + offset}`);
+    }
+  };
+
+  const emitNoteChange = (row, start, length, value) => {
+    dispatch('notechange', { row, start, length, value });
   };
 
   const handlePointer = (event) => {
     if (!pointerActive && event.type === 'pointermove') return;
     const cell = getCellFromEvent(event);
     if (!cell) return;
-    const key = `${cell.row}:${cell.col}`;
-    if (paintedCells.has(key)) return;
-    paintedCells.add(key);
     if (!pointerActive) {
       pointerActive = true;
       paintValue = !(notes?.[cell.row]?.[cell.col]);
     }
-    emitNoteChange(cell.row, cell.col, paintValue);
+    const { row, start, length } = getPaintRange(cell.row, cell.col, paintValue);
+    if (isRangePainted(row, start, length)) return;
+    emitNoteChange(row, start, length, paintValue);
+    markRangePainted(row, start, length);
   };
 
   const handlePointerDown = (event) => {

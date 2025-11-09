@@ -12,12 +12,15 @@ describe('project store', () => {
     resetStore();
   });
 
-  it('toggles notes within bounds', () => {
+  it('sets note ranges within bounds', () => {
     const before = get(project);
     expect(before.tracks[0].notes[0][0]).toBe(false);
-    project.toggleNote(0, 0, 0, true);
-    const after = get(project);
-    expect(after.tracks[0].notes[0][0]).toBe(true);
+    project.setNoteRange(0, 0, 0, 4, true);
+    const afterAdd = get(project);
+    expect(afterAdd.tracks[0].notes[0].slice(0, 4).every(Boolean)).toBe(true);
+    project.setNoteRange(0, 0, 0, 4, false);
+    const afterRemove = get(project);
+    expect(afterRemove.tracks[0].notes[0].slice(0, 4).every((cell) => cell === false)).toBe(true);
   });
 
   it('clamps bars when exceeding five minute limit', () => {
