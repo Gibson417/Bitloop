@@ -331,6 +331,10 @@
   }
 
   @media (max-width: 720px) {
+    .footer {
+      grid-template-columns: 1fr;
+    }
+    
     .project-column {
       order: 1;
     }
