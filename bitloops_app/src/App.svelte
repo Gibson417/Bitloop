@@ -936,11 +936,13 @@
         {/if}
       </div>
     {/if}
-    <TrackControls
-      track={activeTrack}
-      trackIndex={projectState?.selectedTrack ?? 0}
-      on:update={handleTrackUpdate}
-    />
+    <div class="track-controls-wrapper">
+      <TrackControls
+        track={activeTrack}
+        trackIndex={projectState?.selectedTrack ?? 0}
+        on:update={handleTrackUpdate}
+      />
+    </div>
     <div class="grid-shell">
       <div class="grid-toolbar">
         <div class="note-length-group">
@@ -1284,11 +1286,13 @@
     display: flex;
     align-items: center;
     gap: 20px;
+    flex-shrink: 0;
   }
 
   .history-buttons {
     display: flex;
     gap: 8px;
+    align-items: center;
   }
 
   .icon-btn {
@@ -1507,6 +1511,11 @@
     flex: 1;
     padding: 0 24px 18px;
     box-sizing: border-box;
+  }
+
+  .track-controls-wrapper {
+    padding: 0 24px;
+    margin-bottom: 20px;
   }
 
   .workspace-share-feedback {
