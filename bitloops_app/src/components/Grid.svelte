@@ -4,8 +4,8 @@
 
   export let notes = [];
   export let rows = 8;
-export let columns = 16;
-export let stepsPerBar = 16;
+  export let columns = 16;
+  export let stepsPerBar = 16;
   export let playheadStep = 0;
   export let playheadProgress = 0;
   export let trackColor = colors.accent;
@@ -297,11 +297,25 @@ export let stepsPerBar = 16;
     }
   });
 
+  $: drawTrigger = {
+    notes,
+    playheadStep,
+    playheadProgress,
+    trackColor,
+    isPlaying,
+    stepsPerBar,
+    columns,
+    rows
+  };
+
   $: if (canvas && scroller && ctx && columns && rows) {
     updateLayout();
   }
 
-  $: draw();
+  $: if (ctx) {
+    drawTrigger;
+    draw();
+  }
 
   $: if (follow && isPlaying && scroller) {
     const playheadX = (playheadStep + playheadProgress) * layout.cellSize;
@@ -314,9 +328,12 @@ export let stepsPerBar = 16;
 </script>
 
 <div class="grid-container">
-  <div class="note-labels">
+  <div class="note-labels" style={`height: ${layout.height}px`}>
     {#each noteLabels as label, index (index)}
-      <div class="note-label" style="color: {hexToRgba(trackColor, 0.8)};">
+      <div
+        class="note-label"
+        style={`color: ${hexToRgba(trackColor, 0.8)}; height: ${layout.cellSize}px;`}
+      >
         {label}
       </div>
     {/each}
@@ -345,12 +362,13 @@ export let stepsPerBar = 16;
   .note-labels {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    padding: 8px 0;
+    justify-content: flex-start;
+    padding: 0;
     min-width: 48px;
     background: rgba(22, 26, 36, 0.6);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
   }
 
   .note-label {
@@ -361,7 +379,7 @@ export let stepsPerBar = 16;
     font-weight: 600;
     letter-spacing: 0.02em;
     text-align: center;
-    flex: 1;
+    flex: 0 0 auto;
     min-height: 0;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
@@ -375,11 +393,32 @@ export let stepsPerBar = 16;
     background: var(--color-panel);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
+    scrollbar-width: thin;
   }
 
   .grid-canvas {
     touch-action: none;
     cursor: crosshair;
     display: block;
+  }
+
+  .grid-wrapper::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .grid-wrapper::-webkit-scrollbar-track {
+    background: rgba(12, 14, 20, 0.55);
+    border-radius: 999px;
+  }
+
+  .grid-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.65), rgba(var(--color-note-active-rgb), 0.55));
+    border-radius: 999px;
+    border: 2px solid rgba(12, 14, 20, 0.55);
+  }
+
+  .grid-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.85), rgba(var(--color-note-active-rgb), 0.75));
   }
 </style>

@@ -4,9 +4,11 @@
   import Grid from './components/Grid.svelte';
   import TrackSelector from './components/TrackSelector.svelte';
   import TrackControls from './components/TrackControls.svelte';
+  import TrackEffectsPanel from './components/TrackEffectsPanel.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
   import ThemeSelector from './components/ThemeSelector.svelte';
+  import KnobControl from './components/KnobControl.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -41,6 +43,8 @@
   let shareMessage = '';
   let shareLink = '';
   let shareFeedbackTimer;
+  let shareMenuOpen = false;
+  let shareImportInput;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -266,6 +270,8 @@
   };
 
   const NOTE_LENGTH_OPTIONS = [
+    { label: '1/64', value: 64 },
+    { label: '1/32', value: 32 },
     { label: '1/16', value: 16 },
     { label: '1/8', value: 8 },
     { label: '1/4', value: 4 },
@@ -273,7 +279,8 @@
     { label: '1', value: 1 }
   ];
 
-  let selectedNoteLength = `${NOTE_LENGTH_OPTIONS[0].value}`;
+  const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/16')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
+  let selectedNoteLength = DEFAULT_NOTE_LENGTH;
 
   const handleNoteChange = (event) => {
     const { row, start, length, value } = event.detail;
@@ -286,8 +293,40 @@
 
   const handleTrackUpdate = (event) => {
     const { index, key, value } = event.detail;
-    project.setTrackSetting(index, key, value);
+    if (key === 'scale') {
+      project.setAllTracksScale(value);
+    } else if (key === 'rootNote') {
+      project.setAllTracksRootNote(value);
+    } else {
+      project.setTrackSetting(index, key, value);
+    }
   };
+
+  const normalizeHex = (value) => {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (/^#([0-9a-fA-F]{6})$/.test(trimmed)) return trimmed.toLowerCase();
+    if (/^#([0-9a-fA-F]{3})$/.test(trimmed)) {
+      const [, short] = trimmed.toLowerCase().match(/^#([0-9a-f]{3})$/) ?? [];
+      if (!short) return null;
+      return `#${short[0]}${short[0]}${short[1]}${short[1]}${short[2]}${short[2]}`;
+    }
+    return null;
+  };
+
+  const hexToRgba = (hex, alpha = 1) => {
+    const normalized = normalizeHex(hex);
+    if (!normalized) return null;
+    const value = normalized.slice(1);
+    const bigint = Number.parseInt(value, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    const clampedAlpha = Math.min(Math.max(alpha, 0), 1);
+    return `rgba(${r}, ${g}, ${b}, ${clampedAlpha})`;
+  };
+
+  const DEFAULT_NOTE_GLOW = 'rgba(var(--color-note-active-rgb), 0.28)';
 
   const handleTrackAdd = () => {
     project.addTrack();
@@ -315,6 +354,13 @@
     project.setTrackSetting(index, 'solo', !currentValue);
   };
 
+  const handleVolumeChange = (event) => {
+    const value = Number(event.detail?.value ?? event.target?.value);
+    if (Number.isNaN(value)) return;
+    const trackIndex = projectState?.selectedTrack ?? 0;
+    project.setTrackSetting(trackIndex, 'volume', value);
+  };
+
   const handleBarsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
     project.setBars(value);
@@ -326,6 +372,10 @@
     if (scheduler) {
       scheduler.setStepsPerBeat(get(project).stepsPerBar / 4);
     }
+  };
+
+  const handleNoteLengthSelect = (value) => {
+    selectedNoteLength = `${value}`;
   };
 
   const handleExport = () => {
@@ -343,9 +393,8 @@
     URL.revokeObjectURL(url);
   };
 
-  const handleImport = (event) => {
-    const json = event.detail?.json;
-    if (!json) return;
+  const importProjectFromJson = (json) => {
+    if (!json) return false;
     try {
       const payload = JSON.parse(json);
       const success = project.load(payload);
@@ -357,11 +406,18 @@
         }
         library.renameCurrent(project.getName());
       }
+      return success;
     } catch (error) {
       console.error('Failed to import project', error);
       // eslint-disable-next-line no-alert
       alert('Unable to import project file. Please ensure it is a valid BitLoops JSON export.');
+      return false;
     }
+  };
+
+  const handleImport = (event) => {
+    const json = event.detail?.json;
+    importProjectFromJson(json);
   };
 
   const handleUndo = () => {
@@ -488,6 +544,7 @@
   const handleShare = async () => {
     if (typeof window === 'undefined') return;
     try {
+      setShareFeedback('working', 'Preparing share link...');
       const snapshot = project.toSnapshot();
       const url = buildShareUrl(snapshot);
       if (!url) throw new Error('Share URL unavailable');
@@ -505,6 +562,63 @@
     } catch (error) {
       console.error('Failed to share project', error);
       setShareFeedback('error', 'Unable to share right now. Please try again.');
+    }
+  };
+
+  const closeShareMenu = () => {
+    shareMenuOpen = false;
+  };
+
+  const toggleShareMenu = (event) => {
+    event?.stopPropagation?.();
+    shareMenuOpen = !shareMenuOpen;
+  };
+
+  const handleShareMenuShare = async () => {
+    closeShareMenu();
+    await handleShare();
+  };
+
+  const handleShareMenuRenderWav = () => {
+    closeShareMenu();
+    handleRenderWav();
+  };
+
+  const handleShareMenuRenderMidi = () => {
+    closeShareMenu();
+    handleRenderMidi();
+  };
+
+  const handleShareMenuExport = () => {
+    closeShareMenu();
+    handleExport();
+  };
+
+  const triggerShareImport = () => {
+    closeShareMenu();
+    shareImportInput?.click();
+  };
+
+  const handleShareImportChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      importProjectFromJson(text);
+    } finally {
+      event.target.value = '';
+      closeShareMenu();
+    }
+  };
+
+  const handleDocumentClick = (event) => {
+    const target = event.target;
+    if (typeof Element !== 'undefined' && target instanceof Element) {
+      if (!target.closest('.share-menu')) {
+        shareMenuOpen = false;
+      }
+    } else {
+      shareMenuOpen = false;
     }
   };
 
@@ -531,6 +645,9 @@
 
   onMount(() => {
     let disposed = false;
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', handleDocumentClick);
+    }
     const boot = async () => {
       await library.initialize();
       if (!disposed) {
@@ -543,6 +660,9 @@
       stopPlayback();
       if (audioContext) {
         audioContext.close?.();
+      }
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('click', handleDocumentClick);
       }
     };
   });
@@ -558,6 +678,8 @@
   $: rows = projectState?.rows ?? 0;
   $: gridNotes = activeTrack?.notes ?? [];
   $: trackColor = activeTrack?.color ?? colors.accent;
+  $: normalizedTrackColor = normalizeHex(trackColor);
+  $: noteChipGlow = normalizedTrackColor ? hexToRgba(normalizedTrackColor, 0.32) ?? DEFAULT_NOTE_GLOW : DEFAULT_NOTE_GLOW;
   $: isPlaying = projectState?.playing ?? false;
   $: isFollowing = projectState?.follow ?? false;
   $: projectName = projectState?.name ?? 'Untitled loop';
@@ -573,7 +695,10 @@
   $: libraryLoading = libraryState?.loading ?? false;
   $: noteLabels = activeTrack ? getRowNoteNames(activeTrack, rows, scales) : [];
   $: selectedNoteLengthValue = Number(selectedNoteLength) || 1;
+  $: selectedNoteOption = NOTE_LENGTH_OPTIONS.find((option) => `${option.value}` === `${selectedNoteLength}`);
+  $: currentNoteLabel = selectedNoteOption?.label ?? NOTE_LENGTH_OPTIONS[0].label;
   $: noteLengthSteps = Math.max(1, Math.round((stepsPerBar || 1) / selectedNoteLengthValue));
+  $: displayNoteLabel = currentNoteLabel ?? NOTE_LENGTH_OPTIONS[0].label;
 </script>
 
 <main class="app">
@@ -608,6 +733,25 @@
         on:skip={handleSkip}
         on:togglefollow={handleFollowToggle}
       />
+      {#if activeTrack}
+        <div class="volume-card">
+          <div class="volume-heading">
+            <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
+          </div>
+          <KnobControl
+            id={`rail-volume-${projectState?.selectedTrack ?? 0}`}
+            label="Volume"
+            min={0}
+            max={1}
+            step={0.01}
+            value={activeTrack.volume ?? 0}
+            accent={trackColor}
+            valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
+            className="volume-knob"
+            on:change={handleVolumeChange}
+          />
+        </div>
+      {/if}
       <TrackSelector
         tracks={projectState?.tracks ?? []}
         selected={projectState?.selectedTrack ?? 0}
@@ -661,7 +805,6 @@
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
         </div>
-        <ThemeSelector />
       </div>
     </div>
   </aside>
@@ -703,19 +846,80 @@
             ↷
           </button>
         </div>
-        <div class="status-pills">
-          <span class={`pill ${isPlaying ? 'playing' : ''}`}>
-            {isPlaying ? 'Playing' : 'Stopped'}
-          </span>
-          <span class={`pill ${isFollowing ? 'following' : ''}`}>
-            {isFollowing ? 'Follow on' : 'Follow off'}
-          </span>
-          <span class={`pill ${isSaving ? 'saving' : ''}`}>
-            {isSaving ? 'Saving…' : 'Saved'}
-          </span>
+        <div class="status-actions">
+          <div class="status-pills">
+            <span class={`pill ${isPlaying ? 'playing' : ''}`}>
+              {isPlaying ? 'Playing' : 'Stopped'}
+            </span>
+            <span class={`pill ${isFollowing ? 'following' : ''}`}>
+              {isFollowing ? 'Follow on' : 'Follow off'}
+            </span>
+          </div>
+          <ThemeSelector noteLabel={displayNoteLabel} />
+          <div
+            class="share-menu"
+            role="presentation"
+            tabindex="-1"
+            on:click|stopPropagation
+            on:keydown|stopPropagation
+          >
+            <button
+              type="button"
+              class={`share-btn ${shareStatus === 'working' ? 'loading' : ''} ${shareMenuOpen ? 'open' : ''}`}
+              on:click={toggleShareMenu}
+              disabled={shareStatus === 'working'}
+              aria-haspopup="true"
+              aria-expanded={shareMenuOpen}
+              aria-controls="share-menu-panel"
+            >
+              <span class="share-icon" aria-hidden="true">🔗</span>
+              <span>Share / Export</span>
+              <span class="share-caret" aria-hidden="true">▾</span>
+            </button>
+            {#if shareMenuOpen}
+              <div class="share-dropdown" id="share-menu-panel" role="menu">
+                <button type="button" role="menuitem" on:click={handleShareMenuShare} disabled={shareStatus === 'working'}>
+                  <span>Share link</span>
+                </button>
+                <button type="button" role="menuitem" on:click={handleShareMenuRenderWav}>
+                  <span>Render WAV</span>
+                </button>
+                <button type="button" role="menuitem" on:click={handleShareMenuRenderMidi}>
+                  <span>Render MIDI</span>
+                </button>
+                <button type="button" role="menuitem" on:click={handleShareMenuExport}>
+                  <span>Export JSON</span>
+                </button>
+                <button type="button" role="menuitem" on:click={triggerShareImport}>
+                  <span>Import JSON</span>
+                </button>
+              </div>
+            {/if}
+            <input
+              type="file"
+              accept=".json,.bitloops.json"
+              bind:this={shareImportInput}
+              on:change={handleShareImportChange}
+              hidden
+            />
+          </div>
         </div>
       </div>
     </div>
+    {#if shareStatus !== 'idle'}
+      <div class={`workspace-share-feedback ${shareStatus}`}>
+        <span>{shareMessage}</span>
+        {#if shareLink}
+          <input
+            class="share-link"
+            type="text"
+            readonly
+            value={shareLink}
+            on:focus={(event) => event.target.select()}
+          />
+        {/if}
+      </div>
+    {/if}
     <TrackControls
       track={activeTrack}
       trackIndex={projectState?.selectedTrack ?? 0}
@@ -723,16 +927,38 @@
     />
     <div class="grid-shell">
       <div class="grid-toolbar">
-        <label for="note-length-select">Note length</label>
-        <select
-          id="note-length-select"
-          bind:value={selectedNoteLength}
-        >
-          {#each NOTE_LENGTH_OPTIONS as option}
-            <option value={option.value}>{option.label}</option>
-          {/each}
-        </select>
-        <span class="note-length-hint">{noteLengthSteps} step{noteLengthSteps === 1 ? '' : 's'}</span>
+        <div class="note-length-group">
+          <div class="note-length-summary" id="note-length-label">
+            <span class="note-length-title">Note length</span>
+            <span class="note-length-current">{currentNoteLabel}</span>
+          </div>
+          <div class="note-length-options" role="group" aria-labelledby="note-length-label">
+            {#each NOTE_LENGTH_OPTIONS as option}
+              <button
+                type="button"
+                class={`note-length-option ${selectedNoteLength === `${option.value}` ? 'active' : ''}`}
+                on:click={() => handleNoteLengthSelect(option.value)}
+                aria-pressed={selectedNoteLength === `${option.value}`}
+                style={selectedNoteLength === `${option.value}`
+                  ? `--note-chip-glow: ${noteChipGlow};`
+                  : ''}
+              >
+                <span class="option-label">{option.label}</span>
+              </button>
+            {/each}
+          </div>
+          <select
+            id="note-length-select"
+            bind:value={selectedNoteLength}
+            class="note-length-native"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            {#each NOTE_LENGTH_OPTIONS as option}
+              <option value={option.value}>{option.label}</option>
+            {/each}
+          </select>
+        </div>
       </div>
       <div class="grid-backdrop">
         <Grid
@@ -751,21 +977,18 @@
         />
       </div>
     </div>
+    <TrackEffectsPanel
+      track={activeTrack}
+      trackIndex={projectState?.selectedTrack ?? 0}
+      on:update={handleTrackUpdate}
+    />
     <Footer
       projects={projects}
       currentId={currentProjectId}
-      shareStatus={shareStatus}
-      shareMessage={shareMessage}
-      shareLink={shareLink}
-      on:export={handleExport}
-      on:import={handleImport}
       on:selectproject={handleProjectSelect}
       on:newproject={handleNewProject}
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
-      on:render={handleRenderWav}
-      on:rendermidi={handleRenderMidi}
-      on:share={handleShare}
     />
   </section>
 </main>
@@ -833,14 +1056,18 @@
     background-position: top left, bottom right;
     color: var(--color-text, #fff);
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   .app {
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 260px 1fr;
     backdrop-filter: blur(0px);
     color: #fff;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   .app-rail {
@@ -848,7 +1075,7 @@
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: center;
-    padding: 32px 28px;
+    padding: 28px 24px;
   }
 
   .rail-inner {
@@ -860,9 +1087,9 @@
 
   .brand {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
   }
 
   .brand-logo {
@@ -872,7 +1099,7 @@
   }
 
   .logo-icon {
-    width: 108px;
+    width: 78px;
     height: auto;
     color: var(--color-accent);
   }
@@ -888,18 +1115,20 @@
     margin: 0;
     padding: 0;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 2.4rem;
-    line-height: 1.1;
+    font-size: 1.6rem;
+    line-height: 1.05;
   }
 
   .brand-tag {
     margin: 0;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.64rem;
+    color: rgba(255, 255, 255, 0.6);
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    line-height: 1.1;
+    white-space: nowrap;
   }
 
   .rail-stats {
@@ -963,14 +1192,18 @@
     flex-direction: column;
     backdrop-filter: blur(20px);
     background: rgba(14, 16, 22, 0.72);
+    min-width: 0;
+    overflow-x: auto;
   }
 
   .workspace-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 28px 32px 16px;
-    gap: 24px;
+    padding: 18px 24px 8px;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .session-info {
@@ -989,7 +1222,7 @@
 
   .project-name-input {
     margin: 0;
-    padding: 4px 8px;
+  padding: 4px 8px;
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -1071,16 +1304,156 @@
 
   .status-pills {
     display: flex;
-    gap: 16px;
+    gap: 14px;
     flex-wrap: wrap;
   }
 
+  .status-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.6);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.35), rgba(14, 16, 22, 0.92));
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .share-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: rgba(var(--color-accent-rgb), 0.8);
+    box-shadow: 0 18px 44px rgba(var(--color-accent-rgb), 0.35);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.45), rgba(14, 16, 22, 0.92));
+  }
+
+  .share-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .share-btn.open {
+    border-color: rgba(var(--color-accent-rgb), 0.8);
+    box-shadow: 0 18px 44px rgba(var(--color-accent-rgb), 0.35);
+  }
+
+  .share-btn.loading {
+    position: relative;
+  }
+
+  .share-btn.loading::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-top-color: transparent;
+    display: inline-block;
+    margin-left: 6px;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .share-btn.loading .share-caret {
+    display: none;
+  }
+
+  .share-icon {
+    font-size: 1rem;
+  }
+
+  .share-btn.loading .share-icon {
+    display: none;
+  }
+
+  .share-caret {
+    font-size: 0.7rem;
+    margin-left: 4px;
+    opacity: 0.8;
+    transition: transform 0.2s ease;
+  }
+
+  .share-btn.open .share-caret {
+    transform: rotate(180deg);
+  }
+
+  .share-menu {
+    position: relative;
+  }
+
+  .share-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 180px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(14, 16, 22, 0.96);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+    z-index: 150;
+  }
+
+  .share-dropdown button {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .share-dropdown button:hover:not(:disabled) {
+    background: rgba(var(--color-accent-rgb), 0.18);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    transform: translateY(-1px);
+  }
+
+  .share-dropdown button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .pill {
-    padding: 10px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.05);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1094,69 +1467,209 @@
     color: #fff;
   }
 
-  .pill.saving {
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(var(--color-accent-rgb), 0.08);
-    color: rgba(255, 255, 255, 0.85);
-  }
-
   .grid-shell {
     flex: 1;
-    padding: 0 32px 32px;
+    padding: 0 24px 18px;
+    box-sizing: border-box;
+  }
+
+  .workspace-share-feedback {
+    margin: 0 24px 16px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.82);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .workspace-share-feedback.copied,
+  .workspace-share-feedback.shared,
+  .workspace-share-feedback.loaded {
+    border-color: rgba(var(--color-accent-rgb), 0.55);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    color: #fff;
+  }
+
+  .workspace-share-feedback.error {
+    border-color: rgba(255, 99, 132, 0.8);
+    background: rgba(78, 14, 24, 0.65);
+    color: rgba(255, 210, 216, 1);
+  }
+
+  .workspace-share-feedback .share-link {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: #fff;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+  }
+
+  .workspace-share-feedback .share-link:focus {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
+    outline-offset: 2px;
+  }
+
+  .volume-card {
+    margin-top: 10px;
+    padding: 16px 14px 18px;
+    border-radius: 16px;
+    background: rgba(10, 12, 18, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .volume-heading {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+  }
+
+  .volume-heading .track-name {
+    color: inherit;
+  }
+
+  .volume-card :global(.volume-knob) {
+    transform: scale(0.85);
+    transform-origin: center top;
   }
 
   .grid-toolbar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 0 0 16px;
-    padding: 12px 20px;
-    border-radius: 14px;
-    background: rgba(12, 14, 20, 0.6);
-    border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
-    color: rgba(255, 255, 255, 0.8);
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 0 0 18px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.95rem;
   }
 
-  .grid-toolbar label {
+  .note-length-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    align-self: flex-start;
+  }
+
+  .note-length-summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 12px;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.68);
   }
 
-  .grid-toolbar select {
-    background: rgba(120, 210, 255, 0.12);
-    border: 1px solid rgba(var(--color-note-active-rgb), 0.35);
-    color: #fff;
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-weight: 600;
-  }
-
-  .grid-toolbar select:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--color-note-active-rgb), 0.35);
-  }
-
-  .note-length-hint {
-    font-size: 0.8rem;
+  .note-length-title {
     color: rgba(255, 255, 255, 0.55);
+  }
+
+  .note-length-current {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .note-length-options {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .note-length-option {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--color-note-active-rgb), 0.18);
+  background: transparent;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .note-length-option:hover,
+  .note-length-option:focus {
+    outline: none;
+    border-color: rgba(var(--color-note-active-rgb), 0.55);
+    background: rgba(var(--color-note-active-rgb), 0.18);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 14px rgba(var(--color-note-active-rgb), 0.24);
+  }
+
+  .note-length-option.active {
+    border-color: rgba(var(--color-note-active-rgb), 0.75);
+    background: rgba(var(--color-note-active-rgb), 0.28);
+    color: #fff;
+    box-shadow: 0 14px 24px var(--note-chip-glow, rgba(var(--color-note-active-rgb), 0.28));
+  }
+
+  .note-length-option:focus-visible {
+    outline: 2px solid rgba(var(--color-note-active-rgb), 0.5);
+    outline-offset: 2px;
+  }
+
+  .option-label {
+  font-size: 0.72rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .note-length-native {
+    display: none;
   }
 
   .grid-backdrop {
     position: relative;
-    height: 100%;
-    border-radius: 24px;
-    padding: 20px;
+    border-radius: 20px;
+    padding: 16px;
+    box-sizing: border-box;
     background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
     border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
     box-shadow: 0 20px 60px rgba(12, 14, 20, 0.4);
+    margin-bottom: 20px;
   }
 
   .grid-backdrop :global(.grid-wrapper) {
-    height: 100%;
+    height: auto;
   }
 
   @media (max-width: 960px) {
@@ -1199,6 +1712,14 @@
       margin-bottom: 12px;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .note-length-group {
+      width: 100%;
+    }
+
+    .note-length-options {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .grid-backdrop {
@@ -1260,14 +1781,18 @@
       padding: 6px 10px;
       font-size: 0.7rem;
     }
+
+    .note-length-options {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
   }
   
   /* Touch improvements */
   @media (hover: none) and (pointer: coarse) {
     .icon-btn,
     button,
-    select,
-    input[type="range"] {
+    select {
       min-height: 44px;
       min-width: 44px;
     }

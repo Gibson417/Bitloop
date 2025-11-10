@@ -1,57 +1,202 @@
 <script>
+  import { onDestroy } from 'svelte';
   import { theme } from '../store/themeStore.js';
-  
+
+  export let noteLabel = '';
+
   let currentTheme = 'dark';
-  let themes = [];
-  
+  let themes = theme.getThemes();
+  let menuOpen = false;
+  let selectRef;
+  let menuLabel = '';
+
   const unsubscribe = theme.subscribe((value) => {
     currentTheme = value;
   });
-  
-  themes = theme.getThemes();
-  
+
+  const toggleMenu = (event) => {
+    event?.stopPropagation?.();
+    menuOpen = !menuOpen;
+    if (menuOpen) {
+      queueMicrotask(() => {
+        selectRef?.focus();
+      });
+    }
+  };
+
+  const closeMenu = () => {
+    menuOpen = false;
+  };
+
   const handleThemeChange = (event) => {
     theme.setTheme(event.target.value);
+    closeMenu();
   };
+
+  const handleWindowClick = (event) => {
+    if (!menuOpen) return;
+    const target = event.target;
+    if (typeof Element !== 'undefined' && target instanceof Element) {
+      if (!target.closest('.theme-toggle')) {
+        closeMenu();
+      }
+    } else {
+      closeMenu();
+    }
+  };
+
+  const handleWindowKeydown = (event) => {
+    if (event.key === 'Escape' && menuOpen) {
+      closeMenu();
+    }
+  };
+
+  $: {
+    const label = typeof noteLabel === 'string' ? noteLabel.trim() : '';
+    menuLabel = label;
+  }
+
+  onDestroy(() => {
+    unsubscribe?.();
+  });
 </script>
 
-<div class="theme-selector">
-  <label for="theme-select" class="label">Theme</label>
-  <select id="theme-select" value={currentTheme} on:change={handleThemeChange} class="theme-select">
-    {#each themes as themeOption}
-      <option value={themeOption.id}>{themeOption.name}</option>
-    {/each}
-  </select>
+<svelte:window on:click={handleWindowClick} on:keydown={handleWindowKeydown} />
+
+<div class="theme-toggle">
+  <button
+    type="button"
+    class={`theme-trigger ${menuOpen ? 'open' : ''}`}
+    on:click={toggleMenu}
+    aria-haspopup="true"
+    aria-expanded={menuOpen}
+    aria-controls="theme-menu"
+    aria-label="Theme settings"
+  >
+    <span class="icon" aria-hidden="true">⚙</span>
+    <span class="visually-hidden">Theme settings</span>
+  </button>
+    {#if menuOpen}
+      <div class="theme-menu" id="theme-menu" role="dialog">
+        <label for="theme-select" class="label">Theme</label>
+        <select
+          id="theme-select"
+          bind:value={currentTheme}
+          on:change={handleThemeChange}
+          class="theme-select"
+          bind:this={selectRef}
+        >
+          {#each themes as themeOption}
+            <option value={themeOption.id}>{themeOption.name}</option>
+          {/each}
+        </select>
+        {#if menuLabel}
+          <div class="note-length" aria-live="polite">
+            Note length: {menuLabel}
+          </div>
+        {/if}
+      </div>
+    {/if}
 </div>
 
 <style>
-  .theme-selector {
+  .theme-toggle {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .theme-trigger {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.45);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    color: rgba(255, 255, 255, 0.85);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    padding: 0;
+  }
+
+  .theme-trigger:hover,
+  .theme-trigger.open {
+    border-color: rgba(var(--color-accent-rgb), 0.7);
+    background: rgba(var(--color-accent-rgb), 0.2);
+    box-shadow: 0 12px 28px rgba(var(--color-accent-rgb), 0.25);
+    transform: translateY(-1px);
+  }
+
+  .theme-trigger:focus {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.7);
+    outline-offset: 2px;
+  }
+
+  .icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .theme-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 180px;
+    padding: 14px 16px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(10, 12, 18, 0.95);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
+    z-index: 30;
   }
-  
+
   .label {
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-text-muted, rgba(255, 255, 255, 0.55));
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.6));
   }
-  
+
   .theme-select {
     background: rgba(0, 0, 0, 0.35);
     color: var(--color-text, #fff);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     padding: 8px 12px;
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
   }
-  
+
   .theme-select:focus {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
   }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .note-length {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+
+  
 </style>

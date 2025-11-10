@@ -519,6 +519,25 @@ const createProjectStore = () => {
         }
       }
     },
+    setAllTracksRootNote(rootNote) {
+      const numericNote = clamp(Number(rootNote), 0, 11);
+      const prevSnapshot = toSnapshot(get(store));
+      let changed = false;
+      update((state) => {
+        const nextTracks = state.tracks.map((track) => {
+          if (track.rootNote === numericNote) return track;
+          changed = true;
+          return { ...track, rootNote: numericNote };
+        });
+        return { ...state, tracks: nextTracks };
+      });
+      if (changed) {
+        const nextSnapshot = toSnapshot(get(store));
+        if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+          pushHistory(prevSnapshot);
+        }
+      }
+    },
     addTrack() {
       const prevSnapshot = toSnapshot(get(store));
       let changed = false;
