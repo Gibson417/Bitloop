@@ -139,4 +139,83 @@ describe('project store undo/redo', () => {
     const finalState = get(project);
     expect(finalState).toBeTruthy();
   });
+
+  it('ensures playheadStep is never NaN after undo', () => {
+    // Make changes
+    project.setNoteRange(0, 0, 0, 1, true);
+    project.setNoteRange(0, 1, 0, 1, true);
+    
+    // Undo operations
+    project.undo();
+    const afterFirstUndo = get(project);
+    expect(Number.isFinite(afterFirstUndo.playheadStep)).toBe(true);
+    expect(Number.isNaN(afterFirstUndo.playheadStep)).toBe(false);
+    expect(Number.isFinite(afterFirstUndo.playheadProgress)).toBe(true);
+    expect(Number.isNaN(afterFirstUndo.playheadProgress)).toBe(false);
+    
+    project.undo();
+    const afterSecondUndo = get(project);
+    expect(Number.isFinite(afterSecondUndo.playheadStep)).toBe(true);
+    expect(Number.isNaN(afterSecondUndo.playheadStep)).toBe(false);
+    expect(Number.isFinite(afterSecondUndo.playheadProgress)).toBe(true);
+    expect(Number.isNaN(afterSecondUndo.playheadProgress)).toBe(false);
+  });
+
+  it('handles loading snapshots with missing playhead fields', () => {
+    // Create a snapshot without playhead fields (simulating old data)
+    const incompleteSnapshot = {
+      name: 'Test Project',
+      rows: 8,
+      bars: 4,
+      stepsPerBar: 16,
+      bpm: 120,
+      follow: true,
+      selectedTrack: 0,
+      tracks: [
+        {
+          id: 1,
+          name: 'Track 1',
+          color: '#78D2B9',
+          waveform: 'square',
+          scale: 'major',
+          octave: 4,
+          volume: 0.7,
+          customShape: 0.5,
+          effects: {
+            filterType: 'none',
+            filterCutoff: 1800,
+            filterQ: 0.7,
+            delayMix: 0,
+            delayTime: 0.28,
+            delayFeedback: 0.35,
+            reverbMix: 0,
+            reverbTime: 1,
+            bitcrushBits: 16,
+            bitcrushRate: 1
+          },
+          adsr: { attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.3 },
+          rootNote: 0,
+          mute: false,
+          solo: false,
+          notes: Array.from({ length: 8 }, () => Array.from({ length: 64 }, () => false))
+        }
+      ]
+      // Note: playheadStep, playheadProgress, lastStepTime, nextStepTime are missing
+    };
+    
+    // Load the incomplete snapshot
+    const loaded = project.load(incompleteSnapshot);
+    expect(loaded).toBe(true);
+    
+    // Verify that playhead fields are valid numbers
+    const state = get(project);
+    expect(Number.isFinite(state.playheadStep)).toBe(true);
+    expect(Number.isNaN(state.playheadStep)).toBe(false);
+    expect(Number.isFinite(state.playheadProgress)).toBe(true);
+    expect(Number.isNaN(state.playheadProgress)).toBe(false);
+    expect(Number.isFinite(state.lastStepTime)).toBe(true);
+    expect(Number.isNaN(state.lastStepTime)).toBe(false);
+    expect(Number.isFinite(state.nextStepTime)).toBe(true);
+    expect(Number.isNaN(state.nextStepTime)).toBe(false);
+  });
 });
