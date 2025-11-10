@@ -6,6 +6,6 @@ export const colors = {
   accentBright: '#9BFFE0', // Brighter teal for active/playing states
   noteActive: '#78D2FF',
   noteInactive: '#3C4450',
-  background: '#0E1016',
-  panel: '#161A24'
+  background: '#1A1D28',
+  panel: '#222632'
 };

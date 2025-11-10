@@ -1018,10 +1018,10 @@
     --color-note-active: #78d2ff;
     --color-note-active-rgb: 120, 210, 255;
     --color-note-inactive: #3c4450;
-    --color-background: #0e1016;
-    --color-panel: #161a24;
+    --color-background: #1a1d28;
+    --color-panel: #222632;
     --color-playhead: rgba(var(--color-accent-rgb), 0.85);
-    --color-grid-line: rgba(255, 255, 255, 0.08);
+    --color-grid-line: rgba(255, 255, 255, 0.12);
   }
 
   :global(.text-accent) {
@@ -1078,12 +1078,12 @@
   :global(body) {
     margin: 0;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background-image: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.22), transparent 45%),
-      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.18), transparent 40%);
+    background-image: radial-gradient(circle at top left, rgba(var(--color-accent-rgb), 0.15), transparent 50%),
+      radial-gradient(circle at bottom right, rgba(var(--color-note-active-rgb), 0.12), transparent 50%);
     background-color: var(--color-background);
     background-attachment: fixed, fixed;
     background-repeat: no-repeat, no-repeat;
-    background-size: 160% 160%, 140% 140%;
+    background-size: 140% 140%, 120% 120%;
     background-position: top left, bottom right;
     color: var(--color-text, #fff);
     min-height: 100vh;
@@ -1102,8 +1102,8 @@
   }
 
   .app-rail {
-    background: linear-gradient(180deg, rgba(22, 26, 36, 0.95) 0%, rgba(14, 16, 22, 0.98) 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, rgba(34, 38, 50, 0.95) 0%, rgba(26, 29, 40, 0.98) 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     justify-content: center;
     padding: 28px 24px;
@@ -1222,7 +1222,7 @@
     display: flex;
     flex-direction: column;
     backdrop-filter: blur(20px);
-    background: rgba(14, 16, 22, 0.72);
+    background: rgba(26, 29, 40, 0.65);
     min-width: 0;
     overflow-x: auto;
   }

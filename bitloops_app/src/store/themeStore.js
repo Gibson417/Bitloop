@@ -12,8 +12,8 @@ const THEMES = {
       noteActive: '#78d2ff',
       noteActiveRgb: '120, 210, 255',
       noteInactive: '#3c4450',
-      background: '#0e1016',
-      panel: '#161a24',
+      background: '#1a1d28',
+      panel: '#222632',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -89,15 +89,15 @@ const applyTheme = (themeName) => {
   root.style.setProperty('--color-text', theme.colors.text);
   root.style.setProperty('--color-text-muted', theme.colors.textMuted);
   root.style.setProperty('--color-playhead', `rgba(${theme.colors.accentRgb}, 0.85)`);
-  root.style.setProperty('--color-grid-line', theme.colors.background === '#0e1016' 
-    ? 'rgba(255, 255, 255, 0.08)' 
-    : 'rgba(0, 0, 0, 0.08)');
+  root.style.setProperty('--color-grid-line', theme.colors.background === '#f5f7fa' 
+    ? 'rgba(0, 0, 0, 0.08)' 
+    : 'rgba(255, 255, 255, 0.12)');
   
   // Update body background
   if (themeName === 'light') {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 45%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 40%), ${theme.colors.background}`;
+    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.12), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.10), transparent 50%), ${theme.colors.background}`;
   } else {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.22), transparent 45%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.18), transparent 40%), ${theme.colors.background}`;
+    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 50%), ${theme.colors.background}`;
   }
   document.body.style.color = theme.colors.text;
 };
