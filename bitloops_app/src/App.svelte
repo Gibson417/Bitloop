@@ -1013,6 +1013,8 @@
   :global(:root) {
     --color-accent: #78d2b9;
     --color-accent-rgb: 120, 210, 185;
+    --color-accent-bright: #9BFFE0;
+    --color-accent-bright-rgb: 155, 255, 224;
     --color-note-active: #78d2ff;
     --color-note-active-rgb: 120, 210, 255;
     --color-note-inactive: #3c4450;
