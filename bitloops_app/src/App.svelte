@@ -1122,7 +1122,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
   }
 
   .brand-logo {
@@ -1140,7 +1140,7 @@
   .brand-text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0px;
     align-items: flex-start;
   }
 
