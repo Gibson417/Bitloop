@@ -25,7 +25,14 @@
 
 <div class="transport">
   <div class="transport-buttons">
-    <button class="play-button" class:active={playing} on:click={handlePlayClick} type="button" aria-label={playing ? 'Stop' : 'Play'}>
+    <button 
+      class="play-button" 
+      class:active={playing} 
+      on:click={handlePlayClick} 
+      type="button" 
+      aria-label={playing ? 'Stop' : 'Play'}
+      aria-pressed={playing}
+    >
       <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
     </button>
     <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
@@ -36,7 +43,14 @@
     </button>
   </div>
   <div class="transport-controls">
-    <button class="follow" class:active={follow} on:click={handleFollowClick} type="button">
+    <button 
+      class="follow" 
+      class:active={follow} 
+      on:click={handleFollowClick} 
+      type="button"
+      aria-pressed={follow}
+      aria-label={follow ? 'Disable follow mode' : 'Enable follow mode'}
+    >
       <span>Follow</span>
       <span class="indicator" aria-hidden="true"></span>
     </button>
@@ -83,6 +97,11 @@
     box-shadow: 0 20px 40px rgba(var(--color-accent-rgb), 0.28);
   }
 
+  .play-button:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 3px;
+  }
+
   .play-button.active {
     background: linear-gradient(135deg, rgba(246, 142, 175, 0.25), rgba(22, 26, 36, 0.85));
     border-color: rgba(246, 142, 175, 0.32);
@@ -109,6 +128,11 @@
     border-color: rgba(var(--color-accent-rgb), 0.5);
     color: #fff;
     box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
+  }
+
+  .control-button:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   .control-button:disabled {
@@ -154,6 +178,11 @@
     color: #fff;
     background: rgba(var(--color-accent-rgb), 0.24);
     border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+
+  .follow:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   .follow .indicator {

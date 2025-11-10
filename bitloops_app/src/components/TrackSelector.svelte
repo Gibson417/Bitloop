@@ -87,22 +87,23 @@
         class="track-item {idx === selected ? 'selected' : ''}"
       >
         <span class="track-strip" style={`background:${track.color}`}></span>
-        <div 
+        <button
+          type="button"
           class="track-main" 
           on:click={() => handleSelect(idx)} 
-          on:keydown={(e) => e.key === 'Enter' && handleSelect(idx)}
-          role="button" 
-          tabindex="0"
+          aria-label={`${track.name} ${track.waveform}${idx === selected ? ', selected' : ''}`}
+          aria-current={idx === selected ? 'true' : undefined}
         >
           <span class="track-info">
             <span class="track-name">{track.name}</span>
             <span class="track-meta">{track.waveform}</span>
           </span>
-        </div>
+        </button>
         <button
           type="button"
           class="toggle-btn mute {track.mute ? 'active' : ''}"
           aria-label={track.mute ? `Unmute ${track.name}` : `Mute ${track.name}`}
+          aria-pressed={track.mute}
           title={track.mute ? 'Unmute' : 'Mute'}
           on:click={(event) => handleToggleMute(event, idx)}
         >
@@ -112,6 +113,7 @@
           type="button"
           class="toggle-btn solo {track.solo ? 'active' : ''}"
           aria-label={track.solo ? `Unsolo ${track.name}` : `Solo ${track.name}`}
+          aria-pressed={track.solo}
           title={track.solo ? 'Unsolo' : 'Solo'}
           on:click={(event) => handleToggleSolo(event, idx)}
         >
@@ -182,6 +184,11 @@
     box-shadow: 0 4px 8px rgba(var(--color-accent-rgb), 0.2);
   }
 
+  .action-button:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
   .action-button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -244,6 +251,18 @@
     flex: 1;
     cursor: pointer;
     min-width: 0;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    text-align: left;
+  }
+
+  .track-main:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+    border-radius: 6px;
   }
 
   .track-info {
@@ -292,6 +311,11 @@
     transform: scale(1.05);
   }
 
+  .toggle-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
   .toggle-btn.active {
     border-color: rgba(var(--color-accent-rgb), 0.7);
     background: rgba(var(--color-accent-rgb), 0.25);
@@ -327,5 +351,10 @@
     border-color: rgba(255, 80, 80, 0.5);
     color: #fff;
     transform: scale(1.05);
+  }
+
+  .remove-button:focus-visible {
+    outline: 2px solid rgba(255, 80, 80, 0.8);
+    outline-offset: 2px;
   }
 </style>

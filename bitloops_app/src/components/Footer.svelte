@@ -106,10 +106,20 @@
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
   }
 
+  .library-actions button:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
   .library-actions button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+  }
+
+  .select-shell select:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   @media (max-width: 720px) {
