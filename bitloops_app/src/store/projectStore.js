@@ -224,6 +224,10 @@ const normalizeState = (state) => {
   const steps = bars * stepsPerBar;
   const tracks = normalizeTracks(state.tracks, rows, steps);
   const selectedTrack = clamp(state.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0));
+  const playheadStepValue = Number.isFinite(state.playheadStep) ? state.playheadStep : 0;
+  const playheadProgressValue = Number.isFinite(state.playheadProgress) ? state.playheadProgress : 0;
+  const lastStepTimeValue = Number.isFinite(state.lastStepTime) ? state.lastStepTime : 0;
+  const nextStepTimeValue = Number.isFinite(state.nextStepTime) ? state.nextStepTime : 0;
   return {
     name: sanitizeName(state.name ?? DEFAULT_NAME),
     rows,
@@ -233,10 +237,10 @@ const normalizeState = (state) => {
     follow: state.follow ?? DEFAULT_FOLLOW,
     playing: state.playing ?? false,
     selectedTrack,
-    playheadStep: state.playheadStep % (steps || 1),
-    playheadProgress: state.playheadProgress ?? 0,
-    lastStepTime: state.lastStepTime ?? 0,
-    nextStepTime: state.nextStepTime ?? 0,
+    playheadStep: playheadStepValue % (steps || 1),
+    playheadProgress: clamp(playheadProgressValue, 0, 1),
+    lastStepTime: lastStepTimeValue,
+    nextStepTime: nextStepTimeValue,
     tracks
   };
 };
