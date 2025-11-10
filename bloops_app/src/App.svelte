@@ -43,8 +43,6 @@
   let shareMessage = '';
   let shareLink = '';
   let shareFeedbackTimer;
-  let shareMenuOpen = false;
-  let shareImportInput;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -565,66 +563,34 @@
     }
   };
 
-  const closeShareMenu = () => {
-    shareMenuOpen = false;
-  };
-
-  const toggleShareMenu = (event) => {
-    event?.stopPropagation?.();
-    shareMenuOpen = !shareMenuOpen;
-  };
-
-  const handleShareMenuShare = async () => {
-    closeShareMenu();
+  const handleFooterShare = async () => {
     await handleShare();
   };
 
-  const handleShareMenuRenderWav = () => {
-    closeShareMenu();
+  const handleFooterRender = () => {
     handleRenderWav();
   };
 
-  const handleShareMenuRenderMidi = () => {
-    closeShareMenu();
+  const handleFooterRenderMidi = () => {
     handleRenderMidi();
   };
 
-  const handleShareMenuExport = () => {
-    closeShareMenu();
+  const handleFooterExport = () => {
     handleExport();
   };
 
-  const triggerShareImport = () => {
-    closeShareMenu();
-    shareImportInput?.click();
-  };
-
-  const handleShareImportChange = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFooterImport = async (event) => {
+    const { file, json } = event.detail ?? {};
     try {
-      const text = await file.text();
-      importProjectFromJson(text);
-    } finally {
-      event.target.value = '';
-      closeShareMenu();
-    }
-  };
-
-  const handleDocumentClick = (event) => {
-    const target = event.target;
-    if (typeof Element !== 'undefined' && target instanceof Element) {
-      if (!target.closest('.share-menu')) {
-        shareMenuOpen = false;
+      let payload = json ?? null;
+      if (!payload && file) {
+        payload = await file.text();
       }
-    } else {
-      shareMenuOpen = false;
-    }
-  };
-
-  const handleDocumentKeydown = (event) => {
-    if (event.key === 'Escape' && shareMenuOpen) {
-      shareMenuOpen = false;
+      if (!payload) return;
+      importProjectFromJson(payload);
+    } catch (error) {
+      console.error('Failed to import project', error);
+      setShareFeedback('error', 'Unable to import project. Please try again.');
     }
   };
 
@@ -651,10 +617,6 @@
 
   onMount(() => {
     let disposed = false;
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleDocumentKeydown);
-    }
     const boot = async () => {
       await library.initialize();
       if (!disposed) {
@@ -667,10 +629,6 @@
       stopPlayback();
       if (audioContext) {
         audioContext.close?.();
-      }
-      if (typeof document !== 'undefined') {
-        document.removeEventListener('click', handleDocumentClick);
-        document.removeEventListener('keydown', handleDocumentKeydown);
       }
     };
   });
@@ -872,70 +830,9 @@
             </span>
           </div>
           <ThemeSelector noteLabel={displayNoteLabel} />
-          <div
-            class="share-menu"
-            role="presentation"
-            tabindex="-1"
-            on:click|stopPropagation
-            on:keydown|stopPropagation
-          >
-            <button
-              type="button"
-              class={`share-btn ${shareStatus === 'working' ? 'loading' : ''} ${shareMenuOpen ? 'open' : ''}`}
-              on:click={toggleShareMenu}
-              disabled={shareStatus === 'working'}
-              aria-haspopup="true"
-              aria-expanded={shareMenuOpen}
-              aria-controls="share-menu-panel"
-            >
-              <span class="share-icon" aria-hidden="true">🔗</span>
-              <span>Share / Export</span>
-              <span class="share-caret" aria-hidden="true">▾</span>
-            </button>
-            {#if shareMenuOpen}
-              <div class="share-dropdown" id="share-menu-panel" role="menu">
-                <button type="button" role="menuitem" on:click={handleShareMenuShare} disabled={shareStatus === 'working'}>
-                  <span>Share link</span>
-                </button>
-                <button type="button" role="menuitem" on:click={handleShareMenuRenderWav}>
-                  <span>Render WAV</span>
-                </button>
-                <button type="button" role="menuitem" on:click={handleShareMenuRenderMidi}>
-                  <span>Render MIDI</span>
-                </button>
-                <button type="button" role="menuitem" on:click={handleShareMenuExport}>
-                  <span>Export JSON</span>
-                </button>
-                <button type="button" role="menuitem" on:click={triggerShareImport}>
-                  <span>Import JSON</span>
-                </button>
-              </div>
-            {/if}
-            <input
-              type="file"
-              accept=".json,.bloops.json"
-              bind:this={shareImportInput}
-              on:change={handleShareImportChange}
-              hidden
-            />
-          </div>
         </div>
       </div>
     </div>
-    {#if shareStatus !== 'idle'}
-      <div class={`workspace-share-feedback ${shareStatus}`}>
-        <span>{shareMessage}</span>
-        {#if shareLink}
-          <input
-            class="share-link"
-            type="text"
-            readonly
-            value={shareLink}
-            on:focus={(event) => event.target.select()}
-          />
-        {/if}
-      </div>
-    {/if}
     <div class="track-controls-wrapper">
       <TrackControls
         track={activeTrack}
@@ -1003,10 +900,18 @@
     <Footer
       projects={projects}
       currentId={currentProjectId}
+      shareStatus={shareStatus}
+      shareMessage={shareMessage}
+      shareLink={shareLink}
       on:selectproject={handleProjectSelect}
       on:newproject={handleNewProject}
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
+      on:share={handleFooterShare}
+      on:render={handleFooterRender}
+      on:rendermidi={handleFooterRenderMidi}
+      on:export={handleFooterExport}
+      on:import={handleFooterImport}
     />
   </section>
 </main>
@@ -1356,138 +1261,6 @@
     justify-content: flex-end;
   }
 
-  .share-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.6);
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.35), rgba(14, 16, 22, 0.92));
-    color: #fff;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-
-  .share-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    border-color: rgba(var(--color-accent-rgb), 0.8);
-    box-shadow: 0 18px 44px rgba(var(--color-accent-rgb), 0.35);
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.45), rgba(14, 16, 22, 0.92));
-  }
-
-  .share-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-  }
-
-  .share-btn.open {
-    border-color: rgba(var(--color-accent-rgb), 0.8);
-    box-shadow: 0 18px 44px rgba(var(--color-accent-rgb), 0.35);
-  }
-
-  .share-btn.loading {
-    position: relative;
-  }
-
-  .share-btn.loading::after {
-    content: '';
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    border-top-color: transparent;
-    display: inline-block;
-    margin-left: 6px;
-    animation: spin 0.8s linear infinite;
-  }
-
-  .share-btn.loading .share-caret {
-    display: none;
-  }
-
-  .share-icon {
-    font-size: 1rem;
-  }
-
-  .share-btn.loading .share-icon {
-    display: none;
-  }
-
-  .share-caret {
-    font-size: 0.7rem;
-    margin-left: 4px;
-    opacity: 0.8;
-    transition: transform 0.2s ease;
-  }
-
-  .share-btn.open .share-caret {
-    transform: rotate(180deg);
-  }
-
-  .share-menu {
-    position: relative;
-  }
-
-  .share-dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    min-width: 180px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: rgba(14, 16, 22, 0.96);
-    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
-    border-radius: 12px;
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
-    z-index: 150;
-  }
-
-  .share-dropdown button {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .share-dropdown button:hover:not(:disabled) {
-    background: rgba(var(--color-accent-rgb), 0.18);
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    transform: translateY(-1px);
-  }
-
-  .share-dropdown button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   .pill {
     padding: 8px 14px;
     border-radius: 999px;
@@ -1516,52 +1289,6 @@
   .track-controls-wrapper {
     padding: 0 24px;
     margin-bottom: 20px;
-  }
-
-  .workspace-share-feedback {
-    margin: 0 24px 16px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(0, 0, 0, 0.35);
-    color: rgba(255, 255, 255, 0.82);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-
-  .workspace-share-feedback.copied,
-  .workspace-share-feedback.shared,
-  .workspace-share-feedback.loaded {
-    border-color: rgba(var(--color-accent-rgb), 0.55);
-    background: rgba(var(--color-accent-rgb), 0.12);
-    color: #fff;
-  }
-
-  .workspace-share-feedback.error {
-    border-color: rgba(255, 99, 132, 0.8);
-    background: rgba(78, 14, 24, 0.65);
-    color: rgba(255, 210, 216, 1);
-  }
-
-  .workspace-share-feedback .share-link {
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 8px 10px;
-    color: #fff;
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-  }
-
-  .workspace-share-feedback .share-link:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
-    outline-offset: 2px;
   }
 
   .volume-card {
