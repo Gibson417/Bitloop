@@ -1,10 +1,10 @@
 node_modules/
-bitloops_app/node_modules/
+bloops_app/node_modules/
 dist/
-bitloops_app/dist/
+bloops_app/dist/
 .coverage/
-bitloops_app/coverage/
-bitloops_app/.svelte-kit/
+bloops_app/coverage/
+bloops_app/.svelte-kit/
 .DS_Store
 *.log
 screenshots/

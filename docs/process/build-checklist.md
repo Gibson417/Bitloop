@@ -1,6 +1,6 @@
 # Build Checklist
 
-Use this checklist to orchestrate delivery of the Bitloop MVP. Complete items in order within each phase and record owner initials and dates as work progresses.
+Use this checklist to orchestrate delivery of the Bloops MVP. Complete items in order within each phase and record owner initials and dates as work progresses.
 
 ## 1. Foundations
 - [ ] Confirm product requirements with stakeholders and lock MVP scope.

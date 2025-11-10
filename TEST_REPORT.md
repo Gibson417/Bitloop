@@ -1,4 +1,4 @@
-# Bitloop UI and Feature Test Report
+# Bloops UI and Feature Test Report
 
 **Test Date:** November 9, 2025  
 **Tester:** GitHub Copilot  
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Comprehensive testing of the Bitloop chiptune loop composer was completed successfully. All core features are functional, the UI is responsive and visually polished, and the application is ready for production use.
+Comprehensive testing of the Bloops chiptune loop composer was completed successfully. All core features are functional, the UI is responsive and visually polished, and the application is ready for production use.
 
 **Overall Result:** ✅ **PASS** - All features tested successfully
 
@@ -278,7 +278,7 @@ None discovered during testing.
 
 ## Conclusion
 
-The Bitloop application is **production-ready** with all advertised features working correctly:
+The Bloops application is **production-ready** with all advertised features working correctly:
 
 ✅ Intuitive dot-grid sequencer  
 ✅ Multi-track composition support  

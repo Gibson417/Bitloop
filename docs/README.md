@@ -1,6 +1,6 @@
-# Bitloop Documentation
+# Bloops Documentation
 
-This directory houses the planning, design, and workflow assets for the Bitloop MVP.
+This directory houses the planning, design, and workflow assets for the Bloops MVP.
 Use the sections below to locate the artifact you need.
 
 ## Directory Overview

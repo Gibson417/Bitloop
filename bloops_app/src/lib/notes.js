@@ -1,4 +1,4 @@
-// Note name utilities for BitLoops
+// Note name utilities for Bloops
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 

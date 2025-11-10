@@ -1,4 +1,4 @@
-// Color tokens used throughout the BitLoops UI.
+// Color tokens used throughout the Bloops UI.
 // These values mirror the design spec (B‑Warm accent, etc.).
 
 export const colors = {

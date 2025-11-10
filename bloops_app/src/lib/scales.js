@@ -1,4 +1,4 @@
-// Scale definitions for BitLoops.
+// Scale definitions for Bloops.
 
 // Each array is a list of semitone offsets from the root note.
 // For example, the minor pentatonic scale uses [0, 3, 5, 7, 10].

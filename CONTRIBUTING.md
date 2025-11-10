@@ -1,6 +1,6 @@
-# Contributing to BitLoops
+# Contributing to Bloops
 
-Thank you for your interest in contributing to BitLoops! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Bloops! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -13,13 +13,13 @@ Thank you for your interest in contributing to BitLoops! This document provides 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Gibson417/Bitloop.git
-cd Bitloop
+git clone https://github.com/Gibson417/Bloops.git
+cd Bloops
 ```
 
 2. Install dependencies:
 ```bash
-cd bitloops_app
+cd bloops_app
 npm install
 ```
 
@@ -33,8 +33,8 @@ npm run dev
 ## Project Structure
 
 ```
-Bitloop/
-├── bitloops_app/          # Main application code
+Bloops/
+├── bloops_app/          # Main application code
 │   ├── src/
 │   │   ├── components/    # Svelte components
 │   │   ├── lib/          # Utility libraries
@@ -91,7 +91,7 @@ npm run check
 
 ## Design Principles
 
-BitLoops prioritizes **feel** over features:
+Bloops prioritizes **feel** over features:
 
 - **Smooth playback**: Stable scheduler and precise timing
 - **Fast, intuitive editing**: Zero perceived lag
@@ -139,9 +139,9 @@ BitLoops prioritizes **feel** over features:
 ## Questions or Issues?
 
 - Check the [documentation](docs/)
-- Review existing [issues](https://github.com/Gibson417/Bitloop/issues)
+- Review existing [issues](https://github.com/Gibson417/Bloops/issues)
 - Open a new issue for bugs or feature requests
 
 ## License
 
-By contributing to BitLoops, you agree that your contributions will be licensed under the project's license.
+By contributing to Bloops, you agree that your contributions will be licensed under the project's license.
