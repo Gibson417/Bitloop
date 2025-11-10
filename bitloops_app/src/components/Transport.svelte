@@ -36,10 +36,10 @@
       <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
     </button>
     <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
-      <span class="icon" aria-hidden="true">⏮</span>
+      <span class="icon" aria-hidden="true">◄◄</span>
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
-      <span class="icon" aria-hidden="true">⏭</span>
+      <span class="icon" aria-hidden="true">►►</span>
     </button>
   </div>
   <div class="transport-controls">
