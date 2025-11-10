@@ -622,6 +622,12 @@
     }
   };
 
+  const handleDocumentKeydown = (event) => {
+    if (event.key === 'Escape' && shareMenuOpen) {
+      shareMenuOpen = false;
+    }
+  };
+
   const attemptLoadSharedSnapshot = async () => {
     if (typeof window === 'undefined') return;
     const currentUrl = new URL(window.location.href);
@@ -647,6 +653,7 @@
     let disposed = false;
     if (typeof document !== 'undefined') {
       document.addEventListener('click', handleDocumentClick);
+      document.addEventListener('keydown', handleDocumentKeydown);
     }
     const boot = async () => {
       await library.initialize();
@@ -663,6 +670,7 @@
       }
       if (typeof document !== 'undefined') {
         document.removeEventListener('click', handleDocumentClick);
+        document.removeEventListener('keydown', handleDocumentKeydown);
       }
     };
   });
@@ -702,6 +710,14 @@
 </script>
 
 <main class="app">
+  <!-- Screen reader announcements -->
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {#if isPlaying}
+      Playback started
+    {:else}
+      Playback stopped
+    {/if}
+  </div>
   <aside class="app-rail">
     <div class="rail-inner">
       <div class="brand">
@@ -1038,6 +1054,19 @@
     border-color: var(--color-accent);
   }
 
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
   :global(*),
   :global(*::before),
   :global(*::after) {
@@ -1282,6 +1311,11 @@
     color: #fff;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
+  }
+
+  .icon-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   .icon-btn:disabled {
@@ -1635,6 +1669,11 @@
     box-shadow: 0 8px 14px rgba(var(--color-note-active-rgb), 0.24);
   }
 
+  .note-length-option:focus-visible {
+    outline: 2px solid rgba(var(--color-note-active-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
   .note-length-option.active {
     border-color: rgba(var(--color-note-active-rgb), 0.75);
     background: rgba(var(--color-note-active-rgb), 0.28);
@@ -1785,6 +1824,28 @@
     .note-length-options {
       flex-wrap: wrap;
       justify-content: flex-start;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .play-button,
+    .control-button,
+    .icon-btn,
+    .follow,
+    .toggle-btn,
+    .note-length-option,
+    .share-btn {
+      transform: none !important;
     }
   }
   
