@@ -36,10 +36,10 @@
       <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
     </button>
     <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
-      <span class="icon" aria-hidden="true">⏮</span>
+      <span class="icon" aria-hidden="true">◄◄</span>
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
-      <span class="icon" aria-hidden="true">⏭</span>
+      <span class="icon" aria-hidden="true">►►</span>
     </button>
   </div>
   <div class="transport-controls">
@@ -103,8 +103,9 @@
   }
 
   .play-button.active {
-    background: linear-gradient(135deg, rgba(246, 142, 175, 0.25), rgba(22, 26, 36, 0.85));
-    border-color: rgba(246, 142, 175, 0.32);
+    background: linear-gradient(135deg, rgba(var(--color-accent-bright-rgb), 0.35), rgba(22, 26, 36, 0.85));
+    border-color: rgba(var(--color-accent-bright-rgb), 0.5);
+    box-shadow: 0 16px 36px rgba(var(--color-accent-bright-rgb), 0.35);
   }
 
   .control-button {

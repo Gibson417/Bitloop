@@ -7,11 +7,13 @@ const THEMES = {
     colors: {
       accent: '#78d2b9',
       accentRgb: '120, 210, 185',
+      accentBright: '#9BFFE0',
+      accentBrightRgb: '155, 255, 224',
       noteActive: '#78d2ff',
       noteActiveRgb: '120, 210, 255',
       noteInactive: '#3c4450',
-      background: '#0e1016',
-      panel: '#161a24',
+      background: '#1a1d28',
+      panel: '#222632',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -21,6 +23,8 @@ const THEMES = {
     colors: {
       accent: '#28a88f',
       accentRgb: '40, 168, 143',
+      accentBright: '#35D4B4',
+      accentBrightRgb: '53, 212, 180',
       noteActive: '#2890d8',
       noteActiveRgb: '40, 144, 216',
       noteInactive: '#b8bcc4',
@@ -35,6 +39,8 @@ const THEMES = {
     colors: {
       accent: '#ff6b9d',
       accentRgb: '255, 107, 157',
+      accentBright: '#FFB3D0',
+      accentBrightRgb: '255, 179, 208',
       noteActive: '#ffd93d',
       noteActiveRgb: '255, 217, 61',
       noteInactive: '#6c5b7b',
@@ -73,6 +79,8 @@ const applyTheme = (themeName) => {
   const root = document.documentElement;
   root.style.setProperty('--color-accent', theme.colors.accent);
   root.style.setProperty('--color-accent-rgb', theme.colors.accentRgb);
+  root.style.setProperty('--color-accent-bright', theme.colors.accentBright);
+  root.style.setProperty('--color-accent-bright-rgb', theme.colors.accentBrightRgb);
   root.style.setProperty('--color-note-active', theme.colors.noteActive);
   root.style.setProperty('--color-note-active-rgb', theme.colors.noteActiveRgb);
   root.style.setProperty('--color-note-inactive', theme.colors.noteInactive);
@@ -81,15 +89,15 @@ const applyTheme = (themeName) => {
   root.style.setProperty('--color-text', theme.colors.text);
   root.style.setProperty('--color-text-muted', theme.colors.textMuted);
   root.style.setProperty('--color-playhead', `rgba(${theme.colors.accentRgb}, 0.85)`);
-  root.style.setProperty('--color-grid-line', theme.colors.background === '#0e1016' 
-    ? 'rgba(255, 255, 255, 0.08)' 
-    : 'rgba(0, 0, 0, 0.08)');
+  root.style.setProperty('--color-grid-line', theme.colors.background === '#f5f7fa' 
+    ? 'rgba(0, 0, 0, 0.08)' 
+    : 'rgba(255, 255, 255, 0.12)');
   
   // Update body background
   if (themeName === 'light') {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 45%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 40%), ${theme.colors.background}`;
+    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.12), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.10), transparent 50%), ${theme.colors.background}`;
   } else {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.22), transparent 45%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.18), transparent 40%), ${theme.colors.background}`;
+    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 50%), ${theme.colors.background}`;
   }
   document.body.style.color = theme.colors.text;
 };
