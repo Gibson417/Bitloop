@@ -1,6 +1,6 @@
-# BitLoops Application
+# Bloops Application
 
-This directory contains the main BitLoops web application.
+This directory contains the main Bloops web application.
 
 ## Quick Start
 

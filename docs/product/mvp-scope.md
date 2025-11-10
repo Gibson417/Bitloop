@@ -1,4 +1,4 @@
-# Bitloop MVP Scope
+# Bloops MVP Scope
 
 The MVP centers on delivering a responsive, browser-based chiptune loop sequencer that allows musicians to author and share short-form loops with a dot-grid interface. The scope prioritizes stability, predictable timing, and an intuitive editing workflow at 120–160 BPM with up to ten concurrent tracks.
 

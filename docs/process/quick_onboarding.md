@@ -1,6 +1,6 @@
-# BitLoops — Quick Onboarding
+# Bloops — Quick Onboarding
 
-Welcome to BitLoops! This guide gets new contributors up to speed quickly.
+Welcome to Bloops! This guide gets new contributors up to speed quickly.
 
 ## 1 Run the project
 
@@ -13,7 +13,7 @@ Open your browser at `http://localhost:5173` to see the running app.
 
 ## 2 Core Idea
 
-BitLoops is a **dot‑grid sequencer**. You place dots in the grid to make notes.  
+Bloops is a **dot‑grid sequencer**. You place dots in the grid to make notes.  
 The app keeps looping and you can add or remove notes without stopping playback.  
 It’s built to feel **musical, not mechanical**.
 

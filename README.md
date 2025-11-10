@@ -1,8 +1,8 @@
-# BitLoops  
+# Bloops  
 *A modern, intuitive chiptune loop composer for the browser.*
 
-BitLoops is designed to feel effortless, musical, and inspiring.  
-Instead of rows of piano-roll rectangles, BitLoops uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
+Bloops is designed to feel effortless, musical, and inspiring.  
+Instead of rows of piano-roll rectangles, Bloops uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
 
 This is a tool for capturing ideas quickly, looping them, refining them, and *staying in the creative headspace* rather than wrestling with technical machinery.
 
@@ -17,7 +17,7 @@ This is a tool for capturing ideas quickly, looping them, refining them, and *st
 - **Built-in scale chooser** keeps melodies musical without forcing theory knowledge  
 - **Warm chiptune sound palette** (square, triangle, saw, noise, light-softening envelope)
 
-BitLoops encourages **flow** — curiosity, repetition, listening, adjusting, evolving.
+Bloops encourages **flow** — curiosity, repetition, listening, adjusting, evolving.
 
 ## 🎨 Visual Identity & Design Language
 
@@ -38,7 +38,7 @@ Most browser-based music makers fall into one of two extremes:
 1. **Overly technical** (trackers, modular patching, chip-accurate systems), or  
 2. **Toy-like quick sketch pads** that flatten expression.
 
-BitLoops aims for the middle space:
+Bloops aims for the middle space:
 
 **Simple enough to start instantly.**  
 **Deep enough to shape real music.**
@@ -90,7 +90,7 @@ src/
 ## 🛠 Quick Start
 
 ```bash
-cd bitloops_app
+cd bloops_app
 npm install
 npm run dev
 ```
@@ -102,8 +102,8 @@ For detailed setup and contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTI
 ## 📁 Project Structure
 
 ```
-Bitloop/
-├── bitloops_app/          # Main application
+Bloops/
+├── bloops_app/          # Main application
 │   ├── src/              # Source code
 │   │   ├── components/   # Svelte UI components
 │   │   ├── lib/         # Utilities and helpers

@@ -141,7 +141,7 @@ export const getTrackDisplayWaveform = (track) => {
   return `custom ${intensity}%`;
 };
 
-export const SHARE_TEXT = 'Check out my BitLoops loop!';
+export const SHARE_TEXT = 'Check out my Bloops loop!';
 
 export const encodeShareSnapshot = (snapshot) => {
   if (!snapshot) return '';

@@ -1,5 +1,5 @@
 /**
- * BitLoops WebAudio scheduler with lookahead.
+ * Bloops WebAudio scheduler with lookahead.
  *
  * The scheduler queues playback steps slightly ahead of the audio clock to
  * ensure smooth playback. Consumers should provide an `onStep` callback which

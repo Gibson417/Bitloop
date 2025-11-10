@@ -1,4 +1,4 @@
-# BitLoops – Starter Issue List
+# Bloops – Starter Issue List
 
 This document contains copy‑and‑paste templates for creating your first GitHub issues. Each issue corresponds to a key milestone in the MVP build.
 
@@ -27,7 +27,7 @@ This document contains copy‑and‑paste templates for creating your first GitH
 **Labels:** `ui`, `styling`  
 **Description:**
 
-Create a Tailwind theme extension using the BitLoops design tokens:
+Create a Tailwind theme extension using the Bloops design tokens:
 
 ```
 Accent (primary): B‑Warm (#78D2B9)
@@ -121,7 +121,7 @@ Panel Background: #161A24
 **Labels:** `storage`  
 **Description:**
 
-* Add functions to serialize and deserialize project state as JSON files (`*.bitloops.json`).
+* Add functions to serialize and deserialize project state as JSON files (`*.bloops.json`).
 * Provide import and export buttons in the UI.
 
 **Acceptance Criteria:**

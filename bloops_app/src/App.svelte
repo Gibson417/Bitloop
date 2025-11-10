@@ -386,7 +386,7 @@
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'bitloops-project.json';
+    anchor.download = 'bloops-project.json';
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
@@ -410,7 +410,7 @@
     } catch (error) {
       console.error('Failed to import project', error);
       // eslint-disable-next-line no-alert
-      alert('Unable to import project file. Please ensure it is a valid BitLoops JSON export.');
+      alert('Unable to import project file. Please ensure it is a valid Bloops JSON export.');
       return false;
     }
   };
@@ -737,7 +737,7 @@
           </svg>
         </div>
         <div class="brand-text">
-          <h1 class="brand-mark">Bitloop</h1>
+          <h1 class="brand-mark">Bloops</h1>
           <p class="brand-tag">Dot grid sequencer</p>
         </div>
       </div>
@@ -913,7 +913,7 @@
             {/if}
             <input
               type="file"
-              accept=".json,.bitloops.json"
+              accept=".json,.bloops.json"
               bind:this={shareImportInput}
               on:change={handleShareImportChange}
               hidden
