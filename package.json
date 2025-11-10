@@ -1,0 +1,8 @@
+{
+  "name": "bitloop-repo",
+  "private": true,
+  "scripts": {
+    "test:run": "npm --prefix bloops_app run test:run",
+    "test": "npm --prefix bloops_app test"
+  }
+}
