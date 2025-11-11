@@ -4,7 +4,12 @@ import path from 'path';
 
 export default defineConfig({
   root: '.',
-  plugins: [svelte()],
+  plugins: [svelte({
+    hot: false,
+    compilerOptions: {
+      dev: false
+    }
+  })],
   resolve: {
     alias: {
       $components: path.resolve(__dirname, 'src/components'),
