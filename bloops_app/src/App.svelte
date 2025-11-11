@@ -820,23 +820,23 @@
             ↷
           </button>
         </div>
-        <ShareMenu
-          shareStatus={shareStatus}
-          shareMessage={shareMessage}
-          shareLink={shareLink}
-          on:share={handleShareMenuShare}
-          on:render={handleShareMenuRender}
-          on:rendermidi={handleShareMenuRenderMidi}
-          on:export={handleShareMenuExport}
-          on:import={handleShareMenuImport}
-        />
-        <div class="status-actions">
-          <div class="status-controls">
-            <span class={`pill ${isPlaying ? 'playing' : ''}`}>
-              {isPlaying ? 'Playing' : 'Stopped'}
-            </span>
-            <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
-          </div>
+        <div class="status-controls">
+          <span class={`pill ${isPlaying ? 'playing' : ''}`}>
+            {isPlaying ? 'Playing' : 'Stopped'}
+          </span>
+          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+        </div>
+        <div class="utility-buttons">
+          <ShareMenu
+            shareStatus={shareStatus}
+            shareMessage={shareMessage}
+            shareLink={shareLink}
+            on:share={handleShareMenuShare}
+            on:render={handleShareMenuRender}
+            on:rendermidi={handleShareMenuRenderMidi}
+            on:export={handleShareMenuExport}
+            on:import={handleShareMenuImport}
+          />
           <ThemeSelector noteLabel={displayNoteLabel} />
         </div>
       </div>
@@ -1197,6 +1197,12 @@
   }
 
   .history-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .utility-buttons {
     display: flex;
     gap: 8px;
     align-items: center;

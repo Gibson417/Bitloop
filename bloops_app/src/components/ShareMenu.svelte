@@ -101,10 +101,9 @@
     aria-haspopup="true"
     aria-expanded={shareMenuOpen}
     aria-label="Share or Export"
+    title="Share or Export"
   >
     <span class="share-icon" aria-hidden="true">🔗</span>
-    <span>Share or Export</span>
-    <span class="share-caret" aria-hidden="true">▾</span>
   </button>
   {#if shareMenuOpen}
     <div class="share-dropdown" role="menu">
@@ -152,27 +151,27 @@
   }
 
   .share-btn {
-    padding: 12px 16px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
+    font-size: 1.25rem;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
-    display: inline-flex;
+    transition: all 0.2s ease;
+    display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    padding: 0;
   }
 
   .share-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
     border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(0, 0, 0, 0.45);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
+    background: rgba(var(--color-accent-rgb), 0.26);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .share-btn:focus-visible {
@@ -181,9 +180,11 @@
   }
 
   .share-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.35;
     cursor: not-allowed;
-    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .share-btn.loading {
@@ -192,12 +193,12 @@
 
   .share-btn.open {
     border-color: rgba(var(--color-accent-rgb), 0.65);
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(var(--color-accent-rgb), 0.3);
   }
 
-  .share-icon,
-  .share-caret {
-    font-size: 0.9rem;
+  .share-icon {
+    font-size: 1.25rem;
+    line-height: 1;
   }
 
   .share-dropdown {
