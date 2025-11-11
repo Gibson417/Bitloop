@@ -2,13 +2,10 @@
   import { onDestroy } from 'svelte';
   import { theme } from '../store/themeStore.js';
 
-  export let noteLabel = '';
-
   let currentTheme = 'dark';
   let themes = theme.getThemes();
   let menuOpen = false;
   let selectRef;
-  let menuLabel = '';
 
   const unsubscribe = theme.subscribe((value) => {
     currentTheme = value;
@@ -51,11 +48,6 @@
     }
   };
 
-  $: {
-    const label = typeof noteLabel === 'string' ? noteLabel.trim() : '';
-    menuLabel = label;
-  }
-
   onDestroy(() => {
     unsubscribe?.();
   });
@@ -90,11 +82,6 @@
             <option value={themeOption.id}>{themeOption.name}</option>
           {/each}
         </select>
-        {#if menuLabel}
-          <div class="note-length" aria-live="polite">
-            Note length: {menuLabel}
-          </div>
-        {/if}
       </div>
     {/if}
 </div>
@@ -189,14 +176,6 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-  }
-
-  .note-length {
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.75);
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
   }
 
   

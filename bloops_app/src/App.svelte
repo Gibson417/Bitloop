@@ -701,12 +701,6 @@
           <p class="brand-tag">Dot grid sequencer</p>
         </div>
       </div>
-    <Transport
-      playing={isPlaying}
-      on:toggleplay={handleTogglePlay}
-      on:skipback={handleSkipBack}
-      on:skip={handleSkip}
-    />
       {#if activeTrack}
         <div class="volume-card">
           <div class="volume-heading">
@@ -726,6 +720,12 @@
           />
         </div>
       {/if}
+    <Transport
+      playing={isPlaying}
+      on:toggleplay={handleTogglePlay}
+      on:skipback={handleSkipBack}
+      on:skip={handleSkip}
+    />
       <TrackSelector
         tracks={projectState?.tracks ?? []}
         selected={projectState?.selectedTrack ?? 0}
@@ -837,7 +837,7 @@
             on:export={handleShareMenuExport}
             on:import={handleShareMenuImport}
           />
-          <ThemeSelector noteLabel={displayNoteLabel} />
+          <ThemeSelector />
         </div>
       </div>
     </div>
