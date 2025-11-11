@@ -1,0 +1,14 @@
+*** Begin Patch
+*** Update File: node_modules/@sveltejs/vite-plugin-svelte/src/utils/compile.js
+@@
+-        try {
+-            compiled = svelte.compile(finalCode, { ...finalCompileOptions, filename });
++        try {
++            // the svelte compiler does not recognize an `hmr` option; the plugin
++            // may use `hmr` internally for behavior but must not pass it to the
++            // compiler. Create a sanitized options object and remove `hmr` so
++            // the compiler doesn't throw `Unrecognized option 'hmr'`.
++            const sanitizedOptions = { ...finalCompileOptions };
++            if ('hmr' in sanitizedOptions) delete sanitizedOptions.hmr;
++            compiled = svelte.compile(finalCode, { ...sanitizedOptions, filename });
+*** End Patch

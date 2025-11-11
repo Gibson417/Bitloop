@@ -240,6 +240,9 @@
 
   const handleNoteChange = (event) => {
     const { row, step, value } = event.detail;
+    if (typeof window !== 'undefined' && window?.console?.debug) {
+      console.debug('[NoteChange] received', { row, step, value });
+    }
     project.toggleNote(projectState?.selectedTrack ?? 0, row, step, value);
   };
 
@@ -481,12 +484,27 @@
       }
     };
     boot();
+    const handleKey = (e) => {
+      // Spacebar toggles play/stop but shouldn't scroll the page.
+      if (e.code === 'Space' || e.key === ' ') {
+        // Ignore when focus is on input, textarea, select, or contenteditable
+        const active = document.activeElement;
+        const tag = active?.tagName?.toLowerCase();
+        const editable = active?.isContentEditable;
+        if (tag === 'input' || tag === 'textarea' || tag === 'select' || editable) return;
+        e.preventDefault();
+        // Toggle playback
+        handleTogglePlay();
+      }
+    };
+    window.addEventListener('keydown', handleKey, { passive: false });
     return () => {
       disposed = true;
       stopPlayback();
       if (audioContext) {
         audioContext.close?.();
       }
+      window.removeEventListener('keydown', handleKey);
     };
   });
 
@@ -855,7 +873,8 @@
     font-size: 1rem;
     font-weight: 600;
     appearance: textfield;
-    width: 100%;
+    width: 120px;
+    max-width: 100%;
   }
 
   .stat-input::-webkit-outer-spin-button,
@@ -910,7 +929,7 @@
     font-family: inherit;
     transition: all 0.2s ease;
     width: 100%;
-    max-width: 500px;
+    max-width: 360px;
   }
 
   .project-name-input:hover {

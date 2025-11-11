@@ -17,6 +17,7 @@ export let stepsPerBar = 16;
 
   let canvas;
   let scroller;
+  let labelsContainer;
   let ctx;
   let layout = { cellSize: 32, width: 0, height: 0, dpr: 1 };
   let pointerActive = false;
@@ -67,6 +68,50 @@ export let stepsPerBar = 16;
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     draw();
+
+    // compute label vertical offset so labels line up with canvas rows
+    if (canvas && labelsContainer) {
+      try {
+        const canvasRect = canvas.getBoundingClientRect();
+        const labelsRect = labelsContainer.getBoundingClientRect();
+        const offset = Math.round(canvasRect.top - labelsRect.top);
+        labelsContainer.style.paddingTop = `${Math.max(0, offset)}px`;
+        // ensure the label background matches the canvas height so boxes fit exactly
+        labelsContainer.style.height = `${height}px`;
+      } catch (e) {
+        // ignore measurement errors
+      }
+    }
+  };
+
+  // Ensure we redraw when notes, playheadStep or playheadProgress change
+  $: if (canvas && ctx) {
+    // reference reactive props so Svelte will re-run this block on change
+    // eslint-disable-next-line no-unused-expressions
+    notes;
+    // eslint-disable-next-line no-unused-expressions
+    playheadStep;
+    // eslint-disable-next-line no-unused-expressions
+    playheadProgress;
+    // When not animating via RAF, ensure immediate redraw on prop updates
+    if (!isPlaying) draw();
+  }
+
+  let rafId = null;
+  const startRaf = () => {
+    if (rafId) return;
+    const loop = () => {
+      draw();
+      rafId = requestAnimationFrame(loop);
+    };
+    rafId = requestAnimationFrame(loop);
+  };
+
+  const stopRaf = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
   };
 
   const draw = () => {
@@ -219,8 +264,10 @@ export let stepsPerBar = 16;
     }
     const handleWindowResize = () => updateLayout();
     window.addEventListener('resize', handleWindowResize);
+    // ensure we redraw continuously when playing for smooth playhead
     return () => {
       window.removeEventListener('resize', handleWindowResize);
+      stopRaf();
     };
   });
 
@@ -237,6 +284,15 @@ export let stepsPerBar = 16;
 
   $: draw();
 
+  // Start/stop an animation loop when playing to ensure the canvas updates every frame.
+  $: if (isPlaying) {
+    startRaf();
+  } else {
+    stopRaf();
+    // still draw once to render final state
+    draw();
+  }
+
   $: if (follow && isPlaying && scroller) {
     const playheadX = (playheadStep + playheadProgress) * layout.cellSize;
     const center = playheadX - scroller.clientWidth / 2;
@@ -248,9 +304,9 @@ export let stepsPerBar = 16;
 </script>
 
 <div class="grid-container">
-  <div class="note-labels">
+  <div class="note-labels" bind:this={labelsContainer}>
     {#each noteLabels as label, index (index)}
-      <div class="note-label" style="color: {hexToRgba(trackColor, 0.8)};">
+      <div class="note-label" style="color: {hexToRgba(trackColor, 0.8)}; height: {layout.cellSize}px; line-height: {layout.cellSize}px;">
         {label}
       </div>
     {/each}
@@ -265,6 +321,8 @@ export let stepsPerBar = 16;
       on:pointerleave={handlePointerCancel}
       on:pointercancel={handlePointerCancel}
     ></canvas>
+    <!-- DOM playhead overlay for crisp rendering -->
+    <div class="playhead-overlay" aria-hidden="true" style="height: {layout.height}px; left: {(playheadStep + playheadProgress) * layout.cellSize}px"></div>
   </div>
 </div>
 
@@ -274,29 +332,34 @@ export let stepsPerBar = 16;
     width: 100%;
     height: 100%;
     gap: 8px;
+    align-items: flex-start;
   }
 
   .note-labels {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     padding: 8px 0;
     min-width: 48px;
     background: rgba(22, 26, 36, 0.6);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .note-label {
-    display: flex;
+    display: block;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     text-align: center;
-    flex: 1;
+    flex: none;
     min-height: 0;
+    padding: 0 6px;
+    box-sizing: border-box;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
 
@@ -309,6 +372,17 @@ export let stepsPerBar = 16;
     background: var(--color-panel);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .playhead-overlay {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: var(--color-playhead);
+    box-shadow: 0 0 18px rgba(120,210,185,0.25), 0 0 6px rgba(120,210,185,0.18);
+    transform: translateX(-1px);
+    pointer-events: none;
+    z-index: 8;
   }
 
   .grid-canvas {

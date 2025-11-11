@@ -268,20 +268,36 @@
 <style>
   .track-controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    /* explicit columns: name/color | waveform | scale | root | octave | volume | effects */
+    grid-template-columns: 260px 140px 120px 90px 80px 180px 120px;
+    grid-template-rows: auto auto;
+    gap: 6px 12px; /* row-gap, column-gap */
+    padding: 14px;
     border-radius: 20px;
     background: linear-gradient(130deg, rgba(20, 24, 32, 0.95), rgba(14, 16, 22, 0.92));
     border: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .control {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    /* collapse wrapper so its children are placed directly into the parent grid
+       (label, then control field) — this allows labels to align in the top row */
+    display: contents;
+  }
+
+  .control > label {
+    display: block;
+    color: rgba(255, 255, 255, 0.75);
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .control-field {
+    display: block;
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .control label {
@@ -299,6 +315,17 @@
 
   .name-color-group input[type='text'] {
     flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* Make selects and text inputs take full width in single-column layout */
+  select,
+  input[type='number'],
+  input[type='text'] {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .name-color-group input[type='color'] {
@@ -319,13 +346,18 @@
   select,
   input[type='number'],
   input[type='range'],
-  input[type='text'] {
+  input[type='text'],
+  select,
+  input[type='number'],
+  input[type='range'] {
     background: rgba(0, 0, 0, 0.35);
     color: #fff;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 8px 12px;
-    font-size: 0.95rem;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   select:focus,
@@ -449,14 +481,27 @@
   }
 
   .effect-card {
+    /* keep effect card as a block so it can span the entire grid */
+    display: block;
     grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    margin-top: 6px;
     padding: 18px;
     border-radius: 18px;
     background: rgba(9, 11, 16, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Responsive: stack columns on narrower viewports */
+  @media (max-width: 980px) {
+    .track-controls {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .track-controls {
+      grid-template-columns: 1fr;
+    }
   }
 
   .effect-toggle {
