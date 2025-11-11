@@ -5,8 +5,12 @@
   export let options = []; // Can be array of strings or array of objects with {value, label}
   export let value = null; // Current selected value
   export let label = ''; // Label for the control
+  export let disabled = false; // Disabled state
 
   const dispatch = createEventDispatcher();
+
+  // Generate unique ID for accessibility
+  const uniqueId = `selector-${Math.random().toString(36).substr(2, 9)}`;
 
   // Determine if options are objects or strings
   $: isObjectArray = options.length > 0 && typeof options[0] === 'object' && options[0] !== null && 'value' in options[0];
@@ -23,7 +27,7 @@
 
   // Handle left arrow click (previous option)
   const handlePrevious = () => {
-    if (options.length === 0) return;
+    if (options.length === 0 || disabled) return;
     
     const newIndex = currentIndex <= 0 ? options.length - 1 : currentIndex - 1;
     const newValue = isObjectArray ? options[newIndex].value : options[newIndex];
@@ -33,36 +37,62 @@
 
   // Handle right arrow click (next option)
   const handleNext = () => {
-    if (options.length === 0) return;
+    if (options.length === 0 || disabled) return;
     
     const newIndex = currentIndex >= options.length - 1 ? 0 : currentIndex + 1;
     const newValue = isObjectArray ? options[newIndex].value : options[newIndex];
     
     dispatch('change', { value: newValue });
   };
+
+  // Handle keyboard navigation with arrow keys
+  const handleKeyDown = (e) => {
+    if (disabled) return;
+    
+    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      e.preventDefault();
+      handlePrevious();
+    } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+      e.preventDefault();
+      handleNext();
+    }
+  };
 </script>
 
-<div class="arrow-selector">
+<div class="arrow-selector" class:disabled role="group" aria-labelledby={label ? `label-${uniqueId}` : undefined}>
   {#if label}
-    <div class="selector-label">{label}</div>
+    <div id="label-{uniqueId}" class="selector-label">{label}</div>
   {/if}
-  <div class="selector-controls">
+  <div class="selector-controls" role="group">
     <button
       type="button"
       class="arrow-button"
       on:click={handlePrevious}
+      on:keydown={handleKeyDown}
       aria-label="Select previous {label}"
       title="Previous"
+      disabled={disabled}
+      tabindex="0"
     >
       ◀
     </button>
-    <div class="selector-value">{displayValue}</div>
+    <div 
+      class="selector-value"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {displayValue}
+    </div>
     <button
       type="button"
       class="arrow-button"
       on:click={handleNext}
+      on:keydown={handleKeyDown}
       aria-label="Select next {label}"
       title="Next"
+      disabled={disabled}
+      tabindex="0"
     >
       ▶
     </button>
@@ -134,6 +164,16 @@
     transform: scale(0.95);
   }
 
+  .arrow-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .arrow-selector.disabled {
+    opacity: 0.6;
+  }
+
   .selector-value {
     flex: 1;
     text-align: center;
@@ -151,9 +191,13 @@
     }
 
     .arrow-button {
-      width: 28px;
-      height: 28px;
-      font-size: 0.8rem;
+      width: 44px;
+      height: 44px;
+      font-size: 0.85rem;
+    }
+
+    .selector-controls {
+      padding: 4px;
     }
   }
 </style>
