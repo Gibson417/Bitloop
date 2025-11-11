@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { scales } from '../lib/scales.js';
+  import { scales, parseCustomScale } from '../lib/scales.js';
   import ArrowSelector from './ArrowSelector.svelte';
 
   export let track = null;
@@ -9,7 +9,7 @@
   const dispatch = createEventDispatcher();
 
   const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise', 'custom'];
-  const scaleOptions = Object.keys(scales);
+  const scaleOptions = [...Object.keys(scales), 'custom'];
   const rootNoteOptions = [
     { value: 0, label: 'C' },
     { value: 1, label: 'C♯/D♭' },
@@ -25,9 +25,44 @@
     { value: 11, label: 'B' }
   ];
 
+  let customScaleInput = '';
+  let customScaleError = '';
+
   const handleChange = (key, value) => {
     dispatch('update', { index: trackIndex, key, value });
   };
+
+  const handleScaleChange = (newScale) => {
+    if (newScale === 'custom') {
+      const defaultCustomScale = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      customScaleInput = defaultCustomScale.join(', ');
+      handleChange('scale', 'custom');
+      handleChange('customScale', defaultCustomScale);
+    } else {
+      handleChange('scale', newScale);
+      handleChange('customScale', null);
+    }
+  };
+
+  const handleCustomScaleInput = (event) => {
+    const input = event.target.value;
+    customScaleInput = input;
+    const parsed = parseCustomScale(input);
+    
+    if (parsed) {
+      customScaleError = '';
+      handleChange('customScale', parsed);
+    } else {
+      customScaleError = 'Invalid scale. Use 0-11 separated by commas or spaces, must include 0.';
+    }
+  };
+
+  $: {
+    if (track?.scale === 'custom' && track?.customScale) {
+      customScaleInput = track.customScale.join(', ');
+      customScaleError = '';
+    }
+  }
 </script>
 
 {#if track}
@@ -84,9 +119,26 @@
         label="Scale"
         options={scaleOptions}
         value={track.scale}
-        on:change={(event) => handleChange('scale', event.detail.value)}
+        on:change={(event) => handleScaleChange(event.detail.value)}
       />
     </div>
+
+    {#if track.scale === 'custom'}
+      <div class="control plain">
+        <label for={`custom-scale-${trackIndex}`}>Custom scale (0-11)</label>
+        <input
+          id={`custom-scale-${trackIndex}`}
+          type="text"
+          value={customScaleInput}
+          on:input={handleCustomScaleInput}
+          placeholder="0, 2, 4, 5, 7, 9, 11"
+        />
+        {#if customScaleError}
+          <span class="error-message">{customScaleError}</span>
+        {/if}
+        <span class="help-text">Enter semitones (0-11) separated by commas. Must include 0 (root).</span>
+      </div>
+    {/if}
 
     <div class="control plain">
       <ArrowSelector
@@ -236,6 +288,21 @@
   .number-field input::-webkit-inner-spin-button {
     appearance: none;
     margin: 0;
+  }
+
+  .error-message {
+    display: block;
+    font-size: 0.7rem;
+    color: #ff6b6b;
+    margin-top: 4px;
+  }
+
+  .help-text {
+    display: block;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 4px;
+    line-height: 1.3;
   }
 
   @media (max-width: 720px) {

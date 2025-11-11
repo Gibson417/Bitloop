@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-import { scales } from '../lib/scales.js';
+import { scales, isValidCustomScale } from '../lib/scales.js';
 
 export const MAX_LOOP_SECONDS = 300;
 // Base resolution per bar for internal storage. All notes are stored at this resolution.
@@ -113,7 +113,21 @@ const normalizeTracks = (tracks, rows, storageSteps) => {
   return fallback.map((track, index) => {
     const color = track.color ?? TRACK_COLORS[index % TRACK_COLORS.length];
     const waveform = track.waveform ?? 'square';
-    const scaleName = scales[track.scale] ? track.scale : 'major';
+    
+    // Support both named scales and custom scales
+    let scaleName = 'major';
+    let customScale = null;
+    
+    if (track.scale === 'custom' && Array.isArray(track.customScale)) {
+      // Validate custom scale
+      if (isValidCustomScale(track.customScale)) {
+        scaleName = 'custom';
+        customScale = [...track.customScale];
+      }
+    } else if (scales[track.scale]) {
+      scaleName = track.scale;
+    }
+    
     const octave = clamp(track.octave ?? 4, 1, 7);
     const volume = clamp(track.volume ?? 0.7, 0, 1);
     const id = track.id ?? index + 1;
@@ -129,6 +143,7 @@ const normalizeTracks = (tracks, rows, storageSteps) => {
         color,
         waveform,
         scale: scaleName,
+        customScale,
         octave,
         volume,
         customShape,
@@ -153,6 +168,7 @@ const createTrack = (index, rows, storageSteps) =>
       color: TRACK_COLORS[index % TRACK_COLORS.length],
       waveform: 'square',
       scale: 'major',
+      customScale: null,
       octave: 4,
       volume: 0.7,
       customShape: DEFAULT_CUSTOM_SHAPE,
@@ -194,6 +210,7 @@ const snapshotTracks = (tracks) =>
     color: track.color,
     waveform: track.waveform,
     scale: track.scale,
+    customScale: track.customScale ? [...track.customScale] : null,
     octave: track.octave,
     volume: track.volume,
     customShape: track.customShape,

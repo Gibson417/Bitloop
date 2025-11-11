@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { scales } from '../lib/scales.js';
+  import { scales, parseCustomScale } from '../lib/scales.js';
 
   export let tracks = [];
   export let selected = 0;
@@ -12,8 +12,11 @@
   const dispatch = createEventDispatcher();
 
   const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise', 'custom'];
-  const scaleOptions = Object.keys(scales);
+  const scaleOptions = [...Object.keys(scales), 'custom'];
   const filterOptions = ['none', 'lowpass', 'highpass', 'bandpass'];
+
+  let customScaleInput = '';
+  let customScaleError = '';
 
   const handleSelect = (idx) => {
     dispatch('select', { index: idx });
@@ -47,8 +50,40 @@
     });
   };
 
+  const handleScaleChange = (newScale) => {
+    if (newScale === 'custom') {
+      // Initialize with chromatic scale as default
+      const defaultCustomScale = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      customScaleInput = defaultCustomScale.join(', ');
+      dispatch('update', { index: selected, key: 'scale', value: 'custom' });
+      dispatch('update', { index: selected, key: 'customScale', value: defaultCustomScale });
+    } else {
+      dispatch('update', { index: selected, key: 'scale', value: newScale });
+      dispatch('update', { index: selected, key: 'customScale', value: null });
+    }
+  };
+
+  const handleCustomScaleInput = (event) => {
+    const input = event.target.value;
+    customScaleInput = input;
+    const parsed = parseCustomScale(input);
+    
+    if (parsed) {
+      customScaleError = '';
+      dispatch('update', { index: selected, key: 'customScale', value: parsed });
+    } else {
+      customScaleError = 'Invalid scale. Use 0-11 separated by commas or spaces, must include 0.';
+    }
+  };
+
   $: currentTrack = tracks?.[selected] ?? null;
   $: currentEffects = currentTrack?.effects ?? {};
+  $: {
+    if (currentTrack?.scale === 'custom' && currentTrack?.customScale) {
+      customScaleInput = currentTrack.customScale.join(', ');
+      customScaleError = '';
+    }
+  }
 </script>
 
 <div class="trackbar">
@@ -142,7 +177,7 @@
         <label for="scale">Scale</label>
         <select
           id="scale"
-          on:change={(event) => handleChange('scale', event.target.value)}
+          on:change={(event) => handleScaleChange(event.target.value)}
           value={currentTrack.scale}
         >
           {#each scaleOptions as option}
@@ -150,6 +185,23 @@
           {/each}
         </select>
       </div>
+
+      {#if currentTrack.scale === 'custom'}
+        <div class="control">
+          <label for="custom-scale">Custom scale (0-11)</label>
+          <input
+            id="custom-scale"
+            type="text"
+            value={customScaleInput}
+            on:input={handleCustomScaleInput}
+            placeholder="0, 2, 4, 5, 7, 9, 11"
+          />
+          {#if customScaleError}
+            <span class="error-message">{customScaleError}</span>
+          {/if}
+          <span class="help-text">Enter semitones (0-11) separated by commas. Must include 0 (root).</span>
+        </div>
+      {/if}
 
       <div class="control">
         <label for="octave">Octave</label>
@@ -590,6 +642,21 @@
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.2);
     color: #fff;
+  }
+
+  .error-message {
+    display: block;
+    font-size: 0.7rem;
+    color: #ff6b6b;
+    margin-top: 4px;
+  }
+
+  .help-text {
+    display: block;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 4px;
+    line-height: 1.3;
   }
 
   </style>
