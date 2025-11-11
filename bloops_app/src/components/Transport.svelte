@@ -2,7 +2,6 @@
   import { createEventDispatcher } from 'svelte';
 
   export let playing = false;
-  export let follow = true;
 
   const dispatch = createEventDispatcher();
 
@@ -18,9 +17,6 @@
     dispatch('skip');
   };
 
-  const handleFollowClick = () => {
-    dispatch('togglefollow', { value: !follow });
-  };
 </script>
 
 <div class="transport">
@@ -40,19 +36,6 @@
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
       <span class="icon" aria-hidden="true">►►</span>
-    </button>
-  </div>
-  <div class="transport-controls">
-    <button 
-      class="follow" 
-      class:active={follow} 
-      on:click={handleFollowClick} 
-      type="button"
-      aria-pressed={follow}
-      aria-label={follow ? 'Disable follow mode' : 'Enable follow mode'}
-    >
-      <span>Follow</span>
-      <span class="indicator" aria-hidden="true"></span>
     </button>
   </div>
 </div>
@@ -150,76 +133,4 @@
     font-size: 1.3rem;
   }
 
-  .transport-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .follow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.35);
-    background: rgba(var(--color-accent-rgb), 0.14);
-    color: rgba(var(--color-accent-rgb), 0.95);
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-
-  .follow:hover {
-    color: #fff;
-    background: rgba(var(--color-accent-rgb), 0.24);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-  }
-
-  .follow:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
-    outline-offset: 2px;
-  }
-
-  .follow .indicator {
-    width: 36px;
-    height: 20px;
-    border-radius: 10px;
-    background: rgba(var(--color-accent-rgb), 0.2);
-    position: relative;
-    transition: background 0.3s ease;
-    flex-shrink: 0;
-  }
-
-  .follow .indicator::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .follow.active {
-    color: #fff;
-    border-color: rgba(var(--color-accent-rgb), 0.55);
-    background: rgba(var(--color-accent-rgb), 0.22);
-  }
-
-  .follow.active .indicator {
-    background: var(--color-accent);
-  }
-
-  .follow.active .indicator::after {
-    transform: translateX(16px);
-  }
 </style>

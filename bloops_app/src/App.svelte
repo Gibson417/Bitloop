@@ -9,6 +9,8 @@
   import Footer from './components/Footer.svelte';
   import ThemeSelector from './components/ThemeSelector.svelte';
   import KnobControl from './components/KnobControl.svelte';
+  import ShareMenu from './components/ShareMenu.svelte';
+  import FollowToggle from './components/FollowToggle.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -563,23 +565,23 @@
     }
   };
 
-  const handleFooterShare = async () => {
+  const handleShareMenuShare = async () => {
     await handleShare();
   };
 
-  const handleFooterRender = () => {
+  const handleShareMenuRender = () => {
     handleRenderWav();
   };
 
-  const handleFooterRenderMidi = () => {
+  const handleShareMenuRenderMidi = () => {
     handleRenderMidi();
   };
 
-  const handleFooterExport = () => {
+  const handleShareMenuExport = () => {
     handleExport();
   };
 
-  const handleFooterImport = async (event) => {
+  const handleShareMenuImport = async (event) => {
     const { file, json } = event.detail ?? {};
     try {
       let payload = json ?? null;
@@ -699,14 +701,12 @@
           <p class="brand-tag">Dot grid sequencer</p>
         </div>
       </div>
-      <Transport
-        playing={isPlaying}
-        follow={isFollowing}
-        on:toggleplay={handleTogglePlay}
-        on:skipback={handleSkipBack}
-        on:skip={handleSkip}
-        on:togglefollow={handleFollowToggle}
-      />
+    <Transport
+      playing={isPlaying}
+      on:toggleplay={handleTogglePlay}
+      on:skipback={handleSkipBack}
+      on:skip={handleSkip}
+    />
       {#if activeTrack}
         <div class="volume-card">
           <div class="volume-heading">
@@ -820,14 +820,22 @@
             ↷
           </button>
         </div>
+        <ShareMenu
+          shareStatus={shareStatus}
+          shareMessage={shareMessage}
+          shareLink={shareLink}
+          on:share={handleShareMenuShare}
+          on:render={handleShareMenuRender}
+          on:rendermidi={handleShareMenuRenderMidi}
+          on:export={handleShareMenuExport}
+          on:import={handleShareMenuImport}
+        />
         <div class="status-actions">
-          <div class="status-pills">
+          <div class="status-controls">
             <span class={`pill ${isPlaying ? 'playing' : ''}`}>
               {isPlaying ? 'Playing' : 'Stopped'}
             </span>
-            <span class={`pill ${isFollowing ? 'following' : ''}`}>
-              {isFollowing ? 'Follow on' : 'Follow off'}
-            </span>
+            <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
           </div>
           <ThemeSelector noteLabel={displayNoteLabel} />
         </div>
@@ -900,18 +908,10 @@
     <Footer
       projects={projects}
       currentId={currentProjectId}
-      shareStatus={shareStatus}
-      shareMessage={shareMessage}
-      shareLink={shareLink}
       on:selectproject={handleProjectSelect}
       on:newproject={handleNewProject}
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
-      on:share={handleFooterShare}
-      on:render={handleFooterRender}
-      on:rendermidi={handleFooterRenderMidi}
-      on:export={handleFooterExport}
-      on:import={handleFooterImport}
     />
   </section>
 </main>
@@ -1189,9 +1189,11 @@
 
   .header-actions {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
     flex-shrink: 0;
+    justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
   .history-buttons {
@@ -1247,10 +1249,11 @@
     font-size: 0.95rem;
   }
 
-  .status-pills {
+  .status-controls {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .status-actions {
@@ -1476,7 +1479,7 @@
       gap: 16px;
     }
 
-    .status-pills {
+    .status-controls {
       width: 100%;
     }
 
