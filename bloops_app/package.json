@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check",
-  "postinstall": "node scripts/apply-patches.cjs",
+    "postinstall": "node scripts/apply-patches.cjs",
     "test": "vitest",
     "test:run": "vitest run",
     "coverage": "vitest run --coverage"
@@ -17,7 +17,7 @@
     "svelte": "^4.2.0"
   },
   "devDependencies": {
-  "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@testing-library/svelte": "^4.2.2",
     "@testing-library/user-event": "^14.5.2",
     "@vitest/coverage-v8": "^4.0.8",
