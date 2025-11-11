@@ -2,13 +2,10 @@
   import { onDestroy } from 'svelte';
   import { theme } from '../store/themeStore.js';
 
-  export let noteLabel = '';
-
   let currentTheme = 'dark';
   let themes = theme.getThemes();
   let menuOpen = false;
   let selectRef;
-  let menuLabel = '';
 
   const unsubscribe = theme.subscribe((value) => {
     currentTheme = value;
@@ -51,11 +48,6 @@
     }
   };
 
-  $: {
-    const label = typeof noteLabel === 'string' ? noteLabel.trim() : '';
-    menuLabel = label;
-  }
-
   onDestroy(() => {
     unsubscribe?.();
   });
@@ -90,11 +82,6 @@
             <option value={themeOption.id}>{themeOption.name}</option>
           {/each}
         </select>
-        {#if menuLabel}
-          <div class="note-length" aria-live="polite">
-            Note length: {menuLabel}
-          </div>
-        {/if}
       </div>
     {/if}
 </div>
@@ -108,28 +95,29 @@
   .theme-trigger {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.45);
-    background: rgba(var(--color-accent-rgb), 0.12);
-    color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    transition: all 0.2s ease;
     padding: 0;
   }
 
   .theme-trigger:hover,
   .theme-trigger.open {
-    border-color: rgba(var(--color-accent-rgb), 0.7);
-    background: rgba(var(--color-accent-rgb), 0.2);
-    box-shadow: 0 12px 28px rgba(var(--color-accent-rgb), 0.25);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.26);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
     transform: translateY(-1px);
   }
 
-  .theme-trigger:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.7);
+  .theme-trigger:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
     outline-offset: 2px;
   }
 
@@ -188,14 +176,6 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-  }
-
-  .note-length {
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.75);
-    display: flex;
-    gap: 6px;
-    align-items: baseline;
   }
 
   

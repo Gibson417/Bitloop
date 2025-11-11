@@ -701,12 +701,6 @@
           <p class="brand-tag">Dot grid sequencer</p>
         </div>
       </div>
-    <Transport
-      playing={isPlaying}
-      on:toggleplay={handleTogglePlay}
-      on:skipback={handleSkipBack}
-      on:skip={handleSkip}
-    />
       {#if activeTrack}
         <div class="volume-card">
           <div class="volume-heading">
@@ -726,6 +720,12 @@
           />
         </div>
       {/if}
+    <Transport
+      playing={isPlaying}
+      on:toggleplay={handleTogglePlay}
+      on:skipback={handleSkipBack}
+      on:skip={handleSkip}
+    />
       <TrackSelector
         tracks={projectState?.tracks ?? []}
         selected={projectState?.selectedTrack ?? 0}
@@ -820,24 +820,24 @@
             ↷
           </button>
         </div>
-        <ShareMenu
-          shareStatus={shareStatus}
-          shareMessage={shareMessage}
-          shareLink={shareLink}
-          on:share={handleShareMenuShare}
-          on:render={handleShareMenuRender}
-          on:rendermidi={handleShareMenuRenderMidi}
-          on:export={handleShareMenuExport}
-          on:import={handleShareMenuImport}
-        />
-        <div class="status-actions">
-          <div class="status-controls">
-            <span class={`pill ${isPlaying ? 'playing' : ''}`}>
-              {isPlaying ? 'Playing' : 'Stopped'}
-            </span>
-            <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
-          </div>
-          <ThemeSelector noteLabel={displayNoteLabel} />
+        <div class="status-controls">
+          <span class={`pill ${isPlaying ? 'playing' : ''}`}>
+            {isPlaying ? 'Playing' : 'Stopped'}
+          </span>
+          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+        </div>
+        <div class="utility-buttons">
+          <ShareMenu
+            shareStatus={shareStatus}
+            shareMessage={shareMessage}
+            shareLink={shareLink}
+            on:share={handleShareMenuShare}
+            on:render={handleShareMenuRender}
+            on:rendermidi={handleShareMenuRenderMidi}
+            on:export={handleShareMenuExport}
+            on:import={handleShareMenuImport}
+          />
+          <ThemeSelector />
         </div>
       </div>
     </div>
@@ -1197,6 +1197,12 @@
   }
 
   .history-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .utility-buttons {
     display: flex;
     gap: 8px;
     align-items: center;
