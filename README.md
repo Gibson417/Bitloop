@@ -1,10 +1,16 @@
 # Bloops  
 *A modern, intuitive chiptune loop composer for the browser.*
 
-Bloops is designed to feel effortless, musical, and inspiring.  
+Bloops is designed to feel effortless, musical, and inspiring.
 Instead of rows of piano-roll rectangles, Bloops uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
 
 This is a tool for capturing ideas quickly, looping them, refining them, and *staying in the creative headspace* rather than wrestling with technical machinery.
+
+## 📸 Visual Identity
+
+![Bloops hero mockup of the full application](docs/images/bloops-app-overview.svg)
+
+![Bloops wordmark and dot grid logo](docs/images/bloops-logo.svg)
 
 ## ✨ Core Experience
 

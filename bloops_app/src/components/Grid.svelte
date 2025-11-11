@@ -23,6 +23,7 @@
   let pointerActive = false;
   let paintValue = true;
   let paintedCells = new Set();
+  let activeNoteLength = 1;
   let resizeObserver;
 
   const hexToRgba = (hex, alpha = 1) => {
@@ -188,11 +189,13 @@
 
   const clampColumn = (col) => Math.min(Math.max(col, 0), Math.max(columns - 1, 0));
 
+  const getCurrentNoteLength = () => Math.max(1, Math.round(noteLengthSteps) || 1);
+
   const getPaintRange = (row, col, value) => {
     const safeRow = Math.max(0, Math.min(row, rows - 1));
     const safeCol = clampColumn(col);
     if (value) {
-      const length = Math.max(1, Math.round(noteLengthSteps) || 1);
+      const length = Math.max(1, Math.round(pointerActive ? activeNoteLength : getCurrentNoteLength()) || 1);
       const end = clampColumn(safeCol + length - 1);
       return { row: safeRow, start: safeCol, length: end - safeCol + 1 };
     }
@@ -234,7 +237,9 @@
     if (!cell) return;
     if (!pointerActive) {
       pointerActive = true;
-      paintValue = !(notes?.[cell.row]?.[cell.col]);
+      const isEraseGesture = event.button === 2 || event.ctrlKey || event.metaKey;
+      paintValue = isEraseGesture ? false : !(notes?.[cell.row]?.[cell.col]);
+      activeNoteLength = getCurrentNoteLength();
     }
     const { row, start, length } = getPaintRange(cell.row, cell.col, paintValue);
     if (isRangePainted(row, start, length)) return;
@@ -265,6 +270,7 @@
     }
     pointerActive = false;
     paintedCells = new Set();
+    activeNoteLength = getCurrentNoteLength();
   };
 
   const handlePointerUp = (event) => {
@@ -347,6 +353,7 @@
       on:pointerup={handlePointerUp}
       on:pointerleave={handlePointerCancel}
       on:pointercancel={handlePointerCancel}
+      on:contextmenu|preventDefault
     ></canvas>
   </div>
 </div>
