@@ -159,7 +159,10 @@
           if (track.notes?.[row]?.[storageIndex]) {
           const midi = getMidiForCell(track, row);
           const frequency = midiToFrequency(midi);
-          playTone(track, frequency, time, stepDuration * 0.95);
+          // Apply minimum duration of 50ms to prevent clicks on very short notes
+          const minDuration = 0.05; // 50ms minimum gate time
+          const safeDuration = Math.max(stepDuration * 0.95, minDuration);
+          playTone(track, frequency, time, safeDuration);
         }
       }
     });

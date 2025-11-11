@@ -180,7 +180,7 @@
   }
 
   .share-btn:disabled {
-    opacity: 0.35;
+    opacity: 0.5;
     cursor: not-allowed;
     color: rgba(255, 255, 255, 0.4);
     border-color: rgba(255, 255, 255, 0.15);
