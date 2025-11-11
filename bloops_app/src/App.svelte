@@ -45,15 +45,6 @@
   let shareMessage = '';
   let shareLink = '';
   let shareFeedbackTimer;
-  // Lightweight on-screen debug panel (enable with ?debug=1 in the URL)
-  let debugMode = false;
-  if (typeof window !== 'undefined') {
-    try {
-      debugMode = new URL(window.location.href).searchParams.get('debug') === '1';
-    } catch (e) {
-      debugMode = false;
-    }
-  }
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -176,10 +167,6 @@
     if (!totalSteps) return;
     const stepIndex = ((step % totalSteps) + totalSteps) % totalSteps;
     project.registerStep(stepIndex, time, duration);
-    // Debug: log scheduler callbacks so we can inspect timing in DevTools
-    if (typeof window !== 'undefined' && window?.console?.debug) {
-      console.debug('[Scheduler] onStep', { stepIndex, time, duration, now: audioContext?.currentTime });
-    }
     scheduleAudio(stepIndex, time, duration, state);
   };
 
@@ -191,15 +178,7 @@
       const now = audioContext.currentTime;
       const progress = (now - state.lastStepTime) / delta;
       if (Number.isFinite(progress)) {
-        const clamped = Math.min(Math.max(progress, 0), 1);
-        project.setPlayheadProgress(clamped);
-        // Debug: only log when progress changes noticeably to avoid spamming the console
-        if (typeof window !== 'undefined' && window?.console?.debug) {
-          const shouldLog = Math.abs((state.playheadProgress || 0) - clamped) > 0.02 || clamped === 0 || clamped === 1;
-          if (shouldLog) {
-            console.debug('[Playhead] progress', { progress: clamped, step: state.playheadStep, last: state.lastStepTime, next: state.nextStepTime, now });
-          }
-        }
+        project.setPlayheadProgress(Math.min(Math.max(progress, 0), 1));
       }
     }
     animationId = requestAnimationFrame(animatePlayhead);
@@ -936,18 +915,6 @@
     />
   </section>
 </main>
-
-{#if debugMode}
-  <div style="position:fixed;right:12px;bottom:12px;background:rgba(0,0,0,0.6);color:#fff;padding:10px;border-radius:8px;font-family:monospace;font-size:12px;z-index:9999;min-width:220px">
-    <div style="font-weight:700;margin-bottom:6px">BitLoops Debug</div>
-    <div>Playing: {projectState?.playing ? 'yes' : 'no'}</div>
-    <div>Step: {projectState?.playheadStep ?? 0}</div>
-    <div>Progress: {(projectState?.playheadProgress ?? 0).toFixed(3)}</div>
-    <div>Last: {(projectState?.lastStepTime ?? 0).toFixed(3)}</div>
-    <div>Next: {(projectState?.nextStepTime ?? 0).toFixed(3)}</div>
-    <div>Audio now: {audioContext ? audioContext.currentTime.toFixed(3) : 'n/a'}</div>
-  </div>
-{/if}
 
 <style>
   :global(:root) {
