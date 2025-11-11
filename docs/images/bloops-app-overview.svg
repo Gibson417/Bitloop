@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="screenBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1d28" />
+      <stop offset="100%" stop-color="#131620" />
+    </linearGradient>
+    <linearGradient id="panelBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#262b3a" />
+      <stop offset="100%" stop-color="#1f2230" />
+    </linearGradient>
+    <linearGradient id="gridBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#242836" />
+      <stop offset="100%" stop-color="#1b1e29" />
+    </linearGradient>
+    <linearGradient id="railBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b1f2b" />
+      <stop offset="100%" stop-color="#141723" />
+    </linearGradient>
+    <linearGradient id="pill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#78d2b9" />
+      <stop offset="100%" stop-color="#9bffe0" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0a0d14" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#screenBg)" />
+  <g filter="url(#softShadow)">
+    <rect x="60" y="60" width="220" height="780" rx="36" fill="url(#railBg)" />
+    <rect x="300" y="60" width="1240" height="780" rx="48" fill="url(#panelBg)" />
+  </g>
+  <text x="110" y="130" fill="#ffffff" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="36" font-weight="600">Tracks</text>
+  <g font-family="'DM Sans', 'Segoe UI', sans-serif" fill="#d6d9e4" font-size="22">
+    <g>
+      <rect x="88" y="160" width="164" height="84" rx="22" fill="#232736" stroke="#303545" stroke-width="2" />
+      <text x="106" y="210">Pulse Lead</text>
+    </g>
+    <g transform="translate(0, 110)">
+      <rect x="88" y="160" width="164" height="84" rx="22" fill="#232736" stroke="#303545" stroke-width="2" />
+      <text x="106" y="210">Bass</text>
+    </g>
+    <g transform="translate(0, 220)">
+      <rect x="88" y="160" width="164" height="84" rx="22" fill="#232736" stroke="#303545" stroke-width="2" />
+      <text x="106" y="210">Chords</text>
+    </g>
+    <g transform="translate(0, 330)">
+      <rect x="88" y="160" width="164" height="84" rx="22" fill="#232736" stroke="#303545" stroke-width="2" />
+      <text x="106" y="210">Percussion</text>
+    </g>
+  </g>
+  <text x="340" y="140" fill="#ffffff" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="42" font-weight="600">Bloops Session Overview</text>
+  <text x="340" y="188" fill="#aab2c7" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="24">Modern dot-grid chiptune sequencer</text>
+  <rect x="340" y="220" width="1160" height="420" rx="36" fill="url(#gridBg)" stroke="#31394b" stroke-width="2" />
+  <g>
+    <rect x="360" y="240" width="1120" height="40" rx="18" fill="#292d3d" />
+    <text x="376" y="268" fill="#bfc5d9" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="20">Note length • 1/8 • 1/4 • 1/2 • Follow playhead</text>
+  </g>
+  <g>
+    <rect x="360" y="300" width="64" height="360" rx="18" fill="#1f2330" />
+    <g font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="18" fill="#9ea6bf">
+      <text x="372" y="330">C6</text>
+      <text x="372" y="375">B5</text>
+      <text x="372" y="420">A5</text>
+      <text x="372" y="465">G5</text>
+      <text x="372" y="510">F5</text>
+      <text x="372" y="555">E5</text>
+      <text x="372" y="600">D5</text>
+      <text x="372" y="645">C5</text>
+    </g>
+  </g>
+  <g>
+    <rect x="440" y="300" width="1000" height="360" rx="24" fill="#1b1f2c" />
+    <g fill="#2a3142">
+      <rect x="440" y="300" width="1000" height="360" rx="24" />
+    </g>
+    <g fill="#3f4557">
+      <rect x="440" y="300" width="1000" height="2" />
+      <rect x="440" y="340" width="1000" height="2" />
+      <rect x="440" y="380" width="1000" height="2" />
+      <rect x="440" y="420" width="1000" height="2" />
+      <rect x="440" y="460" width="1000" height="2" />
+      <rect x="440" y="500" width="1000" height="2" />
+      <rect x="440" y="540" width="1000" height="2" />
+      <rect x="440" y="580" width="1000" height="2" />
+    </g>
+    <g fill="#1f2535">
+      <rect x="500" y="300" width="2" height="360" />
+      <rect x="580" y="300" width="2" height="360" />
+      <rect x="660" y="300" width="2" height="360" />
+      <rect x="740" y="300" width="2" height="360" />
+      <rect x="820" y="300" width="2" height="360" />
+      <rect x="900" y="300" width="2" height="360" />
+      <rect x="980" y="300" width="2" height="360" />
+      <rect x="1060" y="300" width="2" height="360" />
+      <rect x="1140" y="300" width="2" height="360" />
+      <rect x="1220" y="300" width="2" height="360" />
+      <rect x="1300" y="300" width="2" height="360" />
+      <rect x="1380" y="300" width="2" height="360" />
+      <rect x="1460" y="300" width="2" height="360" />
+      <rect x="1540" y="300" width="2" height="360" />
+    </g>
+    <g>
+      <circle cx="520" cy="335" r="16" fill="url(#pill)" />
+      <circle cx="600" cy="375" r="16" fill="url(#pill)" />
+      <circle cx="680" cy="495" r="16" fill="url(#pill)" />
+      <circle cx="760" cy="455" r="16" fill="url(#pill)" />
+      <circle cx="840" cy="415" r="16" fill="url(#pill)" />
+      <circle cx="920" cy="375" r="16" fill="url(#pill)" />
+      <circle cx="1000" cy="335" r="16" fill="url(#pill)" />
+      <circle cx="1080" cy="495" r="16" fill="url(#pill)" />
+      <circle cx="1160" cy="455" r="16" fill="url(#pill)" />
+      <circle cx="1240" cy="415" r="16" fill="url(#pill)" />
+    </g>
+    <rect x="900" y="300" width="4" height="360" fill="#78d2ff" opacity="0.65" />
+  </g>
+  <rect x="340" y="680" width="1160" height="120" rx="30" fill="#2b3042" stroke="#343a4f" stroke-width="2" />
+  <text x="360" y="735" fill="#ced3e3" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="24">Transport • Tempo • Swing • Loop length • Share</text>
+  <text x="360" y="775" fill="#8990a5" font-family="'DM Sans', 'Segoe UI', sans-serif" font-size="20">Status: Autosave enabled • 4 bars • 120 BPM</text>
+</svg>
