@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import { colors } from '../lib/colorTokens.js';
+  import { BASE_RESOLUTION } from '../store/projectStore.js';
 
   export let notes = [];
   export let rows = 8;
@@ -12,7 +13,9 @@
   export let follow = true;
   export let isPlaying = false;
   export let noteLabels = [];
-  export let noteLengthSteps = 1;
+  // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64
+  export let noteLengthSteps = 1; // backwards-compat (grouping factor)
+  export let noteLengthDenominator = undefined;
 
   const dispatch = createEventDispatcher();
 
@@ -23,7 +26,6 @@
   let pointerActive = false;
   let paintValue = true;
   let paintedCells = new Set();
-  let activeNoteLength = 1;
   let resizeObserver;
 
   const hexToRgba = (hex, alpha = 1) => {
@@ -49,13 +51,24 @@
   };
 
   const updateLayout = () => {
-    if (!canvas || !scroller) return;
+    if (!canvas || !scroller) {
+      return;
+    }
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-    const visibleColumns = Math.min(columns, 16);
-    const availableWidth = scroller.clientWidth || columns * 32;
+    const safeRows = Math.max(rows || 8, 1);
+    const logicalColumns = Math.max(columns || 16, 1); // logical total steps (bars * stepsPerBar)
+    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
+    const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
+    const visibleColumns = Math.min(displayColumns, 16);
+    const availableWidth = scroller.clientWidth || displayColumns * 32;
     const cellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
-    const width = Math.max(columns * cellSize, availableWidth);
-    const height = rows * cellSize;
+    const width = Math.max(displayColumns * cellSize, availableWidth);
+    const height = safeRows * cellSize;
 
     layout = { cellSize, width, height, dpr };
 
@@ -71,188 +84,175 @@
     draw();
   };
 
-  const draw = () => {
-    if (!ctx) return;
-    const styles = getStyles();
-    ctx.clearRect(0, 0, layout.width, layout.height);
-    const backgroundGradient = ctx.createLinearGradient(0, 0, 0, layout.height);
-    backgroundGradient.addColorStop(0, styles.background);
-    backgroundGradient.addColorStop(1, 'rgba(14, 16, 22, 0.92)');
-    ctx.fillStyle = backgroundGradient;
-    ctx.fillRect(0, 0, layout.width, layout.height);
+    const draw = () => {
+      if (!ctx) return;
+      const safeRows = Math.max(rows || 8, 1);
+      const safeColumns = Math.max(columns || 16, 1);
+      // ...existing code...
+      const styles = getStyles();
+      ctx.clearRect(0, 0, layout.width, layout.height);
+      const backgroundGradient = ctx.createLinearGradient(0, 0, 0, layout.height);
+      backgroundGradient.addColorStop(0, styles.background);
+      backgroundGradient.addColorStop(1, 'rgba(14, 16, 22, 0.92)');
+      ctx.fillStyle = backgroundGradient;
+      ctx.fillRect(0, 0, layout.width, layout.height);
 
-    const barWidth = Math.max(stepsPerBar, 1) * layout.cellSize;
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    for (let col = 0; col < columns; col += stepsPerBar) {
-      const x = col * layout.cellSize;
-      const stripe = ctx.createLinearGradient(x, 0, x + layout.cellSize * 1.5, 0);
-      stripe.addColorStop(0, hexToRgba(trackColor, 0.08));
-      stripe.addColorStop(1, 'transparent');
-      ctx.fillStyle = stripe;
-      ctx.fillRect(x, 0, layout.cellSize * 1.5, layout.height);
+      // Calculate display columns based on selected note denominator (e.g. 16,32,64) and storage mapping.
+      const logicalColumns = Math.max(columns || 16, 1);
+      const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+      const denom = Number(noteLengthDenominator) || null;
+      const displayColumns = denom && Number.isFinite(denom) && denom > 0
+        ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
+        : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+      const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
+      const cellSize = layout.cellSize;
 
-      const wash = ctx.createLinearGradient(x, 0, x + barWidth, 0);
-      wash.addColorStop(0, hexToRgba(trackColor, 0.04));
-      wash.addColorStop(1, 'transparent');
-      ctx.fillStyle = wash;
-      ctx.fillRect(x, 0, barWidth, layout.height);
-    }
-    ctx.restore();
-
-    const radius = layout.cellSize * 0.28;
-
-    for (let row = 0; row < rows; row += 1) {
-      for (let col = 0; col < columns; col += 1) {
-        const active = notes?.[row]?.[col];
-        const cx = col * layout.cellSize + layout.cellSize / 2;
-        const cy = row * layout.cellSize + layout.cellSize / 2;
+      // Draw grid lines
+      ctx.save();
+      ctx.strokeStyle = hexToRgba(trackColor, 0.18);
+      ctx.lineWidth = 1;
+      for (let col = 0; col <= displayColumns; col++) {
+        const x = col * cellSize + 0.5;
         ctx.beginPath();
-        const inactive = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
-        inactive.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
-        inactive.addColorStop(1, styles.inactive);
-        if (active) {
-          ctx.shadowColor = hexToRgba(trackColor, 0.7);
-          ctx.shadowBlur = layout.cellSize * 0.5;
-          ctx.fillStyle = hexToRgba(trackColor, 0.9);
-        } else {
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = inactive;
-        }
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.fill();
-        if (active) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, layout.height);
+        ctx.stroke();
+      }
+      for (let row = 0; row <= rows; row++) {
+        const y = row * cellSize + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(layout.width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Draw notes (map displayed column -> underlying step index)
+      ctx.save();
+      for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < displayColumns; col++) {
+        // Map displayed column -> underlying storage step index
+        const storageIndex = Math.floor((col * storageColumns) / displayColumns);
+        const isActive = !!notes?.[row]?.[storageIndex];
+          const cx = col * cellSize + cellSize / 2;
+          const cy = row * cellSize + cellSize / 2;
+          const radius = cellSize * 0.28;
+
+          const inactive = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+          inactive.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+          inactive.addColorStop(1, styles.inactive);
+
+          if (isActive) {
+            ctx.shadowColor = hexToRgba(trackColor, 0.7);
+            ctx.shadowBlur = cellSize * 0.5;
+            ctx.fillStyle = hexToRgba(trackColor, 0.9);
+          } else {
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = inactive;
+          }
           ctx.beginPath();
-          ctx.fillStyle = hexToRgba(trackColor, 0.45);
-          ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
           ctx.fill();
+
+          if (isActive) {
+            ctx.beginPath();
+            ctx.fillStyle = hexToRgba(trackColor, 0.45);
+            ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
       }
-    }
+      ctx.restore();
 
-    const playheadX = (playheadStep + playheadProgress) * layout.cellSize;
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    
-    // Enhanced playhead with animated glow
-    const glowIntensity = isPlaying ? 0.3 + Math.sin(Date.now() * 0.003) * 0.1 : 0.2;
-    const glowWidth = layout.cellSize * (isPlaying ? 2.5 : 1.5);
-    
-    const playheadGlow = ctx.createLinearGradient(playheadX - glowWidth, 0, playheadX + glowWidth, 0);
-    playheadGlow.addColorStop(0, 'transparent');
-    playheadGlow.addColorStop(0.5, hexToRgba(trackColor, glowIntensity));
-    playheadGlow.addColorStop(1, 'transparent');
-    ctx.fillStyle = playheadGlow;
-    ctx.fillRect(playheadX - glowWidth, 0, glowWidth * 2, layout.height);
-    
-    // Playhead line with enhanced visibility
-    ctx.strokeStyle = styles.playhead;
-    ctx.lineWidth = isPlaying ? 3 : 2;
-    ctx.beginPath();
-    ctx.moveTo(playheadX, 0);
-    ctx.lineTo(playheadX, layout.height);
-    ctx.stroke();
-    
-    // Add subtle shadow for depth
-    if (isPlaying) {
-      ctx.shadowColor = hexToRgba(trackColor, 0.5);
-      ctx.shadowBlur = 8;
-      ctx.strokeStyle = hexToRgba(trackColor, 0.8);
-      ctx.lineWidth = 2;
+  // Playhead (map logical playhead -> displayed column then to pixels)
+  const playheadX = ((playheadStep + playheadProgress) * (displayColumns / Math.max(1, columns))) * layout.cellSize;
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      const glowIntensity = isPlaying ? 0.3 + Math.sin(Date.now() * 0.003) * 0.1 : 0.2;
+      const glowWidth = layout.cellSize * (isPlaying ? 2.5 : 1.5);
+      const playheadGlow = ctx.createLinearGradient(playheadX - glowWidth, 0, playheadX + glowWidth, 0);
+      playheadGlow.addColorStop(0, 'transparent');
+      playheadGlow.addColorStop(0.5, hexToRgba(trackColor, glowIntensity));
+      playheadGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = playheadGlow;
+      ctx.fillRect(playheadX - glowWidth, 0, glowWidth * 2, layout.height);
+      ctx.strokeStyle = styles.playhead;
+      ctx.lineWidth = isPlaying ? 3 : 2;
       ctx.beginPath();
       ctx.moveTo(playheadX, 0);
       ctx.lineTo(playheadX, layout.height);
       ctx.stroke();
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-    }
-  };
-
-  const getCellFromEvent = (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = Number.isFinite(event.clientX)
-      ? event.clientX
-      : (typeof event.offsetX === 'number' ? rect.left + event.offsetX : rect.left);
-    const clientY = Number.isFinite(event.clientY)
-      ? event.clientY
-      : (typeof event.offsetY === 'number' ? rect.top + event.offsetY : rect.top);
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    const col = Math.floor(x / layout.cellSize);
-    const row = Math.floor(y / layout.cellSize);
-    if (row < 0 || row >= rows || col < 0 || col >= columns) {
-      return null;
-    }
-    return { row, col };
-  };
-
-  const clampColumn = (col) => Math.min(Math.max(col, 0), Math.max(columns - 1, 0));
-
-  const getCurrentNoteLength = () => Math.max(1, Math.round(noteLengthSteps) || 1);
-
-  const getPaintRange = (row, col, value) => {
-    const safeRow = Math.max(0, Math.min(row, rows - 1));
-    const safeCol = clampColumn(col);
-    if (value) {
-      const length = Math.max(1, Math.round(pointerActive ? activeNoteLength : getCurrentNoteLength()) || 1);
-      const end = clampColumn(safeCol + length - 1);
-      return { row: safeRow, start: safeCol, length: end - safeCol + 1 };
-    }
-    const rowNotes = notes?.[safeRow] ?? [];
-    let start = safeCol;
-    let end = safeCol;
-    while (start > 0 && rowNotes[start - 1]) {
-      start -= 1;
-    }
-    while (end + 1 < columns && rowNotes[end + 1]) {
-      end += 1;
-    }
-    return { row: safeRow, start, length: end - start + 1 };
-  };
-
-  const isRangePainted = (row, start, length) => {
-    for (let offset = 0; offset < length; offset += 1) {
-      const key = `${row}:${start + offset}`;
-      if (!paintedCells.has(key)) {
-        return false;
+      if (isPlaying) {
+        ctx.shadowColor = hexToRgba(trackColor, 0.5);
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = hexToRgba(trackColor, 0.8);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(playheadX, 0);
+        ctx.lineTo(playheadX, layout.height);
+        ctx.stroke();
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
       }
-    }
-    return true;
-  };
-
-  const markRangePainted = (row, start, length) => {
-    for (let offset = 0; offset < length; offset += 1) {
-      paintedCells.add(`${row}:${start + offset}`);
-    }
-  };
-
-  const emitNoteChange = (row, start, length, value) => {
-    dispatch('notechange', { row, start, length, value });
-  };
-
-  const handlePointer = (event) => {
-    if (!pointerActive && event.type === 'pointermove') return;
-    const cell = getCellFromEvent(event);
-    if (!cell) return;
-    if (!pointerActive) {
-      pointerActive = true;
-      const isEraseGesture = event.button === 2 || event.ctrlKey || event.metaKey;
-      paintValue = isEraseGesture ? false : !(notes?.[cell.row]?.[cell.col]);
-      activeNoteLength = getCurrentNoteLength();
-    }
-    const { row, start, length } = getPaintRange(cell.row, cell.col, paintValue);
-    if (isRangePainted(row, start, length)) return;
-    emitNoteChange(row, start, length, paintValue);
-    markRangePainted(row, start, length);
-  };
+    };
 
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    pointerActive = false;
+    pointerActive = true;
     paintedCells = new Set();
     handlePointer(event);
+  };
+
+  const handlePointer = (event) => {
+    if (!canvas || !scroller) return;
+    const rect = canvas.getBoundingClientRect();
+    // account for scroller horizontal scroll
+    const scrollLeft = scroller.scrollLeft || 0;
+    const x = (event.clientX - rect.left) + scrollLeft;
+    const y = event.clientY - rect.top;
+
+    const col = Math.floor(x / layout.cellSize);
+    const row = Math.floor(y / layout.cellSize);
+    if (row < 0 || row >= rows || col < 0) return;
+
+    const sourceColumns = Math.max(columns || 16, 1);
+    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    if (col >= displayColumns) return;
+
+    const stepIndex = Math.floor((col * sourceColumns) / displayColumns);
+
+    // Compute storage indices for the start and length so the event carries
+    // high-resolution (internal) indices rather than logical indices.
+    const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
+    const storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+
+    // logical visible width of this displayed column (in logical steps)
+    const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
+    const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+
+    // Determine current state at the underlying storage slice we're about to modify
+    const sliceStart = storageStart;
+    const sliceEnd = storageStart + storageLength;
+    const currentSlice = (notes?.[row] ?? []).slice(sliceStart, sliceEnd);
+    const current = currentSlice.length > 0 && currentSlice.every(Boolean);
+    if (!pointerActive) {
+      pointerActive = true;
+      paintValue = !current;
+    }
+
+    const key = `${row}:${storageStart}`;
+    if (paintedCells.has(key)) return;
+    paintedCells.add(key);
+
+    // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
+    // The `storage: true` flag helps consumers know start/length are high-resolution indices.
+    dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
   };
 
   const handlePointerMove = (event) => {
@@ -270,7 +270,6 @@
     }
     pointerActive = false;
     paintedCells = new Set();
-    activeNoteLength = getCurrentNoteLength();
   };
 
   const handlePointerUp = (event) => {
@@ -285,6 +284,7 @@
     if (!canvas) return;
     ctx = canvas.getContext('2d');
     updateLayout();
+    
     if (typeof ResizeObserver !== 'undefined') {
       resizeObserver = new ResizeObserver(() => updateLayout());
       if (scroller) resizeObserver.observe(scroller);
@@ -310,12 +310,18 @@
     trackColor,
     isPlaying,
     stepsPerBar,
+    noteLengthSteps,
     columns,
     rows
   };
 
-  $: if (canvas && scroller && ctx && columns && rows) {
-    updateLayout();
+  $: if (canvas && scroller && columns && rows) {
+    if (!ctx && canvas) {
+      ctx = canvas.getContext('2d');
+    }
+    if (ctx) {
+      updateLayout();
+    }
   }
 
   $: if (ctx) {
@@ -324,7 +330,13 @@
   }
 
   $: if (follow && isPlaying && scroller) {
-    const playheadX = (playheadStep + playheadProgress) * layout.cellSize;
+    const sourceColumns = Math.max(columns || 16, 1);
+    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    const playheadX = ((playheadStep + playheadProgress) * (displayColumns / sourceColumns)) * layout.cellSize;
     const center = playheadX - scroller.clientWidth / 2;
     const target = Math.max(0, center);
     if (Math.abs(scroller.scrollLeft - target) > 2) {
@@ -334,7 +346,12 @@
 </script>
 
 <div class="grid-container">
-  <div class="note-labels" style={`height: ${layout.height}px`}>
+  <div class="note-labels" style={`height: ${layout.height || 256}px`}>
+    {#if noteLabels.length === 0}
+      <div class="note-label" style={`color: rgba(255,255,255,0.5); height: 32px;`}>
+        Loading...
+      </div>
+    {/if}
     {#each noteLabels as label, index (index)}
       <div
         class="note-label"
@@ -345,6 +362,9 @@
     {/each}
   </div>
   <div class="grid-wrapper" bind:this={scroller}>
+    {#if !canvas}
+      <div style="color: white; padding: 20px;">Grid initializing...</div>
+    {/if}
     <canvas
       class="grid-canvas"
       bind:this={canvas}
@@ -353,7 +373,6 @@
       on:pointerup={handlePointerUp}
       on:pointerleave={handlePointerCancel}
       on:pointercancel={handlePointerCancel}
-      on:contextmenu|preventDefault
     ></canvas>
   </div>
 </div>
@@ -363,6 +382,7 @@
     display: flex;
     width: 100%;
     height: 100%;
+    min-height: 280px;
     gap: 8px;
   }
 
@@ -382,12 +402,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     text-align: center;
     flex: 0 0 auto;
-    min-height: 0;
+    min-height: 32px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
 
@@ -395,6 +415,7 @@
     position: relative;
     flex: 1;
     height: 100%;
+    min-height: 256px;
     overflow-x: auto;
     overflow-y: hidden;
     background: var(--color-panel);
@@ -408,6 +429,11 @@
     touch-action: none;
     cursor: crosshair;
     display: block;
+    min-width: 512px;
+    min-height: 256px;
+    /* Reset debug visuals */
+    background: transparent;
+    border: none;
   }
 
   .grid-wrapper::-webkit-scrollbar {

@@ -1,7 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { scales } from '../lib/scales.js';
-  import ArrowSelector from './ArrowSelector.svelte';
 
   export let tracks = [];
   export let selected = 0;
@@ -46,10 +45,6 @@
       key: 'effects',
       value: { ...(current.effects ?? {}), ...updates }
     });
-  };
-
-  const handleScaleChange = (event) => {
-    handleChange('scale', event.detail.value);
   };
 
   $: currentTrack = tracks?.[selected] ?? null;
@@ -144,12 +139,16 @@
       {/if}
 
       <div class="control">
-        <ArrowSelector
-          options={scaleOptions}
+        <label for="scale">Scale</label>
+        <select
+          id="scale"
+          on:change={(event) => handleChange('scale', event.target.value)}
           value={currentTrack.scale}
-          label="Scale"
-          on:change={handleScaleChange}
-        />
+        >
+          {#each scaleOptions as option}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
       </div>
 
       <div class="control">

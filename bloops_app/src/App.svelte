@@ -12,7 +12,7 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import { Scheduler } from './lib/scheduler.js';
-  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus } from './store/projectStore.js';
+  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
@@ -45,6 +45,8 @@
   let shareMessage = '';
   let shareLink = '';
   let shareFeedbackTimer;
+  // When initialization fails, set mountError to show a visible overlay instead of a white screen.
+  let mountError = null;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -152,7 +154,9 @@
 
     audibleTracks.forEach((track) => {
       for (let row = 0; row < rows; row += 1) {
-        if (track.notes?.[row]?.[stepIndex]) {
+          // Map logical stepIndex -> storage index using BASE_RESOLUTION
+          const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
+          if (track.notes?.[row]?.[storageIndex]) {
           const midi = getMidiForCell(track, row);
           const frequency = midiToFrequency(midi);
           playTone(track, frequency, time, stepDuration * 0.95);
@@ -284,7 +288,9 @@
 
   const handleNoteChange = (event) => {
     const { row, start, length, value } = event.detail;
-    project.setNoteRange(projectState?.selectedTrack ?? 0, row, start, length, value);
+    // Grid now dispatches storage (high-resolution) indices for start/length.
+    // Use a storage-aware setter in the project store.
+    project.setNoteRangeStorage(projectState?.selectedTrack ?? 0, row, start, length, value);
   };
 
   const handleTrackSelect = (event) => {
@@ -376,6 +382,17 @@
 
   const handleNoteLengthSelect = (value) => {
     selectedNoteLength = `${value}`;
+    const denom = Number(value) || 1;
+    // If the selected denominator requires higher resolution than current stepsPerBar,
+    // increase the project's stepsPerBar so the grid can represent the finer subdivisions.
+    try {
+      const currentSteps = projectState?.stepsPerBar ?? 0;
+      if (denom > currentSteps) {
+        project.setStepsPerBar(denom);
+      }
+    } catch (e) {
+      // ignore if project not ready
+    }
   };
 
   const handleExport = () => {
@@ -619,13 +636,20 @@
 
   onMount(() => {
     let disposed = false;
+    let mountErrorLocal = null;
     const boot = async () => {
       await library.initialize();
       if (!disposed) {
         await attemptLoadSharedSnapshot();
       }
     };
-    boot();
+    // Run boot and surface any errors to the UI so we don't leave the user on a white screen.
+    boot().catch((err) => {
+      console.error('Initialization failed', err);
+      mountErrorLocal = err?.message || String(err);
+      // expose to reactive scope
+      mountError = mountErrorLocal;
+    });
     return () => {
       disposed = true;
       stopPlayback();
@@ -642,8 +666,8 @@
   });
 
   $: activeTrack = projectState?.tracks?.[projectState?.selectedTrack ?? 0];
-  $: columns = totalStepsValue ?? 0;
-  $: rows = projectState?.rows ?? 0;
+  $: columns = Math.max(totalStepsValue || 64, 1);
+  $: rows = Math.max(projectState?.rows || 8, 1);
   $: gridNotes = activeTrack?.notes ?? [];
   $: trackColor = activeTrack?.color ?? colors.accent;
   $: normalizedTrackColor = normalizeHex(trackColor);
@@ -670,6 +694,12 @@
 </script>
 
 <main class="app">
+  {#if mountError}
+    <div class="mount-error" style="position:fixed;inset:16px;background:rgba(0,0,0,0.9);color:#fff;padding:20px;border-radius:8px;z-index:9999;overflow:auto;">
+      <h2 style="margin:0 0 8px 0;font-size:18px;">Initialization error</h2>
+      <div style="font-family:monospace;white-space:pre-wrap;">{mountError}</div>
+    </div>
+  {/if}
   <!-- Screen reader announcements -->
   <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {#if isPlaying}
@@ -884,7 +914,7 @@
         </div>
       </div>
       <div class="grid-backdrop">
-        <Grid
+          <Grid
           {rows}
           {columns}
           notes={gridNotes}
@@ -895,7 +925,7 @@
           follow={isFollowing}
           isPlaying={isPlaying}
           stepsPerBar={stepsPerBar}
-          noteLengthSteps={noteLengthSteps}
+          noteLengthDenominator={selectedNoteLengthValue}
           on:notechange={handleNoteChange}
         />
       </div>
@@ -1132,6 +1162,7 @@
     background: rgba(26, 29, 40, 0.65);
     min-width: 0;
     overflow-x: auto;
+    min-height: 100vh;
   }
 
   .workspace-header {
@@ -1293,6 +1324,9 @@
     flex: 1;
     padding: 0 24px 18px;
     box-sizing: border-box;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
   }
 
   .track-controls-wrapper {
@@ -1449,9 +1483,11 @@
     padding: 16px;
     box-sizing: border-box;
     background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
-    border: 1px solid rgba(var(--color-note-active-rgb), 0.08);
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
     box-shadow: 0 20px 60px rgba(12, 14, 20, 0.4);
     margin-bottom: 20px;
+    min-height: 300px;
+    flex: 1;
   }
 
   .grid-backdrop :global(.grid-wrapper) {
