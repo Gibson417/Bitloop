@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { scales } from '../lib/scales.js';
+  import ArrowSelector from './ArrowSelector.svelte';
 
   export let track = null;
   export let trackIndex = 0;
@@ -26,6 +27,14 @@
 
   const handleChange = (key, value) => {
     dispatch('update', { index: trackIndex, key, value });
+  };
+
+  const handleScaleChange = (event) => {
+    handleChange('scale', event.detail.value);
+  };
+
+  const handleRootNoteChange = (event) => {
+    handleChange('rootNote', event.detail.value);
   };
 </script>
 
@@ -83,29 +92,21 @@
     {/if}
 
     <div class="control plain">
-      <label for={`scale-${trackIndex}`}>Scale</label>
-      <select
-        id={`scale-${trackIndex}`}
-        on:change={(event) => handleChange('scale', event.target.value)}
+      <ArrowSelector
+        options={scaleOptions}
         value={track.scale}
-      >
-        {#each scaleOptions as option}
-          <option value={option}>{option}</option>
-        {/each}
-      </select>
+        label="Scale"
+        on:change={handleScaleChange}
+      />
     </div>
 
     <div class="control plain">
-      <label for={`root-note-${trackIndex}`}>Root note</label>
-      <select
-        id={`root-note-${trackIndex}`}
-        on:change={(event) => handleChange('rootNote', Number(event.target.value))}
+      <ArrowSelector
+        options={rootNoteOptions}
         value={track.rootNote ?? 0}
-      >
-        {#each rootNoteOptions as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
+        label="Root note"
+        on:change={handleRootNoteChange}
+      />
     </div>
 
     <div class="control plain">
