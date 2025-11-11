@@ -195,21 +195,39 @@
   input[type='number'],
   input[type='range'],
   input[type='text'] {
-    background: rgba(0, 0, 0, 0.35);
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.5), rgba(10, 12, 18, 0.45));
     color: #fff;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 8px 12px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.25);
+    padding: 10px 12px;
     font-size: 0.95rem;
+    font-weight: 600;
     width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  select:hover,
+  input[type='number']:hover,
+  input[type='text']:hover {
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.65), rgba(10, 12, 18, 0.6));
+    border-color: rgba(var(--color-accent-rgb), 0.45);
   }
 
   select:focus,
   input[type='number']:focus,
   input[type='range']:focus,
   input[type='text']:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.7);
     outline-offset: 2px;
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.7), rgba(10, 12, 18, 0.65));
+  }
+
+  select option {
+    background: rgba(10, 12, 18, 0.98);
+    color: #fff;
+    padding: 8px;
   }
 
   .slider-control {

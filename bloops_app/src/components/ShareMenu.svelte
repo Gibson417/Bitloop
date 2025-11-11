@@ -207,21 +207,23 @@
     right: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(12, 16, 24, 0.9);
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+    gap: 6px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    background: linear-gradient(145deg, rgba(22, 26, 36, 0.98), rgba(10, 12, 18, 0.98));
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.08) inset;
     min-width: 220px;
     z-index: 20;
   }
 
   .share-dropdown button {
     padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.15);
+    background: rgba(255, 255, 255, 0.06);
     color: #fff;
     text-align: left;
     text-transform: uppercase;
@@ -229,13 +231,14 @@
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.15s ease, border 0.15s ease, background 0.15s ease;
+    transition: all 0.2s ease;
   }
 
   .share-dropdown button:hover {
-    transform: translateX(2px);
-    border-color: rgba(var(--color-accent-rgb), 0.45);
-    background: rgba(var(--color-accent-rgb), 0.14);
+    transform: translateX(3px);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.18);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .share-dropdown button:focus-visible {

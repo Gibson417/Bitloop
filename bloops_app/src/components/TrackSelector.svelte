@@ -159,22 +159,24 @@
   .header-actions {
     display: flex;
     gap: 6px;
+    align-items: center;
   }
 
   .action-button {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.15);
     color: var(--color-accent);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    padding: 0;
   }
 
   .action-button:hover:not(:disabled) {

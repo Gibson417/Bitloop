@@ -90,23 +90,34 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    background: rgba(12, 16, 24, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.32);
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.5), rgba(10, 12, 18, 0.45));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
     border-radius: 12px;
     padding: 12px 16px;
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(255, 255, 255, 0.95);
     font-size: 0.95rem;
+    font-weight: 600;
     appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .select-shell select:hover {
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.65), rgba(10, 12, 18, 0.6));
+    border-color: rgba(var(--color-accent-rgb), 0.5);
   }
 
   .select-shell select:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.7);
     outline-offset: 2px;
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.7), rgba(10, 12, 18, 0.65));
   }
 
   .select-shell select option {
-    background: rgba(20, 24, 34, 0.95);
-    color: rgba(255, 255, 255, 0.92);
+    background: rgba(10, 12, 18, 0.98);
+    color: rgba(255, 255, 255, 0.95);
+    padding: 8px;
   }
 
   .select-shell select option:disabled {
