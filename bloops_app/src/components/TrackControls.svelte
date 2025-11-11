@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { scales } from '../lib/scales.js';
+  import ArrowSelector from './ArrowSelector.svelte';
 
   export let track = null;
   export let trackIndex = 0;
@@ -52,16 +53,12 @@
     </div>
 
     <div class="control plain">
-      <label for={`waveform-${trackIndex}`}>Waveform</label>
-      <select
-        id={`waveform-${trackIndex}`}
-        on:change={(event) => handleChange('waveform', event.target.value)}
+      <ArrowSelector
+        label="Waveform"
+        options={waveformOptions}
         value={track.waveform}
-      >
-        {#each waveformOptions as option}
-          <option value={option}>{option}</option>
-        {/each}
-      </select>
+        on:change={(event) => handleChange('waveform', event.detail.value)}
+      />
     </div>
 
     {#if track.waveform === 'custom'}
@@ -83,29 +80,21 @@
     {/if}
 
     <div class="control plain">
-      <label for={`scale-${trackIndex}`}>Scale</label>
-      <select
-        id={`scale-${trackIndex}`}
-        on:change={(event) => handleChange('scale', event.target.value)}
+      <ArrowSelector
+        label="Scale"
+        options={scaleOptions}
         value={track.scale}
-      >
-        {#each scaleOptions as option}
-          <option value={option}>{option}</option>
-        {/each}
-      </select>
+        on:change={(event) => handleChange('scale', event.detail.value)}
+      />
     </div>
 
     <div class="control plain">
-      <label for={`root-note-${trackIndex}`}>Root note</label>
-      <select
-        id={`root-note-${trackIndex}`}
-        on:change={(event) => handleChange('rootNote', Number(event.target.value))}
+      <ArrowSelector
+        label="Root note"
+        options={rootNoteOptions}
         value={track.rootNote ?? 0}
-      >
-        {#each rootNoteOptions as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
+        on:change={(event) => handleChange('rootNote', event.detail.value)}
+      />
     </div>
 
     <div class="control plain">
