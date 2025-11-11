@@ -18,7 +18,7 @@ describe('Grid component', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthSteps: 1
+        noteLengthDenominator: 1
       }
     });
 
@@ -36,10 +36,13 @@ describe('Grid component', () => {
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
-    expect(event.detail).toHaveProperty('row');
-    expect(event.detail).toHaveProperty('start');
-    expect(event.detail).toHaveProperty('length');
-    expect(event.detail).toHaveProperty('value');
-    expect(event.detail.length).toBeGreaterThan(0);
+  expect(event.detail).toHaveProperty('row');
+  expect(event.detail).toHaveProperty('start');
+  expect(event.detail).toHaveProperty('length');
+  expect(event.detail).toHaveProperty('value');
+  // Grid now includes a storage flag when start/length are high-resolution indices
+  expect(event.detail).toHaveProperty('storage');
+  expect(event.detail.storage).toBe(true);
+  expect(event.detail.length).toBeGreaterThan(0);
   });
 });

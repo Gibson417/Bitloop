@@ -21,6 +21,9 @@
 
 <div class="transport">
   <div class="transport-buttons">
+    <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
+      <span class="icon" aria-hidden="true">◄◄</span>
+    </button>
     <button 
       class="play-button" 
       class:active={playing} 
@@ -30,9 +33,6 @@
       aria-pressed={playing}
     >
       <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
-    </button>
-    <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
-      <span class="icon" aria-hidden="true">◄◄</span>
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
       <span class="icon" aria-hidden="true">►►</span>
@@ -45,12 +45,14 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    align-items: center;
   }
 
   .transport-buttons {
     display: flex;
     gap: 12px;
     align-items: center;
+    justify-content: center;
   }
 
   .play-button {

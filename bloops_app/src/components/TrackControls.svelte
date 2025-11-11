@@ -1,7 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { scales } from '../lib/scales.js';
-  import ArrowSelector from './ArrowSelector.svelte';
 
   export let track = null;
   export let trackIndex = 0;
@@ -27,14 +26,6 @@
 
   const handleChange = (key, value) => {
     dispatch('update', { index: trackIndex, key, value });
-  };
-
-  const handleScaleChange = (event) => {
-    handleChange('scale', event.detail.value);
-  };
-
-  const handleRootNoteChange = (event) => {
-    handleChange('rootNote', event.detail.value);
   };
 </script>
 
@@ -92,21 +83,29 @@
     {/if}
 
     <div class="control plain">
-      <ArrowSelector
-        options={scaleOptions}
+      <label for={`scale-${trackIndex}`}>Scale</label>
+      <select
+        id={`scale-${trackIndex}`}
+        on:change={(event) => handleChange('scale', event.target.value)}
         value={track.scale}
-        label="Scale"
-        on:change={handleScaleChange}
-      />
+      >
+        {#each scaleOptions as option}
+          <option value={option}>{option}</option>
+        {/each}
+      </select>
     </div>
 
     <div class="control plain">
-      <ArrowSelector
-        options={rootNoteOptions}
+      <label for={`root-note-${trackIndex}`}>Root note</label>
+      <select
+        id={`root-note-${trackIndex}`}
+        on:change={(event) => handleChange('rootNote', Number(event.target.value))}
         value={track.rootNote ?? 0}
-        label="Root note"
-        on:change={handleRootNoteChange}
-      />
+      >
+        {#each rootNoteOptions as option}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
     </div>
 
     <div class="control plain">
@@ -196,45 +195,21 @@
   input[type='number'],
   input[type='range'],
   input[type='text'] {
-    background: rgba(18, 22, 32, 0.9);
+    background: rgba(0, 0, 0, 0.35);
     color: #fff;
-    border-radius: 12px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.22);
-    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 8px 12px;
     font-size: 0.95rem;
     width: 100%;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-
-  select {
-    appearance: none;
-    background-image: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.25), rgba(var(--color-accent-rgb), 0.05));
   }
 
   select:focus,
   input[type='number']:focus,
   input[type='range']:focus,
   input[type='text']:focus {
-    outline: none;
-    border-color: rgba(var(--color-accent-rgb), 0.55);
-    box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2), 0 6px 18px rgba(0, 0, 0, 0.32);
-  }
-
-  select:focus-visible,
-  input[type='number']:focus-visible,
-  input[type='range']:focus-visible,
-  input[type='text']:focus-visible {
-    outline: 2px solid rgba(155, 255, 224, 0.55);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
-  }
-
-  select:hover,
-  input[type='number']:hover,
-  input[type='text']:hover {
-    background: rgba(24, 28, 40, 0.95);
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.1), 0 6px 18px rgba(0, 0, 0, 0.28);
   }
 
   .slider-control {

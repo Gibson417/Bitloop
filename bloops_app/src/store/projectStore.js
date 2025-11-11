@@ -2,6 +2,8 @@ import { writable, derived, get } from 'svelte/store';
 import { scales } from '../lib/scales.js';
 
 export const MAX_LOOP_SECONDS = 300;
+// Base resolution per bar for internal storage. All notes are stored at this resolution.
+export const BASE_RESOLUTION = 64;
 
 const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
@@ -93,21 +95,21 @@ const sanitizeAdsr = (adsr = {}) => {
   return { attack, decay, sustain, release };
 };
 
-const resizeTrack = (track, rows, steps) => {
+const resizeTrack = (track, rows, storageSteps) => {
   const notes = Array.from({ length: rows }, (_, rowIndex) => {
     const row = track.notes?.[rowIndex] ?? [];
-    const resized = row.slice(0, steps);
-    if (resized.length < steps) {
-      resized.push(...Array.from({ length: steps - resized.length }, () => false));
+    const resized = row.slice(0, storageSteps);
+    if (resized.length < storageSteps) {
+      resized.push(...Array.from({ length: storageSteps - resized.length }, () => false));
     }
     return resized;
   });
   return { ...track, notes };
 };
 
-const normalizeTracks = (tracks, rows, steps) => {
+const normalizeTracks = (tracks, rows, storageSteps) => {
   const safeTracks = Array.isArray(tracks) && tracks.length > 0 ? tracks.slice(0, MAX_TRACKS) : [];
-  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, steps), createTrack(1, rows, steps)];
+  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, storageSteps), createTrack(1, rows, storageSteps)];
   return fallback.map((track, index) => {
     const color = track.color ?? TRACK_COLORS[index % TRACK_COLORS.length];
     const waveform = track.waveform ?? 'square';
@@ -135,15 +137,15 @@ const normalizeTracks = (tracks, rows, steps) => {
         rootNote,
         mute: !!track.mute,
         solo: !!track.solo,
-        notes: track.notes ?? createEmptyPattern(rows, steps)
+        notes: track.notes ?? createEmptyPattern(rows, storageSteps)
       },
       rows,
-      steps
+      storageSteps
     );
   });
 };
 
-const createTrack = (index, rows, steps) =>
+const createTrack = (index, rows, storageSteps) =>
   resizeTrack(
     {
       id: index + 1,
@@ -159,10 +161,10 @@ const createTrack = (index, rows, steps) =>
       rootNote: 0,
       mute: false,
       solo: false,
-      notes: createEmptyPattern(rows, steps)
+      notes: createEmptyPattern(rows, storageSteps)
     },
     rows,
-    steps
+    storageSteps
   );
 
 const calculateSecondsPerBar = (bpm) => 240 / bpm;
@@ -221,8 +223,9 @@ const normalizeState = (state) => {
   const stepsPerBar = ensurePositiveInteger(state.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
   const desiredBars = ensurePositiveInteger(state.bars, DEFAULT_BARS, 1, 512);
   const bars = ensureBarsWithinLimit(bpm, desiredBars);
-  const steps = bars * stepsPerBar;
-  const tracks = normalizeTracks(state.tracks, rows, steps);
+  // internal storage uses BASE_RESOLUTION per bar
+  const storageSteps = bars * BASE_RESOLUTION;
+  const tracks = normalizeTracks(state.tracks, rows, storageSteps);
   const selectedTrack = clamp(state.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0));
   const playheadStepValue = Number.isFinite(state.playheadStep) ? state.playheadStep : 0;
   const playheadProgressValue = Number.isFinite(state.playheadProgress) ? state.playheadProgress : 0;
@@ -237,7 +240,8 @@ const normalizeState = (state) => {
     follow: state.follow ?? DEFAULT_FOLLOW,
     playing: state.playing ?? false,
     selectedTrack,
-    playheadStep: playheadStepValue % (steps || 1),
+  // normalize playhead to within the logical total steps (bars * stepsPerBar)
+  playheadStep: playheadStepValue % Math.max(1, bars * stepsPerBar),
     playheadProgress: clamp(playheadProgressValue, 0, 1),
     lastStepTime: lastStepTimeValue,
     nextStepTime: nextStepTimeValue,
@@ -259,8 +263,8 @@ const initialState = normalizeState({
   lastStepTime: 0,
   nextStepTime: 0,
   tracks: [
-    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR),
-    createTrack(1, DEFAULT_ROWS, DEFAULT_BARS * DEFAULT_STEPS_PER_BAR)
+    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION),
+    createTrack(1, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION)
   ]
 });
 
@@ -298,22 +302,96 @@ const createProjectStore = () => {
     const prevSnapshot = toSnapshot(get(store));
     let changed = false;
     update((state) => {
-      const totalSteps = state.bars * state.stepsPerBar;
+      const totalLogicalSteps = state.bars * state.stepsPerBar;
+      const storageSteps = state.bars * BASE_RESOLUTION;
       if (
         trackIndex < 0 ||
         trackIndex >= state.tracks.length ||
         row < 0 ||
         row >= state.rows ||
-        totalSteps <= 0
+        totalLogicalSteps <= 0
+      ) {
+        return state;
+      }
+      const safeStart = clamp(start ?? 0, 0, Math.max(totalLogicalSteps - 1, 0));
+      const rawLength = Number.isFinite(length) ? Math.round(length) : 1;
+      const clampedLength = Math.max(1, Math.min(Math.abs(rawLength) || 1, totalLogicalSteps - safeStart));
+      const track = state.tracks[trackIndex];
+      const rowNotes = track.notes?.[row] ?? [];
+
+      // Map logical indices -> storage indices
+      const storagePerLogical = BASE_RESOLUTION / Math.max(1, state.stepsPerBar);
+      const storageStart = Math.floor(safeStart * storagePerLogical);
+      const storageLength = Math.max(1, Math.round(clampedLength * storagePerLogical));
+      const sliceEnd = storageStart + storageLength;
+      const currentSlice = rowNotes.slice(storageStart, sliceEnd);
+      let nextValue = value;
+      if (nextValue === undefined) {
+        const allActive = currentSlice.length > 0 && currentSlice.every(Boolean);
+        nextValue = !allActive;
+      }
+
+      const desiredValue = !!nextValue;
+      const noChange =
+        currentSlice.length === storageLength &&
+        currentSlice.every((cell) => cell === desiredValue);
+
+      if (noChange) {
+        return state;
+      }
+
+      const tracks = state.tracks.map((t, idx) => {
+        if (idx !== trackIndex) return t;
+          const notes = t.notes.map((rowNotes, rowIdx) => {
+          if (rowIdx !== row) return rowNotes.slice();
+          const rowCopy = rowNotes.slice();
+          for (let offset = 0; offset < storageLength; offset += 1) {
+            const targetIndex = storageStart + offset;
+            if (targetIndex < rowCopy.length) {
+              rowCopy[targetIndex] = desiredValue;
+            }
+          }
+          return rowCopy;
+        });
+        return { ...t, notes };
+      });
+
+      changed = true;
+      return { ...state, tracks };
+    });
+
+    if (changed) {
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
+    }
+  };
+
+  // Apply a note range where the provided start/length are already in
+  // storage (high-resolution) indices (0..bars*BASE_RESOLUTION-1).
+  const applyNoteRangeStorage = (trackIndex, row, storageStart, storageLength, value) => {
+    const prevSnapshot = toSnapshot(get(store));
+    let changed = false;
+    update((state) => {
+      const storageSteps = state.bars * BASE_RESOLUTION;
+      if (
+        trackIndex < 0 ||
+        trackIndex >= state.tracks.length ||
+        row < 0 ||
+        row >= state.rows ||
+        storageSteps <= 0
       ) {
         return state;
       }
 
-      const safeStart = clamp(start ?? 0, 0, Math.max(totalSteps - 1, 0));
-      const rawLength = Number.isFinite(length) ? Math.round(length) : 1;
-      const clampedLength = Math.max(1, Math.min(Math.abs(rawLength) || 1, totalSteps - safeStart));
+      const safeStart = clamp(Math.floor(storageStart ?? 0), 0, Math.max(storageSteps - 1, 0));
+      const rawLength = Number.isFinite(storageLength) ? Math.round(storageLength) : 1;
+      const clampedLength = Math.max(1, Math.min(Math.abs(rawLength) || 1, storageSteps - safeStart));
+
       const track = state.tracks[trackIndex];
       const rowNotes = track.notes?.[row] ?? [];
+
       const sliceEnd = safeStart + clampedLength;
       const currentSlice = rowNotes.slice(safeStart, sliceEnd);
       let nextValue = value;
@@ -367,6 +445,9 @@ const createProjectStore = () => {
     },
     setNoteRange(trackIndex, row, start, length, value) {
       applyNoteRange(trackIndex, row, start, length, value);
+    },
+    setNoteRangeStorage(trackIndex, row, storageStart, storageLength, value) {
+      applyNoteRangeStorage(trackIndex, row, storageStart, storageLength, value);
     },
     setPlaying(playing) {
       update((state) => ({ ...state, playing }));

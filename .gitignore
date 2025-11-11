@@ -9,3 +9,6 @@ bloops_app/.svelte-kit/
 *.log
 screenshots/
 review-screenshots/
+# Test results
+vitest-*.txt
+vitest-results.json
