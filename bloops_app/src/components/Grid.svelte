@@ -27,6 +27,11 @@
   let paintValue = true;
   let paintedCells = new Set();
   let resizeObserver;
+  
+  // Keyboard navigation state
+  let focusedRow = 0;
+  let focusedCol = 0;
+  let keyboardMode = false;
 
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
@@ -165,6 +170,18 @@
       }
       ctx.restore();
 
+      // Draw keyboard focus indicator
+      if (keyboardMode) {
+        ctx.save();
+        ctx.strokeStyle = hexToRgba(trackColor, 0.9);
+        ctx.lineWidth = 3;
+        ctx.setLineDash([4, 4]);
+        const focusX = focusedCol * cellSize;
+        const focusY = focusedRow * cellSize;
+        ctx.strokeRect(focusX + 2, focusY + 2, cellSize - 4, cellSize - 4);
+        ctx.restore();
+      }
+
   // Playhead (map logical playhead -> displayed column then to pixels)
   const playheadX = ((playheadStep + playheadProgress) * (displayColumns / Math.max(1, columns))) * layout.cellSize;
       ctx.shadowColor = 'transparent';
@@ -280,6 +297,93 @@
     releasePointer(event);
   };
 
+  // Keyboard navigation handlers
+  const handleKeyDown = (event) => {
+    if (!canvas || !scroller) return;
+    
+    const sourceColumns = Math.max(columns || 16, 1);
+    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+
+    // Arrow keys for navigation
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      keyboardMode = true;
+      focusedRow = Math.max(0, focusedRow - 1);
+      draw();
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      keyboardMode = true;
+      focusedRow = Math.min(rows - 1, focusedRow + 1);
+      draw();
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      keyboardMode = true;
+      focusedCol = Math.max(0, focusedCol - 1);
+      // Scroll to keep focused cell visible
+      const focusX = focusedCol * layout.cellSize;
+      if (focusX < scroller.scrollLeft) {
+        scroller.scrollLeft = focusX - layout.cellSize;
+      }
+      draw();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      keyboardMode = true;
+      focusedCol = Math.min(displayColumns - 1, focusedCol + 1);
+      // Scroll to keep focused cell visible
+      const focusX = (focusedCol + 1) * layout.cellSize;
+      if (focusX > scroller.scrollLeft + scroller.clientWidth) {
+        scroller.scrollLeft = focusX - scroller.clientWidth + layout.cellSize;
+      }
+      draw();
+    } else if (event.key === ' ' || event.key === 'Enter') {
+      // Space or Enter to toggle note at focused cell
+      event.preventDefault();
+      keyboardMode = true;
+      
+      const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
+      const storageStart = Math.floor((focusedCol * storageColumns) / displayColumns);
+      const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
+      const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
+      const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+      
+      // Get current state of the cell
+      const sliceStart = storageStart;
+      const sliceEnd = storageStart + storageLength;
+      const currentSlice = (notes?.[focusedRow] ?? []).slice(sliceStart, sliceEnd);
+      const current = currentSlice.length > 0 && currentSlice.every(Boolean);
+      
+      // Toggle the note
+      dispatch('notechange', { 
+        row: focusedRow, 
+        start: storageStart, 
+        length: storageLength, 
+        value: !current, 
+        storage: true 
+      });
+    }
+  };
+
+  const handleCanvasFocus = () => {
+    // When canvas receives focus via tab, enable keyboard mode
+    keyboardMode = true;
+    draw();
+  };
+
+  const handleCanvasBlur = () => {
+    // When canvas loses focus, disable keyboard mode
+    keyboardMode = false;
+    draw();
+  };
+
+  const handleCanvasClick = () => {
+    // When clicked, disable keyboard mode (pointer takes over)
+    keyboardMode = false;
+  };
+
   onMount(() => {
     if (!canvas) return;
     ctx = canvas.getContext('2d');
@@ -368,11 +472,18 @@
     <canvas
       class="grid-canvas"
       bind:this={canvas}
+      tabindex="0"
+      role="grid"
+      aria-label="Note grid - use arrow keys to navigate, space or enter to toggle notes"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}
       on:pointerleave={handlePointerCancel}
       on:pointercancel={handlePointerCancel}
+      on:keydown={handleKeyDown}
+      on:focus={handleCanvasFocus}
+      on:blur={handleCanvasBlur}
+      on:click={handleCanvasClick}
     ></canvas>
   </div>
 </div>
@@ -382,7 +493,7 @@
     display: flex;
     width: 100%;
     height: 100%;
-    min-height: 280px;
+    min-height: 256px;
     gap: 8px;
   }
 
@@ -434,6 +545,13 @@
     /* Reset debug visuals */
     background: transparent;
     border: none;
+    outline: none;
+  }
+
+  .grid-canvas:focus-visible {
+    outline: 3px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: -3px;
+    border-radius: 8px;
   }
 
   .grid-wrapper::-webkit-scrollbar {
