@@ -13,6 +13,30 @@ import {
 import { project } from './projectStore.js';
 
 const AUTOSAVE_DEBOUNCE = 600;
+const DEFAULT_NAME = project.defaultSnapshot().name ?? 'Untitled loop';
+
+const sanitizeName = (name) => {
+  if (typeof name !== 'string') return DEFAULT_NAME;
+  const trimmed = name.trim();
+  return trimmed.length ? trimmed : DEFAULT_NAME;
+};
+
+const generateUniqueName = (desiredName, existingProjects) => {
+  const safeName = sanitizeName(desiredName);
+  const taken = new Set((existingProjects ?? []).map((project) => project.name));
+  if (!taken.has(safeName)) {
+    return safeName;
+  }
+
+  let suffix = 2;
+  let candidate = `${safeName} (${suffix})`;
+  while (taken.has(candidate)) {
+    suffix += 1;
+    candidate = `${safeName} (${suffix})`;
+  }
+
+  return candidate;
+};
 
 const createLibraryStore = () => {
   const store = writable({
@@ -28,6 +52,7 @@ const createLibraryStore = () => {
   let lastSnapshotHash = '';
   let initialized = false;
   let unsubscribeProject = null;
+  let initializationPromise = null;
 
   const computeHash = (snapshot) => JSON.stringify(snapshot);
 
@@ -43,7 +68,7 @@ const createLibraryStore = () => {
       const loaded = project.load(record.data);
       if (!loaded) return false;
     }
-    project.setName(record?.name ?? 'Untitled loop');
+    project.setName(record?.name ?? DEFAULT_NAME);
     await setCurrentProjectId(projectId);
     update((state) => ({ ...state, currentId: projectId }));
     return true;
@@ -78,23 +103,32 @@ const createLibraryStore = () => {
   return {
     subscribe,
     async initialize() {
-      if (initialized) return;
-      initialized = true;
-      set((state) => ({ ...state, loading: true }));
-      subscribeToProject();
-      let currentId = await getCurrentProjectId();
-      await refreshProjects(currentId);
-      const currentState = get(store);
-      if (!currentId && currentState.projects.length > 0) {
-        currentId = currentState.projects[0].id;
+      if (initializationPromise) {
+        await initializationPromise;
+        return;
       }
-      if (!currentId) {
-        const created = await createProject({ name: project.getName(), data: project.toSnapshot() });
-        currentId = created.id;
-      }
-      await loadIntoStore(currentId);
-      await refreshProjects(currentId);
-      set((state) => ({ ...state, loading: false }));
+      initializationPromise = (async () => {
+        if (initialized) return;
+        initialized = true;
+        set((state) => ({ ...state, loading: true }));
+        subscribeToProject();
+        let currentId = await getCurrentProjectId();
+        await refreshProjects(currentId);
+        const currentState = get(store);
+        if (!currentId && currentState.projects.length > 0) {
+          currentId = currentState.projects[0].id;
+        }
+        if (!currentId) {
+          const snapshot = project.toSnapshot();
+          const created = await createProject({ name: snapshot.name, data: snapshot });
+          currentId = created.id;
+        }
+        await loadIntoStore(currentId);
+        await refreshProjects(currentId);
+        set((state) => ({ ...state, loading: false }));
+      })();
+      await initializationPromise;
+      initializationPromise = null;
     },
     async selectProject(id) {
       if (!id) return;
@@ -102,8 +136,14 @@ const createLibraryStore = () => {
       await refreshProjects(id);
     },
     async createNew() {
+      if (initializationPromise) {
+        await initializationPromise;
+      }
+      const state = get(store);
       const snapshot = project.defaultSnapshot();
-      const created = await createProject({ name: snapshot.name, data: snapshot });
+      const name = generateUniqueName(snapshot.name, state.projects);
+      const preparedSnapshot = { ...snapshot, name };
+      const created = await createProject({ name, data: preparedSnapshot });
       await loadIntoStore(created.id);
       await refreshProjects(created.id);
     },
@@ -128,10 +168,27 @@ const createLibraryStore = () => {
       await loadIntoStore(next?.id);
     },
     async renameCurrent(name) {
+      const desiredName = sanitizeName(name);
+      project.setName(desiredName);
+      const finalName = project.getName();
+
+      if (initializationPromise) {
+        await initializationPromise;
+        if (project.getName() !== finalName) {
+          project.setName(finalName);
+        }
+      }
+
       const state = get(store);
-      if (!state.currentId) return;
-      await renameProjectRecord(state.currentId, name);
-      project.setName(name);
+      if (!state.currentId) {
+        const snapshot = project.toSnapshot();
+        const created = await createProject({ name: finalName, data: snapshot });
+        await loadIntoStore(created.id);
+        await refreshProjects(created.id);
+        return;
+      }
+
+      await renameProjectRecord(state.currentId, finalName);
       await refreshProjects(state.currentId);
     },
     dispose() {
@@ -143,6 +200,7 @@ const createLibraryStore = () => {
       }
       initialized = false;
       lastSnapshotHash = '';
+      initializationPromise = null;
     }
   };
 };
