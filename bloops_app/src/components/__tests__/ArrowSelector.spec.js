@@ -216,7 +216,7 @@ describe('ArrowSelector component', () => {
       expect(getByLabelText('Select next Test')).toBeInTheDocument();
     });
 
-    it('updates ARIA labels when label prop changes', () => {
+    it('updates ARIA labels when label prop changes', async () => {
       const { component, getByLabelText } = render(ArrowSelector, {
         props: {
           options: ['A', 'B', 'C'],
@@ -225,7 +225,7 @@ describe('ArrowSelector component', () => {
         }
       });
 
-      component.$set({ label: 'Second' });
+      await component.$set({ label: 'Second' });
 
       expect(getByLabelText('Select previous Second')).toBeInTheDocument();
       expect(getByLabelText('Select next Second')).toBeInTheDocument();

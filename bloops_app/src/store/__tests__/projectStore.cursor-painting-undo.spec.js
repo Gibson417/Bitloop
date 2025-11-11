@@ -73,37 +73,49 @@ describe('cursor painting with undo', () => {
   });
 
   it('should handle undo after erasing with cursor', () => {
-    // First paint some notes
+    // First paint some notes (logical indices 0-7)
+    // With stepsPerBar=16 and BASE_RESOLUTION=64, storagePerLogical=4
+    // So logical 0-7 maps to storage indices 0-31
     project.setNoteRange(0, 0, 0, 8, true);
     
     const afterPaint = get(project);
-    for (let i = 0; i < 8; i++) {
+    // Check storage indices 0-31 (logical 0-7)
+    for (let i = 0; i < 32; i++) {
       expect(afterPaint.tracks[0].notes[0][i]).toBe(true);
     }
     
     // Now erase some notes (simulating cursor drag to erase)
-    project.setNoteRange(0, 0, 2, 3, false);  // Erase cells 2-4
+    // Erase logical cells 2-4, which maps to storage indices 8-19
+    project.setNoteRange(0, 0, 2, 3, false);
     
     const afterErase = get(project);
-    expect(afterErase.tracks[0].notes[0][0]).toBe(true);
-    expect(afterErase.tracks[0].notes[0][1]).toBe(true);
-    expect(afterErase.tracks[0].notes[0][2]).toBe(false);
-    expect(afterErase.tracks[0].notes[0][3]).toBe(false);
-    expect(afterErase.tracks[0].notes[0][4]).toBe(false);
-    expect(afterErase.tracks[0].notes[0][5]).toBe(true);
+    // Storage 0-7 (logical 0-1) should still be true
+    for (let i = 0; i < 8; i++) {
+      expect(afterErase.tracks[0].notes[0][i]).toBe(true);
+    }
+    // Storage 8-19 (logical 2-4) should be false (erased)
+    for (let i = 8; i < 20; i++) {
+      expect(afterErase.tracks[0].notes[0][i]).toBe(false);
+    }
+    // Storage 20-31 (logical 5-7) should still be true
+    for (let i = 20; i < 32; i++) {
+      expect(afterErase.tracks[0].notes[0][i]).toBe(true);
+    }
     
     // Undo the erase
     project.undo();
     
     const afterUndo = get(project);
     expect(afterUndo).toBeTruthy();
-    expect(afterUndo.tracks[0].notes[0][2]).toBe(true);
-    expect(afterUndo.tracks[0].notes[0][3]).toBe(true);
-    expect(afterUndo.tracks[0].notes[0][4]).toBe(true);
+    // After undo, storage 8-19 should be true again
+    for (let i = 8; i < 20; i++) {
+      expect(afterUndo.tracks[0].notes[0][i]).toBe(true);
+    }
     
     // App should still function
     project.setNoteRange(0, 1, 0, 1, true);
     const finalState = get(project);
+    // Logical index 0 row 1 maps to storage indices 0-3
     expect(finalState.tracks[0].notes[1][0]).toBe(true);
   });
 

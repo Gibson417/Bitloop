@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, vi } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
+import '@testing-library/jest-dom/vitest';
 
 beforeAll(() => {
   if (!globalThis.window) {
