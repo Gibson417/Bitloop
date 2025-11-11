@@ -1,13 +1,8 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const config = {
-  compilerOptions: {
-    dev: false
-  },
-  preprocess: vitePreprocess(),
-  kit: {
-    adapter: undefined
-  }
+  compilerOptions: {},
+  preprocess: vitePreprocess()
 };
 
 export default config;

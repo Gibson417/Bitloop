@@ -4,7 +4,11 @@ import path from 'path';
 
 export default defineConfig({
   root: '.',
-  plugins: [svelte()],
+  plugins: [svelte({
+    compilerOptions: {
+      // Svelte 4 compatibility
+    }
+  })],
   resolve: {
     alias: {
       $components: path.resolve(__dirname, 'src/components'),
