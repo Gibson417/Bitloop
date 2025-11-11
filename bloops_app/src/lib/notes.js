@@ -28,7 +28,10 @@ export const getRowNoteNames = (track, rows, scales) => {
     return Array.from({ length: rows || 8 }, () => '?');
   }
 
-  const scalePattern = scales[track.scale] ?? scales.major ?? [0, 2, 4, 5, 7, 9, 11];
+  // Use custom scale if available, otherwise use named scale
+  const scalePattern = track.scale === 'custom' && track.customScale
+    ? track.customScale
+    : (scales[track.scale] ?? scales.major ?? [0, 2, 4, 5, 7, 9, 11]);
   const degrees = scalePattern.length;
   const rootNote = track.rootNote ?? 0;
   

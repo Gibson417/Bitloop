@@ -4,7 +4,10 @@ import { getCustomWave, connectTrackEffects } from './sound.js';
 const midiToFrequency = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
 const getMidiForCell = (track, rowIndex, totalRows) => {
-  const scalePattern = scales[track.scale] ?? scales.major;
+  // Use custom scale if available, otherwise use named scale
+  const scalePattern = track.scale === 'custom' && track.customScale
+    ? track.customScale
+    : (scales[track.scale] ?? scales.major);
   const degrees = scalePattern.length;
   const indexFromBottom = totalRows - 1 - rowIndex;
   const octaveOffset = Math.floor(indexFromBottom / degrees);

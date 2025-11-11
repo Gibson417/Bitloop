@@ -76,7 +76,10 @@
   const getMidiForCell = (track, row) => {
     const stateRows = projectState?.rows ?? 0;
     if (!stateRows) return 60;
-    const scalePattern = scales[track.scale] ?? scales.major;
+    // Use custom scale if available, otherwise use named scale
+    const scalePattern = track.scale === 'custom' && track.customScale 
+      ? track.customScale 
+      : (scales[track.scale] ?? scales.major);
     const degrees = scalePattern.length;
     const rows = stateRows;
     const indexFromBottom = rows - 1 - row;
