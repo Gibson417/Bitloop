@@ -2,7 +2,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const config = {
   compilerOptions: {
-    dev: false
+    dev: true
   },
   preprocess: vitePreprocess(),
   kit: {
