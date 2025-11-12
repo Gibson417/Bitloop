@@ -24,6 +24,12 @@ Fixed critical bug in Grid.svelte where clicking on filled notes would not remov
 **Root Cause:**
 In Grid.svelte, the `pointerActive` flag was being set to `true` in `handlePointerDown()` BEFORE calling `handlePointer()`. This caused the paint value determination logic to be skipped, as it only executes when `!pointerActive` is true.
 
+**Visual Explanation:**
+
+![Grid Fix Diagram](images/grid-fix-diagram.svg)
+
+The diagram above illustrates how the bug occurred and how it was fixed.
+
 ## Changes Made
 
 ### 1. Grid.svelte - Core Fix
