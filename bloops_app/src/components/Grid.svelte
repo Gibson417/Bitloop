@@ -27,6 +27,7 @@
   let paintValue = true;
   let paintedCells = new Set();
   let resizeObserver;
+  let eraseMode = false; // Track if shift/alt key is held for explicit erase
   
   // Keyboard navigation state
   let focusedRow = 0;
@@ -236,7 +237,9 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    pointerActive = true;
+    // Check if shift or alt key is held for explicit erase mode
+    eraseMode = event.shiftKey || event.altKey;
+    pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set();
     handlePointer(event);
   };
@@ -281,7 +284,9 @@
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
     if (!pointerActive) {
       pointerActive = true;
-      paintValue = !current;
+      // If eraseMode is active (via shift/alt key), always erase
+      // Otherwise, toggle based on the current state of the first cell
+      paintValue = eraseMode ? false : !current;
     }
 
     const key = `${row}:${storageStart}`;
@@ -308,6 +313,7 @@
     }
     pointerActive = false;
     paintedCells = new Set();
+    eraseMode = false; // Reset erase mode when pointer is released
   };
 
   const handlePointerUp = (event) => {
@@ -414,10 +420,30 @@
       resizeObserver = new ResizeObserver(() => updateLayout());
       if (scroller) resizeObserver.observe(scroller);
     }
+    
+    // Track modifier keys for erase mode while hovering
+    const handleKeyDownGlobal = (e) => {
+      if (e.shiftKey || e.altKey) {
+        eraseMode = true;
+      }
+    };
+    
+    const handleKeyUpGlobal = (e) => {
+      // Only disable erase mode if neither shift nor alt is held
+      if (!e.shiftKey && !e.altKey) {
+        eraseMode = false;
+      }
+    };
+    
     const handleWindowResize = () => updateLayout();
     window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('keydown', handleKeyDownGlobal);
+    window.addEventListener('keyup', handleKeyUpGlobal);
+    
     return () => {
       window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener('keydown', handleKeyDownGlobal);
+      window.removeEventListener('keyup', handleKeyUpGlobal);
     };
   });
 
@@ -495,7 +521,8 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - use arrow keys to navigate, space or enter to toggle notes"
+      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, space or enter to toggle notes"
+      style="cursor: {eraseMode ? 'not-allowed' : 'crosshair'};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}
@@ -559,7 +586,6 @@
 
   .grid-canvas {
     touch-action: none;
-    cursor: crosshair;
     display: block;
     min-width: 512px;
     min-height: 256px;

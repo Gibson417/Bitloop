@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- Title -->
+  <text x="400" y="30" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">
+    Grid Note Removal Bug Fix
+  </text>
+  
+  <!-- Before Section -->
+  <g id="before">
+    <text x="200" y="70" font-size="18" font-weight="bold" text-anchor="middle" fill="#d32f2f">
+      ❌ BEFORE (Buggy)
+    </text>
+    
+    <!-- Step 1 -->
+    <rect x="50" y="90" width="300" height="80" fill="#ffebee" stroke="#d32f2f" stroke-width="2" rx="5"/>
+    <text x="200" y="115" font-size="14" text-anchor="middle" font-weight="bold" fill="#333">
+      1. User clicks filled cell
+    </text>
+    <text x="200" y="135" font-size="12" text-anchor="middle" fill="#666">
+      handlePointerDown() called
+    </text>
+    <text x="200" y="155" font-size="12" text-anchor="middle" fill="#666">
+      Sets: pointerActive = true ❌
+    </text>
+    
+    <!-- Arrow -->
+    <path d="M 200 170 L 200 195" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Step 2 -->
+    <rect x="50" y="200" width="300" height="80" fill="#ffebee" stroke="#d32f2f" stroke-width="2" rx="5"/>
+    <text x="200" y="225" font-size="14" text-anchor="middle" font-weight="bold" fill="#333">
+      2. handlePointer() called
+    </text>
+    <text x="200" y="245" font-size="12" text-anchor="middle" fill="#666">
+      Checks: if (!pointerActive) → FALSE
+    </text>
+    <text x="200" y="265" font-size="12" text-anchor="middle" fill="#d32f2f">
+      ❌ paintValue never set!
+    </text>
+    
+    <!-- Arrow -->
+    <path d="M 200 280 L 200 305" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Step 3 -->
+    <rect x="50" y="310" width="300" height="60" fill="#ffebee" stroke="#d32f2f" stroke-width="2" rx="5"/>
+    <text x="200" y="335" font-size="14" text-anchor="middle" font-weight="bold" fill="#d32f2f">
+      Result: Note NOT removed ❌
+    </text>
+    <text x="200" y="355" font-size="12" text-anchor="middle" fill="#666">
+      Uses stale paintValue (likely true)
+    </text>
+  </g>
+  
+  <!-- After Section -->
+  <g id="after">
+    <text x="600" y="70" font-size="18" font-weight="bold" text-anchor="middle" fill="#388e3c">
+      ✅ AFTER (Fixed)
+    </text>
+    
+    <!-- Step 1 -->
+    <rect x="450" y="90" width="300" height="80" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+    <text x="600" y="115" font-size="14" text-anchor="middle" font-weight="bold" fill="#333">
+      1. User clicks filled cell
+    </text>
+    <text x="600" y="135" font-size="12" text-anchor="middle" fill="#666">
+      handlePointerDown() called
+    </text>
+    <text x="600" y="155" font-size="12" text-anchor="middle" fill="#388e3c">
+      Sets: pointerActive = false ✅
+    </text>
+    
+    <!-- Arrow -->
+    <path d="M 600 170 L 600 195" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Step 2 -->
+    <rect x="450" y="200" width="300" height="80" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+    <text x="600" y="225" font-size="14" text-anchor="middle" font-weight="bold" fill="#333">
+      2. handlePointer() called
+    </text>
+    <text x="600" y="245" font-size="12" text-anchor="middle" fill="#666">
+      Checks: if (!pointerActive) → TRUE
+    </text>
+    <text x="600" y="265" font-size="12" text-anchor="middle" fill="#388e3c">
+      ✅ paintValue = !current = false
+    </text>
+    
+    <!-- Arrow -->
+    <path d="M 600 280 L 600 305" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Step 3 -->
+    <rect x="450" y="310" width="300" height="60" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+    <text x="600" y="335" font-size="14" text-anchor="middle" font-weight="bold" fill="#388e3c">
+      Result: Note removed! ✅
+    </text>
+    <text x="600" y="355" font-size="12" text-anchor="middle" fill="#666">
+      Dispatches value=false correctly
+    </text>
+  </g>
+  
+  <!-- Bonus Feature Section -->
+  <g id="bonus">
+    <rect x="200" y="420" width="400" height="140" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+    <text x="400" y="445" font-size="18" font-weight="bold" text-anchor="middle" fill="#1976d2">
+      ✨ BONUS: Explicit Erase Mode
+    </text>
+    
+    <text x="400" y="475" font-size="14" text-anchor="middle" fill="#333">
+      Hold Shift or Alt key while painting
+    </text>
+    <text x="400" y="495" font-size="12" text-anchor="middle" fill="#666">
+      • Cursor changes to "not-allowed"
+    </text>
+    <text x="400" y="515" font-size="12" text-anchor="middle" fill="#666">
+      • Always erases (paintValue = false)
+    </text>
+    <text x="400" y="535" font-size="12" text-anchor="middle" fill="#666">
+      • Works even on empty cells
+    </text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+    </marker>
+  </defs>
+</svg>
