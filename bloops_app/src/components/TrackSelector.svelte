@@ -196,7 +196,8 @@
     background: rgba(var(--color-accent-rgb), 0.25);
     border-color: rgba(var(--color-accent-rgb), 0.6);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(var(--color-accent-rgb), 0.2);
+    box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
+    color: #fff;
   }
 
   .action-button:focus-visible {
@@ -216,15 +217,24 @@
     max-height: 400px;
     overflow-y: auto;
     scrollbar-width: thin;
+    scrollbar-color: rgba(var(--color-accent-rgb), 0.4) transparent;
   }
 
   .track-list::-webkit-scrollbar {
     width: 6px;
   }
 
+  .track-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   .track-list::-webkit-scrollbar-thumb {
-    background: rgba(var(--color-accent-rgb), 0.3);
+    background: rgba(var(--color-accent-rgb), 0.4);
     border-radius: 999px;
+  }
+
+  .track-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--color-accent-rgb), 0.6);
   }
 
   .track-item {
