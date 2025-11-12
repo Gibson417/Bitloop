@@ -2,6 +2,7 @@
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import { colors } from '../lib/colorTokens.js';
   import { BASE_RESOLUTION } from '../store/projectStore.js';
+  import { theme } from '../store/themeStore.js';
 
   export let notes = [];
   export let rows = 8;
@@ -33,6 +34,12 @@
   let focusedRow = 0;
   let focusedCol = 0;
   let keyboardMode = false;
+
+  // Track current theme to trigger redraw on theme change
+  let currentTheme;
+  const unsubscribeTheme = theme.subscribe((value) => {
+    currentTheme = value;
+  });
 
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
@@ -452,6 +459,7 @@
       resizeObserver.unobserve(scroller);
       resizeObserver.disconnect();
     }
+    unsubscribeTheme?.();
   });
 
   $: drawTrigger = {
@@ -463,7 +471,8 @@
     stepsPerBar,
     noteLengthSteps,
     columns,
-    rows
+    rows,
+    currentTheme
   };
 
   $: if (canvas && scroller && columns && rows) {
