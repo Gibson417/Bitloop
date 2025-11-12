@@ -10,6 +10,7 @@
   import ThemeSelector from './components/ThemeSelector.svelte';
   import KnobControl from './components/KnobControl.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
+  import SettingsMenu from './components/SettingsMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
@@ -899,7 +900,7 @@
             on:export={handleShareMenuExport}
             on:import={handleShareMenuImport}
           />
-          <ThemeSelector />
+          <SettingsMenu />
         </div>
       </div>
     </div>
