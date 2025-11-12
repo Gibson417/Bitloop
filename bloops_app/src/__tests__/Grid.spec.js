@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 import Grid from '../components/Grid.svelte';
+import { theme } from '../store/themeStore.js';
 
 const createNotes = (rows, cols) =>
   Array.from({ length: rows }, () => Array.from({ length: cols }, () => false));
@@ -187,5 +188,48 @@ describe('Grid component', () => {
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
     expect(event.detail.value).toBe(false); // Should erase even on empty cell
+  });
+
+  it('redraws canvas when theme changes', async () => {
+    const rows = 4;
+    const columns = 8;
+    const notes = createNotes(rows, columns);
+    notes[0][0] = true; // Add one active note
+
+    const { container } = render(Grid, {
+      props: {
+        rows,
+        columns,
+        notes,
+        playheadStep: 0,
+        playheadProgress: 0,
+        follow: false,
+        isPlaying: false,
+        noteLengthDenominator: 16,
+        stepsPerBar: 16
+      }
+    });
+
+    const canvas = container.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Mock the canvas context methods to track draw calls
+    const fillRectSpy = vi.spyOn(ctx, 'fillRect');
+    const strokeSpy = vi.spyOn(ctx, 'stroke');
+    
+    // Clear any initial draw calls
+    fillRectSpy.mockClear();
+    strokeSpy.mockClear();
+    
+    // Change the theme
+    const currentTheme = 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    theme.setTheme(newTheme);
+    
+    // Wait for the next tick to allow reactivity to trigger
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    // Verify that canvas drawing methods were called (indicating a redraw)
+    expect(fillRectSpy.mock.calls.length).toBeGreaterThan(0);
   });
 });
