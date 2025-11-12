@@ -119,11 +119,11 @@
   .selector-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     background: rgba(18, 22, 32, 0.9);
     border-radius: 12px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.22);
-    padding: 6px;
+    padding: 8px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
@@ -136,16 +136,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.85);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
+    flex-shrink: 0;
   }
 
   .arrow-button:hover {
@@ -180,8 +181,8 @@
     font-size: 0.95rem;
     font-weight: 600;
     color: #fff;
-    padding: 4px 8px;
-    min-width: 80px;
+    padding: 4px 12px;
+    min-width: 70px;
   }
 
   @media (max-width: 720px) {

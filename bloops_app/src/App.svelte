@@ -1180,34 +1180,34 @@
 
   .project-name-input {
     margin: 0;
-    padding: 8px 14px;
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.08), rgba(255, 255, 255, 0.06));
-    border: 2px solid rgba(var(--color-accent-rgb), 0.25);
-    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.1), rgba(255, 255, 255, 0.08));
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 10px;
     color: #fff;
     font-family: inherit;
     transition: all 0.2s ease;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     cursor: text;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
   .project-name-input:hover {
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.12), rgba(255, 255, 255, 0.1));
-    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15), rgba(255, 255, 255, 0.12));
+    border-color: rgba(var(--color-accent-rgb), 0.5);
     cursor: text;
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.15);
+    box-shadow: 0 4px 14px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .project-name-input:focus {
     outline: none;
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15), rgba(255, 255, 255, 0.12));
-    border-color: rgba(var(--color-accent-rgb), 0.7);
-    box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(255, 255, 255, 0.14));
+    border-color: rgba(var(--color-accent-rgb), 0.8);
+    box-shadow: 0 6px 18px rgba(var(--color-accent-rgb), 0.3);
   }
 
   .header-actions {
@@ -1384,7 +1384,7 @@
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 320px;
+    max-width: 240px;
     align-self: flex-start;
   }
 
