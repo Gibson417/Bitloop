@@ -155,6 +155,9 @@
       // Calculate quarter-bar step size in logical steps
       const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
       
+      // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
+      const isZoomed = denom && denom > stepsPerBarSafe;
+      
       for (let col = 0; col <= displayColumns; col++) {
         // Map displayed column back to logical step in the source columns
         const logicalStep = Math.floor((col * logicalColumns) / displayColumns);
@@ -163,16 +166,23 @@
         const isBarBoundary = logicalStep % stepsPerBarSafe === 0;
         const isQuarterBarBoundary = logicalStep % stepsPerQuarterBar === 0;
         
-        // Only draw lines at quarter-bar increments or bar boundaries
-        if (!isQuarterBarBoundary && !isBarBoundary) continue;
+        // In zoomed mode, draw sub-beat ticks for all columns
+        // In normal mode, only draw lines at quarter-bar increments or bar boundaries
+        const shouldDraw = isZoomed || isQuarterBarBoundary || isBarBoundary;
+        
+        if (!shouldDraw) continue;
         
         const x = col * cellSize + 0.5;
         
-        // Use different opacity/color for bar boundaries vs quarter-bar boundaries
+        // Use different opacity/color for bar boundaries vs quarter-bar boundaries vs sub-beats
         if (isBarBoundary) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.35); // More visible for bars
+          ctx.strokeStyle = hexToRgba(trackColor, 0.35); // Most visible for bars
+        } else if (isQuarterBarBoundary) {
+          ctx.strokeStyle = styles.grid; // Medium visibility for quarter-bars
+        } else if (isZoomed) {
+          ctx.strokeStyle = hexToRgba(trackColor, 0.08); // Subtle sub-beat ticks when zoomed
         } else {
-          ctx.strokeStyle = styles.grid; // Use theme grid color for quarter-bars
+          continue; // Skip non-boundary lines in normal view
         }
         
         ctx.beginPath();

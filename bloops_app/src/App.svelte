@@ -157,16 +157,40 @@
       : state.tracks.filter((track) => !track.mute);
 
     audibleTracks.forEach((track) => {
+      // Map logical stepIndex -> storage index using BASE_RESOLUTION
+      const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
+      
       for (let row = 0; row < rows; row += 1) {
-          // Map logical stepIndex -> storage index using BASE_RESOLUTION
-          const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
-          if (track.notes?.[row]?.[storageIndex]) {
-          const midi = getMidiForCell(track, row);
-          const frequency = midiToFrequency(midi);
-          // Apply minimum duration of 50ms to prevent clicks on very short notes
-          const minDuration = 0.05; // 50ms minimum gate time
-          const safeDuration = Math.max(stepDuration * 0.95, minDuration);
-          playTone(track, frequency, time, safeDuration);
+        const rowNotes = track.notes?.[row] ?? [];
+        
+        // Check if this is the start of a note event
+        if (rowNotes[storageIndex]) {
+          // Only trigger if previous step was not active (this is note start)
+          const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : storageIndex;
+          const isNoteStart = !rowNotes[prevStorageIndex] || storageIndex === 0;
+          
+          if (isNoteStart) {
+            // Find note length by scanning forward
+            let noteLength = 1;
+            let nextIndex = storageIndex + 1;
+            while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+              noteLength++;
+              nextIndex++;
+            }
+            
+            // Convert storage steps to time duration
+            const storageStepDuration = stepDuration / (BASE_RESOLUTION / state.stepsPerBar);
+            const noteDuration = noteLength * storageStepDuration;
+            
+            const midi = getMidiForCell(track, row);
+            const frequency = midiToFrequency(midi);
+            
+            // Apply minimum duration of 50ms to prevent clicks on very short notes
+            const minDuration = 0.05; // 50ms minimum gate time
+            const safeDuration = Math.max(noteDuration * 0.95, minDuration);
+            
+            playTone(track, frequency, time, safeDuration);
+          }
         }
       }
     });
