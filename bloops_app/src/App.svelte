@@ -12,6 +12,7 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
+  import PatternSelector from './components/PatternSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -157,16 +158,40 @@
       : state.tracks.filter((track) => !track.mute);
 
     audibleTracks.forEach((track) => {
+      // Map logical stepIndex -> storage index using BASE_RESOLUTION
+      const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
+      
       for (let row = 0; row < rows; row += 1) {
-          // Map logical stepIndex -> storage index using BASE_RESOLUTION
-          const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
-          if (track.notes?.[row]?.[storageIndex]) {
-          const midi = getMidiForCell(track, row);
-          const frequency = midiToFrequency(midi);
-          // Apply minimum duration of 50ms to prevent clicks on very short notes
-          const minDuration = 0.05; // 50ms minimum gate time
-          const safeDuration = Math.max(stepDuration * 0.95, minDuration);
-          playTone(track, frequency, time, safeDuration);
+        const rowNotes = track.notes?.[row] ?? [];
+        
+        // Check if this is the start of a note event
+        if (rowNotes[storageIndex]) {
+          // Only trigger if previous step was not active (this is note start)
+          const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : storageIndex;
+          const isNoteStart = !rowNotes[prevStorageIndex] || storageIndex === 0;
+          
+          if (isNoteStart) {
+            // Find note length by scanning forward
+            let noteLength = 1;
+            let nextIndex = storageIndex + 1;
+            while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+              noteLength++;
+              nextIndex++;
+            }
+            
+            // Convert storage steps to time duration
+            const storageStepDuration = stepDuration / (BASE_RESOLUTION / state.stepsPerBar);
+            const noteDuration = noteLength * storageStepDuration;
+            
+            const midi = getMidiForCell(track, row);
+            const frequency = midiToFrequency(midi);
+            
+            // Apply minimum duration of 50ms to prevent clicks on very short notes
+            const minDuration = 0.05; // 50ms minimum gate time
+            const safeDuration = Math.max(noteDuration * 0.95, minDuration);
+            
+            playTone(track, frequency, time, safeDuration);
+          }
         }
       }
     });
@@ -480,6 +505,31 @@
     library.deleteCurrent();
   };
 
+  // Pattern management handlers
+  const handlePatternSelect = (event) => {
+    const { index } = event.detail;
+    project.selectPattern(index);
+  };
+
+  const handlePatternAdd = () => {
+    project.addPattern();
+  };
+
+  const handlePatternDuplicate = (event) => {
+    const { index } = event.detail;
+    project.duplicatePattern(index);
+  };
+
+  const handlePatternRemove = (event) => {
+    const { index } = event.detail;
+    project.removePattern(index);
+  };
+
+  const handlePatternRename = (event) => {
+    const { index, name } = event.detail;
+    project.renamePattern(index, name);
+  };
+
   const handleRenderWav = async () => {
     try {
       const snapshot = project.toSnapshot();
@@ -683,6 +733,8 @@
   $: trackColor = activeTrack?.color ?? colors.accent;
   $: normalizedTrackColor = normalizeHex(trackColor);
   $: noteChipGlow = normalizedTrackColor ? hexToRgba(normalizedTrackColor, 0.32) ?? DEFAULT_NOTE_GLOW : DEFAULT_NOTE_GLOW;
+  $: patterns = projectState?.patterns ?? [];
+  $: selectedPattern = projectState?.selectedPattern ?? 0;
   $: isPlaying = projectState?.playing ?? false;
   $: isFollowing = projectState?.follow ?? false;
   $: projectName = projectState?.name ?? 'Untitled loop';
@@ -777,6 +829,15 @@
         on:remove={handleTrackRemove}
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
+      />
+      <PatternSelector
+        patterns={patterns}
+        selectedPattern={selectedPattern}
+        on:select={handlePatternSelect}
+        on:add={handlePatternAdd}
+        on:duplicate={handlePatternDuplicate}
+        on:remove={handlePatternRemove}
+        on:rename={handlePatternRename}
       />
       <div class="rail-stats">
         <div class="stat-field">

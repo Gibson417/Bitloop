@@ -5,6 +5,9 @@ export const MAX_LOOP_SECONDS = 300;
 // Base resolution per bar for internal storage. All notes are stored at this resolution.
 export const BASE_RESOLUTION = 64;
 
+// Note event structure: { row: number, start: number, length: number }
+// start and length are in 64th-note storage steps (0..bars*BASE_RESOLUTION-1)
+
 const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
 const DEFAULT_BARS = 4;
@@ -93,6 +96,70 @@ const sanitizeAdsr = (adsr = {}) => {
   const releaseValue = Number.parseFloat(adsr.release);
   const release = clamp(Number.isFinite(releaseValue) ? releaseValue : DEFAULT_ADSR.release, 0.001, 5);
   return { attack, decay, sustain, release };
+};
+
+// Convert boolean matrix to note events
+// Returns array of { row, start, length } for each track row
+const booleanToEvents = (booleanMatrix, rows) => {
+  const result = [];
+  for (let row = 0; row < rows; row++) {
+    const rowNotes = booleanMatrix[row] ?? [];
+    const rowEvents = [];
+    let noteStart = -1;
+    
+    for (let step = 0; step < rowNotes.length; step++) {
+      if (rowNotes[step]) {
+        if (noteStart === -1) {
+          noteStart = step;
+        }
+      } else if (noteStart !== -1) {
+        // End of note
+        rowEvents.push({ row, start: noteStart, length: step - noteStart });
+        noteStart = -1;
+      }
+    }
+    
+    // Handle note that extends to end
+    if (noteStart !== -1) {
+      rowEvents.push({ row, start: noteStart, length: rowNotes.length - noteStart });
+    }
+    
+    result.push(...rowEvents);
+  }
+  return result;
+};
+
+// Convert note events to boolean matrix
+// events: array of { row, start, length }
+// Returns 2D boolean array [rows][steps]
+const eventsToBooleans = (events, rows, storageSteps) => {
+  const matrix = Array.from({ length: rows }, () => Array.from({ length: storageSteps }, () => false));
+  
+  for (const event of events) {
+    const { row, start, length } = event;
+    if (row < 0 || row >= rows) continue;
+    
+    const safeStart = clamp(Math.floor(start), 0, storageSteps - 1);
+    const safeLength = Math.max(1, Math.floor(length));
+    const end = Math.min(safeStart + safeLength, storageSteps);
+    
+    for (let step = safeStart; step < end; step++) {
+      matrix[row][step] = true;
+    }
+  }
+  
+  return matrix;
+};
+
+// Get all note events from a track's boolean matrix
+export const getTrackEvents = (track, rows) => {
+  if (!track || !track.notes) return [];
+  return booleanToEvents(track.notes, rows);
+};
+
+// Set track notes from events
+export const setTrackFromEvents = (events, rows, storageSteps) => {
+  return eventsToBooleans(events, rows, storageSteps);
 };
 
 const resizeTrack = (track, rows, storageSteps) => {
@@ -222,8 +289,46 @@ const snapshotTracks = (tracks) =>
     notes: track.notes.map((row) => row.slice())
   }));
 
+// Pattern management helpers
+const createPattern = (id, name, bars, rows, storageSteps, tracks = null) => ({
+  id: id || `pattern-${Date.now()}`,
+  name: name || `Pattern ${id}`,
+  bars,
+  tracks: tracks || [createTrack(0, rows, storageSteps), createTrack(1, rows, storageSteps)]
+});
+
+const snapshotPattern = (pattern) => ({
+  id: pattern.id,
+  name: pattern.name,
+  bars: pattern.bars,
+  tracks: snapshotTracks(pattern.tracks)
+});
+
+const snapshotPatterns = (patterns) => patterns.map(snapshotPattern);
+
+const normalizePattern = (pattern, rows, bpm) => {
+  const bars = ensureBarsWithinLimit(bpm, ensurePositiveInteger(pattern.bars, DEFAULT_BARS, 1, 512));
+  const storageSteps = bars * BASE_RESOLUTION;
+  const tracks = normalizeTracks(pattern.tracks, rows, storageSteps);
+  return {
+    id: pattern.id || `pattern-${Date.now()}`,
+    name: sanitizeName(pattern.name || 'Pattern'),
+    bars,
+    tracks
+  };
+};
+
+const normalizePatterns = (patterns, rows, bpm) => {
+  if (!Array.isArray(patterns) || patterns.length === 0) {
+    const defaultBars = ensureBarsWithinLimit(bpm, DEFAULT_BARS);
+    const storageSteps = defaultBars * BASE_RESOLUTION;
+    return [createPattern('A', 'Pattern A', defaultBars, rows, storageSteps)];
+  }
+  return patterns.map(p => normalizePattern(p, rows, bpm));
+};
+
 const toSnapshot = (state) => ({
-  version: 3,
+  version: 4, // Increment version for pattern support
   name: state.name,
   rows: state.rows,
   bars: state.bars,
@@ -231,7 +336,11 @@ const toSnapshot = (state) => ({
   bpm: state.bpm,
   follow: state.follow,
   selectedTrack: state.selectedTrack,
-  tracks: snapshotTracks(state.tracks)
+  tracks: snapshotTracks(state.tracks),
+  // Pattern support (optional for backwards compatibility)
+  patterns: state.patterns ? snapshotPatterns(state.patterns) : undefined,
+  selectedPattern: state.selectedPattern ?? 0,
+  arrangement: state.arrangement ?? []
 });
 
 const normalizeState = (state) => {
@@ -242,12 +351,29 @@ const normalizeState = (state) => {
   const bars = ensureBarsWithinLimit(bpm, desiredBars);
   // internal storage uses BASE_RESOLUTION per bar
   const storageSteps = bars * BASE_RESOLUTION;
-  const tracks = normalizeTracks(state.tracks, rows, storageSteps);
+  
+  // Support both legacy single-track model and new pattern-based model
+  let tracks, patterns, selectedPattern;
+  
+  if (state.patterns && Array.isArray(state.patterns) && state.patterns.length > 0) {
+    // Pattern-based model
+    patterns = normalizePatterns(state.patterns, rows, bpm);
+    selectedPattern = clamp(state.selectedPattern ?? 0, 0, Math.max(patterns.length - 1, 0));
+    // Use current pattern's tracks
+    tracks = patterns[selectedPattern].tracks;
+  } else {
+    // Legacy single-track model (backwards compatibility)
+    tracks = normalizeTracks(state.tracks, rows, storageSteps);
+    patterns = [createPattern('A', 'Pattern A', bars, rows, storageSteps, tracks)];
+    selectedPattern = 0;
+  }
+  
   const selectedTrack = clamp(state.selectedTrack ?? 0, 0, Math.max(tracks.length - 1, 0));
   const playheadStepValue = Number.isFinite(state.playheadStep) ? state.playheadStep : 0;
   const playheadProgressValue = Number.isFinite(state.playheadProgress) ? state.playheadProgress : 0;
   const lastStepTimeValue = Number.isFinite(state.lastStepTime) ? state.lastStepTime : 0;
   const nextStepTimeValue = Number.isFinite(state.nextStepTime) ? state.nextStepTime : 0;
+  
   return {
     name: sanitizeName(state.name ?? DEFAULT_NAME),
     rows,
@@ -257,12 +383,15 @@ const normalizeState = (state) => {
     follow: state.follow ?? DEFAULT_FOLLOW,
     playing: state.playing ?? false,
     selectedTrack,
-  // normalize playhead to within the logical total steps (bars * stepsPerBar)
-  playheadStep: playheadStepValue % Math.max(1, bars * stepsPerBar),
+    // normalize playhead to within the logical total steps (bars * stepsPerBar)
+    playheadStep: playheadStepValue % Math.max(1, bars * stepsPerBar),
     playheadProgress: clamp(playheadProgressValue, 0, 1),
     lastStepTime: lastStepTimeValue,
     nextStepTime: nextStepTimeValue,
-    tracks
+    tracks,
+    patterns,
+    selectedPattern,
+    arrangement: state.arrangement ?? []
   };
 };
 
@@ -760,6 +889,8 @@ const createProjectStore = () => {
       const bars = clamp(payload.bars ?? DEFAULT_BARS, 1, maxBars);
       const stepsPerBar = ensurePositiveInteger(payload.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
+      const patternsPayload = Array.isArray(payload.patterns) && payload.patterns.length > 0 ? payload.patterns : undefined;
+      
       const snapshot = {
         name: sanitizeName(payload.name ?? DEFAULT_NAME),
         rows,
@@ -773,7 +904,10 @@ const createProjectStore = () => {
         playheadProgress: 0,
         lastStepTime: 0,
         nextStepTime: 0,
-        tracks: tracksPayload ?? [createTrack(0, rows, bars * stepsPerBar)]
+        tracks: tracksPayload ?? [createTrack(0, rows, bars * BASE_RESOLUTION)],
+        patterns: patternsPayload,
+        selectedPattern: payload.selectedPattern ?? 0,
+        arrangement: payload.arrangement ?? []
       };
       suppressHistory = true;
       set(normalizeState(snapshot));
@@ -782,6 +916,105 @@ const createProjectStore = () => {
       historyFuture = [];
       updateHistoryStatus();
       return true;
+    },
+    // Pattern management functions
+    selectPattern(index) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        const safeIndex = clamp(index, 0, Math.max(state.patterns.length - 1, 0));
+        const pattern = state.patterns[safeIndex];
+        return normalizeState({ 
+          ...state, 
+          selectedPattern: safeIndex,
+          tracks: pattern.tracks,
+          bars: pattern.bars
+        });
+      });
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
+    },
+    addPattern() {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        const newId = `pattern-${Date.now()}`;
+        const newName = `Pattern ${String.fromCharCode(65 + state.patterns.length)}`;
+        const storageSteps = state.bars * BASE_RESOLUTION;
+        const newPattern = createPattern(newId, newName, state.bars, state.rows, storageSteps);
+        const patterns = [...state.patterns, newPattern];
+        return normalizeState({ 
+          ...state, 
+          patterns,
+          selectedPattern: patterns.length - 1,
+          tracks: newPattern.tracks,
+          bars: newPattern.bars
+        });
+      });
+      pushHistory(prevSnapshot);
+    },
+    duplicatePattern(index) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        if (index < 0 || index >= state.patterns.length) return state;
+        const patternToDup = state.patterns[index];
+        const newId = `pattern-${Date.now()}`;
+        const newName = `${patternToDup.name} Copy`;
+        const dupPattern = {
+          ...patternToDup,
+          id: newId,
+          name: newName,
+          tracks: patternToDup.tracks.map(track => ({
+            ...track,
+            notes: track.notes.map(row => [...row])
+          }))
+        };
+        const patterns = [...state.patterns, dupPattern];
+        return normalizeState({ 
+          ...state, 
+          patterns,
+          selectedPattern: patterns.length - 1,
+          tracks: dupPattern.tracks,
+          bars: dupPattern.bars
+        });
+      });
+      pushHistory(prevSnapshot);
+    },
+    removePattern(index) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        if (state.patterns.length <= 1) return state;
+        if (index < 0 || index >= state.patterns.length) return state;
+        const patterns = state.patterns.filter((_, idx) => idx !== index);
+        const selectedPattern = clamp(
+          state.selectedPattern >= index ? state.selectedPattern - 1 : state.selectedPattern,
+          0,
+          patterns.length - 1
+        );
+        const pattern = patterns[selectedPattern];
+        return normalizeState({ 
+          ...state, 
+          patterns,
+          selectedPattern,
+          tracks: pattern.tracks,
+          bars: pattern.bars
+        });
+      });
+      pushHistory(prevSnapshot);
+    },
+    renamePattern(index, name) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        if (index < 0 || index >= state.patterns.length) return state;
+        const patterns = state.patterns.map((p, idx) => 
+          idx === index ? { ...p, name: sanitizeName(name) } : p
+        );
+        return normalizeState({ ...state, patterns });
+      });
+      const nextSnapshot = toSnapshot(get(store));
+      if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
+        pushHistory(prevSnapshot);
+      }
     }
   };
 };
