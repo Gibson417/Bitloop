@@ -41,6 +41,9 @@
     currentTheme = value;
   });
 
+  // Check for reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
     const clean = fallback.replace('#', '');
@@ -303,7 +306,9 @@
   const playheadX = ((playheadStep + playheadProgress) * (displayColumns / Math.max(1, columns))) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
-      const glowIntensity = isPlaying ? 0.3 + Math.sin(Date.now() * 0.003) * 0.1 : 0.2;
+      const glowIntensity = isPlaying 
+        ? (prefersReducedMotion ? 0.3 : 0.3 + Math.sin(Date.now() * 0.003) * 0.1)
+        : 0.2;
       const glowWidth = layout.cellSize * (isPlaying ? 2.5 : 1.5);
       const playheadGlow = ctx.createLinearGradient(playheadX - glowWidth, 0, playheadX + glowWidth, 0);
       playheadGlow.addColorStop(0, 'transparent');
