@@ -1180,34 +1180,32 @@
 
   .project-name-input {
     margin: 0;
-    padding: 10px 16px;
+    padding: 8px 12px;
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.01em;
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.1), rgba(255, 255, 255, 0.08));
-    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     color: #fff;
     font-family: inherit;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     width: 100%;
     max-width: 420px;
     cursor: text;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
   .project-name-input:hover {
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15), rgba(255, 255, 255, 0.12));
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(var(--color-accent-rgb), 0.2);
     cursor: text;
-    box-shadow: 0 4px 14px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .project-name-input:focus {
     outline: none;
-    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.18), rgba(255, 255, 255, 0.14));
-    border-color: rgba(var(--color-accent-rgb), 0.8);
-    box-shadow: 0 6px 18px rgba(var(--color-accent-rgb), 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .header-actions {

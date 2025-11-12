@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+  import { createEventDispatcher, onDestroy, tick } from 'svelte';
 
   export let shareStatus = 'idle';
   export let shareMessage = '';
@@ -11,13 +11,32 @@
   let shareMenuEl;
   let importInput;
 
-  const toggleShareMenu = (event) => {
+  const toggleShareMenu = async (event) => {
     event?.stopPropagation?.();
     shareMenuOpen = !shareMenuOpen;
+    
+    if (shareMenuOpen) {
+      // Wait for next tick, then add the click listener
+      await tick();
+      setTimeout(() => {
+        if (shareMenuOpen) {
+          document.addEventListener('click', closeOnClickOutside, { once: false });
+        }
+      }, 0);
+    }
+  };
+
+  const closeOnClickOutside = (event) => {
+    const target = event.target;
+    if (shareMenuEl && !shareMenuEl.contains(target)) {
+      shareMenuOpen = false;
+      document.removeEventListener('click', closeOnClickOutside);
+    }
   };
 
   const closeShareMenu = () => {
     shareMenuOpen = false;
+    document.removeEventListener('click', closeOnClickOutside);
   };
 
   const handleShare = () => {
@@ -55,21 +74,10 @@
     event.target.value = '';
   };
 
-  const handleDocumentClick = (event) => {
-    if (!shareMenuOpen) return;
-    const target = event.target;
-    if (typeof Element !== 'undefined' && target instanceof Element) {
-      if (!shareMenuEl?.contains(target)) {
-        shareMenuOpen = false;
-      }
-    } else {
-      shareMenuOpen = false;
-    }
-  };
-
   const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape' && shareMenuOpen) {
       shareMenuOpen = false;
+      document.removeEventListener('click', closeOnClickOutside);
     }
   };
 
@@ -77,16 +85,14 @@
     event.target.select?.();
   };
 
-  onMount(() => {
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleDocumentKeydown);
-    }
-  });
+  // Add keyboard listener on mount
+  if (typeof document !== 'undefined') {
+    document.addEventListener('keydown', handleDocumentKeydown);
+  }
 
   onDestroy(() => {
     if (typeof document !== 'undefined') {
-      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('click', closeOnClickOutside);
       document.removeEventListener('keydown', handleDocumentKeydown);
     }
   });
