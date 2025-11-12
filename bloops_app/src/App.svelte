@@ -12,6 +12,7 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
+  import PatternSelector from './components/PatternSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -504,6 +505,31 @@
     library.deleteCurrent();
   };
 
+  // Pattern management handlers
+  const handlePatternSelect = (event) => {
+    const { index } = event.detail;
+    project.selectPattern(index);
+  };
+
+  const handlePatternAdd = () => {
+    project.addPattern();
+  };
+
+  const handlePatternDuplicate = (event) => {
+    const { index } = event.detail;
+    project.duplicatePattern(index);
+  };
+
+  const handlePatternRemove = (event) => {
+    const { index } = event.detail;
+    project.removePattern(index);
+  };
+
+  const handlePatternRename = (event) => {
+    const { index, name } = event.detail;
+    project.renamePattern(index, name);
+  };
+
   const handleRenderWav = async () => {
     try {
       const snapshot = project.toSnapshot();
@@ -707,6 +733,8 @@
   $: trackColor = activeTrack?.color ?? colors.accent;
   $: normalizedTrackColor = normalizeHex(trackColor);
   $: noteChipGlow = normalizedTrackColor ? hexToRgba(normalizedTrackColor, 0.32) ?? DEFAULT_NOTE_GLOW : DEFAULT_NOTE_GLOW;
+  $: patterns = projectState?.patterns ?? [];
+  $: selectedPattern = projectState?.selectedPattern ?? 0;
   $: isPlaying = projectState?.playing ?? false;
   $: isFollowing = projectState?.follow ?? false;
   $: projectName = projectState?.name ?? 'Untitled loop';
@@ -801,6 +829,15 @@
         on:remove={handleTrackRemove}
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
+      />
+      <PatternSelector
+        patterns={patterns}
+        selectedPattern={selectedPattern}
+        on:select={handlePatternSelect}
+        on:add={handlePatternAdd}
+        on:duplicate={handlePatternDuplicate}
+        on:remove={handlePatternRemove}
+        on:rename={handlePatternRename}
       />
       <div class="rail-stats">
         <div class="stat-field">

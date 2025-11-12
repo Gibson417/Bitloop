@@ -1,0 +1,263 @@
+<script>
+  import { createEventDispatcher } from 'svelte';
+
+  export let patterns = [];
+  export let selectedPattern = 0;
+
+  const dispatch = createEventDispatcher();
+
+  const handleSelect = (index) => {
+    dispatch('select', { index });
+  };
+
+  const handleAdd = () => {
+    dispatch('add');
+  };
+
+  const handleDuplicate = (index) => {
+    dispatch('duplicate', { index });
+  };
+
+  const handleRemove = (index) => {
+    dispatch('remove', { index });
+  };
+
+  const handleRename = (index, event) => {
+    const newName = event.target.value;
+    if (newName && newName.trim()) {
+      dispatch('rename', { index, name: newName });
+    }
+  };
+
+  $: canRemove = patterns.length > 1;
+</script>
+
+<div class="pattern-selector">
+  <div class="pattern-header">
+    <h3 class="pattern-title">Patterns</h3>
+    <button
+      type="button"
+      class="add-pattern-btn"
+      on:click={handleAdd}
+      title="Add new pattern"
+      aria-label="Add new pattern"
+    >
+      +
+    </button>
+  </div>
+  
+  <div class="pattern-list">
+    {#each patterns as pattern, index (pattern.id)}
+      <div 
+        class="pattern-item" 
+        class:selected={index === selectedPattern}
+        role="button"
+        tabindex="0"
+        on:click={() => handleSelect(index)}
+        on:keydown={(e) => e.key === 'Enter' && handleSelect(index)}
+      >
+        <input
+          type="text"
+          class="pattern-name"
+          value={pattern.name}
+          on:change={(e) => handleRename(index, e)}
+          on:click={(e) => e.stopPropagation()}
+          placeholder="Pattern name"
+          aria-label="Pattern name"
+        />
+        <div class="pattern-actions">
+          <button
+            type="button"
+            class="pattern-action-btn"
+            on:click|stopPropagation={() => handleDuplicate(index)}
+            title="Duplicate pattern"
+            aria-label="Duplicate pattern"
+          >
+            ⎘
+          </button>
+          {#if canRemove}
+            <button
+              type="button"
+              class="pattern-action-btn remove"
+              on:click|stopPropagation={() => handleRemove(index)}
+              title="Remove pattern"
+              aria-label="Remove pattern"
+            >
+              ×
+            </button>
+          {/if}
+        </div>
+      </div>
+    {/each}
+  </div>
+</div>
+
+<style>
+  .pattern-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--color-panel);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+  }
+
+  .pattern-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .pattern-title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .add-pattern-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .add-pattern-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.26);
+    transform: scale(1.05);
+  }
+
+  .add-pattern-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .pattern-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pattern-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pattern-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(var(--color-accent-rgb), 0.3);
+  }
+
+  .pattern-item.selected {
+    background: rgba(var(--color-accent-rgb), 0.18);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+
+  .pattern-item:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .pattern-name {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .pattern-name:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .pattern-name:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+  }
+
+  .pattern-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .pattern-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .pattern-action-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.2);
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  .pattern-action-btn.remove:hover {
+    border-color: rgba(255, 100, 100, 0.5);
+    background: rgba(255, 100, 100, 0.2);
+    color: #fff;
+  }
+
+  .pattern-action-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .pattern-selector {
+      padding: 12px;
+    }
+
+    .pattern-action-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 1.3rem;
+    }
+
+    .add-pattern-btn {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
