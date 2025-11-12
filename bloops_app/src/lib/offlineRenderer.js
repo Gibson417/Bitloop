@@ -124,9 +124,10 @@ export const renderProjectToWav = async (snapshot) => {
   const stepsPerBar = snapshot.stepsPerBar ?? 16;
   const bpm = snapshot.bpm ?? 120;
   const rows = snapshot.rows ?? 8;
-  const totalSteps = bars * stepsPerBar;
+  const BASE_RESOLUTION = 64; // Must match projectStore.js
+  const totalStorageSteps = bars * BASE_RESOLUTION;
   const secondsPerBar = (240 / bpm) || 2;
-  const stepDuration = secondsPerBar / stepsPerBar;
+  const durationPerStorageCell = secondsPerBar / BASE_RESOLUTION;
   const loopSeconds = secondsPerBar * bars;
   const sampleRate = 44100;
   const frameCount = Math.ceil(loopSeconds * sampleRate);
@@ -146,11 +147,32 @@ export const renderProjectToWav = async (snapshot) => {
     trackGain.connect(masterGain);
 
     for (let row = 0; row < rows; row += 1) {
-      for (let step = 0; step < totalSteps; step += 1) {
-        if (!track.notes?.[row]?.[step]) continue;
+      const rowNotes = track.notes?.[row];
+      if (!rowNotes) continue;
+      
+      // Iterate through storage array at BASE_RESOLUTION
+      for (let storageIndex = 0; storageIndex < totalStorageSteps; storageIndex += 1) {
+        if (!rowNotes[storageIndex]) continue;
+        
+        // Only trigger note if this is the start of the note (previous cell is inactive or doesn't exist)
+        const isNoteStart = storageIndex === 0 || !rowNotes[storageIndex - 1];
+        if (!isNoteStart) continue;
+        
+        // Calculate actual note duration from storage array
+        // Count consecutive active cells starting from storageIndex
+        let noteLength = 1;
+        for (let i = storageIndex + 1; i < rowNotes.length; i++) {
+          if (rowNotes[i]) {
+            noteLength++;
+          } else {
+            break;
+          }
+        }
+        
         const frequency = midiToFrequency(getMidiForCell(track, row, rows));
-        const startTime = step * stepDuration;
-        addTone(context, trackGain, track, frequency, startTime, stepDuration * 0.95);
+        const startTime = storageIndex * durationPerStorageCell;
+        const noteDuration = noteLength * durationPerStorageCell;
+        addTone(context, trackGain, track, frequency, startTime, noteDuration * 0.95);
       }
     }
   });

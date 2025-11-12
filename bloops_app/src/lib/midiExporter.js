@@ -63,14 +63,14 @@ const createTrackNameEvent = (name) => {
   ];
 };
 
-const createNoteEvents = (notes, totalSteps, rows, track, ticksPerStep) => {
+const createNoteEvents = (notes, rows, track, ticksPerStorageCell, totalStorageSteps) => {
   const events = [];
   const activeNotes = new Map(); // Track which notes are currently on
   
-  for (let step = 0; step < totalSteps; step++) {
+  for (let storageIndex = 0; storageIndex < totalStorageSteps; storageIndex++) {
     for (let row = 0; row < rows; row++) {
       const noteKey = `${row}`;
-      const isActive = notes?.[row]?.[step];
+      const isActive = notes?.[row]?.[storageIndex];
       const wasActive = activeNotes.has(noteKey);
       
       if (isActive && !wasActive) {
@@ -78,15 +78,15 @@ const createNoteEvents = (notes, totalSteps, rows, track, ticksPerStep) => {
         const midiNote = getMidiForCell(track, row, rows);
         const velocity = Math.floor((track.volume ?? 0.7) * 127);
         events.push({
-          time: step * ticksPerStep,
+          time: storageIndex * ticksPerStorageCell,
           data: [0x90, midiNote, velocity] // Note On, channel 0
         });
-        activeNotes.set(noteKey, { midiNote, step });
+        activeNotes.set(noteKey, { midiNote, storageIndex });
       } else if (!isActive && wasActive) {
         // Note Off
         const { midiNote } = activeNotes.get(noteKey);
         events.push({
-          time: step * ticksPerStep,
+          time: storageIndex * ticksPerStorageCell,
           data: [0x80, midiNote, 0] // Note Off
         });
         activeNotes.delete(noteKey);
@@ -97,7 +97,7 @@ const createNoteEvents = (notes, totalSteps, rows, track, ticksPerStep) => {
   // Turn off any remaining notes at the end
   for (const [noteKey, { midiNote }] of activeNotes) {
     events.push({
-      time: totalSteps * ticksPerStep,
+      time: totalStorageSteps * ticksPerStorageCell,
       data: [0x80, midiNote, 0]
     });
   }
@@ -143,11 +143,13 @@ export const renderProjectToMidi = (snapshot) => {
   const stepsPerBar = snapshot.stepsPerBar ?? 16;
   const bpm = snapshot.bpm ?? 120;
   const rows = snapshot.rows ?? 8;
-  const totalSteps = bars * stepsPerBar;
+  const BASE_RESOLUTION = 64; // Must match projectStore.js
+  const totalStorageSteps = bars * BASE_RESOLUTION;
   
   // MIDI timing
   const ticksPerQuarter = 480;
-  const ticksPerStep = ticksPerQuarter / (stepsPerBar / 4); // Assuming 4/4 time
+  // Each storage cell is (1/BASE_RESOLUTION) of a bar = (1/BASE_RESOLUTION) * 4 beats
+  const ticksPerStorageCell = (ticksPerQuarter * 4) / BASE_RESOLUTION;
   
   const audibleTracks = snapshot.tracks?.some((track) => track.solo)
     ? snapshot.tracks.filter((track) => track.solo)
@@ -170,7 +172,7 @@ export const renderProjectToMidi = (snapshot) => {
   audibleTracks.forEach((track, index) => {
     const trackData = [
       ...createTrackNameEvent(track.name ?? `Track ${index + 1}`),
-      ...createNoteEvents(track.notes, totalSteps, rows, track, ticksPerStep),
+      ...createNoteEvents(track.notes, rows, track, ticksPerStorageCell, totalStorageSteps),
       ...writeVarLen(0), // Delta time: 0
       0xff, 0x2f, 0x00 // End of Track
     ];
