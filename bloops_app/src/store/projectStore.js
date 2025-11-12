@@ -5,6 +5,9 @@ export const MAX_LOOP_SECONDS = 300;
 // Base resolution per bar for internal storage. All notes are stored at this resolution.
 export const BASE_RESOLUTION = 64;
 
+// Note event structure: { row: number, start: number, length: number }
+// start and length are in 64th-note storage steps (0..bars*BASE_RESOLUTION-1)
+
 const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
 const DEFAULT_BARS = 4;
@@ -93,6 +96,70 @@ const sanitizeAdsr = (adsr = {}) => {
   const releaseValue = Number.parseFloat(adsr.release);
   const release = clamp(Number.isFinite(releaseValue) ? releaseValue : DEFAULT_ADSR.release, 0.001, 5);
   return { attack, decay, sustain, release };
+};
+
+// Convert boolean matrix to note events
+// Returns array of { row, start, length } for each track row
+const booleanToEvents = (booleanMatrix, rows) => {
+  const result = [];
+  for (let row = 0; row < rows; row++) {
+    const rowNotes = booleanMatrix[row] ?? [];
+    const rowEvents = [];
+    let noteStart = -1;
+    
+    for (let step = 0; step < rowNotes.length; step++) {
+      if (rowNotes[step]) {
+        if (noteStart === -1) {
+          noteStart = step;
+        }
+      } else if (noteStart !== -1) {
+        // End of note
+        rowEvents.push({ row, start: noteStart, length: step - noteStart });
+        noteStart = -1;
+      }
+    }
+    
+    // Handle note that extends to end
+    if (noteStart !== -1) {
+      rowEvents.push({ row, start: noteStart, length: rowNotes.length - noteStart });
+    }
+    
+    result.push(...rowEvents);
+  }
+  return result;
+};
+
+// Convert note events to boolean matrix
+// events: array of { row, start, length }
+// Returns 2D boolean array [rows][steps]
+const eventsToBooleans = (events, rows, storageSteps) => {
+  const matrix = Array.from({ length: rows }, () => Array.from({ length: storageSteps }, () => false));
+  
+  for (const event of events) {
+    const { row, start, length } = event;
+    if (row < 0 || row >= rows) continue;
+    
+    const safeStart = clamp(Math.floor(start), 0, storageSteps - 1);
+    const safeLength = Math.max(1, Math.floor(length));
+    const end = Math.min(safeStart + safeLength, storageSteps);
+    
+    for (let step = safeStart; step < end; step++) {
+      matrix[row][step] = true;
+    }
+  }
+  
+  return matrix;
+};
+
+// Get all note events from a track's boolean matrix
+export const getTrackEvents = (track, rows) => {
+  if (!track || !track.notes) return [];
+  return booleanToEvents(track.notes, rows);
+};
+
+// Set track notes from events
+export const setTrackFromEvents = (events, rows, storageSteps) => {
+  return eventsToBooleans(events, rows, storageSteps);
 };
 
 const resizeTrack = (track, rows, storageSteps) => {

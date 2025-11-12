@@ -51,6 +51,33 @@
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
+  // Convert boolean matrix to note events for rendering
+  const extractNoteEvents = (notesMatrix, rows) => {
+    const events = [];
+    for (let row = 0; row < rows; row++) {
+      const rowNotes = notesMatrix?.[row] ?? [];
+      let noteStart = -1;
+      
+      for (let step = 0; step < rowNotes.length; step++) {
+        if (rowNotes[step]) {
+          if (noteStart === -1) {
+            noteStart = step;
+          }
+        } else if (noteStart !== -1) {
+          // End of note
+          events.push({ row, start: noteStart, length: step - noteStart });
+          noteStart = -1;
+        }
+      }
+      
+      // Handle note that extends to end
+      if (noteStart !== -1) {
+        events.push({ row, start: noteStart, length: rowNotes.length - noteStart });
+      }
+    }
+    return events;
+  };
+
   const getStyles = () => {
     const style = getComputedStyle(canvas);
     return {
@@ -156,41 +183,94 @@
       
       ctx.restore();
 
-      // Draw notes (map displayed column -> underlying step index)
+      // Draw notes as events (dots with duration bars)
       ctx.save();
-      for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < displayColumns; col++) {
-        // Map displayed column -> underlying storage step index range
-        const storageStart = Math.floor((col * storageColumns) / displayColumns);
-        const storageEnd = Math.floor(((col + 1) * storageColumns) / displayColumns);
-        // Check if ANY cell in the storage range is active (fixes display for mixed resolutions)
-        const rowNotes = notes?.[row] ?? [];
-        const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
-          const cx = col * cellSize + cellSize / 2;
-          const cy = row * cellSize + cellSize / 2;
-          const radius = cellSize * 0.28;
-
-          const inactive = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
-          inactive.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
-          inactive.addColorStop(1, styles.inactive);
-
-          if (isActive) {
-            ctx.shadowColor = hexToRgba(trackColor, 0.7);
-            ctx.shadowBlur = cellSize * 0.5;
-            ctx.fillStyle = hexToRgba(trackColor, 0.9);
-          } else {
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = inactive;
-          }
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (isActive) {
+      
+      // Extract note events from boolean matrix
+      const noteEvents = extractNoteEvents(notes, rows);
+      
+      // Draw each note event
+      for (const event of noteEvents) {
+        const { row, start, length } = event;
+        
+        // Convert storage coordinates to display coordinates
+        const displayStartCol = Math.floor((start * displayColumns) / storageColumns);
+        const displayEndCol = Math.floor(((start + length) * displayColumns) / storageColumns);
+        const displayLength = Math.max(1, displayEndCol - displayStartCol);
+        
+        // Skip if note is outside visible area
+        if (displayStartCol >= displayColumns || displayEndCol < 0) continue;
+        
+        // Clamp to visible area
+        const visibleStartCol = Math.max(0, displayStartCol);
+        const visibleEndCol = Math.min(displayColumns, displayEndCol);
+        
+        // Draw note start dot
+        const startX = displayStartCol * cellSize + cellSize / 2;
+        const cy = row * cellSize + cellSize / 2;
+        const radius = cellSize * 0.28;
+        
+        ctx.shadowColor = hexToRgba(trackColor, 0.7);
+        ctx.shadowBlur = cellSize * 0.5;
+        ctx.fillStyle = hexToRgba(trackColor, 0.9);
+        ctx.beginPath();
+        ctx.arc(startX, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.fillStyle = hexToRgba(trackColor, 0.45);
+        ctx.arc(startX, cy, radius * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw duration bar if note spans multiple cells
+        if (displayLength > 1) {
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          
+          const barY = cy;
+          const barHeight = cellSize * 0.15;
+          const barStartX = startX + radius;
+          const barEndX = (displayEndCol * cellSize) - cellSize / 2;
+          const barWidth = Math.max(0, barEndX - barStartX);
+          
+          if (barWidth > 0) {
+            // Draw duration bar
+            ctx.fillStyle = hexToRgba(trackColor, 0.5);
+            ctx.fillRect(barStartX, barY - barHeight / 2, barWidth, barHeight);
+            
+            // Draw end cap
+            ctx.fillStyle = hexToRgba(trackColor, 0.7);
             ctx.beginPath();
-            ctx.fillStyle = hexToRgba(trackColor, 0.45);
-            ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
+            ctx.arc(barEndX, barY, barHeight / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+      
+      // Draw inactive note placeholders
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < displayColumns; col++) {
+          // Map displayed column -> underlying storage step index range
+          const storageStart = Math.floor((col * storageColumns) / displayColumns);
+          const storageEnd = Math.floor(((col + 1) * storageColumns) / displayColumns);
+          // Check if ANY cell in the storage range is active
+          const rowNotes = notes?.[row] ?? [];
+          const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
+          
+          if (!isActive) {
+            const cx = col * cellSize + cellSize / 2;
+            const cy = row * cellSize + cellSize / 2;
+            const radius = cellSize * 0.28;
+            
+            const inactive = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+            inactive.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+            inactive.addColorStop(1, styles.inactive);
+            
+            ctx.fillStyle = inactive;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
             ctx.fill();
           }
         }
