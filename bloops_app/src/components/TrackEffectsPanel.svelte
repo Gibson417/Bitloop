@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import KnobControl from './KnobControl.svelte';
+  import ArrowSelector from './ArrowSelector.svelte';
 
   export let track = null;
   export let trackIndex = 0;
@@ -68,16 +69,12 @@
     {#if activePanel === 'effects'}
       <div class="effects-grid">
         <div class="effect-header">
-          <span>Filter</span>
-          <select
-            id={`filter-type-${trackIndex}`}
-            on:change={(event) => handleEffectsChange({ filterType: event.target.value })}
+          <ArrowSelector
+            label="Filter"
+            options={filterOptions}
             value={currentEffects.filterType ?? 'none'}
-          >
-            {#each filterOptions as option}
-              <option value={option}>{option}</option>
-            {/each}
-          </select>
+            on:change={(event) => handleEffectsChange({ filterType: event.detail.value })}
+          />
         </div>
         <KnobControl
           className="effect-knob"
@@ -333,28 +330,13 @@
   .effect-header {
     grid-column: 1 / -1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7);
-  }
-
-  .effect-header select {
-    min-width: 140px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    font-size: 0.9rem;
-  }
-
-  .effect-header select:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.45);
-    outline-offset: 2px;
   }
 
   .effects-grid :global(.effect-knob),
