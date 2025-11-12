@@ -7,7 +7,7 @@
   import TrackEffectsPanel from './components/TrackEffectsPanel.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
-  import ThemeSelector from './components/ThemeSelector.svelte';
+  import SettingsMenu from './components/SettingsMenu.svelte';
   import KnobControl from './components/KnobControl.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
@@ -873,7 +873,7 @@
             on:export={handleShareMenuExport}
             on:import={handleShareMenuImport}
           />
-          <ThemeSelector />
+          <SettingsMenu />
         </div>
       </div>
     </div>
