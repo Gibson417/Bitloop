@@ -21,17 +21,17 @@ const THEMES = {
   light: {
     name: 'Light',
     colors: {
-      accent: '#28a88f',
-      accentRgb: '40, 168, 143',
-      accentBright: '#35D4B4',
-      accentBrightRgb: '53, 212, 180',
-      noteActive: '#2890d8',
-      noteActiveRgb: '40, 144, 216',
-      noteInactive: '#b8bcc4',
-      background: '#f5f7fa',
+      accent: '#1a8a7a',
+      accentRgb: '26, 138, 122',
+      accentBright: '#0e6d5f',
+      accentBrightRgb: '14, 109, 95',
+      noteActive: '#0d7ac4',
+      noteActiveRgb: '13, 122, 196',
+      noteInactive: '#7a8190',
+      background: '#fafbfc',
       panel: '#ffffff',
-      text: '#1a1d24',
-      textMuted: 'rgba(26, 29, 36, 0.7)'
+      text: '#1a1d28',
+      textMuted: 'rgba(26, 29, 40, 0.65)'
     }
   },
   classic: {
