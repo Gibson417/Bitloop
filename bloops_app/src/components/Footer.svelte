@@ -76,43 +76,26 @@
     position: relative;
   }
 
-  .select-shell::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    pointer-events: none;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(120, 210, 255, 0.12));
-    opacity: 0.7;
-  }
-
   .select-shell select {
-    position: relative;
-    z-index: 1;
     width: 100%;
-    background: rgba(12, 16, 24, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.32);
-    border-radius: 12px;
-    padding: 12px 16px;
-    color: rgba(255, 255, 255, 0.92);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #fff;
     font-size: 0.95rem;
+    font-weight: 600;
     appearance: none;
   }
 
   .select-shell select:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
   }
 
   .select-shell select option {
-    background: rgba(20, 24, 34, 0.95);
-    color: rgba(255, 255, 255, 0.92);
-  }
-
-  .select-shell select option:disabled {
-    color: rgba(255, 255, 255, 0.78);
-    background: rgba(120, 210, 255, 0.14);
-    font-weight: 600;
+    background: rgba(26, 29, 40, 0.98);
+    color: #fff;
   }
 
   .library-actions {
