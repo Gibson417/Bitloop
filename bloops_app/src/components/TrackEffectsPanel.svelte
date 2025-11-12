@@ -255,6 +255,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 100%;
   }
 
   .effects-header {
@@ -326,8 +327,9 @@
   .effects-grid,
   .adsr-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px 18px;
+    max-width: 1000px;
   }
 
   .effect-header {

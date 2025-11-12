@@ -77,10 +77,10 @@
     border-radius: 14px;
     border: 2px solid rgba(var(--color-accent-rgb), 0.4);
     background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.22), rgba(22, 26, 36, 0.85));
-    color: #fff;
+    color: rgba(var(--color-accent-rgb), 0.95);
     font-size: 1.4rem;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     box-shadow: 0 16px 36px rgba(var(--color-accent-rgb), 0.25);
   }
 
@@ -99,6 +99,7 @@
   .play-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 20px 40px rgba(var(--color-accent-rgb), 0.28);
+    color: #fff;
   }
 
   .play-button:focus-visible {
@@ -110,6 +111,7 @@
     background: linear-gradient(135deg, rgba(var(--color-accent-bright-rgb), 0.35), rgba(22, 26, 36, 0.85));
     border-color: rgba(var(--color-accent-bright-rgb), 0.5);
     box-shadow: 0 16px 36px rgba(var(--color-accent-bright-rgb), 0.35);
+    color: rgba(var(--color-accent-bright-rgb), 0.95);
   }
 
   .control-button {

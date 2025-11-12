@@ -1197,31 +1197,30 @@
 
   .project-name-input {
     margin: 0;
-  padding: 4px 8px;
-    font-size: 1.8rem;
+    padding: 6px 12px;
+    font-size: 1.6rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
+    letter-spacing: 0.02em;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
     color: #fff;
     font-family: inherit;
     transition: all 0.2s ease;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     cursor: text;
   }
 
   .project-name-input:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-bottom-color: rgba(var(--color-accent-rgb), 0.3);
     cursor: text;
   }
 
   .project-name-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(var(--color-accent-rgb), 0.7);
+    border-bottom-color: rgba(var(--color-accent-rgb), 0.8);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.15);
   }
 
   .header-actions {
@@ -1461,7 +1460,7 @@
     }
     
     .project-name-input {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       max-width: 100%;
     }
     
