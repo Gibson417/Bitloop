@@ -49,6 +49,29 @@
     dispatch('change', { value: nextValue });
   };
 
+  const handleWheel = (event) => {
+    if (disabled) return;
+    event.preventDefault();
+    
+    // Determine step size based on the range
+    const range = max - min;
+    let wheelStep = step;
+    
+    // For larger ranges, use a percentage-based step
+    if (range > 100) {
+      wheelStep = range * 0.01; // 1% of range
+    } else if (range > 10) {
+      wheelStep = range * 0.02; // 2% of range
+    }
+    
+    // Normalize wheel delta (different browsers have different scales)
+    const delta = event.deltaY < 0 ? 1 : -1;
+    const nextValue = clamp(numericValue + (delta * wheelStep));
+    
+    dispatch('input', { value: nextValue });
+    dispatch('change', { value: nextValue });
+  };
+
   $: numericValue = clamp(value);
   $: normalized = Math.min(Math.max(getNormalized(numericValue), 0), 1);
   $: rotation = normalized * KNOB_SWEEP - KNOB_OFFSET;
@@ -60,7 +83,7 @@
   {#if label}
     <span class="knob-label">{label}</span>
   {/if}
-  <div class="knob-shell">
+  <div class="knob-shell" on:wheel={handleWheel}>
     <input
       id={id}
       type="range"
@@ -114,6 +137,11 @@
     position: relative;
     width: 72px;
     height: 72px;
+    cursor: pointer;
+  }
+  
+  .knob-shell:hover .knob-face {
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6), 0 6px 20px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .knob-input {
