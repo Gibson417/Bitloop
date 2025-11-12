@@ -29,6 +29,56 @@
     }
   };
 
+  const handleKeyNavigation = (event, index) => {
+    // Handle Enter key for selection
+    if (event.key === 'Enter') {
+      handleSelect(index);
+      return;
+    }
+
+    // Handle arrow key navigation
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const nextIndex = Math.min(index + 1, patterns.length - 1);
+      if (nextIndex !== index) {
+        handleSelect(nextIndex);
+        // Focus the next pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[nextIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const prevIndex = Math.max(index - 1, 0);
+      if (prevIndex !== index) {
+        handleSelect(prevIndex);
+        // Focus the previous pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[prevIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      handleSelect(0);
+      // Focus the first pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[0]?.focus();
+      }, 0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      const lastIndex = patterns.length - 1;
+      handleSelect(lastIndex);
+      // Focus the last pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[lastIndex]?.focus();
+      }, 0);
+    }
+  };
+
   $: canRemove = patterns.length > 1;
 </script>
 
@@ -54,7 +104,8 @@
         role="button"
         tabindex="0"
         on:click={() => handleSelect(index)}
-        on:keydown={(e) => e.key === 'Enter' && handleSelect(index)}
+        on:keydown={(e) => handleKeyNavigation(e, index)}
+        aria-label="Pattern {index + 1}: {pattern.name}"
       >
         <input
           type="text"
@@ -120,8 +171,8 @@
   }
 
   .add-pattern-btn {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
@@ -210,8 +261,8 @@
   }
 
   .pattern-action-btn {
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.3);
@@ -250,14 +301,14 @@
     }
 
     .pattern-action-btn {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       font-size: 1.3rem;
     }
 
     .add-pattern-btn {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
     }
   }
 </style>
