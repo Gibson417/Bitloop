@@ -104,7 +104,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    color: #fff;
+    color: var(--color-text);
     font-size: 0.78rem;
   }
 
@@ -113,14 +113,14 @@
     letter-spacing: 0.1em;
     font-weight: 600;
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
   }
 
   .selector-controls {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(18, 22, 32, 0.9);
+    background: var(--color-panel);
     border-radius: 10px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.22);
     padding: 6px 8px;
@@ -139,9 +139,9 @@
     width: 32px;
     height: 28px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(var(--color-text), 0.2);
+    background: var(--color-panel);
+    color: var(--color-text-muted);
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -152,7 +152,7 @@
   .arrow-button:hover {
     border-color: rgba(var(--color-accent-rgb), 0.5);
     background: rgba(var(--color-accent-rgb), 0.2);
-    color: #fff;
+    color: var(--color-text);
     transform: scale(1.05);
   }
 
@@ -180,7 +180,7 @@
     text-align: center;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     padding: 4px 12px;
     min-width: 70px;
   }

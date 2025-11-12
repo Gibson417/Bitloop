@@ -560,9 +560,9 @@
     justify-content: flex-start;
     padding: 0;
     min-width: 48px;
-    background: rgba(22, 26, 36, 0.6);
+    background: var(--color-grid-bg);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(var(--color-text), 0.08);
     overflow: hidden;
   }
 
@@ -588,7 +588,7 @@
     overflow-y: hidden;
     background: var(--color-panel);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(var(--color-text), 0.08);
     scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
     scrollbar-width: thin;
   }

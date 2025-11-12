@@ -172,8 +172,8 @@
     gap: 18px;
     padding: 18px;
     border-radius: 18px;
-    background: linear-gradient(135deg, rgba(18, 22, 30, 0.9), rgba(10, 12, 16, 0.92));
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end));
+    border: 1px solid rgba(var(--color-text), 0.08);
     box-sizing: border-box;
   }
 
@@ -181,7 +181,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    color: #fff;
+    color: var(--color-text);
     font-size: 0.78rem;
   }
 
@@ -194,8 +194,8 @@
   .control:not(.plain) {
     padding: 12px;
     border-radius: 14px;
-    background: rgba(0, 0, 0, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--color-panel);
+    border: 1px solid rgba(var(--color-text), 0.12);
   }
 
   .control label {
@@ -203,7 +203,7 @@
     letter-spacing: 0.1em;
     font-weight: 600;
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
   }
 
   .name-color-group {
@@ -257,10 +257,10 @@
   input[type='number'],
   input[type='range'],
   input[type='text'] {
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
+    background: var(--color-panel);
+    color: var(--color-text);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(var(--color-text), 0.2);
     padding: 8px 12px;
     font-size: 0.95rem;
     width: 100%;
@@ -292,7 +292,7 @@
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
     white-space: nowrap;
     min-width: 60px;
     text-align: right;
@@ -321,7 +321,8 @@
   .help-text {
     display: block;
     font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--color-text-muted);
+    opacity: 0.7;
     margin-top: 4px;
     line-height: 1.3;
   }

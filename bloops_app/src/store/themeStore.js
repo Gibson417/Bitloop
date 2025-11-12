@@ -143,7 +143,7 @@ const THEMES = {
     }
   },
   monochrome: {
-    name: 'Monochrome',
+    name: 'Mono',
     colors: {
       accent: '#888888',
       accentRgb: '136, 136, 136',
