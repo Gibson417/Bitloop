@@ -114,8 +114,20 @@ describe('Grid component', () => {
     canvas.releasePointerCapture = vi.fn();
 
     // Click on the filled cell
-    await fireEvent.pointerDown(canvas, { clientX: 10, clientY: 10, pointerId: 1 });
-    await fireEvent.pointerUp(canvas, { pointerId: 1 });
+    const pointerDownEvent = new PointerEvent('pointerdown', {
+      clientX: 10,
+      clientY: 10,
+      pointerId: 1,
+      bubbles: true,
+      cancelable: true
+    });
+    const pointerUpEvent = new PointerEvent('pointerup', {
+      pointerId: 1,
+      bubbles: true,
+      cancelable: true
+    });
+    canvas.dispatchEvent(pointerDownEvent);
+    canvas.dispatchEvent(pointerUpEvent);
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
@@ -148,8 +160,21 @@ describe('Grid component', () => {
     canvas.releasePointerCapture = vi.fn();
 
     // Click on an empty cell WITH shift key - should erase (value=false)
-    await fireEvent.pointerDown(canvas, { clientX: 10, clientY: 10, pointerId: 1, shiftKey: true });
-    await fireEvent.pointerUp(canvas, { pointerId: 1 });
+    const pointerDownEvent = new PointerEvent('pointerdown', {
+      clientX: 10,
+      clientY: 10,
+      pointerId: 1,
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true
+    });
+    const pointerUpEvent = new PointerEvent('pointerup', {
+      pointerId: 1,
+      bubbles: true,
+      cancelable: true
+    });
+    canvas.dispatchEvent(pointerDownEvent);
+    canvas.dispatchEvent(pointerUpEvent);
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
@@ -182,8 +207,21 @@ describe('Grid component', () => {
     canvas.releasePointerCapture = vi.fn();
 
     // Click on an empty cell WITH alt key - should erase (value=false)
-    await fireEvent.pointerDown(canvas, { clientX: 10, clientY: 10, pointerId: 1, altKey: true });
-    await fireEvent.pointerUp(canvas, { pointerId: 1 });
+    const pointerDownEvent = new PointerEvent('pointerdown', {
+      clientX: 10,
+      clientY: 10,
+      pointerId: 1,
+      altKey: true,
+      bubbles: true,
+      cancelable: true
+    });
+    const pointerUpEvent = new PointerEvent('pointerup', {
+      pointerId: 1,
+      bubbles: true,
+      cancelable: true
+    });
+    canvas.dispatchEvent(pointerDownEvent);
+    canvas.dispatchEvent(pointerUpEvent);
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
