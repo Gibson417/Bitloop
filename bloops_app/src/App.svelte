@@ -159,14 +159,38 @@
       for (let row = 0; row < rows; row += 1) {
           // Map logical stepIndex -> storage index using BASE_RESOLUTION
           const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
-          if (track.notes?.[row]?.[storageIndex]) {
+          const rowNotes = track.notes?.[row];
+          if (!rowNotes?.[storageIndex]) continue;
+          
+          // Only trigger note if this is the start of the note (previous cell is inactive or doesn't exist)
+          const isNoteStart = storageIndex === 0 || !rowNotes[storageIndex - 1];
+          if (!isNoteStart) continue;
+          
           const midi = getMidiForCell(track, row);
           const frequency = midiToFrequency(midi);
+          
+          // Calculate actual note duration from storage array
+          // Count consecutive active cells starting from storageIndex
+          let noteLength = 1;
+          for (let i = storageIndex + 1; i < rowNotes.length; i++) {
+            if (rowNotes[i]) {
+              noteLength++;
+            } else {
+              break;
+            }
+          }
+          
+          // Calculate duration based on note length in storage
+          // Each storage cell represents (1/BASE_RESOLUTION) of a bar
+          const secondsPerBeat = 60 / state.bpm;
+          const secondsPerBar = secondsPerBeat * 4; // 4 beats per bar
+          const durationPerStorageCell = secondsPerBar / BASE_RESOLUTION;
+          const noteDuration = noteLength * durationPerStorageCell;
+          
           // Apply minimum duration of 50ms to prevent clicks on very short notes
           const minDuration = 0.05; // 50ms minimum gate time
-          const safeDuration = Math.max(stepDuration * 0.95, minDuration);
+          const safeDuration = Math.max(noteDuration * 0.95, minDuration);
           playTone(track, frequency, time, safeDuration);
-        }
       }
     });
   };
