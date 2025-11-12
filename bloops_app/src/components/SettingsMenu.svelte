@@ -166,7 +166,7 @@
     padding: 16px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(12, 16, 24, 0.95);
+    background: var(--color-panel);
     backdrop-filter: blur(10px);
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
     min-width: 220px;

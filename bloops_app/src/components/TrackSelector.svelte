@@ -243,8 +243,8 @@
     padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(17, 20, 29, 0.5);
-    color: #fff;
+    background: rgba(var(--color-background, 17, 20, 29), 0.5);
+    color: var(--color-text, #fff);
     text-align: left;
     gap: 8px;
     transition: all 0.2s ease;
@@ -254,7 +254,7 @@
 
   .track-item:hover {
     border-color: rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(17, 20, 29, 0.85);
+    background: rgba(var(--color-background, 17, 20, 29), 0.85);
     transform: translateY(-1px);
   }
 
