@@ -246,8 +246,8 @@
   .track-effects {
     padding: 24px;
     border-radius: 24px;
-    background: linear-gradient(135deg, rgba(15, 18, 26, 0.92), rgba(12, 14, 22, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end));
+    border: 1px solid rgba(var(--color-text-muted), 0.15);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -267,13 +267,13 @@
     font-size: 1.2rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--color-text);
   }
 
   .effects-header p {
     margin: 6px 0 0;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     max-width: 360px;
     letter-spacing: 0.03em;
   }
@@ -290,9 +290,9 @@
     gap: 8px;
     padding: 10px 16px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(var(--color-text), 0.2);
+    background: var(--color-panel);
+    color: var(--color-text-muted);
     font-size: 0.82rem;
     font-weight: 600;
     letter-spacing: 0.1em;
@@ -306,13 +306,13 @@
     outline: none;
     border-color: rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.18);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .panel-toggle.active {
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.25);
-    color: #fff;
+    color: var(--color-text);
     box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
@@ -337,13 +337,13 @@
     letter-spacing: 0.1em;
     font-size: 0.75rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
   }
 
   .effects-grid :global(.effect-knob),
   .adsr-grid :global(.effect-knob) {
-    background: rgba(0, 0, 0, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-panel);
+    border: 1px solid rgba(var(--color-text), 0.12);
     border-radius: 12px;
     padding: 14px 10px 18px;
   }
