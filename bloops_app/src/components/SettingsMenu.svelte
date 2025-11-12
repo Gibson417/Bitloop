@@ -1,9 +1,11 @@
 <script>
   import { onDestroy, tick } from 'svelte';
   import ThemeSelector from './ThemeSelector.svelte';
+  import HowToGuide from './HowToGuide.svelte';
 
   let settingsMenuOpen = false;
   let settingsMenuEl;
+  let showGuide = false;
 
   const toggleSettingsMenu = async (event) => {
     event?.stopPropagation?.();
@@ -31,6 +33,15 @@
   const closeSettingsMenu = () => {
     settingsMenuOpen = false;
     document.removeEventListener('click', closeOnClickOutside);
+  };
+
+  const openGuide = () => {
+    showGuide = true;
+    closeSettingsMenu();
+  };
+
+  const closeGuide = () => {
+    showGuide = false;
   };
 
   const handleDocumentKeydown = (event) => {
@@ -74,9 +85,27 @@
       <div class="settings-section">
         <ThemeSelector />
       </div>
+      <div class="settings-divider"></div>
+      <button 
+        type="button" 
+        class="menu-item how-to-btn"
+        on:click={openGuide}
+        role="menuitem"
+      >
+        <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span>How To / Guide</span>
+      </button>
     </div>
   {/if}
 </div>
+
+{#if showGuide}
+  <HowToGuide on:close={closeGuide} />
+{/if}
 
 <style>
   .settings-menu {
@@ -148,6 +177,56 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .settings-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    margin: 4px 0;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+    border-radius: 8px;
+    background: rgba(var(--color-accent-rgb), 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+  }
+
+  .menu-icon {
+    width: 18px;
+    height: 18px;
+    color: rgba(var(--color-accent-rgb), 0.8);
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+  }
+
+  .menu-item:hover {
+    background: rgba(var(--color-accent-rgb), 0.12);
+    border-color: rgba(var(--color-accent-rgb), 0.35);
+    transform: translateX(2px);
+  }
+
+  .menu-item:hover .menu-icon {
+    color: rgba(var(--color-accent-rgb), 1);
+  }
+
+  .menu-item:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.6);
+    outline-offset: 2px;
+  }
+
+  .menu-item:active {
+    transform: translateX(0);
   }
 
   @media (max-width: 768px) {
