@@ -344,8 +344,10 @@ const createProjectStore = () => {
       const currentSlice = rowNotes.slice(storageStart, sliceEnd);
       let nextValue = value;
       if (nextValue === undefined) {
-        const allActive = currentSlice.length > 0 && currentSlice.every(Boolean);
-        nextValue = !allActive;
+        // Use some() to detect if ANY part of the slice has notes
+        // This ensures proper toggle behavior when notes were placed at different resolutions
+        const anyActive = currentSlice.length > 0 && currentSlice.some(Boolean);
+        nextValue = !anyActive;
       }
 
       const desiredValue = !!nextValue;
@@ -413,8 +415,10 @@ const createProjectStore = () => {
       const currentSlice = rowNotes.slice(safeStart, sliceEnd);
       let nextValue = value;
       if (nextValue === undefined) {
-        const allActive = currentSlice.length > 0 && currentSlice.every(Boolean);
-        nextValue = !allActive;
+        // Use some() to detect if ANY part of the slice has notes
+        // This ensures proper toggle behavior when notes were placed at different resolutions
+        const anyActive = currentSlice.length > 0 && currentSlice.some(Boolean);
+        nextValue = !anyActive;
       }
 
       const desiredValue = !!nextValue;

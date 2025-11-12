@@ -136,9 +136,12 @@
       ctx.save();
       for (let row = 0; row < rows; row++) {
       for (let col = 0; col < displayColumns; col++) {
-        // Map displayed column -> underlying storage step index
-        const storageIndex = Math.floor((col * storageColumns) / displayColumns);
-        const isActive = !!notes?.[row]?.[storageIndex];
+        // Map displayed column -> underlying storage step index range
+        const storageStart = Math.floor((col * storageColumns) / displayColumns);
+        const storageEnd = Math.floor(((col + 1) * storageColumns) / displayColumns);
+        // Check if ANY cell in the storage range is active (fixes display for mixed resolutions)
+        const rowNotes = notes?.[row] ?? [];
+        const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
           const cx = col * cellSize + cellSize / 2;
           const cy = row * cellSize + cellSize / 2;
           const radius = cellSize * 0.28;
@@ -257,7 +260,9 @@
     const sliceStart = storageStart;
     const sliceEnd = storageStart + storageLength;
     const currentSlice = (notes?.[row] ?? []).slice(sliceStart, sliceEnd);
-    const current = currentSlice.length > 0 && currentSlice.every(Boolean);
+    // Use some(Boolean) instead of every(Boolean) to detect if ANY part has notes
+    // This fixes erasing when notes were placed at different resolutions
+    const current = currentSlice.length > 0 && currentSlice.some(Boolean);
     if (!pointerActive) {
       pointerActive = true;
       paintValue = !current;
@@ -350,11 +355,11 @@
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
       const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
       
-      // Get current state of the cell
+      // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
       const sliceEnd = storageStart + storageLength;
       const currentSlice = (notes?.[focusedRow] ?? []).slice(sliceStart, sliceEnd);
-      const current = currentSlice.length > 0 && currentSlice.every(Boolean);
+      const current = currentSlice.length > 0 && currentSlice.some(Boolean);
       
       // Toggle the note
       dispatch('notechange', { 
