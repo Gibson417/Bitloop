@@ -505,6 +505,16 @@ const createProjectStore = () => {
       });
 
       changed = true;
+      
+      // Update patterns if they exist
+      if (state.patterns && Array.isArray(state.patterns)) {
+        const patterns = state.patterns.map((pattern, idx) => {
+          if (idx !== state.selectedPattern) return pattern;
+          return { ...pattern, tracks };
+        });
+        return { ...state, tracks, patterns };
+      }
+      
       return { ...state, tracks };
     });
 
@@ -576,6 +586,16 @@ const createProjectStore = () => {
       });
 
       changed = true;
+      
+      // Update patterns if they exist
+      if (state.patterns && Array.isArray(state.patterns)) {
+        const patterns = state.patterns.map((pattern, idx) => {
+          if (idx !== state.selectedPattern) return pattern;
+          return { ...pattern, tracks };
+        });
+        return { ...state, tracks, patterns };
+      }
+      
       return { ...state, tracks };
     });
 
