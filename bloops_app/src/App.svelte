@@ -826,7 +826,6 @@
   <section class="workspace">
     <div class="workspace-header">
       <div class="session-info">
-        <span class="eyebrow">Project</span>
         <input
           class="project-name-input"
           type="text"
@@ -1167,7 +1166,6 @@
   .session-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
   }
 
   .eyebrow {

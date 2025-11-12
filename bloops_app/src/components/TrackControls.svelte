@@ -208,7 +208,7 @@
 
   .name-color-group {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
   }
 
