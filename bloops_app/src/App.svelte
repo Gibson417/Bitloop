@@ -960,11 +960,13 @@
         />
       </div>
     </div>
-    <TrackEffectsPanel
-      track={activeTrack}
-      trackIndex={projectState?.selectedTrack ?? 0}
-      on:update={handleTrackUpdate}
-    />
+    <div class="track-effects-wrapper">
+      <TrackEffectsPanel
+        track={activeTrack}
+        trackIndex={projectState?.selectedTrack ?? 0}
+        on:update={handleTrackUpdate}
+      />
+    </div>
     <Footer
       projects={projects}
       currentId={currentProjectId}
@@ -1360,6 +1362,11 @@
   }
 
   .track-controls-wrapper {
+    padding: 0 24px;
+    margin-bottom: 20px;
+  }
+
+  .track-effects-wrapper {
     padding: 0 24px;
     margin-bottom: 20px;
   }

@@ -112,24 +112,40 @@
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
 
-      // Draw grid lines
+      // Draw grid lines (vertical only, with different intensities for bars and quarter-bars)
       ctx.save();
-      ctx.strokeStyle = hexToRgba(trackColor, 0.18);
       ctx.lineWidth = 1;
+      
+      // Calculate quarter-bar step size in logical steps
+      const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
+      
       for (let col = 0; col <= displayColumns; col++) {
+        // Map displayed column back to logical step in the source columns
+        const logicalStep = Math.floor((col * logicalColumns) / displayColumns);
+        
+        // Check if this logical step aligns with bar or quarter-bar boundaries
+        const isBarBoundary = logicalStep % stepsPerBarSafe === 0;
+        const isQuarterBarBoundary = logicalStep % stepsPerQuarterBar === 0;
+        
+        // Only draw lines at quarter-bar increments or bar boundaries
+        if (!isQuarterBarBoundary && !isBarBoundary) continue;
+        
         const x = col * cellSize + 0.5;
+        
+        // Use different opacity/color for bar boundaries vs quarter-bar boundaries
+        if (isBarBoundary) {
+          ctx.strokeStyle = hexToRgba(trackColor, 0.28); // More visible for bars
+        } else {
+          ctx.strokeStyle = hexToRgba(trackColor, 0.10); // Faint for quarter-bars
+        }
+        
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, layout.height);
         ctx.stroke();
       }
-      for (let row = 0; row <= rows; row++) {
-        const y = row * cellSize + 0.5;
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(layout.width, y);
-        ctx.stroke();
-      }
+      
+      ctx.restore();
       ctx.restore();
 
       // Draw notes (map displayed column -> underlying step index)
