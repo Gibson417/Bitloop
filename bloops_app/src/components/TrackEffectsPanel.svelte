@@ -313,7 +313,7 @@
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.25);
     color: #fff;
-    box-shadow: 0 14px 28px rgba(var(--color-accent-rgb), 0.25);
+    box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .chevron {

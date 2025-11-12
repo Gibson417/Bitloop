@@ -860,33 +860,33 @@
         />
       </div>
       <div class="header-actions">
-        <div class="history-buttons">
-          <button
-            type="button"
-            class="icon-btn"
-            on:click={handleUndo}
-            disabled={!canUndo}
-            title="Undo"
-            aria-label="Undo"
-          >
-            ↶
-          </button>
-          <button
-            type="button"
-            class="icon-btn"
-            on:click={handleRedo}
-            disabled={!canRedo}
-            title="Redo"
-            aria-label="Redo"
-          >
-            ↷
-          </button>
-        </div>
         <div class="status-controls">
           <span class={`pill ${isPlaying ? 'playing' : ''}`}>
             {isPlaying ? 'Playing' : 'Stopped'}
           </span>
           <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+          <div class="history-buttons">
+            <button
+              type="button"
+              class="icon-btn"
+              on:click={handleUndo}
+              disabled={!canUndo}
+              title="Undo"
+              aria-label="Undo"
+            >
+              ↶
+            </button>
+            <button
+              type="button"
+              class="icon-btn"
+              on:click={handleRedo}
+              disabled={!canRedo}
+              title="Redo"
+              aria-label="Redo"
+            >
+              ↷
+            </button>
+          </div>
         </div>
         <div class="utility-buttons">
           <ShareMenu
