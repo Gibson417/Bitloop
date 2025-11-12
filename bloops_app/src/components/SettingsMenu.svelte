@@ -1,47 +1,53 @@
 <script>
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
   import ThemeSelector from './ThemeSelector.svelte';
 
   let settingsMenuOpen = false;
   let settingsMenuEl;
 
-  const toggleSettingsMenu = (event) => {
+  const toggleSettingsMenu = async (event) => {
     event?.stopPropagation?.();
     settingsMenuOpen = !settingsMenuOpen;
+    
+    if (settingsMenuOpen) {
+      // Wait for next tick, then add the click listener
+      await tick();
+      setTimeout(() => {
+        if (settingsMenuOpen) {
+          document.addEventListener('click', closeOnClickOutside, { once: false });
+        }
+      }, 0);
+    }
+  };
+
+  const closeOnClickOutside = (event) => {
+    const target = event.target;
+    if (settingsMenuEl && !settingsMenuEl.contains(target)) {
+      settingsMenuOpen = false;
+      document.removeEventListener('click', closeOnClickOutside);
+    }
   };
 
   const closeSettingsMenu = () => {
     settingsMenuOpen = false;
-  };
-
-  const handleDocumentClick = (event) => {
-    if (!settingsMenuOpen) return;
-    const target = event.target;
-    if (typeof Element !== 'undefined' && target instanceof Element) {
-      if (!settingsMenuEl?.contains(target)) {
-        settingsMenuOpen = false;
-      }
-    } else {
-      settingsMenuOpen = false;
-    }
+    document.removeEventListener('click', closeOnClickOutside);
   };
 
   const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape' && settingsMenuOpen) {
       settingsMenuOpen = false;
+      document.removeEventListener('click', closeOnClickOutside);
     }
   };
 
-  onMount(() => {
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', handleDocumentClick);
-      document.addEventListener('keydown', handleDocumentKeydown);
-    }
-  });
+  // Add keyboard listener on mount
+  if (typeof document !== 'undefined') {
+    document.addEventListener('keydown', handleDocumentKeydown);
+  }
 
   onDestroy(() => {
     if (typeof document !== 'undefined') {
-      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('click', closeOnClickOutside);
       document.removeEventListener('keydown', handleDocumentKeydown);
     }
   });

@@ -218,18 +218,39 @@
   }
 
   .name-color-group input[type='color'] {
-    width: 48px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    border-radius: 50%;
     padding: 0;
     background: none;
     cursor: pointer;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .name-color-group input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  .name-color-group input[type='color']::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+  }
+
+  .name-color-group input[type='color']::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
   }
 
   .name-color-group input[type='color']:hover {
     border-color: rgba(var(--color-accent-rgb), 0.5);
+    transform: scale(1.05);
+  }
+
+  .name-color-group input[type='color']:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   select,
