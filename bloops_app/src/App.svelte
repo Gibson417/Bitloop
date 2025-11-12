@@ -826,7 +826,17 @@
   <section class="workspace">
     <div class="workspace-header">
       <div class="session-info">
+        <label class="project-label" for="project-name-input">
+          <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+          <span class="project-eyebrow">Project Name</span>
+        </label>
         <input
+          id="project-name-input"
           class="project-name-input"
           type="text"
           value={projectName}
@@ -1176,34 +1186,71 @@
     color: rgba(var(--color-accent-rgb), 0.85);
   }
 
+  .project-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .project-icon {
+    width: 18px;
+    height: 18px;
+    color: rgba(var(--color-accent-rgb), 0.75);
+    transition: color 0.2s ease;
+  }
+
+  .project-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(var(--color-accent-rgb), 0.7);
+    transition: color 0.2s ease;
+  }
+
+  .project-label:hover .project-icon,
+  .project-label:hover .project-eyebrow {
+    color: rgba(var(--color-accent-rgb), 0.95);
+  }
+
   .project-name-input {
     margin: 0;
-    padding: 8px 12px;
+    padding: 12px 16px;
     font-size: 1.5rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.01em;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.06), rgba(255, 255, 255, 0.02));
+    border: 1.5px solid rgba(var(--color-accent-rgb), 0.2);
+    border-radius: 10px;
     color: #fff;
     font-family: inherit;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     max-width: 420px;
     cursor: text;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .project-name-input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
   }
 
   .project-name-input:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(var(--color-accent-rgb), 0.2);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.1), rgba(255, 255, 255, 0.04));
+    border-color: rgba(var(--color-accent-rgb), 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.18);
     cursor: text;
   }
 
   .project-name-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(255, 255, 255, 0.06));
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.15), 0 4px 16px rgba(var(--color-accent-rgb), 0.25);
+    transform: translateY(-1px);
   }
 
   .header-actions {
