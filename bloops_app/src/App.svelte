@@ -1037,8 +1037,8 @@
   }
 
   .app-rail {
-    background: linear-gradient(180deg, rgba(34, 38, 50, 0.95) 0%, rgba(26, 29, 40, 0.98) 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, var(--color-rail, rgba(34, 38, 50, 0.95)) 0%, var(--color-rail-end, rgba(26, 29, 40, 0.98)) 100%);
+    border-right: 1px solid rgba(var(--color-text, 255, 255, 255), 0.08);
     display: flex;
     justify-content: center;
     padding: 28px 24px;
@@ -1103,7 +1103,7 @@
     gap: 16px;
     padding: 18px;
     border-radius: 16px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(22, 26, 36, 0.6));
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
   }
 
@@ -1112,7 +1112,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
     margin-bottom: 6px;
     font-weight: 600;
   }
@@ -1120,7 +1120,7 @@
   .rail-stats .value {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text, #fff);
   }
 
   .stat-field {
@@ -1131,9 +1131,9 @@
 
   .stat-input {
     background: rgba(0, 0, 0, 0.35);
-    color: #fff;
+    color: var(--color-text, #fff);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(var(--color-text, 255, 255, 255), 0.15);
     padding: 8px 12px;
     font-size: 1rem;
     font-weight: 600;
@@ -1157,7 +1157,7 @@
     display: flex;
     flex-direction: column;
     backdrop-filter: blur(20px);
-    background: rgba(26, 29, 40, 0.65);
+    background: rgba(var(--color-background, 26, 29, 40), 0.65);
     min-width: 0;
     overflow-x: auto;
     min-height: 100vh;
@@ -1217,40 +1217,36 @@
 
   .project-name-input {
     margin: 0;
-    padding: 12px 16px;
+    padding: 6px 8px;
     font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: 0.01em;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.06), rgba(255, 255, 255, 0.02));
-    border: 1.5px solid rgba(var(--color-accent-rgb), 0.2);
-    border-radius: 10px;
-    color: #fff;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--color-text, #fff);
     font-family: inherit;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     max-width: 420px;
     cursor: text;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
   .project-name-input::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.35));
   }
 
   .project-name-input:hover {
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.1), rgba(255, 255, 255, 0.04));
-    border-color: rgba(var(--color-accent-rgb), 0.35);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.18);
+    background: rgba(var(--color-accent-rgb), 0.08);
+    border-color: rgba(var(--color-accent-rgb), 0.25);
     cursor: text;
   }
 
   .project-name-input:focus {
     outline: none;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(255, 255, 255, 0.06));
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.15), 0 4px 16px rgba(var(--color-accent-rgb), 0.25);
-    transform: translateY(-1px);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.15);
   }
 
   .header-actions {
@@ -1378,7 +1374,7 @@
     margin-top: 10px;
     padding: 16px 14px 18px;
     border-radius: 16px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(22, 26, 36, 0.6));
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
     display: flex;
     flex-direction: column;
@@ -1395,7 +1391,7 @@
     font-size: 0.85rem;
     letter-spacing: 0.04em;
     text-transform: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
     font-weight: 700;
   }
 
@@ -1436,9 +1432,9 @@
     border-radius: 20px;
     padding: 16px;
     box-sizing: border-box;
-    background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(12, 14, 20, 0.88));
+    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    box-shadow: 0 20px 60px rgba(12, 14, 20, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
     min-height: 300px;
     flex: 1;

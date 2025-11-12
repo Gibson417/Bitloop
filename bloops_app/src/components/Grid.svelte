@@ -54,7 +54,8 @@
   const getStyles = () => {
     const style = getComputedStyle(canvas);
     return {
-      background: style.getPropertyValue('--color-panel')?.trim() || colors.panel,
+      background: style.getPropertyValue('--color-grid-bg')?.trim() || style.getPropertyValue('--color-panel')?.trim() || colors.panel,
+      backgroundEnd: style.getPropertyValue('--color-grid-bg-end')?.trim() || 'rgba(14, 16, 22, 0.92)',
       grid: style.getPropertyValue('--color-grid-line')?.trim() || 'rgba(255,255,255,0.08)',
       inactive:
         style.getPropertyValue('--color-note-inactive')?.trim() || colors.noteInactive,
@@ -106,7 +107,7 @@
       ctx.clearRect(0, 0, layout.width, layout.height);
       const backgroundGradient = ctx.createLinearGradient(0, 0, 0, layout.height);
       backgroundGradient.addColorStop(0, styles.background);
-      backgroundGradient.addColorStop(1, 'rgba(14, 16, 22, 0.92)');
+      backgroundGradient.addColorStop(1, styles.backgroundEnd);
       ctx.fillStyle = backgroundGradient;
       ctx.fillRect(0, 0, layout.width, layout.height);
 
@@ -142,9 +143,9 @@
         
         // Use different opacity/color for bar boundaries vs quarter-bar boundaries
         if (isBarBoundary) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.28); // More visible for bars
+          ctx.strokeStyle = hexToRgba(trackColor, 0.35); // More visible for bars
         } else {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.10); // Faint for quarter-bars
+          ctx.strokeStyle = styles.grid; // Use theme grid color for quarter-bars
         }
         
         ctx.beginPath();
@@ -153,7 +154,6 @@
         ctx.stroke();
       }
       
-      ctx.restore();
       ctx.restore();
 
       // Draw notes (map displayed column -> underlying step index)
