@@ -14,6 +14,10 @@ const THEMES = {
       noteInactive: '#3c4450',
       background: '#1a1d28',
       panel: '#222632',
+      rail: 'rgba(34, 38, 50, 0.95)',
+      railEnd: 'rgba(26, 29, 40, 0.98)',
+      gridBg: 'rgba(22, 26, 36, 0.92)',
+      gridBgEnd: 'rgba(12, 14, 20, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -27,9 +31,13 @@ const THEMES = {
       accentBrightRgb: '14, 109, 95',
       noteActive: '#0d7ac4',
       noteActiveRgb: '13, 122, 196',
-      noteInactive: '#7a8190',
+      noteInactive: '#c8cdd5',
       background: '#fafbfc',
       panel: '#ffffff',
+      rail: 'rgba(255, 255, 255, 0.95)',
+      railEnd: 'rgba(245, 247, 252, 0.98)',
+      gridBg: 'rgba(255, 255, 255, 0.92)',
+      gridBgEnd: 'rgba(248, 250, 253, 0.88)',
       text: '#1a1d28',
       textMuted: 'rgba(26, 29, 40, 0.65)'
     }
@@ -46,6 +54,10 @@ const THEMES = {
       noteInactive: '#6c5b7b',
       background: '#0f0a1f',
       panel: '#1f1433',
+      rail: 'rgba(31, 20, 51, 0.95)',
+      railEnd: 'rgba(15, 10, 31, 0.98)',
+      gridBg: 'rgba(24, 16, 40, 0.92)',
+      gridBgEnd: 'rgba(12, 8, 24, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.75)'
     }
@@ -62,6 +74,10 @@ const THEMES = {
       noteInactive: '#4a3f35',
       background: '#1f1410',
       panel: '#2d1f18',
+      rail: 'rgba(45, 31, 24, 0.95)',
+      railEnd: 'rgba(31, 20, 16, 0.98)',
+      gridBg: 'rgba(38, 26, 20, 0.92)',
+      gridBgEnd: 'rgba(24, 16, 12, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -78,6 +94,10 @@ const THEMES = {
       noteInactive: '#2d4a5a',
       background: '#0d1b24',
       panel: '#15252e',
+      rail: 'rgba(21, 37, 46, 0.95)',
+      railEnd: 'rgba(13, 27, 36, 0.98)',
+      gridBg: 'rgba(18, 30, 38, 0.92)',
+      gridBgEnd: 'rgba(10, 20, 28, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -94,6 +114,10 @@ const THEMES = {
       noteInactive: '#3d4a2f',
       background: '#141a0f',
       panel: '#1d2616',
+      rail: 'rgba(29, 38, 22, 0.95)',
+      railEnd: 'rgba(20, 26, 15, 0.98)',
+      gridBg: 'rgba(24, 32, 18, 0.92)',
+      gridBgEnd: 'rgba(16, 22, 12, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -110,6 +134,10 @@ const THEMES = {
       noteInactive: '#4a2d4a',
       background: '#0a0014',
       panel: '#1a0028',
+      rail: 'rgba(26, 0, 40, 0.95)',
+      railEnd: 'rgba(10, 0, 20, 0.98)',
+      gridBg: 'rgba(20, 0, 32, 0.92)',
+      gridBgEnd: 'rgba(8, 0, 16, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.75)'
     }
@@ -126,6 +154,10 @@ const THEMES = {
       noteInactive: '#444444',
       background: '#0f0f0f',
       panel: '#1a1a1a',
+      rail: 'rgba(26, 26, 26, 0.95)',
+      railEnd: 'rgba(15, 15, 15, 0.98)',
+      gridBg: 'rgba(22, 22, 22, 0.92)',
+      gridBgEnd: 'rgba(12, 12, 12, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
@@ -166,10 +198,14 @@ const applyTheme = (themeName) => {
   root.style.setProperty('--color-note-inactive', theme.colors.noteInactive);
   root.style.setProperty('--color-background', theme.colors.background);
   root.style.setProperty('--color-panel', theme.colors.panel);
+  root.style.setProperty('--color-rail', theme.colors.rail);
+  root.style.setProperty('--color-rail-end', theme.colors.railEnd);
+  root.style.setProperty('--color-grid-bg', theme.colors.gridBg);
+  root.style.setProperty('--color-grid-bg-end', theme.colors.gridBgEnd);
   root.style.setProperty('--color-text', theme.colors.text);
   root.style.setProperty('--color-text-muted', theme.colors.textMuted);
   root.style.setProperty('--color-playhead', `rgba(${theme.colors.accentRgb}, 0.85)`);
-  root.style.setProperty('--color-grid-line', theme.colors.background === '#f5f7fa' 
+  root.style.setProperty('--color-grid-line', themeName === 'light' 
     ? 'rgba(0, 0, 0, 0.08)' 
     : 'rgba(255, 255, 255, 0.12)');
   
