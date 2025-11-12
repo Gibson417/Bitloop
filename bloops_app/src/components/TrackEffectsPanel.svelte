@@ -244,7 +244,6 @@
 
 <style>
   .track-effects {
-    margin-top: 20px;
     padding: 24px;
     border-radius: 24px;
     background: linear-gradient(135deg, rgba(15, 18, 26, 0.92), rgba(12, 14, 22, 0.95));
