@@ -22,7 +22,9 @@
 <div class="transport">
   <div class="transport-buttons">
     <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
-      <span class="icon" aria-hidden="true">◄◄</span>
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+      </svg>
     </button>
     <button 
       class="play-button" 
@@ -32,10 +34,21 @@
       aria-label={playing ? 'Stop' : 'Play'}
       aria-pressed={playing}
     >
-      <span class="icon" aria-hidden="true">{playing ? '■' : '▶'}</span>
+      {#if playing}
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" rx="1"/>
+          <rect x="14" y="4" width="4" height="16" rx="1"/>
+        </svg>
+      {:else}
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      {/if}
     </button>
     <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
-      <span class="icon" aria-hidden="true">►►</span>
+      <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+      </svg>
     </button>
   </div>
 </div>
@@ -72,9 +85,15 @@
   }
 
   .play-button .icon {
-    display: grid;
-    place-items: center;
-    font-size: 1.5rem;
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .control-button .icon {
+    width: 20px;
+    height: 20px;
+    display: block;
   }
 
   .play-button:hover {

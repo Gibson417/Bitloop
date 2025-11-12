@@ -11,6 +11,7 @@
   import KnobControl from './components/KnobControl.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
+  import ArrowSelector from './components/ArrowSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -410,7 +411,8 @@
     }
   };
 
-  const handleNoteLengthSelect = (value) => {
+  const handleNoteLengthSelect = (event) => {
+    const value = event.detail?.value;
     selectedNoteLength = `${value}`;
     const denom = Number(value) || 1;
     // If the selected denominator requires higher resolution than current stepsPerBar,
@@ -910,38 +912,12 @@
     </div>
     <div class="grid-shell">
       <div class="grid-toolbar">
-        <div class="note-length-group">
-          <div class="note-length-summary" id="note-length-label">
-            <span class="note-length-title">Note length</span>
-            <span class="note-length-current">{currentNoteLabel}</span>
-          </div>
-          <div class="note-length-options" role="group" aria-labelledby="note-length-label">
-            {#each NOTE_LENGTH_OPTIONS as option}
-              <button
-                type="button"
-                class={`note-length-option ${selectedNoteLength === `${option.value}` ? 'active' : ''}`}
-                on:click={() => handleNoteLengthSelect(option.value)}
-                aria-pressed={selectedNoteLength === `${option.value}`}
-                style={selectedNoteLength === `${option.value}`
-                  ? `--note-chip-glow: ${noteChipGlow};`
-                  : ''}
-              >
-                <span class="option-label">{option.label}</span>
-              </button>
-            {/each}
-          </div>
-          <select
-            id="note-length-select"
-            bind:value={selectedNoteLength}
-            class="note-length-native"
-            aria-hidden="true"
-            tabindex="-1"
-          >
-            {#each NOTE_LENGTH_OPTIONS as option}
-              <option value={option.value}>{option.label}</option>
-            {/each}
-          </select>
-        </div>
+        <ArrowSelector
+          label="Note length"
+          options={NOTE_LENGTH_OPTIONS}
+          value={selectedNoteLengthValue}
+          on:change={handleNoteLengthSelect}
+        />
       </div>
       <div class="grid-backdrop">
           <Grid
@@ -1368,8 +1344,8 @@
     margin-top: 10px;
     padding: 16px 14px 18px;
     border-radius: 16px;
-    background: rgba(10, 12, 18, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(22, 26, 36, 0.6));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.24);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1410,101 +1386,6 @@
     border: none;
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.95rem;
-  }
-
-  .note-length-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 320px;
-    align-self: flex-start;
-  }
-
-  .note-length-summary {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.68);
-  }
-
-  .note-length-title {
-    color: rgba(255, 255, 255, 0.55);
-  }
-
-  .note-length-current {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.95);
-  }
-
-  .note-length-options {
-    display: flex;
-    gap: 6px;
-    width: 100%;
-    max-width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  .note-length-option {
-    position: relative;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 36px;
-    height: 36px;
-    flex: 0 0 36px;
-    border-radius: 8px;
-    border: 1px solid rgba(var(--color-note-active-rgb), 0.18);
-  background: transparent;
-    color: rgba(255, 255, 255, 0.82);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, color 0.25s ease;
-  }
-
-  .note-length-option:hover,
-  .note-length-option:focus {
-    outline: none;
-    border-color: rgba(var(--color-note-active-rgb), 0.55);
-    background: rgba(var(--color-note-active-rgb), 0.18);
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 14px rgba(var(--color-note-active-rgb), 0.24);
-  }
-
-  .note-length-option:focus-visible {
-    outline: 2px solid rgba(var(--color-note-active-rgb), 0.8);
-    outline-offset: 2px;
-  }
-
-  .note-length-option.active {
-    border-color: rgba(var(--color-note-active-rgb), 0.75);
-    background: rgba(var(--color-note-active-rgb), 0.28);
-    color: #fff;
-    box-shadow: 0 14px 24px var(--note-chip-glow, rgba(var(--color-note-active-rgb), 0.28));
-  }
-
-  .note-length-option:focus-visible {
-    outline: 2px solid rgba(var(--color-note-active-rgb), 0.5);
-    outline-offset: 2px;
-  }
-
-  .option-label {
-  font-size: 0.72rem;
-    position: relative;
-    z-index: 1;
-  }
-
-  .note-length-native {
-    display: none;
   }
 
   .grid-backdrop {
@@ -1566,14 +1447,6 @@
       gap: 8px;
     }
 
-    .note-length-group {
-      width: 100%;
-    }
-
-    .note-length-options {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .grid-backdrop {
       padding: 12px;
       border-radius: 18px;
@@ -1633,11 +1506,6 @@
       padding: 6px 10px;
       font-size: 0.7rem;
     }
-
-    .note-length-options {
-      flex-wrap: wrap;
-      justify-content: flex-start;
-    }
   }
   
   /* Reduced motion support */
@@ -1656,7 +1524,6 @@
     .icon-btn,
     .follow,
     .toggle-btn,
-    .note-length-option,
     .share-btn {
       transform: none !important;
     }
