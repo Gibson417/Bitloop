@@ -491,8 +491,8 @@
       focusedCol = Math.min(visibleColumns - 1, focusedCol + 1);
       // No scrolling in static grid mode
       draw();
-    } else if (event.key === ' ' || event.key === 'Enter') {
-      // Space or Enter to toggle note at focused cell
+    } else if (event.key === 'Enter') {
+      // Enter to toggle note at focused cell
       event.preventDefault();
       keyboardMode = true;
       
@@ -654,7 +654,7 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, space or enter to toggle notes"
+      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
       style="cursor: {eraseMode ? 'not-allowed' : 'crosshair'};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
