@@ -66,7 +66,7 @@
 </script>
 
 {#if track}
-  <div class="track-controls">
+  <div class="track-controls" data-component="TrackControls">
     <div class="control plain">
       <label for={`track-name-${trackIndex}`}>Track name</label>
       <div class="name-color-group">

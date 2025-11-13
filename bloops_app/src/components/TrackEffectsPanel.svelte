@@ -38,7 +38,7 @@
 </script>
 
 {#if track}
-  <section class="track-effects" aria-label="Track effects and envelope controls">
+  <section class="track-effects" aria-label="Track effects and envelope controls" data-component="TrackEffectsPanel">
     <header class="effects-header">
       <div>
         <h2>Sound shaping</h2>

@@ -108,7 +108,7 @@
   $: canRemovePattern = patterns.length > 1;
 </script>
 
-<footer class="footer">
+<footer class="footer" data-component="Footer">
   <div class="project-column">
     <div class="field session-field">
       <label for="project-select" class="session-label">
