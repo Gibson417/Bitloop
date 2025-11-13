@@ -19,6 +19,7 @@
   export let noteLengthDenominator = undefined;
   export let gridZoom = 1; // Visual zoom level (1x, 2x, 3x, 4x) - separate from note length
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
+  export let drawingTool = 'paint'; // Drawing tool mode: 'single', 'paint', 'erase'
 
   const dispatch = createEventDispatcher();
 
@@ -367,8 +368,8 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Check if alt key is held for explicit erase mode
-    eraseMode = event.altKey;
+    // Use drawingTool prop to determine mode, but allow Alt key override for erase
+    eraseMode = event.altKey || drawingTool === 'erase';
     // Check if shift key is held for extend/connect mode
     extendMode = event.shiftKey;
     pointerActive = false; // Reset to allow paintValue determination
@@ -429,23 +430,28 @@
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
     if (!pointerActive) {
       pointerActive = true;
-      // Determine paint behavior:
-      // - If eraseMode (Alt key): always erase
-      // - If extendMode (Shift key): toggle based on current state (for extending notes)
-      // - Default: always paint (consecutive notes don't merge)
+      // Determine paint behavior based on drawingTool:
+      // - 'erase': always erase
+      // - 'single': place one note (no drag)
+      // - 'paint': paint consecutive notes (drag to paint)
+      // - Alt key: override to erase mode
+      // - Shift key: toggle based on current state (for extending notes)
       if (eraseMode) {
         paintValue = false;
       } else if (extendMode) {
         paintValue = !current;
+      } else if (drawingTool === 'single') {
+        paintValue = !current; // Toggle on/off for single note tool
       } else {
-        paintValue = true; // Always paint by default
+        paintValue = true; // Always paint by default for paint tool
       }
     }
 
     const key = `${row}:${storageStart}`;
-    // Allow the same cell to be painted again if this is a fresh pointer down (consecutive clicks)
-    // but prevent repainting during the same drag gesture
-    if (paintedCells.has(key) && pointerActive) return;
+    // For 'single' tool, only paint on initial click (not during drag)
+    // For other tools, allow drag painting but prevent repainting the same cell
+    const shouldSkip = paintedCells.has(key) && (drawingTool === 'single' || pointerActive);
+    if (shouldSkip) return;
     paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
@@ -455,6 +461,8 @@
 
   const handlePointerMove = (event) => {
     if (!pointerActive) return;
+    // For 'single' tool, don't allow drag painting
+    if (drawingTool === 'single') return;
     handlePointer(event);
   };
 
