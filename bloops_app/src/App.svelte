@@ -13,6 +13,7 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
+  import ZoomControls from './components/ZoomControls.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -342,6 +343,15 @@
 
   const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/8')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
   let selectedNoteLength = DEFAULT_NOTE_LENGTH;
+
+  // Zoom level state (separate from note length)
+  let gridZoomLevel = 1; // 1x = normal, 2x = 2x detail, etc.
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 4;
+
+  const handleZoom = (event) => {
+    gridZoomLevel = event.detail.level;
+  };
 
   const handleNoteChange = (event) => {
     const { row, start, length, value } = event.detail;
@@ -1033,6 +1043,15 @@
             on:change={handleNoteLengthChange}
           />
         </div>
+        <div class="zoom-controls-group">
+          <ZoomControls
+            zoomLevel={gridZoomLevel}
+            minZoom={MIN_ZOOM}
+            maxZoom={MAX_ZOOM}
+            trackColor={trackColor}
+            on:zoom={handleZoom}
+          />
+        </div>
         <div class="window-switcher-group">
           <WindowSwitcher
             {currentWindow}
@@ -1055,6 +1074,7 @@
           isPlaying={isPlaying}
           stepsPerBar={stepsPerBar}
           noteLengthDenominator={selectedNoteLengthValue}
+          gridZoom={gridZoomLevel}
           manualWindow={manualWindow}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
@@ -1578,6 +1598,11 @@
     width: 100%;
     max-width: 240px;
     align-self: flex-end;
+  }
+
+  .zoom-controls-group {
+    display: flex;
+    align-items: flex-end;
   }
 
   .window-switcher-group {
