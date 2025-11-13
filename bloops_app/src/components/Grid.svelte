@@ -29,7 +29,8 @@
   let paintValue = true;
   let paintedCells = new Set();
   let resizeObserver;
-  let eraseMode = false; // Track if shift/alt key is held for explicit erase
+  let eraseMode = false; // Track if alt key is held for explicit erase
+  let extendMode = false; // Track if shift key is held for extending/connecting notes
   
   // Keyboard navigation state
   let focusedRow = 0;
@@ -359,8 +360,10 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Check if shift or alt key is held for explicit erase mode
-    eraseMode = event.shiftKey || event.altKey;
+    // Check if alt key is held for explicit erase mode
+    eraseMode = event.altKey;
+    // Check if shift key is held for extend/connect mode
+    extendMode = event.shiftKey;
     pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set(); // Clear painted cells for new gesture
     handlePointer(event);
@@ -414,9 +417,17 @@
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
     if (!pointerActive) {
       pointerActive = true;
-      // If eraseMode is active (via shift/alt key), always erase
-      // Otherwise, toggle based on the current state of the first cell
-      paintValue = eraseMode ? false : !current;
+      // Determine paint behavior:
+      // - If eraseMode (Alt key): always erase
+      // - If extendMode (Shift key): toggle based on current state (for extending notes)
+      // - Default: always paint (consecutive notes don't merge)
+      if (eraseMode) {
+        paintValue = false;
+      } else if (extendMode) {
+        paintValue = !current;
+      } else {
+        paintValue = true; // Always paint by default
+      }
     }
 
     const key = `${row}:${storageStart}`;
@@ -446,6 +457,7 @@
     pointerActive = false;
     paintedCells = new Set();
     eraseMode = false; // Reset erase mode when pointer is released
+    extendMode = false; // Reset extend mode when pointer is released
   };
 
   const handlePointerUp = (event) => {
@@ -557,17 +569,24 @@
       if (scroller) resizeObserver.observe(scroller);
     }
     
-    // Track modifier keys for erase mode while hovering
+    // Track modifier keys for erase/extend mode while hovering
     const handleKeyDownGlobal = (e) => {
-      if (e.shiftKey || e.altKey) {
+      if (e.altKey) {
         eraseMode = true;
+      }
+      if (e.shiftKey) {
+        extendMode = true;
       }
     };
     
     const handleKeyUpGlobal = (e) => {
-      // Only disable erase mode if neither shift nor alt is held
-      if (!e.shiftKey && !e.altKey) {
+      // Only disable erase mode if alt is not held
+      if (!e.altKey) {
         eraseMode = false;
+      }
+      // Only disable extend mode if shift is not held
+      if (!e.shiftKey) {
+        extendMode = false;
       }
     };
     
@@ -661,8 +680,8 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
-      style="cursor: {eraseMode ? 'not-allowed' : 'crosshair'};"
+      aria-label="Note grid - click to add notes, hold Alt to erase, hold Shift to toggle/extend notes, use arrow keys to navigate, Enter to toggle notes"
+      style="cursor: {eraseMode ? 'not-allowed' : extendMode ? 'cell' : 'crosshair'};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}
