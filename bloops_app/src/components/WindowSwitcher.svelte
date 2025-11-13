@@ -61,6 +61,10 @@
     {/each}
   </div>
   
+  <div class="window-number" aria-label="Current window position" style="color: {trackColor};">
+    {currentWindow + 1} / {totalWindows}
+  </div>
+  
   <button
     type="button"
     class="window-nav-btn"
@@ -150,6 +154,16 @@
     gap: 8px;
     align-items: center;
     padding: 0 4px;
+  }
+
+  .window-number {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0 8px;
+    opacity: 0.9;
+    min-width: 48px;
+    text-align: center;
   }
 
   .window-indicator {
