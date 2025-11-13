@@ -295,14 +295,12 @@
             const cy = row * cellSize + cellSize / 2;
             const radius = cellSize * 0.28;
             
-            const inactive = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
-            inactive.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
-            inactive.addColorStop(1, styles.inactive);
-            
-            ctx.fillStyle = inactive;
+            // Draw hollow circle (stroke only)
+            ctx.strokeStyle = styles.inactive;
+            ctx.lineWidth = cellSize * 0.06; // Stroke width proportional to cell size
             ctx.beginPath();
             ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.stroke();
           }
         }
       }
