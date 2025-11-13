@@ -136,9 +136,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 28px;
-    border-radius: 6px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-text), 0.2);
     background: var(--color-panel);
     color: var(--color-text-muted);
@@ -192,8 +192,8 @@
     }
 
     .arrow-button {
-      width: 44px;
-      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
       font-size: 0.85rem;
     }
 

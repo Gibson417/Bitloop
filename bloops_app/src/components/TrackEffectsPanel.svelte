@@ -245,7 +245,7 @@
 <style>
   .track-effects {
     padding: 24px;
-    border-radius: 24px;
+    border-radius: 16px;
     background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end));
     border: 1px solid rgba(var(--color-text-muted), 0.15);
     display: flex;
@@ -289,11 +289,12 @@
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
+    min-height: 44px;
     border-radius: 999px;
     border: 1px solid rgba(var(--color-text), 0.2);
     background: var(--color-panel);
     color: var(--color-text-muted);
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -323,8 +324,8 @@
   .effects-grid,
   .adsr-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px 18px;
+    grid-template-columns: repeat(auto-fit, minmax(144px, 1fr));
+    gap: 16px;
     max-width: 1000px;
   }
 

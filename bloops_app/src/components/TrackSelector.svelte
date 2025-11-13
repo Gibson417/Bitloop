@@ -170,8 +170,8 @@
   }
 
   .action-button {
-    width: 32px;
-    height: 32px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 10px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.15);
@@ -240,7 +240,7 @@
   .track-item {
     display: flex;
     align-items: center;
-    padding: 8px 10px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(var(--color-background, 17, 20, 29), 0.5);
@@ -249,7 +249,7 @@
     gap: 8px;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 48px;
+    min-height: 64px;
   }
 
   .track-item:hover {
@@ -260,8 +260,8 @@
 
   .track-item.selected {
     border-color: rgba(var(--color-accent-rgb), 0.7);
-    background: rgba(var(--color-accent-rgb), 0.12);
-    box-shadow: 0 4px 16px rgba(var(--color-accent-rgb), 0.2);
+    background: rgba(var(--color-accent-rgb), 0.18);
+    box-shadow: 0 4px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .track-strip {
@@ -314,14 +314,14 @@
   }
 
   .toggle-btn {
-    width: 28px;
-    height: 28px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -355,13 +355,13 @@
   }
 
   .remove-button {
-    width: 28px;
-    height: 28px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
     display: flex;

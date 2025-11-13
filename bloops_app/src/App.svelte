@@ -1061,7 +1061,7 @@
     --color-accent-bright-rgb: 155, 255, 224;
     --color-note-active: #78d2ff;
     --color-note-active-rgb: 120, 210, 255;
-    --color-note-inactive: #3c4450;
+    --color-note-inactive: #4a5060;
     --color-background: #1a1d28;
     --color-panel: #222632;
     --color-playhead: rgba(var(--color-accent-rgb), 0.85);
@@ -1150,7 +1150,7 @@
     border-right: 1px solid rgba(var(--color-text, 255, 255, 255), 0.08);
     display: flex;
     justify-content: center;
-    padding: 28px 24px;
+    padding: 24px;
   }
 
   .rail-inner {
@@ -1174,7 +1174,7 @@
   }
 
   .logo-icon {
-    width: 78px;
+    width: 56px;
     height: auto;
     color: var(--color-accent);
   }
@@ -1190,15 +1190,15 @@
     margin: 0;
     padding: 0;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: 1.6rem;
-    line-height: 1.05;
+    font-size: 1.5rem;
+    line-height: 1.1;
   }
 
   .brand-tag {
     margin: 0;
-    font-size: 0.64rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1299,7 +1299,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     cursor: pointer;
   }
 
@@ -1326,13 +1326,13 @@
 
   .project-name-input {
     margin: 0;
-    padding: 6px 8px;
-    font-size: 1.5rem;
+    padding: 8px;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 8px;
     color: var(--color-text, #fff);
     font-family: inherit;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1380,8 +1380,8 @@
   }
 
   .icon-btn {
-    width: 40px;
-    height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 10px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
@@ -1626,7 +1626,7 @@
     }
     
     .project-name-input {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       max-width: 100%;
     }
     
@@ -1662,8 +1662,8 @@
     }
     
     .icon-btn {
-      width: 32px;
-      height: 32px;
+      min-width: 44px;
+      min-height: 44px;
       font-size: 1.2rem;
     }
     

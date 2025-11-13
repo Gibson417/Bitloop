@@ -74,11 +74,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
-    border: 2px solid rgba(var(--color-accent-rgb), 0.4);
+    border-radius: 12px;
+    border: 2px solid rgba(var(--color-accent-rgb), 0.45);
     background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.22), rgba(22, 26, 36, 0.85));
     color: rgba(var(--color-accent-rgb), 0.95);
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     box-shadow: 0 8px 24px rgba(var(--color-accent-rgb), 0.25);
@@ -115,12 +115,12 @@
   }
 
   .control-button {
-    width: 48px;
-    height: 48px;
+    min-width: 44px;
+    min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.35);
     background: rgba(var(--color-accent-rgb), 0.14);
     color: rgba(var(--color-accent-rgb), 0.95);
