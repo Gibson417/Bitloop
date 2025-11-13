@@ -413,13 +413,21 @@
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
     const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
     
-    // Calculate the quantized storage start based on noteLengthDenominator
-    const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
-    const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
-    const storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
-
-    // Storage length based on note quantization
-    const storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
+    // For 'single' tool: place notes at exact display column positions without quantization grouping
+    // For other tools: use noteLength quantization
+    let storageStart, storageLength;
+    if (drawingTool === 'single') {
+      // For single tool, map each display column directly to storage without coarse quantization
+      // This ensures adjacent clicks place notes in adjacent (but separate) storage cells
+      storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+      storageLength = 1; // Minimum quantum for isolated single notes
+    } else {
+      // Calculate the quantized storage start based on noteLengthDenominator
+      const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
+      const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
+      storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
+      storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
+    }
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -456,7 +464,32 @@
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
-    dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
+    
+    // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
+    // The `storage: true` flag helps consumers know start/length are high-resolution indices.
+    
+    // For 'single' tool: Ensure notes are visually isolated by adding gaps
+    if (drawingTool === 'single' && paintValue) {
+      // When adding a note with single tool, clear adjacent cells to ensure visual separation
+      // Only clear if those cells currently have notes (to create gaps)
+      const rowNotes = notes?.[row] ?? [];
+      
+      // Clear the cell immediately before (if it exists and is filled)
+      if (storageStart > 0 && rowNotes[storageStart - 1]) {
+        dispatch('notechange', { row, start: storageStart - 1, length: 1, value: false, storage: true });
+      }
+      
+      // Place the note
+      dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
+      
+      // Clear the cell immediately after (if it exists and is filled)
+      if (storageStart + storageLength < rowNotes.length && rowNotes[storageStart + storageLength]) {
+        dispatch('notechange', { row, start: storageStart + storageLength, length: 1, value: false, storage: true });
+      }
+    } else {
+      // For other tools or when removing notes, dispatch normally
+      dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
+    }
   };
 
   const handlePointerMove = (event) => {
