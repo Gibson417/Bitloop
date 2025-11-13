@@ -79,7 +79,8 @@ describe('Grid layout', () => {
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth;
     const expectedCellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
-    const expectedWidth = Math.max(displayColumns * expectedCellSize, availableWidth);
+    // Width is now fixed to visible columns only (static grid with window switching)
+    const expectedWidth = visibleColumns * expectedCellSize;
 
     // Allow Svelte next tick for DOM updates
     await new Promise((r) => setTimeout(r, 20));

@@ -108,10 +108,12 @@
       : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
+    // Fixed viewport: show only 16 columns at a time (one bar)
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth || displayColumns * 32;
     const cellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
-    const width = Math.max(displayColumns * cellSize, availableWidth);
+    // Width is now fixed to visible columns only (no scrolling)
+    const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
 
     layout = { cellSize, width, height, dpr };
@@ -150,6 +152,11 @@
         : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
+      
+      // Calculate which window to display (16 steps at a time)
+      const visibleColumns = 16;
+      const currentWindow = Math.floor(playheadStep / visibleColumns);
+      const windowOffset = currentWindow * visibleColumns;
 
       // Draw grid lines (vertical only, with different intensities for bars and quarter-bars)
       ctx.save();
@@ -161,9 +168,10 @@
       // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
       const isZoomed = denom && denom > stepsPerBarSafe;
       
-      for (let col = 0; col <= displayColumns; col++) {
-        // Map displayed column back to logical step in the source columns
-        const logicalStep = Math.floor((col * logicalColumns) / displayColumns);
+      for (let col = 0; col <= visibleColumns; col++) {
+        // Map displayed column back to logical step in the source columns (accounting for window offset)
+        const displayCol = windowOffset + col;
+        const logicalStep = Math.floor((displayCol * logicalColumns) / displayColumns);
         
         // Check if this logical step aligns with bar or quarter-bar boundaries
         const isBarBoundary = logicalStep % stepsPerBarSafe === 0;
@@ -211,15 +219,18 @@
         const displayEndCol = Math.floor(((start + length) * displayColumns) / storageColumns);
         const displayLength = Math.max(1, displayEndCol - displayStartCol);
         
-        // Skip if note is outside visible area
-        if (displayStartCol >= displayColumns || displayEndCol < 0) continue;
+        // Skip if note is outside current window
+        if (displayStartCol >= windowOffset + visibleColumns || displayEndCol < windowOffset) continue;
         
-        // Clamp to visible area
-        const visibleStartCol = Math.max(0, displayStartCol);
-        const visibleEndCol = Math.min(displayColumns, displayEndCol);
+        // Adjust display position relative to window
+        const windowDisplayStartCol = displayStartCol - windowOffset;
+        const windowDisplayEndCol = displayEndCol - windowOffset;
+        
+        // Skip if note is completely outside visible area
+        if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol < 0) continue;
         
         // Draw note start dot
-        const startX = displayStartCol * cellSize + cellSize / 2;
+        const startX = windowDisplayStartCol * cellSize + cellSize / 2;
         const cy = row * cellSize + cellSize / 2;
         const radius = cellSize * 0.28;
         
@@ -243,7 +254,7 @@
           const barY = cy;
           const barHeight = cellSize * 0.15;
           const barStartX = startX + radius;
-          const barEndX = (displayEndCol * cellSize) - cellSize / 2;
+          const barEndX = (windowDisplayEndCol * cellSize) - cellSize / 2;
           const barWidth = Math.max(0, barEndX - barStartX);
           
           if (barWidth > 0) {
@@ -264,10 +275,11 @@
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
       for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < displayColumns; col++) {
-          // Map displayed column -> underlying storage step index range
-          const storageStart = Math.floor((col * storageColumns) / displayColumns);
-          const storageEnd = Math.floor(((col + 1) * storageColumns) / displayColumns);
+        for (let col = 0; col < visibleColumns; col++) {
+          // Map displayed column (in current window) -> underlying storage step index range
+          const displayCol = windowOffset + col;
+          const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
+          const storageEnd = Math.floor(((displayCol + 1) * storageColumns) / displayColumns);
           // Check if ANY cell in the storage range is active
           const rowNotes = notes?.[row] ?? [];
           const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
@@ -302,8 +314,9 @@
         ctx.restore();
       }
 
-  // Playhead (map logical playhead -> displayed column then to pixels)
-  const playheadX = ((playheadStep + playheadProgress) * (displayColumns / Math.max(1, columns))) * layout.cellSize;
+  // Playhead (show within current window)
+  const playheadStepInWindow = playheadStep % visibleColumns;
+  const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
       const glowIntensity = isPlaying 
@@ -349,24 +362,32 @@
   const handlePointer = (event) => {
     if (!canvas || !scroller) return;
     const rect = canvas.getBoundingClientRect();
-    // account for scroller horizontal scroll
-    const scrollLeft = scroller.scrollLeft || 0;
-    const x = (event.clientX - rect.left) + scrollLeft;
+    // No horizontal scroll in static grid mode
+    const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
     const col = Math.floor(x / layout.cellSize);
     const row = Math.floor(y / layout.cellSize);
-    if (row < 0 || row >= rows || col < 0) return;
-
+    
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     const denom = Number(noteLengthDenominator) || null;
     const displayColumns = denom && Number.isFinite(denom) && denom > 0
       ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
       : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
-    if (col >= displayColumns) return;
+    
+    const visibleColumns = 16;
+    if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
-    const stepIndex = Math.floor((col * sourceColumns) / displayColumns);
+    // Calculate window offset based on playhead position
+    const currentWindow = Math.floor(playheadStep / visibleColumns);
+    const windowOffset = currentWindow * visibleColumns;
+    
+    // Map window column to actual display column
+    const displayCol = windowOffset + col;
+    if (displayCol >= displayColumns) return;
+
+    const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
 
     // Compute storage indices for the start and length so the event carries
     // high-resolution (internal) indices rather than logical indices.
@@ -436,6 +457,8 @@
     const displayColumns = denom && Number.isFinite(denom) && denom > 0
       ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
       : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    
+    const visibleColumns = 16;
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
@@ -452,29 +475,26 @@
       event.preventDefault();
       keyboardMode = true;
       focusedCol = Math.max(0, focusedCol - 1);
-      // Scroll to keep focused cell visible
-      const focusX = focusedCol * layout.cellSize;
-      if (focusX < scroller.scrollLeft) {
-        scroller.scrollLeft = focusX - layout.cellSize;
-      }
+      // No scrolling in static grid mode
       draw();
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
       keyboardMode = true;
-      focusedCol = Math.min(displayColumns - 1, focusedCol + 1);
-      // Scroll to keep focused cell visible
-      const focusX = (focusedCol + 1) * layout.cellSize;
-      if (focusX > scroller.scrollLeft + scroller.clientWidth) {
-        scroller.scrollLeft = focusX - scroller.clientWidth + layout.cellSize;
-      }
+      focusedCol = Math.min(visibleColumns - 1, focusedCol + 1);
+      // No scrolling in static grid mode
       draw();
     } else if (event.key === ' ' || event.key === 'Enter') {
       // Space or Enter to toggle note at focused cell
       event.preventDefault();
       keyboardMode = true;
       
+      // Calculate window offset based on playhead position
+      const currentWindow = Math.floor(playheadStep / visibleColumns);
+      const windowOffset = currentWindow * visibleColumns;
+      const displayCol = windowOffset + focusedCol;
+      
       const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-      const storageStart = Math.floor((focusedCol * storageColumns) / displayColumns);
+      const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
       const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
       const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
@@ -584,20 +604,21 @@
     draw();
   }
 
-  $: if (follow && isPlaying && scroller) {
-    const sourceColumns = Math.max(columns || 16, 1);
-    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
-    const playheadX = ((playheadStep + playheadProgress) * (displayColumns / sourceColumns)) * layout.cellSize;
-    const center = playheadX - scroller.clientWidth / 2;
-    const target = Math.max(0, center);
-    if (Math.abs(scroller.scrollLeft - target) > 2) {
-      scroller.scrollTo({ left: target, behavior: 'smooth' });
-    }
-  }
+  // Scrolling disabled - using static grid with window switching
+  // $: if (follow && isPlaying && scroller) {
+  //   const sourceColumns = Math.max(columns || 16, 1);
+  //   const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+  //   const denom = Number(noteLengthDenominator) || null;
+  //   const displayColumns = denom && Number.isFinite(denom) && denom > 0
+  //     ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+  //     : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+  //   const playheadX = ((playheadStep + playheadProgress) * (displayColumns / sourceColumns)) * layout.cellSize;
+  //   const center = playheadX - scroller.clientWidth / 2;
+  //   const target = Math.max(0, center);
+  //   if (Math.abs(scroller.scrollLeft - target) > 2) {
+  //     scroller.scrollTo({ left: target, behavior: 'smooth' });
+  //   }
+  // }
 </script>
 
 <div class="grid-container">
@@ -679,7 +700,7 @@
     flex: 1;
     height: 100%;
     min-height: 256px;
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: hidden;
     background: var(--color-panel);
     border-radius: 12px;

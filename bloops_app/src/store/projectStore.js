@@ -10,7 +10,7 @@ export const BASE_RESOLUTION = 64;
 
 const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
-const DEFAULT_BARS = 4;
+const DEFAULT_BARS = 2;
 const DEFAULT_STEPS_PER_BAR = 16;
 const DEFAULT_BPM = 120;
 const DEFAULT_FOLLOW = true;
