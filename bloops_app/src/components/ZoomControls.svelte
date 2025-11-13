@@ -3,20 +3,35 @@
 
   export let zoomLevel = 1;
   export let minZoom = 1;
-  export let maxZoom = 4;
+  export let maxZoom = 64;
   export let trackColor = '#78d2b9';
 
   const dispatch = createEventDispatcher();
 
+  // Valid resolution denominators: 1, 2, 4, 8, 16, 32, 64
+  const VALID_RESOLUTIONS = [1, 2, 4, 8, 16, 32, 64];
+
+  // Get the display text for the current zoom level (resolution)
+  $: displayResolution = `1/${zoomLevel}`;
+  
+  // Check if we're at the boundaries
+  $: currentIndex = VALID_RESOLUTIONS.indexOf(zoomLevel);
+  $: canZoomOut = currentIndex > 0;
+  $: canZoomIn = currentIndex < VALID_RESOLUTIONS.length - 1;
+
   const handleZoomIn = () => {
-    if (zoomLevel < maxZoom) {
-      dispatch('zoom', { level: zoomLevel + 1 });
+    // Zoom in means finer resolution (higher denominator)
+    const currentIndex = VALID_RESOLUTIONS.indexOf(zoomLevel);
+    if (currentIndex < VALID_RESOLUTIONS.length - 1) {
+      dispatch('zoom', { level: VALID_RESOLUTIONS[currentIndex + 1] });
     }
   };
 
   const handleZoomOut = () => {
-    if (zoomLevel > minZoom) {
-      dispatch('zoom', { level: zoomLevel - 1 });
+    // Zoom out means coarser resolution (lower denominator)
+    const currentIndex = VALID_RESOLUTIONS.indexOf(zoomLevel);
+    if (currentIndex > 0) {
+      dispatch('zoom', { level: VALID_RESOLUTIONS[currentIndex - 1] });
     }
   };
 </script>
@@ -28,19 +43,19 @@
       type="button"
       class="zoom-btn"
       on:click={handleZoomOut}
-      disabled={zoomLevel <= minZoom}
+      disabled={!canZoomOut}
       title="Zoom out (show less detail)"
       aria-label="Zoom out"
       style="border-color: {trackColor}33; color: {trackColor};"
     >
       −
     </button>
-    <span class="zoom-level" style="color: {trackColor};">{zoomLevel}x</span>
+    <span class="zoom-level" style="color: {trackColor};">{displayResolution}</span>
     <button
       type="button"
       class="zoom-btn"
       on:click={handleZoomIn}
-      disabled={zoomLevel >= maxZoom}
+      disabled={!canZoomIn}
       title="Zoom in (show more detail)"
       aria-label="Zoom in"
       style="border-color: {trackColor}33; color: {trackColor};"
