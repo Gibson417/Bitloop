@@ -598,7 +598,8 @@
     noteLengthSteps,
     columns,
     rows,
-    currentTheme
+    currentTheme,
+    manualWindow
   };
 
   $: if (canvas && scroller && columns && rows) {
