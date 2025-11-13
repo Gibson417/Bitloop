@@ -12,7 +12,6 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
-  import PatternSelector from './components/PatternSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -830,15 +829,6 @@
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
       />
-      <PatternSelector
-        patterns={patterns}
-        selectedPattern={selectedPattern}
-        on:select={handlePatternSelect}
-        on:add={handlePatternAdd}
-        on:duplicate={handlePatternDuplicate}
-        on:remove={handlePatternRemove}
-        on:rename={handlePatternRename}
-      />
       <div class="rail-stats">
         <div class="stat-field">
           <label for="rail-tempo" class="label">Tempo</label>
@@ -997,10 +987,17 @@
     <Footer
       projects={projects}
       currentId={currentProjectId}
+      patterns={patterns}
+      selectedPattern={selectedPattern}
       on:selectproject={handleProjectSelect}
       on:newproject={handleNewProject}
       on:duplicateproject={handleDuplicateProject}
       on:deleteproject={handleDeleteProject}
+      on:patternselect={handlePatternSelect}
+      on:patternadd={handlePatternAdd}
+      on:patternduplicate={handlePatternDuplicate}
+      on:patternremove={handlePatternRemove}
+      on:patternrename={handlePatternRename}
     />
   </section>
 </main>

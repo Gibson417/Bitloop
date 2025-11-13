@@ -22,24 +22,24 @@ const THEMES = {
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
   },
-  light: {
-    name: 'Light',
+  neon: {
+    name: 'Neon',
     colors: {
-      accent: '#1a8a7a',
-      accentRgb: '26, 138, 122',
-      accentBright: '#0e6d5f',
-      accentBrightRgb: '14, 109, 95',
-      noteActive: '#0d7ac4',
-      noteActiveRgb: '13, 122, 196',
-      noteInactive: '#c8cdd5',
-      background: '#fafbfc',
-      panel: '#ffffff',
-      rail: 'rgba(255, 255, 255, 0.95)',
-      railEnd: 'rgba(245, 247, 252, 0.98)',
-      gridBg: 'rgba(255, 255, 255, 0.92)',
-      gridBgEnd: 'rgba(248, 250, 253, 0.88)',
-      text: '#1a1d28',
-      textMuted: 'rgba(26, 29, 40, 0.65)'
+      accent: '#00ffaa',
+      accentRgb: '0, 255, 170',
+      accentBright: '#66ffcc',
+      accentBrightRgb: '102, 255, 204',
+      noteActive: '#ff00ff',
+      noteActiveRgb: '255, 0, 255',
+      noteInactive: '#2d4a3d',
+      background: '#0a1214',
+      panel: '#121c1e',
+      rail: 'rgba(18, 28, 30, 0.95)',
+      railEnd: 'rgba(10, 18, 20, 0.98)',
+      gridBg: 'rgba(15, 24, 26, 0.92)',
+      gridBgEnd: 'rgba(8, 14, 16, 0.88)',
+      text: '#ffffff',
+      textMuted: 'rgba(255, 255, 255, 0.7)'
     }
   },
   classic: {
@@ -205,16 +205,10 @@ const applyTheme = (themeName) => {
   root.style.setProperty('--color-text', theme.colors.text);
   root.style.setProperty('--color-text-muted', theme.colors.textMuted);
   root.style.setProperty('--color-playhead', `rgba(${theme.colors.accentRgb}, 0.85)`);
-  root.style.setProperty('--color-grid-line', themeName === 'light' 
-    ? 'rgba(0, 0, 0, 0.08)' 
-    : 'rgba(255, 255, 255, 0.12)');
+  root.style.setProperty('--color-grid-line', 'rgba(255, 255, 255, 0.12)');
   
   // Update body background
-  if (themeName === 'light') {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.12), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.10), transparent 50%), ${theme.colors.background}`;
-  } else {
-    document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 50%), ${theme.colors.background}`;
-  }
+  document.body.style.background = `radial-gradient(circle at top left, rgba(${theme.colors.accentRgb}, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(${theme.colors.noteActiveRgb}, 0.12), transparent 50%), ${theme.colors.background}`;
   document.body.style.color = theme.colors.text;
 };
 

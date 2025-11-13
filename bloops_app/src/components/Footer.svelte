@@ -3,6 +3,8 @@
 
   export let projects = [];
   export let currentId = null;
+  export let patterns = [];
+  export let selectedPattern = 0;
 
   const dispatch = createEventDispatcher();
 
@@ -13,7 +15,82 @@
   const handleDuplicateProject = () => dispatch('duplicateproject');
   const handleDeleteProject = () => dispatch('deleteproject');
 
+  // Pattern handlers
+  const handlePatternSelect = (index) => {
+    dispatch('patternselect', { index });
+  };
+
+  const handlePatternAdd = () => {
+    dispatch('patternadd');
+  };
+
+  const handlePatternDuplicate = (index) => {
+    dispatch('patternduplicate', { index });
+  };
+
+  const handlePatternRemove = (index) => {
+    dispatch('patternremove', { index });
+  };
+
+  const handlePatternRename = (index, event) => {
+    const newName = event.target.value;
+    if (newName && newName.trim()) {
+      dispatch('patternrename', { index, name: newName });
+    }
+  };
+
+  const handleKeyNavigation = (event, index) => {
+    // Handle Enter key for selection
+    if (event.key === 'Enter') {
+      handlePatternSelect(index);
+      return;
+    }
+
+    // Handle arrow key navigation
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const nextIndex = Math.min(index + 1, patterns.length - 1);
+      if (nextIndex !== index) {
+        handlePatternSelect(nextIndex);
+        // Focus the next pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[nextIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const prevIndex = Math.max(index - 1, 0);
+      if (prevIndex !== index) {
+        handlePatternSelect(prevIndex);
+        // Focus the previous pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[prevIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      handlePatternSelect(0);
+      // Focus the first pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[0]?.focus();
+      }, 0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      const lastIndex = patterns.length - 1;
+      handlePatternSelect(lastIndex);
+      // Focus the last pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[lastIndex]?.focus();
+      }, 0);
+    }
+  };
+
   $: selectedProjectId = currentId ?? '';
+  $: canRemovePattern = patterns.length > 1;
 </script>
 
 <footer class="footer">
@@ -65,12 +142,86 @@
       </div>
     </div>
   </div>
+  
+  <div class="pattern-column">
+    <div class="field pattern-field">
+      <label for="pattern-list" class="pattern-label">
+        <svg class="pattern-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span>Patterns</span>
+      </label>
+      <div class="pattern-list" id="pattern-list">
+        {#each patterns as pattern, index (pattern.id)}
+          <div 
+            class="pattern-item" 
+            class:selected={index === selectedPattern}
+            role="button"
+            tabindex="0"
+            on:click={() => handlePatternSelect(index)}
+            on:keydown={(e) => handleKeyNavigation(e, index)}
+            aria-label="Pattern {index + 1}: {pattern.name}"
+          >
+            <input
+              type="text"
+              class="pattern-name"
+              value={pattern.name}
+              on:change={(e) => handlePatternRename(index, e)}
+              on:click={(e) => e.stopPropagation()}
+              placeholder="Pattern name"
+              aria-label="Pattern name"
+            />
+            <div class="pattern-actions">
+              <button
+                type="button"
+                class="pattern-action-btn"
+                on:click|stopPropagation={() => handlePatternDuplicate(index)}
+                title="Duplicate pattern"
+                aria-label="Duplicate pattern"
+              >
+                ⎘
+              </button>
+              {#if canRemovePattern}
+                <button
+                  type="button"
+                  class="pattern-action-btn remove"
+                  on:click|stopPropagation={() => handlePatternRemove(index)}
+                  title="Remove pattern"
+                  aria-label="Remove pattern"
+                >
+                  ×
+                </button>
+              {/if}
+            </div>
+          </div>
+        {/each}
+      </div>
+      <button
+        type="button"
+        class="add-pattern-btn"
+        on:click={handlePatternAdd}
+        title="Add new pattern"
+        aria-label="Add new pattern"
+      >
+        <svg class="btn-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Pattern
+      </button>
+    </div>
+  </div>
 </footer>
 
 <style>
   .footer {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
     padding: 14px 24px 18px;
     color: rgba(255, 255, 255, 0.85);
     box-sizing: border-box;
@@ -81,8 +232,16 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    width: 100%;
+    flex: 0 0 auto;
     max-width: 480px;
+  }
+
+  .pattern-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    max-width: 600px;
   }
 
   .field {
@@ -153,8 +312,8 @@
   }
 
   .select-shell select option {
-    background: rgba(26, 29, 40, 0.98);
-    color: #fff;
+    background: var(--color-panel);
+    color: var(--color-text, #fff);
     padding: 8px;
   }
 
@@ -240,6 +399,185 @@
     color: rgba(255, 255, 255, 0.3);
   }
 
+  .pattern-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(var(--color-accent-rgb), 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .pattern-label:hover {
+    color: rgba(var(--color-accent-rgb), 1);
+  }
+
+  .pattern-icon {
+    width: 16px;
+    height: 16px;
+    color: rgba(var(--color-accent-rgb), 0.75);
+    transition: color 0.2s ease;
+  }
+
+  .pattern-label:hover .pattern-icon {
+    color: rgba(var(--color-accent-rgb), 1);
+  }
+
+  .pattern-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .pattern-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(0, 0, 0, 0.35));
+    border: 1.5px solid rgba(var(--color-accent-rgb), 0.25);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 0 1 auto;
+    min-width: 160px;
+  }
+
+  .pattern-item:hover {
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(0, 0, 0, 0.4));
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
+  }
+
+  .pattern-item.selected {
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.18), rgba(var(--color-accent-rgb), 0.08));
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
+  }
+
+  .pattern-item:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .pattern-name {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--color-text, #fff);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 0;
+  }
+
+  .pattern-name:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .pattern-name:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+  }
+
+  .pattern-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .pattern-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    background: rgba(var(--color-accent-rgb), 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .pattern-action-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.25);
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  .pattern-action-btn.remove:hover {
+    border-color: rgba(255, 100, 100, 0.5);
+    background: rgba(255, 100, 100, 0.2);
+    color: #fff;
+  }
+
+  .pattern-action-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .add-pattern-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(var(--color-accent-rgb), 0.3);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(0, 0, 0, 0.35));
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    justify-content: center;
+    width: fit-content;
+  }
+
+  .add-pattern-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--color-accent-rgb), 0.55);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.15), rgba(0, 0, 0, 0.45));
+    box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.3);
+  }
+
+  .add-pattern-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .add-pattern-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 960px) {
+    .footer {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .project-column,
+    .pattern-column {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+
   @media (max-width: 640px) {
     .footer {
       padding: 18px 18px 24px;
@@ -256,6 +594,14 @@
     .action-btn {
       flex: 1 1 calc(33.333% - 8px);
       min-width: 100px;
+    }
+
+    .pattern-list {
+      flex-direction: column;
+    }
+
+    .pattern-item {
+      min-width: 100%;
     }
   }
 
