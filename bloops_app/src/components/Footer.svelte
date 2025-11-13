@@ -452,7 +452,7 @@
   .pattern-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 8px;
   }
 
@@ -460,8 +460,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 8px;
+    border-radius: 8px;
     background: rgba(var(--color-background, 17, 20, 29), 0.5);
     border: 1.5px solid rgba(255, 255, 255, 0.08);
     cursor: pointer;
@@ -469,7 +469,7 @@
     flex: 0 1 auto;
     min-width: 200px;
     position: relative;
-    min-height: 60px;
+    min-height: 48px;
   }
 
   .pattern-item:hover {
@@ -493,7 +493,7 @@
   .pattern-strip {
     width: 6px;
     height: 100%;
-    min-height: 28px;
+    min-height: 24px;
     border-radius: 3px;
     flex-shrink: 0;
   }
@@ -538,8 +538,8 @@
   }
 
   .pattern-action-btn {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.08);
@@ -554,8 +554,8 @@
   }
 
   .pattern-action-btn .action-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     display: block;
   }
 
@@ -650,6 +650,12 @@
 
     .pattern-item {
       min-width: 100%;
+    }
+
+    /* Ensure touch-friendly targets on mobile */
+    .pattern-action-btn {
+      min-width: 40px;
+      min-height: 40px;
     }
   }
 
