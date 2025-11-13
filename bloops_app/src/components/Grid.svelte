@@ -17,6 +17,7 @@
   // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
+  export let gridZoom = 1; // Visual zoom level (1x, 2x, 3x, 4x) - separate from note length
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
 
   const dispatch = createEventDispatcher();
@@ -103,10 +104,14 @@
     const safeRows = Math.max(rows || 8, 1);
     const logicalColumns = Math.max(columns || 16, 1); // logical total steps (bars * stepsPerBar)
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    
+    // Calculate display resolution based on gridZoom
+    // gridZoom of 1 = show at stepsPerBar resolution
+    // gridZoom of 2 = show at 2x stepsPerBar resolution, etc.
+    const zoom = Math.max(1, Math.round(gridZoom || 1));
+    const displayResolution = stepsPerBarSafe * zoom;
+    const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
+    
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Fixed viewport: show only 16 columns at a time (one bar)
@@ -144,13 +149,15 @@
       ctx.fillStyle = backgroundGradient;
       ctx.fillRect(0, 0, layout.width, layout.height);
 
-      // Calculate display columns based on selected note denominator (e.g. 16,32,64) and storage mapping.
+      // Calculate display columns based on gridZoom (for visual resolution)
       const logicalColumns = Math.max(columns || 16, 1);
       const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-      const denom = Number(noteLengthDenominator) || null;
-      const displayColumns = denom && Number.isFinite(denom) && denom > 0
-        ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
-        : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+      
+      // Use gridZoom for display resolution
+      const zoom = Math.max(1, Math.round(gridZoom || 1));
+      const displayResolution = stepsPerBarSafe * zoom;
+      const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
+      
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
@@ -173,8 +180,8 @@
       // Calculate quarter-bar step size in logical steps
       const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
       
-      // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
-      const isZoomed = denom && denom > stepsPerBarSafe;
+      // Determine if we're in a "zoomed" view (showing more detail than default)
+      const isZoomed = zoom > 1;
       
       for (let col = 0; col <= visibleColumns; col++) {
         // Map displayed column back to logical step in the source columns (accounting for window offset)
@@ -378,10 +385,11 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    
+    // Use gridZoom for display resolution
+    const zoom = Math.max(1, Math.round(gridZoom || 1));
+    const displayResolution = stepsPerBarSafe * zoom;
+    const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
     
     const visibleColumns = 16;
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
@@ -396,14 +404,18 @@
 
     const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
 
-    // Compute storage indices for the start and length so the event carries
-    // high-resolution (internal) indices rather than logical indices.
+    // Compute storage indices for the start and length
+    // Use noteLengthDenominator to determine the quantization for note placement
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-    const storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+    const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
+    
+    // Calculate the quantized storage start based on noteLengthDenominator
+    const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
+    const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
+    const storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
 
-    // logical visible width of this displayed column (in logical steps)
-    const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
-    const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+    // Storage length based on note quantization
+    const storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -467,10 +479,11 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    
+    // Use gridZoom for display resolution
+    const zoom = Math.max(1, Math.round(gridZoom || 1));
+    const displayResolution = stepsPerBarSafe * zoom;
+    const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
     
     const visibleColumns = 16;
 
@@ -507,11 +520,15 @@
       const windowOffset = currentWindow * visibleColumns;
       const displayCol = windowOffset + focusedCol;
       
-      const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-      const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
-      const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
+      const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
+      
+      // Use noteLengthDenominator for note quantization
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-      const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+      const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
+      const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
+      const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
+      const storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
+      const storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
       
       // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
@@ -602,7 +619,8 @@
     columns,
     rows,
     currentTheme,
-    manualWindow
+    manualWindow,
+    gridZoom
   };
 
   $: if (canvas && scroller && columns && rows) {
