@@ -738,7 +738,7 @@
     });
     
     // Global keyboard handler for spacebar to control play/stop (DAW-style)
-    // and Ctrl+Shift+D for dev mode toggle
+    // Ctrl+Z/Ctrl+Y for undo/redo, and Ctrl+Shift+D for dev mode toggle
     const handleGlobalKeydown = (event) => {
       // Only handle spacebar if not in a text input or textarea
       const target = event.target;
@@ -749,6 +749,22 @@
       if (event.key === ' ' && !isTextInput) {
         event.preventDefault();
         handleTogglePlay();
+      }
+      
+      // Ctrl+Z for undo (or Cmd+Z on Mac)
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 'z') {
+        event.preventDefault();
+        if (canUndo) {
+          handleUndo();
+        }
+      }
+      
+      // Ctrl+Y or Ctrl+Shift+Z for redo (or Cmd+Shift+Z on Mac)
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.shiftKey && event.key === 'z'))) {
+        event.preventDefault();
+        if (canRedo) {
+          handleRedo();
+        }
       }
       
       // Ctrl+Shift+D to toggle dev mode
@@ -969,7 +985,7 @@
             class="icon-btn"
             on:click={handleUndo}
             disabled={!canUndo}
-            title="Undo"
+            title="Undo (Ctrl+Z)"
             aria-label="Undo"
           >
             ↶
@@ -979,7 +995,7 @@
             class="icon-btn"
             on:click={handleRedo}
             disabled={!canRedo}
-            title="Redo"
+            title="Redo (Ctrl+Y)"
             aria-label="Redo"
           >
             ↷
@@ -1150,6 +1166,16 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+  
+  /* Better focus management - hide focus ring for mouse users, show for keyboard users */
+  :global(:focus:not(:focus-visible)) {
+    outline: none;
+  }
+  
+  :global(:focus-visible) {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
 
   .app {
     min-height: 100vh;
@@ -1174,7 +1200,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
   }
 
   .brand {
@@ -1215,7 +1241,7 @@
 
   .brand-tag {
     margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1293,7 +1319,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 6px;
+    padding: 16px 16px 8px;
     gap: 18px;
     width: 100%;
     box-sizing: border-box;
@@ -1307,7 +1333,7 @@
   .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: rgba(var(--color-accent-rgb), 0.85);
   }
@@ -1316,7 +1342,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     cursor: pointer;
   }
 
@@ -1328,7 +1354,7 @@
   }
 
   .project-eyebrow {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -1403,7 +1429,7 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
     color: rgba(var(--color-accent-rgb), 0.9);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -1498,7 +1524,7 @@
 
   .volume-card {
     margin-top: 10px;
-    padding: 14px 12px 16px;
+    padding: 12px;
     border-radius: 14px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
@@ -1536,7 +1562,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 12px;
-    margin: 0 0 14px;
+    margin: 0 0 16px;
     padding: 0;
     border-radius: 0;
     background: transparent;

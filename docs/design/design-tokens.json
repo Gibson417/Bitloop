@@ -16,7 +16,7 @@
       "content": {
         "primary": { "value": "#F5F8FF" },
         "secondary": { "value": "#B5BEDD" },
-        "muted": { "value": "#6E7794" }
+        "muted": { "value": "#828BA0" }
       },
       "grid": {
         "lineMajor": { "value": "rgba(122, 92, 255, 0.5)" },
