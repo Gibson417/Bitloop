@@ -665,4 +665,20 @@
       min-width: 100%;
     }
   }
+  
+  /* Touch device improvements - ensure all interactive elements meet 44×44px minimum */
+  @media (hover: none) and (pointer: coarse) {
+    .pattern-action-btn {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    
+    .action-btn {
+      min-height: 44px;
+    }
+    
+    .add-pattern-btn {
+      min-height: 44px;
+    }
+  }
 </style>

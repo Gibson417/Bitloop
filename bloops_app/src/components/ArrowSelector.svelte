@@ -202,4 +202,12 @@
       gap: 6px;
     }
   }
+  
+  /* Touch device improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .arrow-button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 </style>
