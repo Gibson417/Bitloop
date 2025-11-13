@@ -460,36 +460,11 @@
     // For other tools, allow drag painting but prevent repainting the same cell
     const shouldSkip = paintedCells.has(key) && (drawingTool === 'single' || pointerActive);
     if (shouldSkip) return;
-    paintedCells.add(key);
+     paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
-    
-    // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
-    // The `storage: true` flag helps consumers know start/length are high-resolution indices.
-    
-    // For 'single' tool: Ensure notes are visually isolated by adding gaps
-    if (drawingTool === 'single' && paintValue) {
-      // When adding a note with single tool, clear adjacent cells to ensure visual separation
-      // Only clear if those cells currently have notes (to create gaps)
-      const rowNotes = notes?.[row] ?? [];
-      
-      // Clear the cell immediately before (if it exists and is filled)
-      if (storageStart > 0 && rowNotes[storageStart - 1]) {
-        dispatch('notechange', { row, start: storageStart - 1, length: 1, value: false, storage: true });
-      }
-      
-      // Place the note
-      dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
-      
-      // Clear the cell immediately after (if it exists and is filled)
-      if (storageStart + storageLength < rowNotes.length && rowNotes[storageStart + storageLength]) {
-        dispatch('notechange', { row, start: storageStart + storageLength, length: 1, value: false, storage: true });
-      }
-    } else {
-      // For other tools or when removing notes, dispatch normally
-      dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
-    }
+    dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
   };
 
   const handlePointerMove = (event) => {
