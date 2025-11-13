@@ -20,7 +20,7 @@ describe('WindowSwitcher', () => {
     expect(nextButton).toBeInTheDocument();
   });
 
-  it('should disable prev button on first window', () => {
+  it('should not disable prev button on first window', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 0,
@@ -30,10 +30,10 @@ describe('WindowSwitcher', () => {
     });
 
     const prevButton = screen.getByLabelText('Previous window');
-    expect(prevButton).toBeDisabled();
+    expect(prevButton).not.toBeDisabled();
   });
 
-  it('should disable next button on last window', () => {
+  it('should not disable next button on last window', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 3,
@@ -43,7 +43,22 @@ describe('WindowSwitcher', () => {
     });
 
     const nextButton = screen.getByLabelText('Next window');
-    expect(nextButton).toBeDisabled();
+    expect(nextButton).not.toBeDisabled();
+  });
+
+  it('should not disable buttons even with only one window', () => {
+    render(WindowSwitcher, {
+      props: {
+        currentWindow: 0,
+        totalWindows: 1,
+        trackColor: '#78D2B9'
+      }
+    });
+
+    const prevButton = screen.getByLabelText('Previous window');
+    const nextButton = screen.getByLabelText('Next window');
+    expect(prevButton).not.toBeDisabled();
+    expect(nextButton).not.toBeDisabled();
   });
 
   it('should render correct number of window indicators', () => {
