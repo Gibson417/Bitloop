@@ -1532,7 +1532,7 @@
 
   .grid-toolbar {
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* Align controls at baseline to match WindowSwitcher */
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 12px;
