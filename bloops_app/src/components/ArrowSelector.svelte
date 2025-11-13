@@ -119,11 +119,11 @@
   .selector-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     background: var(--color-panel);
-    border-radius: 10px;
+    border-radius: 6px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.22);
-    padding: 6px 8px;
+    padding: 4px 6px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
@@ -136,13 +136,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 8px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 6px;
     border: 1px solid rgba(var(--color-text), 0.2);
     background: var(--color-panel);
     color: var(--color-text-muted);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
@@ -178,27 +178,28 @@
   .selector-value {
     flex: 1;
     text-align: center;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--color-text);
-    padding: 4px 12px;
-    min-width: 70px;
+    padding: 4px 8px;
+    min-width: 50px;
   }
 
   @media (max-width: 720px) {
     .selector-value {
-      min-width: 60px;
-      font-size: 0.85rem;
+      min-width: 50px;
+      font-size: 0.8rem;
     }
 
     .arrow-button {
-      min-width: 44px;
-      min-height: 44px;
-      font-size: 0.85rem;
+      min-width: 40px;
+      min-height: 40px;
+      font-size: 0.8rem;
     }
 
     .selector-controls {
-      padding: 4px;
+      padding: 4px 6px;
+      gap: 6px;
     }
   }
 </style>
