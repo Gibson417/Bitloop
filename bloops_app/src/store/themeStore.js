@@ -22,22 +22,102 @@ const THEMES = {
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
   },
-  neon: {
-    name: 'Neon',
+  midnight: {
+    name: 'Midnight',
     colors: {
-      accent: '#00ffaa',
-      accentRgb: '0, 255, 170',
-      accentBright: '#66ffcc',
-      accentBrightRgb: '102, 255, 204',
-      noteActive: '#ff00ff',
-      noteActiveRgb: '255, 0, 255',
-      noteInactive: '#2d4a3d',
-      background: '#0a1214',
-      panel: '#121c1e',
-      rail: 'rgba(18, 28, 30, 0.95)',
-      railEnd: 'rgba(10, 18, 20, 0.98)',
-      gridBg: 'rgba(15, 24, 26, 0.92)',
-      gridBgEnd: 'rgba(8, 14, 16, 0.88)',
+      accent: '#5b8dee',
+      accentRgb: '91, 141, 238',
+      accentBright: '#8ab4f8',
+      accentBrightRgb: '138, 180, 248',
+      noteActive: '#a0c4ff',
+      noteActiveRgb: '160, 196, 255',
+      noteInactive: '#2d3a52',
+      background: '#0d1321',
+      panel: '#1b2838',
+      rail: 'rgba(27, 40, 56, 0.95)',
+      railEnd: 'rgba(13, 19, 33, 0.98)',
+      gridBg: 'rgba(21, 32, 45, 0.92)',
+      gridBgEnd: 'rgba(10, 16, 26, 0.88)',
+      text: '#ffffff',
+      textMuted: 'rgba(255, 255, 255, 0.7)'
+    }
+  },
+  sakura: {
+    name: 'Sakura',
+    colors: {
+      accent: '#ffb3d9',
+      accentRgb: '255, 179, 217',
+      accentBright: '#ffd6ec',
+      accentBrightRgb: '255, 214, 236',
+      noteActive: '#ffadd8',
+      noteActiveRgb: '255, 173, 216',
+      noteInactive: '#5a3d4f',
+      background: '#1f1220',
+      panel: '#2d1a28',
+      rail: 'rgba(45, 26, 40, 0.95)',
+      railEnd: 'rgba(31, 18, 32, 0.98)',
+      gridBg: 'rgba(38, 22, 36, 0.92)',
+      gridBgEnd: 'rgba(24, 14, 24, 0.88)',
+      text: '#ffffff',
+      textMuted: 'rgba(255, 255, 255, 0.7)'
+    }
+  },
+  desert: {
+    name: 'Desert',
+    colors: {
+      accent: '#e8a560',
+      accentRgb: '232, 165, 96',
+      accentBright: '#f5c890',
+      accentBrightRgb: '245, 200, 144',
+      noteActive: '#d4915d',
+      noteActiveRgb: '212, 145, 93',
+      noteInactive: '#4a3d2f',
+      background: '#1a1410',
+      panel: '#2a2118',
+      rail: 'rgba(42, 33, 24, 0.95)',
+      railEnd: 'rgba(26, 20, 16, 0.98)',
+      gridBg: 'rgba(36, 28, 20, 0.92)',
+      gridBgEnd: 'rgba(20, 16, 12, 0.88)',
+      text: '#ffffff',
+      textMuted: 'rgba(255, 255, 255, 0.7)'
+    }
+  },
+  arctic: {
+    name: 'Arctic',
+    colors: {
+      accent: '#c8e7f5',
+      accentRgb: '200, 231, 245',
+      accentBright: '#e0f3fa',
+      accentBrightRgb: '224, 243, 250',
+      noteActive: '#b3dff5',
+      noteActiveRgb: '179, 223, 245',
+      noteInactive: '#3d4d5a',
+      background: '#141b21',
+      panel: '#1d2831',
+      rail: 'rgba(29, 40, 49, 0.95)',
+      railEnd: 'rgba(20, 27, 33, 0.98)',
+      gridBg: 'rgba(24, 33, 41, 0.92)',
+      gridBgEnd: 'rgba(16, 22, 28, 0.88)',
+      text: '#ffffff',
+      textMuted: 'rgba(255, 255, 255, 0.7)'
+    }
+  },
+  lavender: {
+    name: 'Lavender',
+    colors: {
+      accent: '#b8a4e0',
+      accentRgb: '184, 164, 224',
+      accentBright: '#d1c4f0',
+      accentBrightRgb: '209, 196, 240',
+      noteActive: '#c9b8f5',
+      noteActiveRgb: '201, 184, 245',
+      noteInactive: '#453d5a',
+      background: '#16121f',
+      panel: '#231e2f',
+      rail: 'rgba(35, 30, 47, 0.95)',
+      railEnd: 'rgba(22, 18, 31, 0.98)',
+      gridBg: 'rgba(28, 24, 40, 0.92)',
+      gridBgEnd: 'rgba(18, 15, 26, 0.88)',
       text: '#ffffff',
       textMuted: 'rgba(255, 255, 255, 0.7)'
     }
