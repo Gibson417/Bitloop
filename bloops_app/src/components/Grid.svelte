@@ -112,7 +112,7 @@
     // Fixed viewport: show only 16 columns at a time (one bar)
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth || displayColumns * 32;
-    const cellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
+    const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
@@ -710,7 +710,7 @@
 
   .grid-wrapper {
     position: relative;
-    flex: 0 0 auto; /* Only take space needed for grid canvas */
+    flex: 1; /* Expand to fill available space */
     height: 100%;
     min-height: 256px;
     overflow-x: hidden;
@@ -720,7 +720,9 @@
     border: 1px solid rgba(var(--color-text), 0.08);
     scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
     scrollbar-width: thin;
-    width: auto; /* Auto width to fit canvas content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .grid-canvas {
