@@ -1554,6 +1554,7 @@
     margin-bottom: 16px;
     min-height: 300px;
     flex: 1;
+    display: flex;
   }
 
   .grid-backdrop :global(.grid-wrapper) {
