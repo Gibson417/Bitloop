@@ -1551,12 +1551,12 @@
     gap: 12px;
     width: 100%;
     max-width: 240px;
-    align-self: flex-start;
+    align-self: flex-end;
   }
 
   .window-switcher-group {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     margin-left: auto;
   }
 
