@@ -39,6 +39,21 @@
     }
   };
 
+  // Generate a color for each pattern based on index
+  const getPatternColor = (index) => {
+    const colors = [
+      '#78d2b9', // accent (default)
+      '#ff6b9d', // pink
+      '#ffd93d', // yellow
+      '#6bcf7f', // green
+      '#a78bfa', // purple
+      '#60a5fa', // blue
+      '#fb923c', // orange
+      '#ec4899', // magenta
+    ];
+    return colors[index % colors.length];
+  };
+
   const handleKeyNavigation = (event, index) => {
     // Handle Enter key for selection
     if (event.key === 'Enter') {
@@ -165,6 +180,8 @@
             on:keydown={(e) => handleKeyNavigation(e, index)}
             aria-label="Pattern {index + 1}: {pattern.name}"
           >
+            <span class="pattern-strip" style={`background:${getPatternColor(index)}`}></span>
+            <span class="pattern-id" style={`color:${getPatternColor(index)}`}>P{index + 1}</span>
             <input
               type="text"
               class="pattern-name"
@@ -182,7 +199,10 @@
                 title="Duplicate pattern"
                 aria-label="Duplicate pattern"
               >
-                ⎘
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
               </button>
               {#if canRemovePattern}
                 <button
@@ -192,7 +212,10 @@
                   title="Remove pattern"
                   aria-label="Remove pattern"
                 >
-                  ×
+                  <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
                 </button>
               {/if}
             </div>
@@ -435,33 +458,52 @@
   .pattern-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     padding: 8px 10px;
-    border-radius: 8px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(0, 0, 0, 0.35));
-    border: 1.5px solid rgba(var(--color-accent-rgb), 0.25);
+    border-radius: 10px;
+    background: rgba(var(--color-background, 17, 20, 29), 0.5);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 0 1 auto;
-    min-width: 160px;
+    min-width: 180px;
+    position: relative;
+    min-height: 44px;
   }
 
   .pattern-item:hover {
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(0, 0, 0, 0.4));
     border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-background, 17, 20, 29), 0.85);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }
 
   .pattern-item.selected {
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.18), rgba(var(--color-accent-rgb), 0.08));
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
+    background: rgba(var(--color-accent-rgb), 0.12);
+    border-color: rgba(var(--color-accent-rgb), 0.7);
+    box-shadow: 0 4px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
   .pattern-item:focus-visible {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
     outline-offset: 2px;
+  }
+
+  .pattern-strip {
+    width: 6px;
+    height: 100%;
+    min-height: 28px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .pattern-id {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+    flex-shrink: 0;
+    min-width: 24px;
   }
 
   .pattern-name {
@@ -497,23 +539,28 @@
   .pattern-action-btn {
     width: 28px;
     height: 28px;
-    border-radius: 6px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
-    background: rgba(var(--color-accent-rgb), 0.15);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.8);
-    font-size: 1.1rem;
-    line-height: 1;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
+    flex-shrink: 0;
+  }
+
+  .pattern-action-btn .action-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
   }
 
   .pattern-action-btn:hover {
     border-color: rgba(var(--color-accent-rgb), 0.5);
-    background: rgba(var(--color-accent-rgb), 0.25);
+    background: rgba(var(--color-accent-rgb), 0.2);
     color: #fff;
     transform: scale(1.05);
   }
