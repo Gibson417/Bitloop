@@ -690,7 +690,7 @@
     padding: 0;
     min-width: 48px;
     background: var(--color-grid-bg);
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid rgba(var(--color-text), 0.08);
     overflow: hidden;
   }
@@ -737,7 +737,7 @@
   .grid-canvas:focus-visible {
     outline: 3px solid rgba(var(--color-accent-rgb), 0.8);
     outline-offset: -3px;
-    border-radius: 8px;
+    border-radius: 11px;
   }
 
   .grid-wrapper::-webkit-scrollbar {
