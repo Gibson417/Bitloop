@@ -75,11 +75,13 @@ describe('Grid layout', () => {
     // Trigger a resize by dispatching a window resize event so component recalculates layout
     window.dispatchEvent(new Event('resize'));
 
-    // displayColumns now depends on gridZoom, not noteLengthDenominator
-    // displayColumns = sourceColumns * (stepsPerBar * gridZoom) / stepsPerBar
-    // displayColumns = sourceColumns * gridZoom
+    // displayColumns now depends on gridZoom as resolution denominator
+    // gridZoom = 1 means 1/1 resolution (1 subdivision per bar)
+    // displayResolution = gridZoom
+    // displayColumns = floor((sourceColumns * displayResolution) / stepsPerBar)
     const stepsPerBar = 16; // default in Grid component
-    const displayColumns = Math.floor((sourceColumns * (stepsPerBar * gridZoom)) / stepsPerBar);
+    const displayResolution = gridZoom; // gridZoom is now the resolution denominator
+    const displayColumns = Math.floor((sourceColumns * displayResolution) / stepsPerBar);
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth;
     const expectedCellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));

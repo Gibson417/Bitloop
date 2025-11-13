@@ -345,9 +345,11 @@
   let selectedNoteLength = DEFAULT_NOTE_LENGTH;
 
   // Zoom level state (separate from note length)
-  let gridZoomLevel = 1; // 1x = normal, 2x = 2x detail, etc.
+  // Zoom level represents the grid resolution denominator (1, 2, 4, 8, 16, 32, 64)
+  // displayed as 1/1, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64
+  let gridZoomLevel = 16; // Default to 1/16 resolution (quarter note at 4/4 time)
   const MIN_ZOOM = 1;
-  const MAX_ZOOM = 4;
+  const MAX_ZOOM = 64;
 
   const handleZoom = (event) => {
     gridZoomLevel = event.detail.level;

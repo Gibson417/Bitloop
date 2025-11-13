@@ -107,10 +107,10 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     
     // Calculate display resolution based on gridZoom
-    // gridZoom of 1 = show at stepsPerBar resolution
-    // gridZoom of 2 = show at 2x stepsPerBar resolution, etc.
-    const zoom = Math.max(1, Math.round(gridZoom || 1));
-    const displayResolution = stepsPerBarSafe * zoom;
+    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
+    // e.g., gridZoom = 16 means show 1/16 note resolution (16 subdivisions per bar)
+    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
+    const displayResolution = resolutionDenominator;
     const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
     
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
@@ -154,9 +154,9 @@
       const logicalColumns = Math.max(columns || 16, 1);
       const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
       
-      // Use gridZoom for display resolution
-      const zoom = Math.max(1, Math.round(gridZoom || 1));
-      const displayResolution = stepsPerBarSafe * zoom;
+      // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
+      const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
+      const displayResolution = resolutionDenominator;
       const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
       
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
@@ -182,7 +182,7 @@
       const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
       
       // Determine if we're in a "zoomed" view (showing more detail than default)
-      const isZoomed = zoom > 1;
+      const isZoomed = resolutionDenominator > 16;
       
       for (let col = 0; col <= visibleColumns; col++) {
         // Map displayed column back to logical step in the source columns (accounting for window offset)
@@ -389,9 +389,9 @@
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     
-    // Use gridZoom for display resolution
-    const zoom = Math.max(1, Math.round(gridZoom || 1));
-    const displayResolution = stepsPerBarSafe * zoom;
+    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
+    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
+    const displayResolution = resolutionDenominator;
     const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
     
     const visibleColumns = 16;
@@ -492,9 +492,9 @@
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     
-    // Use gridZoom for display resolution
-    const zoom = Math.max(1, Math.round(gridZoom || 1));
-    const displayResolution = stepsPerBarSafe * zoom;
+    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
+    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
+    const displayResolution = resolutionDenominator;
     const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
     
     const visibleColumns = 16;
