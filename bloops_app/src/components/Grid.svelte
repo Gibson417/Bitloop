@@ -710,7 +710,7 @@
 
   .grid-wrapper {
     position: relative;
-    flex: 1; /* Allow wrapper to expand to fill available space */
+    flex: 0 0 auto; /* Only take space needed for grid canvas */
     height: 100%;
     min-height: 256px;
     overflow-x: hidden;
@@ -720,7 +720,7 @@
     border: 1px solid rgba(var(--color-text), 0.08);
     scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
     scrollbar-width: thin;
-    width: 100%; /* Fill container width to make grid responsive */
+    width: auto; /* Auto width to fit canvas content */
   }
 
   .grid-canvas {
