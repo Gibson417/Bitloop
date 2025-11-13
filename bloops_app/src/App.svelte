@@ -14,6 +14,7 @@
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
   import ZoomControls from './components/ZoomControls.svelte';
+  import GridToolbar from './components/GridToolbar.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -349,8 +350,15 @@
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 4;
 
+  // Drawing tool state
+  let selectedDrawingTool = 'paint'; // 'single', 'paint', 'erase'
+
   const handleZoom = (event) => {
     gridZoomLevel = event.detail.level;
+  };
+
+  const handleToolChange = (event) => {
+    selectedDrawingTool = event.detail.tool;
   };
 
   const handleNoteChange = (event) => {
@@ -1043,6 +1051,13 @@
             on:change={handleNoteLengthChange}
           />
         </div>
+        <div class="drawing-tools-group">
+          <GridToolbar
+            selectedTool={selectedDrawingTool}
+            trackColor={trackColor}
+            on:toolchange={handleToolChange}
+          />
+        </div>
         <div class="zoom-controls-group">
           <ZoomControls
             zoomLevel={gridZoomLevel}
@@ -1076,6 +1091,7 @@
           noteLengthDenominator={selectedNoteLengthValue}
           gridZoom={gridZoomLevel}
           manualWindow={manualWindow}
+          drawingTool={selectedDrawingTool}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
         />
@@ -1601,6 +1617,11 @@
   }
 
   .zoom-controls-group {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .drawing-tools-group {
     display: flex;
     align-items: flex-end;
   }
