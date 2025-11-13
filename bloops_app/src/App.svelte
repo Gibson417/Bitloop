@@ -1614,15 +1614,12 @@
 
   .note-length-group {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 16px;
+    align-items: center;
+    padding: 10px 14px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    min-width: 200px;
-    max-width: 240px;
-    flex-shrink: 0;
+    min-height: 60px;
   }
 
   .zoom-controls-group {
@@ -1632,6 +1629,7 @@
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 60px;
   }
 
   .drawing-tools-group {
@@ -1641,6 +1639,7 @@
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 60px;
   }
 
   .window-switcher-group {
@@ -1651,6 +1650,7 @@
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     margin-left: auto;
+    min-height: 60px;
   }
 
   .grid-backdrop {

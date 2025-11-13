@@ -69,7 +69,7 @@
   .zoom-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 4px 12px;
     background: var(--color-panel);
     border-radius: 8px;

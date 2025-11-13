@@ -105,8 +105,8 @@
 <style>
   .arrow-selector {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
     color: var(--color-text);
     font-size: 0.78rem;
   }
@@ -117,6 +117,7 @@
     font-weight: 600;
     font-size: 0.75rem;
     color: var(--color-text-muted);
+    white-space: nowrap;
   }
 
   .selector-controls {

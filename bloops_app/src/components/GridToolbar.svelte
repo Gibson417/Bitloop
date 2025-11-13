@@ -43,7 +43,7 @@
   .grid-toolbar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 8px 12px;
     background: var(--color-panel);
     border-radius: 8px;
