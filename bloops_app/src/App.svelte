@@ -22,6 +22,7 @@
   import { renderProjectToMidi } from './lib/midiExporter.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
   import { getRowNoteNames } from './lib/notes.js';
+  import { devMode } from './store/devModeStore.js';
 
   let projectState;
   let historyState;
@@ -29,6 +30,7 @@
   let totalStepsValue = 0;
   let loopDurationValue = 0;
   let maxBarsValue = 0;
+  let devModeEnabled = false;
 
   const unsubscribers = [
     project.subscribe((value) => (projectState = value)),
@@ -36,7 +38,8 @@
     loopDuration.subscribe((value) => (loopDurationValue = value)),
     maxBars.subscribe((value) => (maxBarsValue = value)),
     historyStatus.subscribe((value) => (historyState = value)),
-    library.subscribe((value) => (libraryState = value))
+    library.subscribe((value) => (libraryState = value)),
+    devMode.subscribe((value) => (devModeEnabled = value))
   ];
 
   let audioContext;
@@ -735,6 +738,7 @@
     });
     
     // Global keyboard handler for spacebar to control play/stop (DAW-style)
+    // and Ctrl+Shift+D for dev mode toggle
     const handleGlobalKeydown = (event) => {
       // Only handle spacebar if not in a text input or textarea
       const target = event.target;
@@ -745,6 +749,13 @@
       if (event.key === ' ' && !isTextInput) {
         event.preventDefault();
         handleTogglePlay();
+      }
+      
+      // Ctrl+Shift+D to toggle dev mode
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
+        event.preventDefault();
+        const newState = devMode.toggle();
+        console.log(`Dev mode ${newState ? 'enabled' : 'disabled'}`);
       }
     };
     
@@ -796,7 +807,13 @@
   $: displayNoteLabel = currentNoteLabel ?? NOTE_LENGTH_OPTIONS[0].label;
 </script>
 
-<main class="app">
+<main class="app" class:dev-mode={devModeEnabled}>
+  {#if devModeEnabled}
+    <div class="dev-mode-indicator">
+      <span>DEV MODE</span>
+      <kbd>Ctrl+Shift+D</kbd>
+    </div>
+  {/if}
   {#if mountError}
     <div class="mount-error" style="position:fixed;inset:16px;background:rgba(0,0,0,0.9);color:#fff;padding:20px;border-radius:8px;z-index:9999;overflow:auto;">
       <h2 style="margin:0 0 8px 0;font-size:18px;">Initialization error</h2>
@@ -811,9 +828,9 @@
       Playback stopped
     {/if}
   </div>
-  <aside class="app-rail">
+  <aside class="app-rail" data-component="AppRail">
     <div class="rail-inner">
-      <div class="brand">
+      <div class="brand" data-component="Brand">
         <div class="brand-logo" aria-hidden="true">
           <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
             <!-- Stylized "B" made of dots -->
@@ -835,7 +852,7 @@
         </div>
       </div>
       {#if activeTrack}
-        <div class="volume-card">
+        <div class="volume-card" data-component="VolumeCard">
           <div class="volume-heading">
             <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
           </div>
@@ -870,7 +887,7 @@
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
       />
-      <div class="rail-stats">
+      <div class="rail-stats" data-component="RailStats">
         <div class="stat-field">
           <label for="rail-tempo" class="label">Tempo</label>
           <input
@@ -915,8 +932,8 @@
       </div>
     </div>
   </aside>
-  <section class="workspace">
-    <div class="workspace-header">
+  <section class="workspace" data-component="Workspace">
+    <div class="workspace-header" data-component="WorkspaceHeader">
       <div class="session-info">
         <label class="project-label" for="project-name-input">
           <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -983,15 +1000,15 @@
         </div>
       </div>
     </div>
-    <div class="track-controls-wrapper">
+    <div class="track-controls-wrapper" data-component="TrackControlsWrapper">
       <TrackControls
         track={activeTrack}
         trackIndex={projectState?.selectedTrack ?? 0}
         on:update={handleTrackUpdate}
       />
     </div>
-    <div class="grid-shell">
-      <div class="grid-toolbar">
+    <div class="grid-shell" data-component="GridShell">
+      <div class="grid-toolbar" data-component="GridToolbar">
         <div class="note-length-group">
           <ArrowSelector
             label="Note length"
@@ -1009,7 +1026,7 @@
           />
         </div>
       </div>
-      <div class="grid-backdrop">
+      <div class="grid-backdrop" data-component="GridBackdrop">
           <Grid
           {rows}
           {columns}
@@ -1028,7 +1045,7 @@
         />
       </div>
     </div>
-    <div class="track-effects-wrapper">
+    <div class="track-effects-wrapper" data-component="TrackEffectsWrapper">
       <TrackEffectsPanel
         track={activeTrack}
         trackIndex={projectState?.selectedTrack ?? 0}
@@ -1712,6 +1729,78 @@
     
     .follow {
       padding: 12px 16px;
+    }
+  }
+
+  /* Dev Mode Styles */
+  .dev-mode-indicator {
+    position: fixed;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 165, 0, 0.95);
+    color: #000;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+
+  .dev-mode-indicator kbd {
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-family: monospace;
+  }
+
+  /* Dev mode tooltips - only show when dev mode is enabled */
+  .dev-mode [data-component] {
+    position: relative;
+  }
+
+  .dev-mode [data-component]:hover::after {
+    content: attr(data-component);
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 9999;
+    padding: 6px 10px;
+    background: rgba(255, 165, 0, 0.95);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: devTooltipFade 0.15s ease-in;
+  }
+
+  @keyframes devTooltipFade {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hide dev tooltips on reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .dev-mode [data-component]:hover::after {
+      animation: none;
     }
   }
 </style>

@@ -28,7 +28,7 @@
   $: canGoNext = currentWindow < totalWindows - 1;
 </script>
 
-<div class="window-switcher" role="navigation" aria-label="Grid window navigation" style="--track-color: {trackColor}">
+<div class="window-switcher" role="navigation" aria-label="Grid window navigation" style="--track-color: {trackColor}" data-component="WindowSwitcher">
   <button
     type="button"
     class="window-nav-btn"

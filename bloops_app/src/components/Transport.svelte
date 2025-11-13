@@ -19,7 +19,7 @@
 
 </script>
 
-<div class="transport">
+<div class="transport" data-component="Transport">
   <div class="transport-buttons">
     <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
       <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">

@@ -102,7 +102,7 @@
   });
 </script>
 
-<div class="share-menu" data-open={shareMenuOpen} bind:this={shareMenuEl}>
+<div class="share-menu" data-open={shareMenuOpen} bind:this={shareMenuEl} data-component="ShareMenu">
   <button
     type="button"
     class={`share-btn ${shareStatus === 'working' ? 'loading' : ''} ${shareMenuOpen ? 'open' : ''}`}

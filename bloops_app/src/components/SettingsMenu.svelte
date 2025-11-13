@@ -68,7 +68,7 @@
   });
 </script>
 
-<div class="settings-menu" data-open={settingsMenuOpen} bind:this={settingsMenuEl}>
+<div class="settings-menu" data-open={settingsMenuOpen} bind:this={settingsMenuEl} data-component="SettingsMenu">
   <button
     type="button"
     class={`settings-btn ${settingsMenuOpen ? 'open' : ''}`}

@@ -16,6 +16,7 @@
   on:click={handleClick}
   aria-pressed={active}
   aria-label={active ? 'Disable follow mode' : 'Enable follow mode'}
+  data-component="FollowToggle"
 >
   <span class="label">{active ? 'Follow on' : 'Follow off'}</span>
   <span class="indicator" aria-hidden="true"></span>

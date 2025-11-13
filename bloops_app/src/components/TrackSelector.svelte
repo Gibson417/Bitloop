@@ -45,7 +45,7 @@
   };
 </script>
 
-<div class="track-selector">
+<div class="track-selector" data-component="TrackSelector">
   <div class="selector-header">
     <span class="selector-title">Tracks</span>
     <div class="header-actions">
