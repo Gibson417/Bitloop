@@ -156,8 +156,10 @@
       
       // Calculate which window to display (16 steps at a time)
       const visibleColumns = 16;
+      // Convert playhead from logical steps to display steps for correct window calculation
+      const playheadDisplayStep = Math.floor((playheadStep * displayColumns) / logicalColumns);
       // Use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadDisplayStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
@@ -319,7 +321,8 @@
       }
 
   // Playhead (show within current window)
-  const playheadStepInWindow = playheadStep % visibleColumns;
+  // Reuse playheadDisplayStep calculated earlier in the window calculation
+  const playheadStepInWindow = playheadDisplayStep - windowOffset;
   const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
