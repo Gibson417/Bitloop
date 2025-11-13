@@ -413,13 +413,21 @@
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
     const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
     
-    // Calculate the quantized storage start based on noteLengthDenominator
-    const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
-    const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
-    const storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
-
-    // Storage length based on note quantization
-    const storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
+    // For 'single' tool: place notes at exact display column positions without quantization grouping
+    // For other tools: use noteLength quantization
+    let storageStart, storageLength;
+    if (drawingTool === 'single') {
+      // For single tool, map each display column directly to storage without coarse quantization
+      // This ensures adjacent clicks place notes in adjacent (but separate) storage cells
+      storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+      storageLength = 1; // Minimum quantum for isolated single notes
+    } else {
+      // Calculate the quantized storage start based on noteLengthDenominator
+      const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
+      const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
+      storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
+      storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
+    }
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -452,7 +460,7 @@
     // For other tools, allow drag painting but prevent repainting the same cell
     const shouldSkip = paintedCells.has(key) && (drawingTool === 'single' || pointerActive);
     if (shouldSkip) return;
-    paintedCells.add(key);
+     paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
