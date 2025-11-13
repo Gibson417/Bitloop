@@ -798,9 +798,19 @@ const createProjectStore = () => {
       let changed = false;
       update((state) => {
         if (state.tracks.length >= MAX_TRACKS) return state;
-        const steps = state.bars * state.stepsPerBar;
-        const tracks = [...state.tracks, createTrack(state.tracks.length, state.rows, steps)];
+        const storageSteps = state.bars * BASE_RESOLUTION;
+        const tracks = [...state.tracks, createTrack(state.tracks.length, state.rows, storageSteps)];
         changed = true;
+        
+        // Update patterns if they exist
+        if (state.patterns && Array.isArray(state.patterns)) {
+          const patterns = state.patterns.map((pattern, idx) => {
+            if (idx !== state.selectedPattern) return pattern;
+            return { ...pattern, tracks };
+          });
+          return normalizeState({ ...state, tracks, patterns, selectedTrack: tracks.length - 1 });
+        }
+        
         return normalizeState({ ...state, tracks, selectedTrack: tracks.length - 1 });
       });
       if (changed) {
@@ -821,6 +831,16 @@ const createProjectStore = () => {
         };
         const tracks = [...state.tracks, duplicatedTrack];
         changed = true;
+        
+        // Update patterns if they exist
+        if (state.patterns && Array.isArray(state.patterns)) {
+          const patterns = state.patterns.map((pattern, idx) => {
+            if (idx !== state.selectedPattern) return pattern;
+            return { ...pattern, tracks };
+          });
+          return normalizeState({ ...state, tracks, patterns, selectedTrack: tracks.length - 1 });
+        }
+        
         return normalizeState({ ...state, tracks, selectedTrack: tracks.length - 1 });
       });
       if (changed) {
@@ -836,6 +856,16 @@ const createProjectStore = () => {
         const tracks = state.tracks.filter((_, idx) => idx !== index);
         changed = true;
         const selectedTrack = clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1);
+        
+        // Update patterns if they exist
+        if (state.patterns && Array.isArray(state.patterns)) {
+          const patterns = state.patterns.map((pattern, idx) => {
+            if (idx !== state.selectedPattern) return pattern;
+            return { ...pattern, tracks };
+          });
+          return normalizeState({ ...state, tracks, patterns, selectedTrack });
+        }
+        
         return normalizeState({ ...state, tracks, selectedTrack });
       });
       if (changed) {
