@@ -146,7 +146,7 @@
   .track-selector {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .selector-header {
@@ -166,17 +166,17 @@
 
   .header-actions {
     display: flex;
-    gap: 6px;
+    gap: 4px;
   }
 
   .action-button {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 10px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.15);
     color: var(--color-accent);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -213,7 +213,7 @@
   .track-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     max-height: 400px;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -240,16 +240,16 @@
   .track-item {
     display: flex;
     align-items: center;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 8px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(var(--color-background, 17, 20, 29), 0.5);
     color: var(--color-text, #fff);
     text-align: left;
-    gap: 8px;
+    gap: 6px;
     transition: all 0.2s ease;
     position: relative;
-    min-height: 64px;
+    min-height: 52px;
   }
 
   .track-item:hover {
@@ -314,14 +314,14 @@
   }
 
   .toggle-btn {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 8px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.85);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -355,13 +355,13 @@
   }
 
   .remove-button {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 8px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.85);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
     display: flex;
