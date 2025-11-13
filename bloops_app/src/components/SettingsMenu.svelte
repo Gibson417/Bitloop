@@ -1,5 +1,5 @@
 <script>
-  import { onDestroy, tick } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
   import ThemeSelector from './ThemeSelector.svelte';
   import HowToGuide from './HowToGuide.svelte';
 
@@ -46,15 +46,19 @@
 
   const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape' && settingsMenuOpen) {
+      event.preventDefault();
+      event.stopPropagation();
       settingsMenuOpen = false;
       document.removeEventListener('click', closeOnClickOutside);
     }
   };
 
-  // Add keyboard listener on mount
-  if (typeof document !== 'undefined') {
-    document.addEventListener('keydown', handleDocumentKeydown);
-  }
+  // Add keyboard listener in onMount to ensure proper lifecycle management
+  onMount(() => {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', handleDocumentKeydown);
+    }
+  });
 
   onDestroy(() => {
     if (typeof document !== 'undefined') {

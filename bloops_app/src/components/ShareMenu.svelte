@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onDestroy, tick } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
 
   export let shareStatus = 'idle';
   export let shareMessage = '';
@@ -76,6 +76,8 @@
 
   const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape' && shareMenuOpen) {
+      event.preventDefault();
+      event.stopPropagation();
       shareMenuOpen = false;
       document.removeEventListener('click', closeOnClickOutside);
     }
@@ -85,10 +87,12 @@
     event.target.select?.();
   };
 
-  // Add keyboard listener on mount
-  if (typeof document !== 'undefined') {
-    document.addEventListener('keydown', handleDocumentKeydown);
-  }
+  // Add keyboard listener in onMount to ensure proper lifecycle management
+  onMount(() => {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', handleDocumentKeydown);
+    }
+  });
 
   onDestroy(() => {
     if (typeof document !== 'undefined') {
