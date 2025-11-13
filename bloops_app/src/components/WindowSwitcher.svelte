@@ -28,7 +28,7 @@
   $: canGoNext = currentWindow < totalWindows - 1;
 </script>
 
-<div class="window-switcher" role="navigation" aria-label="Grid window navigation">
+<div class="window-switcher" role="navigation" aria-label="Grid window navigation" style="--track-color: {trackColor}">
   <button
     type="button"
     class="window-nav-btn"
@@ -54,7 +54,6 @@
         aria-label="Window {index + 1}"
         aria-selected={index === currentWindow}
         title="Window {index + 1}"
-        style="background: {index === currentWindow ? trackColor : 'rgba(255,255,255,0.15)'};"
       >
         <span class="sr-only">Window {index + 1}</span>
       </button>
@@ -167,20 +166,33 @@
   }
 
   .window-indicator {
-    width: 10px;
-    height: 10px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border-radius: 50%;
     border: none;
-    background: rgba(255, 255, 255, 0.15);
+    background: transparent;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .window-indicator:hover {
+  .window-indicator::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .window-indicator:hover::before {
     transform: scale(1.3);
     box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(255, 255, 255, 0.3);
   }
 
   .window-indicator:focus-visible {
@@ -188,9 +200,10 @@
     outline-offset: 3px;
   }
 
-  .window-indicator.active {
-    width: 14px;
-    height: 14px;
+  .window-indicator.active::before {
+    width: 16px;
+    height: 16px;
+    background: var(--track-color, rgba(var(--color-accent-rgb), 0.9));
     box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
 

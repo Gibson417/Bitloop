@@ -168,10 +168,10 @@
 <style>
   .track-controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 18px;
-    padding: 18px;
-    border-radius: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 20px;
+    border-radius: 16px;
     background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end));
     border: 1px solid rgba(var(--color-text), 0.08);
     box-sizing: border-box;
@@ -330,6 +330,8 @@
   @media (max-width: 720px) {
     .track-controls {
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      padding: 16px;
     }
   }
 </style>

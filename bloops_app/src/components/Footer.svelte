@@ -245,7 +245,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
-    padding: 14px 24px 18px;
+    padding: 16px 24px;
     color: rgba(255, 255, 255, 0.85);
     box-sizing: border-box;
     width: 100%;
@@ -365,8 +365,9 @@
   .action-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     padding: 12px 16px;
+    min-height: 44px;
     border-radius: 10px;
     border: 1.5px solid rgba(var(--color-accent-rgb), 0.3);
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(0, 0, 0, 0.35));
@@ -459,16 +460,16 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 10px;
+    padding: 12px;
     border-radius: 10px;
     background: rgba(var(--color-background, 17, 20, 29), 0.5);
     border: 1.5px solid rgba(255, 255, 255, 0.08);
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 0 1 auto;
-    min-width: 180px;
+    min-width: 200px;
     position: relative;
-    min-height: 44px;
+    min-height: 60px;
   }
 
   .pattern-item:hover {
@@ -537,12 +538,12 @@
   }
 
   .pattern-action-btn {
-    width: 28px;
-    height: 28px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -553,8 +554,8 @@
   }
 
   .pattern-action-btn .action-icon {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     display: block;
   }
 
