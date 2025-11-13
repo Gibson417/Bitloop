@@ -459,6 +459,11 @@
   const handleKeyDown = (event) => {
     if (!canvas || !scroller) return;
     
+    // Allow spacebar to bubble up to global play/pause handler
+    if (event.key === ' ') {
+      return; // Don't handle spacebar here, let it bubble to App.svelte
+    }
+    
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     const denom = Number(noteLengthDenominator) || null;
