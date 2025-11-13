@@ -57,8 +57,9 @@ Bloops encourages **flow** — curiosity, repetition, listening, adjusting, evol
 | **Playhead** | P1 | Thin, calm, warm-accent vertical bar |
 | **Accent Hue** | B-Warm | Teal with a touch of warmth, not icy or clinical |
 | **Inactive Notes** | 2B strength | Softly present, never visually noisy |
+| **Controls** | Compact | Discrete, compact sizing keeps focus on the grid |
 
-The interface is dark, quiet, and gentle — it gets out of the way and lets *sound* lead.
+The interface is dark, quiet, and gentle — it gets out of the way and lets *sound* lead. Controls are intentionally compact and discrete, ensuring the **grid remains the visual instrument** of the project.
 
 ## 🎼 Why It Exists
 
@@ -272,9 +273,10 @@ Bloops prioritizes **feel** over features:
 - **Smooth playback:** Stable scheduler and precise timing
 - **Fast, intuitive editing:** Zero perceived lag
 - **Calm, minimal UI:** Encourages creative flow
+- **Compact, discrete controls:** Grid-focused design with unobtrusive UI elements
 - **Musical, not mechanical:** Easy to create good-sounding melodies
 
-The interface is dark, quiet, and gentle — it gets out of the way and lets *sound* lead.
+The interface is dark, quiet, and gentle — it gets out of the way and lets *sound* lead. Controls are intentionally compact to keep the **grid as the primary instrument**.
 
 ## 🪶 License
 
