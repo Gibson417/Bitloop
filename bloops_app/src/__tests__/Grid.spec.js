@@ -81,7 +81,7 @@ describe('Grid component', () => {
     expect(event.detail.value).toBe(true); // Should add note
   });
 
-  it('clicking a filled cell should remove the note (value=false)', async () => {
+  it('clicking a filled cell should still add a note (default paint behavior)', async () => {
     const rows = 4;
     const columns = 16;
     const notes = createNotes(rows, columns * 4); // Storage resolution
@@ -113,7 +113,7 @@ describe('Grid component', () => {
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
-    // Click on the filled cell
+    // Click on the filled cell - new behavior: should still paint (value=true)
     const pointerDownEvent = new PointerEvent('pointerdown', {
       clientX: 10,
       clientY: 10,
@@ -131,10 +131,10 @@ describe('Grid component', () => {
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
-    expect(event.detail.value).toBe(false); // Should remove note
+    expect(event.detail.value).toBe(true); // Should paint (not toggle)
   });
 
-  it('holding shift key should enable erase mode', async () => {
+  it('holding shift key should enable extend/toggle mode', async () => {
     const rows = 4;
     const columns = 8;
     const { component, container } = render(Grid, {
@@ -159,7 +159,7 @@ describe('Grid component', () => {
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
-    // Click on an empty cell WITH shift key - should erase (value=false)
+    // Click on an empty cell WITH shift key - should toggle (add note since cell is empty)
     const pointerDownEvent = new PointerEvent('pointerdown', {
       clientX: 10,
       clientY: 10,
@@ -178,7 +178,61 @@ describe('Grid component', () => {
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
-    expect(event.detail.value).toBe(false); // Should erase even on empty cell
+    expect(event.detail.value).toBe(true); // Should add note (toggle on empty cell)
+  });
+
+  it('holding shift key on filled cell should toggle (remove note)', async () => {
+    const rows = 4;
+    const columns = 16;
+    const notes = createNotes(rows, columns * 4); // Storage resolution
+    // Fill first cell at storage indices 0-3 (corresponds to first display column)
+    notes[0][0] = true;
+    notes[0][1] = true;
+    notes[0][2] = true;
+    notes[0][3] = true;
+
+    const { component, container } = render(Grid, {
+      props: {
+        rows,
+        columns,
+        notes,
+        playheadStep: 0,
+        playheadProgress: 0,
+        follow: false,
+        isPlaying: false,
+        noteLengthDenominator: 16,
+        stepsPerBar: 16
+      }
+    });
+
+    const noteChange = vi.fn();
+    component.$on('notechange', noteChange);
+
+    const canvas = container.querySelector('canvas');
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 512, height: 128 });
+    canvas.setPointerCapture = vi.fn();
+    canvas.releasePointerCapture = vi.fn();
+
+    // Click on filled cell WITH shift key - should toggle (remove note)
+    const pointerDownEvent = new PointerEvent('pointerdown', {
+      clientX: 10,
+      clientY: 10,
+      pointerId: 1,
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true
+    });
+    const pointerUpEvent = new PointerEvent('pointerup', {
+      pointerId: 1,
+      bubbles: true,
+      cancelable: true
+    });
+    canvas.dispatchEvent(pointerDownEvent);
+    canvas.dispatchEvent(pointerUpEvent);
+
+    expect(noteChange).toHaveBeenCalled();
+    const event = noteChange.mock.calls[0][0];
+    expect(event.detail.value).toBe(false); // Should remove note (toggle on filled cell)
   });
 
   it('holding alt key should enable erase mode', async () => {
