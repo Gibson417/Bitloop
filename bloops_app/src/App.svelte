@@ -314,7 +314,7 @@
     { label: '1', value: 1 }
   ];
 
-  const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/16')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
+  const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/8')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
   let selectedNoteLength = DEFAULT_NOTE_LENGTH;
 
   const handleNoteChange = (event) => {
