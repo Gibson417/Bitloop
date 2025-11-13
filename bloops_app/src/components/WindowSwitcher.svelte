@@ -23,9 +23,6 @@
   const handleWindowClick = (index) => {
     dispatch('switch', { window: index });
   };
-
-  $: canGoPrevious = currentWindow > 0;
-  $: canGoNext = currentWindow < totalWindows - 1;
 </script>
 
 <div class="window-switcher" role="navigation" aria-label="Grid window navigation" style="--track-color: {trackColor}">
@@ -33,7 +30,6 @@
     type="button"
     class="window-nav-btn"
     on:click={handlePrevious}
-    disabled={!canGoPrevious}
     title="Previous window (Shift+Left)"
     aria-label="Previous window"
     style="border-color: {trackColor}20; background: {trackColor}10;"
@@ -68,7 +64,6 @@
     type="button"
     class="window-nav-btn"
     on:click={handleNext}
-    disabled={!canGoNext}
     title="Next window (Shift+Right)"
     aria-label="Next window"
     style="border-color: {trackColor}20; background: {trackColor}10;"
