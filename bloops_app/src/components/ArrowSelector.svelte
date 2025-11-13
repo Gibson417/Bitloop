@@ -55,6 +55,9 @@
     } else if (e.key === 'ArrowRight' || e.key === 'Right') {
       e.preventDefault();
       handleNext();
+    } else if (e.key === ' ') {
+      // Prevent default spacebar button activation and let it bubble to global handler
+      e.preventDefault();
     }
   };
 </script>
