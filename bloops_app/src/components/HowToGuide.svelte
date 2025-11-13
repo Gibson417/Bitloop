@@ -87,7 +87,7 @@
               <polyline points="9 11 12 14 22 4"/>
               <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
             </svg>
-            <span>Click on the grid to add or remove notes</span>
+            <span>Click on the grid to paint notes consecutively. Hold Shift to toggle/extend notes, or Alt to erase</span>
           </li>
           <li>
             <svg class="tip-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
