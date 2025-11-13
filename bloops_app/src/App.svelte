@@ -1596,15 +1596,18 @@
 
   .grid-toolbar {
     display: flex;
-    align-items: flex-end; /* Align controls at baseline to match WindowSwitcher */
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
-    margin: 0 0 16px;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    border: none;
+    gap: 16px;
+    margin: 0 0 20px;
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, 
+      rgba(var(--color-panel, 34, 38, 50), 0.4), 
+      rgba(var(--color-panel, 34, 38, 50), 0.25));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.95rem;
   }
@@ -1612,25 +1615,41 @@
   .note-length-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-width: 200px;
     max-width: 240px;
-    align-self: flex-end;
+    flex-shrink: 0;
   }
 
   .zoom-controls-group {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .drawing-tools-group {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .window-switcher-group {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     margin-left: auto;
   }
 
@@ -1688,20 +1707,28 @@
     }
 
     .grid-toolbar {
-      padding: 10px 14px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 12px;
     }
 
     .note-length-group {
       width: 100%;
+      max-width: 100%;
+      min-width: auto;
+    }
+
+    .drawing-tools-group,
+    .zoom-controls-group,
+    .window-switcher-group {
+      flex: 1;
+      min-width: 0;
+      justify-content: center;
     }
 
     .window-switcher-group {
-      width: 100%;
       margin-left: 0;
-      justify-content: center;
     }
 
     .grid-backdrop {
