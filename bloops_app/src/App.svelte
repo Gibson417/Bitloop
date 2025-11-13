@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { get } from 'svelte/store';
   import Grid from './components/Grid.svelte';
+  import WindowSwitcher from './components/WindowSwitcher.svelte';
   import TrackSelector from './components/TrackSelector.svelte';
   import TrackControls from './components/TrackControls.svelte';
   import TrackEffectsPanel from './components/TrackEffectsPanel.svelte';
@@ -48,6 +49,10 @@
   let shareFeedbackTimer;
   // When initialization fails, set mountError to show a visible overlay instead of a white screen.
   let mountError = null;
+  // Window switching state
+  let manualWindow = null; // null = auto-follow playhead
+  let currentWindow = 0;
+  let totalWindows = 1;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -292,6 +297,24 @@
   const handleFollowToggle = (event) => {
     const nextValue = event.detail?.value ?? !projectState?.follow;
     project.setFollow(nextValue);
+    // When follow is enabled, clear manual window to go back to auto-follow
+    if (nextValue) {
+      manualWindow = null;
+    }
+  };
+
+  const handleWindowSwitch = (event) => {
+    const { window } = event.detail;
+    manualWindow = window;
+    // When manually switching, disable follow mode
+    if (projectState?.follow) {
+      project.setFollow(false);
+    }
+  };
+
+  const handleWindowInfo = (event) => {
+    currentWindow = event.detail.currentWindow;
+    totalWindows = event.detail.totalWindows;
   };
 
   const handleBpmChange = (event) => {
@@ -959,6 +982,14 @@
             on:change={handleNoteLengthChange}
           />
         </div>
+        <div class="window-switcher-group">
+          <WindowSwitcher
+            {currentWindow}
+            {totalWindows}
+            trackColor={trackColor}
+            on:switch={handleWindowSwitch}
+          />
+        </div>
       </div>
       <div class="grid-backdrop">
           <Grid
@@ -973,7 +1004,9 @@
           isPlaying={isPlaying}
           stepsPerBar={stepsPerBar}
           noteLengthDenominator={selectedNoteLengthValue}
+          manualWindow={manualWindow}
           on:notechange={handleNoteChange}
+          on:windowinfo={handleWindowInfo}
         />
       </div>
     </div>
@@ -1465,6 +1498,7 @@
   .grid-toolbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 14px;
     margin: 0 0 18px;
@@ -1483,6 +1517,12 @@
     width: 100%;
     max-width: 240px;
     align-self: flex-start;
+  }
+
+  .window-switcher-group {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
   }
 
   .grid-backdrop {
@@ -1546,6 +1586,12 @@
 
     .note-length-group {
       width: 100%;
+    }
+
+    .window-switcher-group {
+      width: 100%;
+      margin-left: 0;
+      justify-content: center;
     }
 
     .grid-backdrop {

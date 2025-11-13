@@ -17,6 +17,7 @@
   // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
+  export let manualWindow = null; // Manual window override (null = auto-follow playhead)
 
   const dispatch = createEventDispatcher();
 
@@ -155,8 +156,13 @@
       
       // Calculate which window to display (16 steps at a time)
       const visibleColumns = 16;
-      const currentWindow = Math.floor(playheadStep / visibleColumns);
+      // Use manual window if set, otherwise follow playhead
+      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
+      
+      // Dispatch window info for external components
+      const totalWindows = Math.ceil(displayColumns / visibleColumns);
+      dispatch('windowinfo', { currentWindow, totalWindows });
 
       // Draw grid lines (vertical only, with different intensities for bars and quarter-bars)
       ctx.save();
@@ -187,11 +193,11 @@
         
         // Use different opacity/color for bar boundaries vs quarter-bar boundaries vs sub-beats
         if (isBarBoundary) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.35); // Most visible for bars
+          ctx.strokeStyle = hexToRgba(trackColor, 0.55); // Increased from 0.35 for better visibility
         } else if (isQuarterBarBoundary) {
-          ctx.strokeStyle = styles.grid; // Medium visibility for quarter-bars
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)'; // Increased from grid style for better visibility
         } else if (isZoomed) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.08); // Subtle sub-beat ticks when zoomed
+          ctx.strokeStyle = hexToRgba(trackColor, 0.12); // Increased from 0.08 for better visibility
         } else {
           continue; // Skip non-boundary lines in normal view
         }
@@ -355,7 +361,7 @@
     // Check if shift or alt key is held for explicit erase mode
     eraseMode = event.shiftKey || event.altKey;
     pointerActive = false; // Reset to allow paintValue determination
-    paintedCells = new Set();
+    paintedCells = new Set(); // Clear painted cells for new gesture
     handlePointer(event);
   };
 
@@ -379,8 +385,8 @@
     const visibleColumns = 16;
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
-    // Calculate window offset based on playhead position
-    const currentWindow = Math.floor(playheadStep / visibleColumns);
+    // Calculate window offset - use manual window if set, otherwise follow playhead
+    const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
     const windowOffset = currentWindow * visibleColumns;
     
     // Map window column to actual display column
@@ -413,7 +419,9 @@
     }
 
     const key = `${row}:${storageStart}`;
-    if (paintedCells.has(key)) return;
+    // Allow the same cell to be painted again if this is a fresh pointer down (consecutive clicks)
+    // but prevent repainting during the same drag gesture
+    if (paintedCells.has(key) && pointerActive) return;
     paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
@@ -488,8 +496,8 @@
       event.preventDefault();
       keyboardMode = true;
       
-      // Calculate window offset based on playhead position
-      const currentWindow = Math.floor(playheadStep / visibleColumns);
+      // Calculate window offset - use manual window if set, otherwise follow playhead
+      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
       const displayCol = windowOffset + focusedCol;
       
@@ -697,7 +705,7 @@
 
   .grid-wrapper {
     position: relative;
-    flex: 1;
+    flex: 0 1 auto; /* Changed from flex: 1 to prevent unnecessary expansion */
     height: 100%;
     min-height: 256px;
     overflow-x: hidden;
@@ -707,6 +715,8 @@
     border: 1px solid rgba(var(--color-text), 0.08);
     scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
     scrollbar-width: thin;
+    width: fit-content; /* Add fit-content to size based on canvas */
+    max-width: 100%; /* Prevent overflow */
   }
 
   .grid-canvas {

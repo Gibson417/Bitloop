@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background: #1a1d28;">
+  <!-- Title -->
+  <text x="400" y="40" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#78d2b9" text-anchor="middle">
+    Grid Window Switcher - Architecture
+  </text>
+  
+  <!-- Grid Container -->
+  <g id="grid-container">
+    <rect x="50" y="80" width="700" height="450" rx="12" fill="#222632" stroke="#78d2b9" stroke-width="2" opacity="0.3"/>
+    <text x="400" y="105" font-family="system-ui, sans-serif" font-size="14" fill="#78d2b9" text-anchor="middle" opacity="0.7">
+      Grid Backdrop Container
+    </text>
+    
+    <!-- Grid Toolbar -->
+    <rect x="70" y="120" width="660" height="80" rx="8" fill="#2a2e3c" stroke="#78d2b9" stroke-width="1" opacity="0.5"/>
+    <text x="100" y="145" font-family="system-ui, sans-serif" font-size="12" fill="#fff" opacity="0.7">
+      Grid Toolbar
+    </text>
+    
+    <!-- Note Length Selector (left) -->
+    <rect x="90" y="155" width="180" height="35" rx="6" fill="#1a1d28" stroke="rgba(120,210,185,0.3)" stroke-width="1"/>
+    <text x="180" y="178" font-family="system-ui, sans-serif" font-size="11" fill="#78d2b9" text-anchor="middle">
+      Note Length: 1/8
+    </text>
+    
+    <!-- Window Switcher (right) -->
+    <g id="window-switcher">
+      <rect x="470" y="155" width="240" height="35" rx="8" fill="rgba(120,210,185,0.12)" stroke="rgba(120,210,185,0.3)" stroke-width="1"/>
+      
+      <!-- Prev Button -->
+      <rect x="480" y="157.5" width="44" height="30" rx="6" fill="rgba(120,210,185,0.2)" stroke="rgba(120,210,185,0.5)" stroke-width="1"/>
+      <path d="M 505 167.5 L 497 172.5 L 505 177.5" fill="none" stroke="#78d2b9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="502" y="200" font-family="system-ui, sans-serif" font-size="9" fill="#78d2b9" text-anchor="middle" opacity="0.7">Prev</text>
+      
+      <!-- Indicators -->
+      <circle cx="560" cy="172.5" r="5" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="580" cy="172.5" r="5" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="600" cy="172.5" r="7" fill="#78d2b9"/>
+      <circle cx="620" cy="172.5" r="5" fill="rgba(255,255,255,0.2)"/>
+      <text x="590" y="200" font-family="system-ui, sans-serif" font-size="9" fill="#78d2b9" text-anchor="middle" opacity="0.7">Window 3</text>
+      
+      <!-- Next Button -->
+      <rect x="656" y="157.5" width="44" height="30" rx="6" fill="rgba(120,210,185,0.2)" stroke="rgba(120,210,185,0.5)" stroke-width="1"/>
+      <path d="M 673 167.5 L 681 172.5 L 673 177.5" fill="none" stroke="#78d2b9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="678" y="200" font-family="system-ui, sans-serif" font-size="9" fill="#78d2b9" text-anchor="middle" opacity="0.7">Next</text>
+    </g>
+    
+    <!-- Grid Canvas Area -->
+    <rect x="70" y="230" width="660" height="280" rx="8" fill="#161a24" stroke="#78d2b9" stroke-width="2"/>
+    
+    <!-- Note Labels -->
+    <rect x="90" y="250" width="50" height="240" rx="6" fill="#222632" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="115" y="270" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">C5</text>
+    <text x="115" y="300" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">B4</text>
+    <text x="115" y="330" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">A4</text>
+    <text x="115" y="360" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">G4</text>
+    <text x="115" y="390" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">F4</text>
+    <text x="115" y="420" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">E4</text>
+    <text x="115" y="450" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">D4</text>
+    <text x="115" y="480" font-family="system-ui, sans-serif" font-size="10" fill="rgba(120,210,185,0.7)" text-anchor="middle">C4</text>
+    
+    <!-- Grid Canvas with improved contrast lines -->
+    <g id="grid-canvas">
+      <!-- Background -->
+      <rect x="160" y="250" width="550" height="240" rx="6" fill="url(#gridGradient)"/>
+      
+      <!-- Grid Lines (improved contrast) -->
+      <!-- Bar boundaries (0.55 opacity) -->
+      <line x1="160" y1="250" x2="160" y2="490" stroke="rgba(120,210,185,0.55)" stroke-width="1.5"/>
+      <line x1="335" y1="250" x2="335" y2="490" stroke="rgba(120,210,185,0.55)" stroke-width="1.5"/>
+      <line x1="510" y1="250" x2="510" y2="490" stroke="rgba(120,210,185,0.55)" stroke-width="1.5"/>
+      <line x1="685" y1="250" x2="685" y2="490" stroke="rgba(120,210,185,0.55)" stroke-width="1.5"/>
+      
+      <!-- Beat lines (0.18 opacity) -->
+      <line x1="204" y1="250" x2="204" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="248" y1="250" x2="248" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="291" y1="250" x2="291" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="379" y1="250" x2="379" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="422" y1="250" x2="422" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="466" y1="250" x2="466" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="554" y1="250" x2="554" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="598" y1="250" x2="598" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <line x1="641" y1="250" x2="641" y2="490" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      
+      <!-- Sample notes -->
+      <circle cx="204" cy="270" r="8" fill="#78d2b9" opacity="0.9"/>
+      <circle cx="248" cy="300" r="8" fill="#78d2b9" opacity="0.9"/>
+      <circle cx="335" cy="330" r="8" fill="#78d2b9" opacity="0.9"/>
+      <circle cx="422" cy="360" r="8" fill="#78d2b9" opacity="0.9"/>
+      
+      <!-- Inactive note placeholders -->
+      <circle cx="291" cy="390" r="8" fill="rgba(60,68,80,0.5)" opacity="0.5"/>
+      <circle cx="379" cy="420" r="8" fill="rgba(60,68,80,0.5)" opacity="0.5"/>
+      <circle cx="466" cy="450" r="8" fill="rgba(60,68,80,0.5)" opacity="0.5"/>
+      
+      <!-- Playhead -->
+      <line x1="510" y1="250" x2="510" y2="490" stroke="rgba(120,210,185,0.9)" stroke-width="3"/>
+      <ellipse cx="510" cy="370" rx="40" ry="240" fill="rgba(120,210,185,0.15)"/>
+      
+      <!-- Window indicator -->
+      <text x="435" y="275" font-family="system-ui, sans-serif" font-size="11" fill="rgba(120,210,185,0.6)" text-anchor="middle">
+        Window 3 (Steps 33-48)
+      </text>
+    </g>
+    
+    <!-- Before/After Annotations -->
+    <text x="100" y="525" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#78d2b9">
+      ✓ Grid lines: 0.55 opacity (bars), 0.18 opacity (beats)
+    </text>
+    <text x="100" y="545" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#78d2b9">
+      ✓ Container: fit-content (no empty space)
+    </text>
+    <text x="450" y="525" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#78d2b9">
+      ✓ Window switcher: 44×44px touch targets
+    </text>
+    <text x="450" y="545" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#78d2b9">
+      ✓ Consecutive notes: fixed click logic
+    </text>
+  </g>
+  
+  <!-- Legend -->
+  <g id="legend">
+    <text x="50" y="570" font-family="system-ui, sans-serif" font-size="10" fill="rgba(255,255,255,0.5)">
+      Legend:
+    </text>
+    <circle cx="120" cy="566" r="4" fill="rgba(120,210,185,0.55)"/>
+    <text x="130" y="570" font-family="system-ui, sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">
+      Bar lines
+    </text>
+    <circle cx="200" cy="566" r="4" fill="rgba(255,255,255,0.18)"/>
+    <text x="210" y="570" font-family="system-ui, sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">
+      Beat lines
+    </text>
+    <circle cx="280" cy="566" r="4" fill="#78d2b9"/>
+    <text x="290" y="570" font-family="system-ui, sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">
+      Active notes
+    </text>
+    <circle cx="370" cy="566" r="4" fill="rgba(60,68,80,0.5)"/>
+    <text x="380" y="570" font-family="system-ui, sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">
+      Inactive notes
+    </text>
+  </g>
+  
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gridGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(22,26,36,0.92);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(14,16,22,0.92);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
