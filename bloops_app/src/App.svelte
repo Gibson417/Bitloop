@@ -710,12 +710,30 @@
       // expose to reactive scope
       mountError = mountErrorLocal;
     });
+    
+    // Global keyboard handler for spacebar to control play/stop (DAW-style)
+    const handleGlobalKeydown = (event) => {
+      // Only handle spacebar if not in a text input or textarea
+      const target = event.target;
+      const isTextInput = target instanceof HTMLInputElement || 
+                         target instanceof HTMLTextAreaElement ||
+                         (target instanceof HTMLElement && target.isContentEditable);
+      
+      if (event.key === ' ' && !isTextInput) {
+        event.preventDefault();
+        handleTogglePlay();
+      }
+    };
+    
+    window.addEventListener('keydown', handleGlobalKeydown);
+    
     return () => {
       disposed = true;
       stopPlayback();
       if (audioContext) {
         audioContext.close?.();
       }
+      window.removeEventListener('keydown', handleGlobalKeydown);
     };
   });
 

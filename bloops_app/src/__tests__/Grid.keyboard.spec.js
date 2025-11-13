@@ -28,7 +28,7 @@ describe('Grid keyboard navigation', () => {
     expect(canvas.getAttribute('role')).toBe('grid');
   });
 
-  it('dispatches notechange on space key', async () => {
+  it('dispatches notechange on Enter key', async () => {
     const rows = 4;
     const columns = 8;
     const { component, container } = render(Grid, {
@@ -53,8 +53,8 @@ describe('Grid keyboard navigation', () => {
     // Focus the canvas first
     await fireEvent.focus(canvas);
     
-    // Press space to toggle note
-    await fireEvent.keyDown(canvas, { key: ' ' });
+    // Press Enter to toggle note
+    await fireEvent.keyDown(canvas, { key: 'Enter' });
 
     expect(noteChange).toHaveBeenCalled();
     const event = noteChange.mock.calls[0][0];
