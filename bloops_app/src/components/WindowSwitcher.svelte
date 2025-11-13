@@ -39,23 +39,6 @@
     </svg>
   </button>
   
-  <div class="window-indicators" role="tablist" aria-label="Grid windows">
-    {#each Array(totalWindows) as _, index}
-      <button
-        type="button"
-        role="tab"
-        class="window-indicator"
-        class:active={index === currentWindow}
-        on:click={() => handleWindowClick(index)}
-        aria-label="Window {index + 1}"
-        aria-selected={index === currentWindow}
-        title="Window {index + 1}"
-      >
-        <span class="sr-only">Window {index + 1}</span>
-      </button>
-    {/each}
-  </div>
-  
   <div class="window-number" aria-label="Current window position" style="color: {trackColor};">
     {currentWindow + 1} / {totalWindows}
   </div>
@@ -75,18 +58,6 @@
 </div>
 
 <style>
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-
   .window-switcher {
     display: flex;
     align-items: center;
@@ -95,14 +66,16 @@
     border-radius: 6px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(34, 38, 50, 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+    width: 160px;
+    justify-content: center;
   }
 
   .window-nav-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     border-radius: 6px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.25);
@@ -114,8 +87,8 @@
   }
 
   .window-nav-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .window-nav-btn:hover:not(:disabled) {
@@ -143,68 +116,18 @@
     background: rgba(255, 255, 255, 0.05);
   }
 
-  .window-indicators {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    padding: 0 4px;
-  }
-
   .window-number {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    padding: 0 4px;
+    padding: 0 8px;
     opacity: 0.9;
-    min-width: 36px;
+    min-width: 50px;
     text-align: center;
   }
 
-  .window-indicator {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .window-indicator::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .window-indicator:hover::before {
-    transform: scale(1.3);
-    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  .window-indicator:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
-    outline-offset: 3px;
-  }
-
-  .window-indicator.active::before {
-    width: 10px;
-    height: 10px;
-    background: var(--track-color, rgba(var(--color-accent-rgb), 0.9));
-    box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .window-nav-btn,
-    .window-indicator {
+    .window-nav-btn {
       transition: none;
       transform: none !important;
     }
@@ -214,10 +137,12 @@
     .window-switcher {
       gap: 6px;
       padding: 4px 6px;
+      width: 140px;
     }
 
-    .window-indicators {
-      gap: 4px;
+    .window-number {
+      font-size: 0.75rem;
+      min-width: 40px;
     }
   }
 </style>
