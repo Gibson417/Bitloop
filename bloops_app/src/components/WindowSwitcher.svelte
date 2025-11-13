@@ -95,9 +95,9 @@
   .window-switcher {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    border-radius: 12px;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 10px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(34, 38, 50, 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.2);
   }
@@ -106,10 +106,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.25);
     background: rgba(var(--color-accent-rgb), 0.12);
     color: rgba(var(--color-accent-rgb), 0.9);
@@ -119,8 +119,8 @@
   }
 
   .window-nav-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .window-nav-btn:hover:not(:disabled) {
@@ -150,24 +150,24 @@
 
   .window-indicators {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
     padding: 0 4px;
   }
 
   .window-number {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    padding: 0 8px;
+    padding: 0 6px;
     opacity: 0.9;
-    min-width: 48px;
+    min-width: 44px;
     text-align: center;
   }
 
   .window-indicator {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 32px;
+    min-height: 32px;
     padding: 0;
     border-radius: 50%;
     border: none;
@@ -182,8 +182,8 @@
 
   .window-indicator::before {
     content: '';
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -201,8 +201,8 @@
   }
 
   .window-indicator.active::before {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     background: var(--track-color, rgba(var(--color-accent-rgb), 0.9));
     box-shadow: 0 2px 12px rgba(var(--color-accent-rgb), 0.6);
   }
@@ -217,17 +217,17 @@
 
   @media (max-width: 560px) {
     .window-switcher {
-      gap: 8px;
-      padding: 6px 10px;
+      gap: 6px;
+      padding: 5px 8px;
     }
 
     .window-nav-btn {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
     }
 
     .window-indicators {
-      gap: 6px;
+      gap: 4px;
     }
   }
 </style>

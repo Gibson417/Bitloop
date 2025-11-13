@@ -1150,14 +1150,14 @@
     border-right: 1px solid rgba(var(--color-text, 255, 255, 255), 0.08);
     display: flex;
     justify-content: center;
-    padding: 24px;
+    padding: 20px;
   }
 
   .rail-inner {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 28px;
   }
 
   .brand {
@@ -1209,9 +1209,9 @@
   .rail-stats {
     margin-top: auto;
     display: grid;
-    gap: 16px;
-    padding: 18px;
-    border-radius: 16px;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
   }
@@ -1222,7 +1222,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     font-weight: 600;
   }
 
@@ -1235,15 +1235,15 @@
   .stat-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
   }
 
   .stat-input {
     background: rgba(0, 0, 0, 0.35);
     color: var(--color-text, #fff);
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-text, 255, 255, 255), 0.15);
-    padding: 8px 12px;
+    padding: 7px 10px;
     font-size: 1rem;
     font-weight: 600;
     appearance: textfield;
@@ -1276,8 +1276,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 24px 8px;
-    gap: 20px;
+    padding: 16px 20px 6px;
+    gap: 18px;
     width: 100%;
     box-sizing: border-box;
   }
@@ -1298,8 +1298,8 @@
   .project-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: 6px;
+    margin-bottom: 5px;
     cursor: pointer;
   }
 
@@ -1326,13 +1326,13 @@
 
   .project-name-input {
     margin: 0;
-    padding: 8px;
+    padding: 7px;
     font-size: 1.2rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 6px;
     color: var(--color-text, #fff);
     font-family: inherit;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1361,7 +1361,7 @@
   .header-actions {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 16px;
     flex-shrink: 0;
     justify-content: flex-end;
     flex-wrap: wrap;
@@ -1369,24 +1369,24 @@
 
   .history-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
   }
 
   .utility-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
   }
 
   .icon-btn {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 10px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
     color: rgba(var(--color-accent-rgb), 0.9);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -1428,7 +1428,7 @@
 
   .status-controls {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
     align-items: center;
   }
@@ -1442,11 +1442,11 @@
   }
 
   .pill {
-    padding: 8px 14px;
+    padding: 7px 12px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.05);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1462,7 +1462,7 @@
 
   .grid-shell {
     flex: 1;
-    padding: 0 24px 18px;
+    padding: 0 20px 16px;
     box-sizing: border-box;
     min-height: 400px;
     display: flex;
@@ -1470,24 +1470,24 @@
   }
 
   .track-controls-wrapper {
-    padding: 0 24px;
-    margin-bottom: 20px;
+    padding: 0 20px;
+    margin-bottom: 16px;
   }
 
   .track-effects-wrapper {
-    padding: 0 24px;
-    margin-bottom: 20px;
+    padding: 0 20px;
+    margin-bottom: 16px;
   }
 
   .volume-card {
     margin-top: 10px;
-    padding: 16px 14px 18px;
-    border-radius: 16px;
+    padding: 14px 12px 16px;
+    border-radius: 14px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     text-align: center;
   }
@@ -1518,8 +1518,8 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 14px;
-    margin: 0 0 18px;
+    gap: 12px;
+    margin: 0 0 14px;
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -1545,13 +1545,13 @@
 
   .grid-backdrop {
     position: relative;
-    border-radius: 20px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 14px;
     box-sizing: border-box;
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     min-height: 300px;
     flex: 1;
   }
@@ -1662,9 +1662,9 @@
     }
     
     .icon-btn {
-      min-width: 44px;
-      min-height: 44px;
-      font-size: 1.2rem;
+      min-width: 40px;
+      min-height: 40px;
+      font-size: 1.3rem;
     }
     
     .pill {
@@ -1696,11 +1696,12 @@
   
   /* Touch improvements */
   @media (hover: none) and (pointer: coarse) {
+    /* Keep essential buttons at 44px for touch on mobile */
     .icon-btn,
     button,
     select {
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 40px;
+      min-width: 40px;
     }
     
     .play-button {
