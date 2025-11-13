@@ -101,8 +101,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border-radius: 6px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.25);
@@ -114,8 +114,8 @@
   }
 
   .window-nav-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 
   .window-nav-btn:hover:not(:disabled) {
@@ -161,8 +161,8 @@
   }
 
   .window-indicator {
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border-radius: 50%;
     border: none;
@@ -216,23 +216,8 @@
       padding: 4px 6px;
     }
 
-    .window-nav-btn {
-      width: 40px;
-      height: 40px;
-    }
-
-    .window-nav-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-
     .window-indicators {
       gap: 4px;
-    }
-
-    .window-indicator {
-      min-width: 40px;
-      min-height: 40px;
     }
   }
 </style>
