@@ -114,8 +114,11 @@
       : logicalColumns;
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-    // Fixed viewport: show only 16 columns at a time (one bar)
-    const visibleColumns = Math.min(displayColumns, 16);
+    // Calculate visible columns based on zoom level:
+    // - For zoom 8 or 16: show 16 columns (1 bar)
+    // - For zoom 32: show 32 columns (2 bars)
+    // - For zoom 64: show 64 columns (4 bars)
+    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
     const availableWidth = scroller.clientWidth || displayColumns * 32;
     const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
@@ -160,8 +163,11 @@
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
-      // Calculate which window to display (16 steps at a time)
-      const visibleColumns = 16;
+      // Calculate which window to display based on zoom level
+      // For zoom 8 or 16: show 16 columns (1 bar)
+      // For zoom 32: show 32 columns (2 bars)
+      // For zoom 64: show 64 columns (4 bars)
+      const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
       // Use manual window if set, otherwise follow playhead
       const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
@@ -390,7 +396,8 @@
       ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
       : sourceColumns;
     
-    const visibleColumns = 16;
+    // Calculate visible columns based on zoom level
+    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate window offset - use manual window if set, otherwise follow playhead
@@ -521,7 +528,8 @@
       ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
       : sourceColumns;
     
-    const visibleColumns = 16;
+    // Calculate visible columns based on zoom level
+    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
