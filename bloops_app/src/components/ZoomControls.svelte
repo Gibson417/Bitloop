@@ -1,15 +1,15 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let zoomLevel = 1;
-  export let minZoom = 1;
+  export let zoomLevel = 16;
+  export let minZoom = 8;
   export let maxZoom = 64;
   export let trackColor = '#78d2b9';
 
   const dispatch = createEventDispatcher();
 
-  // Valid resolution denominators: 1, 2, 4, 8, 16, 32, 64
-  const VALID_RESOLUTIONS = [1, 2, 4, 8, 16, 32, 64];
+  // Valid resolution denominators: 8, 16, 32, 64 (range from 1/8 to 1/64)
+  const VALID_RESOLUTIONS = [8, 16, 32, 64];
 
   // Get the display text for the current zoom level (resolution)
   $: displayResolution = `1/${zoomLevel}`;

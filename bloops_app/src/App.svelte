@@ -60,7 +60,7 @@
   let totalWindows = 1;
   // Drawing tool and zoom state
   let selectedDrawingTool = 'paint'; // 'single', 'paint', 'erase'
-  let zoomLevel = 1; // Resolution denominator: 1, 2, 4, 8, 16, 32, 64
+  let zoomLevel = 16; // Grid resolution denominator: 8, 16, 32, 64 (default 1/16)
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -452,17 +452,7 @@
 
   const handleNoteLengthSelect = (value) => {
     selectedNoteLength = `${value}`;
-    const denom = Number(value) || 1;
-    // If the selected denominator requires higher resolution than current stepsPerBar,
-    // increase the project's stepsPerBar so the grid can represent the finer subdivisions.
-    try {
-      const currentSteps = projectState?.stepsPerBar ?? 0;
-      if (denom > currentSteps) {
-        project.setStepsPerBar(denom);
-      }
-    } catch (e) {
-      // ignore if project not ready
-    }
+    // Note length now only affects the duration of placed notes, not grid density
   };
 
   const handleNoteLengthChange = (event) => {

@@ -18,7 +18,9 @@ describe('Grid keyboard navigation', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator: 1
+        noteLengthDenominator: 16,
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -40,7 +42,9 @@ describe('Grid keyboard navigation', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator: 1
+        noteLengthDenominator: 16,
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -77,7 +81,9 @@ describe('Grid keyboard navigation', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator: 1
+        noteLengthDenominator: 16,
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
