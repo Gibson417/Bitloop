@@ -33,7 +33,6 @@
                color: {selectedTool === tool.id ? trackColor : 'rgba(255, 255, 255, 0.7)'};"
       >
         <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
-        <span class="tool-label">{tool.label}</span>
       </button>
     {/each}
   </div>
@@ -69,12 +68,15 @@
   .tool-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 6px 10px; /* Reduced from 8px 12px for more compact feel */
+    padding: 10px; /* Icon-only: square padding for better visual balance */
+    min-width: 44px; /* WCAG: minimum touch target size */
+    min-height: 44px;
     background: transparent;
     border: 2px solid;
     border-radius: 6px;
-    font-size: 0.8rem; /* Reduced from 0.85rem */
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -97,24 +99,19 @@
   }
 
   .tool-icon {
-    font-size: 1.1rem;
+    font-size: 1.4rem; /* Increased from 1.1rem for prominence as icon-only */
     line-height: 1;
   }
 
-  .tool-label {
-    font-size: 0.75rem;
-    letter-spacing: 0.03em;
-  }
-
   @media (max-width: 720px) {
-    .tool-label {
-      display: none;
+    .tool-btn {
+      padding: 12px; /* Larger touch targets on mobile */
+      min-width: 48px; /* Increased for mobile touch */
+      min-height: 48px;
     }
     
-    .tool-btn {
-      padding: 8px;
-      min-width: 40px;
-      justify-content: center;
+    .tool-icon {
+      font-size: 1.5rem; /* Slightly larger on mobile */
     }
   }
 </style>

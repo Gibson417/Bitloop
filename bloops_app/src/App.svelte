@@ -1020,8 +1020,8 @@
             on:toolchange={handleToolChange}
           />
           <div class="note-length-group">
+            <span class="note-icon" aria-hidden="true">♪</span>
             <ArrowSelector
-              label="Note length"
               options={NOTE_LENGTH_OPTIONS}
               value={selectedNoteLengthValue}
               on:change={handleNoteLengthChange}
@@ -1557,11 +1557,12 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px; /* Design system: 2 × 8px base */
-    margin: 0 0 16px; /* Design system: 2 × 8px base */
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    border: none;
+    margin: 0 0 0; /* Remove bottom margin to anchor to grid */
+    padding: 12px 14px; /* Add padding to create internal spacing */
+    border-radius: 12px 12px 0 0; /* Round only top corners to connect with grid */
+    background: linear-gradient(135deg, rgba(22, 26, 36, 0.95), rgba(18, 22, 32, 0.92)); /* Match grid backdrop gradient */
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3); /* Match grid border */
+    border-bottom: none; /* Remove bottom border to merge with grid */
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.95rem;
   }
@@ -1585,9 +1586,17 @@
 
   .note-length-group {
     display: flex;
-    flex-direction: column;
-    min-width: 180px; /* Reduced from 240px for more compact feel */
+    align-items: center; /* Center icon with selector */
+    gap: 8px; /* Space between icon and selector */
+    min-width: 180px;
     max-width: 200px;
+  }
+
+  .note-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+    color: rgba(var(--color-accent-rgb), 0.8);
+    flex-shrink: 0;
   }
 
   .window-switcher-group {
@@ -1597,11 +1606,12 @@
 
   .grid-backdrop {
     position: relative;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px; /* Round only bottom corners to connect with toolbar */
     padding: 14px;
     box-sizing: border-box;
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
+    border-top: none; /* Remove top border to merge with toolbar */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     margin-bottom: 16px;
     min-height: 300px;
@@ -1657,7 +1667,9 @@
       flex-direction: column;
       align-items: stretch;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 0; /* Keep anchored on mobile */
+      padding: 12px;
+      border-radius: 12px 12px 0 0; /* Maintain connection */
     }
 
     .toolbar-primary,
@@ -1680,7 +1692,8 @@
 
     .grid-backdrop {
       padding: 12px;
-      border-radius: 18px;
+      border-radius: 0 0 18px 18px; /* Maintain connection, slightly larger radius on mobile */
+      border-top: none;
     }
 
     .app-rail {

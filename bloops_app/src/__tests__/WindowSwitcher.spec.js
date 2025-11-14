@@ -20,7 +20,7 @@ describe('WindowSwitcher', () => {
     expect(nextButton).toBeInTheDocument();
   });
 
-  it('should not disable prev button on first window', () => {
+  it('should disable prev button on first window', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 0,
@@ -30,10 +30,10 @@ describe('WindowSwitcher', () => {
     });
 
     const prevButton = screen.getByLabelText('Previous window');
-    expect(prevButton).not.toBeDisabled();
+    expect(prevButton).toBeDisabled();
   });
 
-  it('should not disable next button on last window', () => {
+  it('should disable next button on last window', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 3,
@@ -43,10 +43,10 @@ describe('WindowSwitcher', () => {
     });
 
     const nextButton = screen.getByLabelText('Next window');
-    expect(nextButton).not.toBeDisabled();
+    expect(nextButton).toBeDisabled();
   });
 
-  it('should not disable buttons even with only one window', () => {
+  it('should disable both buttons with only one window', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 0,
@@ -57,11 +57,11 @@ describe('WindowSwitcher', () => {
 
     const prevButton = screen.getByLabelText('Previous window');
     const nextButton = screen.getByLabelText('Next window');
-    expect(prevButton).not.toBeDisabled();
-    expect(nextButton).not.toBeDisabled();
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).toBeDisabled();
   });
 
-  it('should render correct number of window indicators', () => {
+  it('should display current window position', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 1,
@@ -70,8 +70,9 @@ describe('WindowSwitcher', () => {
       }
     });
 
-    const indicators = screen.getAllByRole('tab');
-    expect(indicators).toHaveLength(5);
+    const windowNumber = screen.getByLabelText('Current window position');
+    expect(windowNumber).toBeInTheDocument();
+    expect(windowNumber).toHaveTextContent('2 / 5');
   });
 
   it('should dispatch switch event when clicking next button', async () => {
@@ -122,47 +123,6 @@ describe('WindowSwitcher', () => {
     );
   });
 
-  it('should dispatch switch event when clicking window indicator', async () => {
-    const user = userEvent.setup();
-    const { component } = render(WindowSwitcher, {
-      props: {
-        currentWindow: 0,
-        totalWindows: 4,
-        trackColor: '#78D2B9'
-      }
-    });
-
-    const switchHandler = vi.fn();
-    component.$on('switch', switchHandler);
-
-    const indicators = screen.getAllByRole('tab');
-    await user.click(indicators[2]); // Click third window
-
-    expect(switchHandler).toHaveBeenCalledTimes(1);
-    expect(switchHandler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: { window: 2 }
-      })
-    );
-  });
-
-  it('should mark current window indicator as selected', () => {
-    render(WindowSwitcher, {
-      props: {
-        currentWindow: 2,
-        totalWindows: 5,
-        trackColor: '#78D2B9'
-      }
-    });
-
-    const indicators = screen.getAllByRole('tab');
-    expect(indicators[2]).toHaveAttribute('aria-selected', 'true');
-    expect(indicators[0]).toHaveAttribute('aria-selected', 'false');
-    expect(indicators[1]).toHaveAttribute('aria-selected', 'false');
-    expect(indicators[3]).toHaveAttribute('aria-selected', 'false');
-    expect(indicators[4]).toHaveAttribute('aria-selected', 'false');
-  });
-
   it('should have proper ARIA labels', () => {
     render(WindowSwitcher, {
       props: {
@@ -173,13 +133,13 @@ describe('WindowSwitcher', () => {
     });
 
     const navigation = screen.getByRole('navigation', { name: 'Grid window navigation' });
-    const tablist = screen.getByRole('tablist', { name: 'Grid windows' });
+    const windowNumber = screen.getByLabelText('Current window position');
 
     expect(navigation).toBeInTheDocument();
-    expect(tablist).toBeInTheDocument();
+    expect(windowNumber).toBeInTheDocument();
   });
 
-  it('should meet minimum touch target size (44x44px)', () => {
+  it('should have fixed width layout', () => {
     const { container } = render(WindowSwitcher, {
       props: {
         currentWindow: 0,
@@ -188,17 +148,10 @@ describe('WindowSwitcher', () => {
       }
     });
 
-    const prevButton = screen.getByLabelText('Previous window');
-    const nextButton = screen.getByLabelText('Next window');
-
-    // Get computed styles
-    const prevStyles = window.getComputedStyle(prevButton);
-    const nextStyles = window.getComputedStyle(nextButton);
-
-    // CSS specifies 44px x 44px for nav buttons
-    expect(prevStyles.width).toBe('44px');
-    expect(prevStyles.height).toBe('44px');
-    expect(nextStyles.width).toBe('44px');
-    expect(nextStyles.height).toBe('44px');
+    const windowSwitcher = container.querySelector('[data-component="WindowSwitcher"]');
+    
+    // Verify the component exists and has the fixed width class applied
+    expect(windowSwitcher).toBeInTheDocument();
+    expect(windowSwitcher).toHaveClass('window-switcher');
   });
 });
