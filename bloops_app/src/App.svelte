@@ -1554,13 +1554,13 @@
 
   .grid-toolbar {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Center all toolbar items vertically */
     justify-content: space-between;
     gap: 16px; /* Design system: 2 × 8px base */
     margin: 0 0 0; /* Remove bottom margin to anchor to grid */
     padding: 12px 14px; /* Add padding to create internal spacing */
     border-radius: 12px 12px 0 0; /* Round only top corners to connect with grid */
-    background: linear-gradient(135deg, rgba(22, 26, 36, 0.95), rgba(18, 22, 32, 0.92)); /* Match grid backdrop gradient */
+    background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end)); /* Use theme variables */
     border: 2px solid rgba(var(--color-accent-rgb), 0.3); /* Match grid border */
     border-bottom: none; /* Remove bottom border to merge with grid */
     color: rgba(255, 255, 255, 0.85);
@@ -1570,7 +1570,7 @@
   /* Primary tools group: Drawing tools and note length (left side) */
   .toolbar-primary {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Center items vertically for alignment */
     gap: 16px; /* Design system: 2 × 8px base */
     flex: 1;
     min-width: 0; /* Allow shrinking */
@@ -1579,7 +1579,7 @@
   /* Secondary tools group: Zoom and window switcher (right side) */
   .toolbar-secondary {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Center items vertically for alignment */
     gap: 12px; /* Slightly tighter spacing for secondary controls */
     flex-shrink: 0; /* Don't shrink secondary tools */
   }
@@ -1601,7 +1601,7 @@
 
   .window-switcher-group {
     display: flex;
-    align-items: center; /* Changed from flex-end for better alignment */
+    align-items: center; /* Center for consistent toolbar alignment */
   }
 
   .grid-backdrop {
