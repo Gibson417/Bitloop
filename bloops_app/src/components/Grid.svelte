@@ -14,12 +14,12 @@
   export let follow = true;
   export let isPlaying = false;
   export let noteLabels = [];
-  // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64
+  // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64 - used for note duration when placing
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
   export let drawingTool = 'paint'; // 'single', 'paint', 'erase'
-  export let zoomLevel = 1; // Resolution denominator: 1, 2, 4, 8, 16, 32, 64
+  export let zoomLevel = 1; // Grid resolution denominator: 1, 2, 4, 8, 16, 32, 64 (controls grid density)
 
   const dispatch = createEventDispatcher();
 
@@ -107,10 +107,11 @@
     const safeRows = Math.max(rows || 8, 1);
     const logicalColumns = Math.max(columns || 16, 1); // logical total steps (bars * stepsPerBar)
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    // Use zoomLevel to determine grid density/resolution, not note length
+    const zoom = Number(zoomLevel) || 1;
+    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
+      ? Math.max(1, Math.floor((logicalColumns * zoom) / stepsPerBarSafe))
+      : logicalColumns;
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Fixed viewport: show only 16 columns at a time (one bar)
@@ -148,13 +149,14 @@
       ctx.fillStyle = backgroundGradient;
       ctx.fillRect(0, 0, layout.width, layout.height);
 
-      // Calculate display columns based on selected note denominator (e.g. 16,32,64) and storage mapping.
+      // Calculate display columns based on zoom level (grid density/resolution)
       const logicalColumns = Math.max(columns || 16, 1);
       const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-      const denom = Number(noteLengthDenominator) || null;
-      const displayColumns = denom && Number.isFinite(denom) && denom > 0
-        ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
-        : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+      // Use zoomLevel to determine grid density, not note length
+      const zoom = Number(zoomLevel) || 1;
+      const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
+        ? Math.max(1, Math.floor((logicalColumns * zoom) / stepsPerBarSafe))
+        : logicalColumns;
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
@@ -176,7 +178,7 @@
       const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
       
       // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
-      const isZoomed = denom && denom > stepsPerBarSafe;
+      const isZoomed = zoom && zoom > stepsPerBarSafe;
       
       for (let col = 0; col <= visibleColumns; col++) {
         // Map displayed column back to logical step in the source columns (accounting for window offset)
@@ -382,10 +384,11 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    // Use zoomLevel for grid density calculation
+    const zoom = Number(zoomLevel) || 1;
+    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
+      ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
+      : sourceColumns;
     
     const visibleColumns = 16;
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
@@ -405,7 +408,12 @@
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
     const storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
 
-    // logical visible width of this displayed column (in logical steps)
+    // Calculate note length based on noteLengthDenominator (e.g., 16 for 1/16, 32 for 1/32)
+    // This determines the duration of placed notes, independent of zoom level
+    const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
+    const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+
+    // Calculate full cell width for detection purposes
     const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
     const fullStorageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
 
@@ -436,11 +444,11 @@
         cellPaintValue = paintValue;
         storageLength = fullStorageLength; // Use full width to create continuous notes
       } else {
-        // Default: toggle each cell independently with shortened notes to create gaps
+        // Default: place note with length determined by noteLengthDenominator
         paintValue = !current; // Store for reference, but each cell toggles independently
         cellPaintValue = !current;
-        // Use only ~75% of storage width to create gaps between notes
-        storageLength = Math.max(1, Math.floor(fullStorageLength * 0.75));
+        // Use noteStorageLength to create notes of specified duration
+        storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
       }
     } else {
       // Subsequent cells during drag
@@ -451,8 +459,8 @@
       } else {
         // Default drag mode: toggle each cell independently based on its current state
         cellPaintValue = !current;
-        // Use only ~75% of storage width to create gaps between notes
-        storageLength = Math.max(1, Math.floor(fullStorageLength * 0.75));
+        // Use noteStorageLength to create notes of specified duration
+        storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
       }
     }
 
@@ -507,10 +515,11 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    const denom = Number(noteLengthDenominator) || null;
-    const displayColumns = denom && Number.isFinite(denom) && denom > 0
-      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
-      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
+    // Use zoomLevel for grid density calculation
+    const zoom = Number(zoomLevel) || 1;
+    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
+      ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
+      : sourceColumns;
     
     const visibleColumns = 16;
 
@@ -549,13 +558,20 @@
       
       const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
+      
+      // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
+      const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
+      const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+      const storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
+      
+      // Calculate full cell width for detection purposes
       const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-      const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+      const fullStorageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
       
       // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
-      const sliceEnd = storageStart + storageLength;
+      const sliceEnd = storageStart + fullStorageLength;
       const currentSlice = (notes?.[focusedRow] ?? []).slice(sliceStart, sliceEnd);
       const current = currentSlice.length > 0 && currentSlice.some(Boolean);
       
@@ -645,7 +661,7 @@
     trackColor,
     isPlaying,
     stepsPerBar,
-    noteLengthSteps,
+    zoomLevel,
     columns,
     rows,
     currentTheme
