@@ -18,6 +18,8 @@
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
+  export let drawingTool = 'paint'; // 'single', 'paint', 'erase'
+  export let zoomLevel = 1; // Resolution denominator: 1, 2, 4, 8, 16, 32, 64
 
   const dispatch = createEventDispatcher();
 
@@ -42,6 +44,9 @@
   const unsubscribeTheme = theme.subscribe((value) => {
     currentTheme = value;
   });
+
+  // Compute cursor style based on drawing tool, erase mode, and extend mode
+  $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : drawingTool === 'single' ? 'pointer' : 'crosshair';
 
   // Check for reduced motion preference
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -357,8 +362,8 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Check if shift or alt key is held for explicit erase mode
-    eraseMode = event.shiftKey || event.altKey;
+    // Check if shift or alt key is held for explicit erase mode, or use the selected drawing tool
+    eraseMode = (drawingTool === 'erase') || event.shiftKey || event.altKey;
     // Check if ctrl/cmd key is held for note extension mode
     extendMode = event.ctrlKey || event.metaKey;
     pointerActive = false; // Reset to allow paintValue determination
@@ -464,6 +469,8 @@
   };
 
   const handlePointerMove = (event) => {
+    // For single note tool, don't allow dragging
+    if (drawingTool === 'single') return;
     if (!pointerActive) return;
     handlePointer(event);
   };
@@ -702,7 +709,7 @@
       tabindex="0"
       role="grid"
       aria-label="Note grid - click to add/remove notes, drag to place multiple notes, hold Ctrl/Cmd to extend notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
-      style="cursor: {eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : 'crosshair'};"
+      style="cursor: {cursorStyle};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}
