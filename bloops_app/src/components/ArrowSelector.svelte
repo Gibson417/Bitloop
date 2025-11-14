@@ -121,9 +121,9 @@
     align-items: center;
     gap: 6px;
     background: var(--color-panel);
-    border-radius: 6px;
+    border-radius: 8px; /* Consistent with other toolbar elements */
     border: 1px solid rgba(var(--color-accent-rgb), 0.22);
-    padding: 4px 6px;
+    padding: 6px 8px; /* Adjusted padding for better alignment */
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 

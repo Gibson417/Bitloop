@@ -60,9 +60,9 @@
     display: flex;
     align-items: center;
     gap: 8px; /* Slightly increased from 6px for better spacing without dots */
-    padding: 6px 10px; /* Adjusted padding for fixed width layout */
-    border-radius: 6px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.06), rgba(34, 38, 50, 0.5));
+    padding: 8px 12px; /* Consistent padding for proper alignment with other toolbar elements */
+    border-radius: 8px;
+    background: var(--color-panel); /* Use theme panel color for consistency */
     border: 1px solid rgba(var(--color-accent-rgb), 0.15);
     width: 140px; /* Fixed width for consistent layout */
     justify-content: space-between; /* Distribute items evenly */

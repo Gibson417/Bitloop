@@ -70,7 +70,7 @@
     display: flex;
     align-items: center;
     gap: 8px; /* Reduced from 10px, using 8px base */
-    padding: 4px 10px; /* Slightly tighter horizontal padding */
+    padding: 8px 12px; /* Consistent padding for proper alignment with other toolbar elements */
     background: var(--color-panel);
     border-radius: 8px;
     border: 1px solid rgba(var(--color-text), 0.06); /* Reduced from 0.08 for subtler presence */
