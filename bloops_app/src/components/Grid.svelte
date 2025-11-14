@@ -32,6 +32,7 @@
   let paintedCells = new Set();
   let resizeObserver;
   let eraseMode = false; // Track if shift/alt key is held for explicit erase
+  let extendMode = false; // Track if ctrl/cmd key is held for note extension
   
   // Keyboard navigation state
   let focusedRow = 0;
@@ -44,8 +45,8 @@
     currentTheme = value;
   });
 
-  // Compute cursor style based on drawing tool and erase mode
-  $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : drawingTool === 'single' ? 'pointer' : 'crosshair';
+  // Compute cursor style based on drawing tool, erase mode, and extend mode
+  $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : drawingTool === 'single' ? 'pointer' : 'crosshair';
 
 
   const hexToRgba = (hex, alpha = 1) => {
@@ -361,6 +362,8 @@
     canvas.setPointerCapture(event.pointerId);
     // Check if shift or alt key is held for explicit erase mode, or use the selected drawing tool
     eraseMode = (drawingTool === 'erase') || event.shiftKey || event.altKey;
+    // Check if ctrl/cmd key is held for note extension mode
+    extendMode = event.ctrlKey || event.metaKey;
     pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set(); // Clear painted cells for new gesture
     handlePointer(event);
@@ -403,20 +406,53 @@
 
     // logical visible width of this displayed column (in logical steps)
     const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
-    const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+    const fullStorageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
-    const sliceEnd = storageStart + storageLength;
+    const sliceEnd = storageStart + fullStorageLength;
     const currentSlice = (notes?.[row] ?? []).slice(sliceStart, sliceEnd);
     // Use some(Boolean) instead of every(Boolean) to detect if ANY part has notes
     // This fixes erasing when notes were placed at different resolutions
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
+
+    // Determine the value to paint for this specific cell and the storage length to use
+    let cellPaintValue;
+    let storageLength;
+
     if (!pointerActive) {
+      // First cell in the gesture
       pointerActive = true;
-      // If eraseMode is active (via shift/alt key), always erase
-      // Otherwise, toggle based on the current state of the first cell
-      paintValue = eraseMode ? false : !current;
+
+      if (eraseMode) {
+        // Shift/Alt: always erase full cell width
+        paintValue = false;
+        cellPaintValue = false;
+        storageLength = fullStorageLength;
+      } else if (extendMode) {
+        // Ctrl/Cmd: extend mode - determine value from first cell and apply to all
+        paintValue = !current;
+        cellPaintValue = paintValue;
+        storageLength = fullStorageLength; // Use full width to create continuous notes
+      } else {
+        // Default: toggle each cell independently with shortened notes to create gaps
+        paintValue = !current; // Store for reference, but each cell toggles independently
+        cellPaintValue = !current;
+        // Use only ~75% of storage width to create gaps between notes
+        storageLength = Math.max(1, Math.floor(fullStorageLength * 0.75));
+      }
+    } else {
+      // Subsequent cells during drag
+      if (extendMode || eraseMode) {
+        // In extend or erase mode: use the initially determined paintValue and full width
+        cellPaintValue = paintValue;
+        storageLength = fullStorageLength;
+      } else {
+        // Default drag mode: toggle each cell independently based on its current state
+        cellPaintValue = !current;
+        // Use only ~75% of storage width to create gaps between notes
+        storageLength = Math.max(1, Math.floor(fullStorageLength * 0.75));
+      }
     }
 
     const key = `${row}:${storageStart}`;
@@ -427,7 +463,7 @@
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
-    dispatch('notechange', { row, start: storageStart, length: storageLength, value: paintValue, storage: true });
+    dispatch('notechange', { row, start: storageStart, length: storageLength, value: cellPaintValue, storage: true });
   };
 
   const handlePointerMove = (event) => {
@@ -448,6 +484,7 @@
     pointerActive = false;
     paintedCells = new Set();
     eraseMode = false; // Reset erase mode when pointer is released
+    extendMode = false; // Reset extend mode when pointer is released
   };
 
   const handlePointerUp = (event) => {
@@ -559,10 +596,13 @@
       if (scroller) resizeObserver.observe(scroller);
     }
     
-    // Track modifier keys for erase mode while hovering
+    // Track modifier keys for erase and extend modes while hovering
     const handleKeyDownGlobal = (e) => {
       if (e.shiftKey || e.altKey) {
         eraseMode = true;
+      }
+      if (e.ctrlKey || e.metaKey) {
+        extendMode = true;
       }
     };
     
@@ -570,6 +610,10 @@
       // Only disable erase mode if neither shift nor alt is held
       if (!e.shiftKey && !e.altKey) {
         eraseMode = false;
+      }
+      // Only disable extend mode if neither ctrl nor cmd is held
+      if (!e.ctrlKey && !e.metaKey) {
+        extendMode = false;
       }
     };
     
@@ -662,7 +706,7 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
+      aria-label="Note grid - click to add/remove notes, drag to place multiple notes, hold Ctrl/Cmd to extend notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
       style="cursor: {cursorStyle};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
