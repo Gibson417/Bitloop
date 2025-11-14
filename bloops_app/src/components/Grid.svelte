@@ -18,6 +18,8 @@
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
+  export let drawingTool = 'paint'; // 'single', 'paint', 'erase'
+  export let zoomLevel = 1; // Resolution denominator: 1, 2, 4, 8, 16, 32, 64
 
   const dispatch = createEventDispatcher();
 
@@ -42,8 +44,9 @@
     currentTheme = value;
   });
 
-  // Check for reduced motion preference
-  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Compute cursor style based on drawing tool and erase mode
+  $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : drawingTool === 'single' ? 'pointer' : 'crosshair';
+
 
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
@@ -356,8 +359,8 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Check if shift or alt key is held for explicit erase mode
-    eraseMode = event.shiftKey || event.altKey;
+    // Check if shift or alt key is held for explicit erase mode, or use the selected drawing tool
+    eraseMode = (drawingTool === 'erase') || event.shiftKey || event.altKey;
     pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set(); // Clear painted cells for new gesture
     handlePointer(event);
@@ -428,6 +431,8 @@
   };
 
   const handlePointerMove = (event) => {
+    // For single note tool, don't allow dragging
+    if (drawingTool === 'single') return;
     if (!pointerActive) return;
     handlePointer(event);
   };
@@ -658,7 +663,7 @@
       tabindex="0"
       role="grid"
       aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
-      style="cursor: {eraseMode ? 'not-allowed' : 'crosshair'};"
+      style="cursor: {cursorStyle};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}

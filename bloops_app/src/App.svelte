@@ -3,6 +3,8 @@
   import { get } from 'svelte/store';
   import Grid from './components/Grid.svelte';
   import WindowSwitcher from './components/WindowSwitcher.svelte';
+  import GridToolbar from './components/GridToolbar.svelte';
+  import ZoomControls from './components/ZoomControls.svelte';
   import TrackSelector from './components/TrackSelector.svelte';
   import TrackControls from './components/TrackControls.svelte';
   import TrackEffectsPanel from './components/TrackEffectsPanel.svelte';
@@ -56,6 +58,9 @@
   let manualWindow = null; // null = auto-follow playhead
   let currentWindow = 0;
   let totalWindows = 1;
+  // Drawing tool and zoom state
+  let selectedDrawingTool = 'paint'; // 'single', 'paint', 'erase'
+  let zoomLevel = 1; // Resolution denominator: 1, 2, 4, 8, 16, 32, 64
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -318,6 +323,14 @@
   const handleWindowInfo = (event) => {
     currentWindow = event.detail.currentWindow;
     totalWindows = event.detail.totalWindows;
+  };
+
+  const handleToolChange = (event) => {
+    selectedDrawingTool = event.detail.tool;
+  };
+
+  const handleZoomChange = (event) => {
+    zoomLevel = event.detail.level;
   };
 
   const handleBpmChange = (event) => {
@@ -1009,6 +1022,11 @@
     </div>
     <div class="grid-shell" data-component="GridShell">
       <div class="grid-toolbar" data-component="GridToolbar">
+        <GridToolbar
+          selectedTool={selectedDrawingTool}
+          {trackColor}
+          on:toolchange={handleToolChange}
+        />
         <div class="note-length-group">
           <ArrowSelector
             label="Note length"
@@ -1017,6 +1035,11 @@
             on:change={handleNoteLengthChange}
           />
         </div>
+        <ZoomControls
+          {zoomLevel}
+          {trackColor}
+          on:zoom={handleZoomChange}
+        />
         <div class="window-switcher-group">
           <WindowSwitcher
             {currentWindow}
@@ -1026,7 +1049,7 @@
           />
         </div>
       </div>
-      <div class="grid-backdrop" data-component="GridBackdrop">
+        <div class="grid-backdrop" data-component="GridBackdrop">
           <Grid
           {rows}
           {columns}
@@ -1040,6 +1063,8 @@
           stepsPerBar={stepsPerBar}
           noteLengthDenominator={selectedNoteLengthValue}
           manualWindow={manualWindow}
+          drawingTool={selectedDrawingTool}
+          {zoomLevel}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
         />
