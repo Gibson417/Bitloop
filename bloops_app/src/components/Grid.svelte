@@ -48,9 +48,6 @@
   // Compute cursor style based on drawing tool, erase mode, and extend mode
   $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : drawingTool === 'single' ? 'pointer' : 'crosshair';
 
-  // Check for reduced motion preference
-  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
     const clean = fallback.replace('#', '');
@@ -329,6 +326,7 @@
   const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
+      const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const glowIntensity = isPlaying 
         ? (prefersReducedMotion ? 0.3 : 0.3 + Math.sin(Date.now() * 0.003) * 0.1)
         : 0.2;
