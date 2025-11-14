@@ -170,10 +170,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    padding: 20px;
-    border-radius: 16px;
+    padding: 16px 20px; /* Reduced vertical padding from 20px to 16px */
+    border-radius: 12px; /* Reduced from 16px for subtler corners */
     background: linear-gradient(135deg, var(--color-grid-bg), var(--color-grid-bg-end));
-    border: 1px solid rgba(var(--color-text), 0.08);
+    border: 1px solid rgba(var(--color-text), 0.06); /* Reduced from 0.08 */
     box-sizing: border-box;
   }
 
@@ -193,17 +193,18 @@
 
   .control:not(.plain) {
     padding: 12px;
-    border-radius: 14px;
+    border-radius: 12px; /* Reduced from 14px for consistency */
     background: var(--color-panel);
-    border: 1px solid rgba(var(--color-text), 0.12);
+    border: 1px solid rgba(var(--color-text), 0.1); /* Reduced from 0.12 */
   }
 
   .control label {
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em; /* Reduced from 0.1em for subtler labels */
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Reduced from 0.75rem */
     color: var(--color-text-muted);
+    opacity: 0.85; /* Added for subtler presence */
   }
 
   .name-color-group {

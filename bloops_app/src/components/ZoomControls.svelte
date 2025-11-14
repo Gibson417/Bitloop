@@ -69,19 +69,19 @@
   .zoom-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 4px 12px;
+    gap: 8px; /* Reduced from 10px, using 8px base */
+    padding: 4px 10px; /* Slightly tighter horizontal padding */
     background: var(--color-panel);
     border-radius: 8px;
-    border: 1px solid rgba(var(--color-text), 0.08);
+    border: 1px solid rgba(var(--color-text), 0.06); /* Reduced from 0.08 for subtler presence */
   }
 
   .zoom-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Reduced from 0.75rem to match GridToolbar */
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    opacity: 0.7;
+    opacity: 0.6; /* Reduced from 0.7 for consistency */
     margin: 0;
   }
 
@@ -95,13 +95,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 26px; /* Reduced from 28px for more compact feel */
+    height: 26px;
     padding: 0;
     background: transparent;
     border: 1px solid;
     border-radius: 6px;
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* Reduced from 1.2rem */
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -123,9 +123,9 @@
   }
 
   .zoom-level {
-    font-size: 0.85rem;
+    font-size: 0.8rem; /* Reduced from 0.85rem */
     font-weight: 600;
-    min-width: 32px;
+    min-width: 30px; /* Reduced from 32px */
     text-align: center;
   }
 </style>

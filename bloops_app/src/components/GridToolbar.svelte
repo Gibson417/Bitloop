@@ -43,26 +43,26 @@
   .grid-toolbar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
+    gap: 12px; /* Design system: 1.5 × 8px base */
+    padding: 6px 10px; /* Reduced from 8px 12px for more compact feel */
     background: var(--color-panel);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.06); /* Reduced from 0.08 for subtler presence */
   }
 
   .toolbar-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Reduced from 0.75rem to be less prominent */
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    opacity: 0.7;
+    opacity: 0.6; /* Reduced from 0.7 for subtler label */
     margin: 0;
     white-space: nowrap;
   }
 
   .tool-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px; /* Reduced from 8px for tighter grouping */
     flex-wrap: wrap;
   }
 
@@ -70,11 +70,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
+    padding: 6px 10px; /* Reduced from 8px 12px for more compact feel */
     background: transparent;
     border: 2px solid;
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.8rem; /* Reduced from 0.85rem */
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -82,14 +82,14 @@
   }
 
   .tool-btn:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04); /* Reduced from 0.05 for subtler hover */
     border-color: rgba(255, 255, 255, 0.25) !important;
     transform: translateY(-1px);
   }
 
   .tool-btn.active {
-    background: rgba(var(--color-accent-rgb), 0.15);
-    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.3);
+    background: rgba(var(--color-accent-rgb), 0.12); /* Reduced from 0.15 */
+    box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.25); /* Reduced glow for subtler active state */
   }
 
   .tool-btn:active {

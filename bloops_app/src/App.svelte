@@ -1022,31 +1022,38 @@
     </div>
     <div class="grid-shell" data-component="GridShell">
       <div class="grid-toolbar" data-component="GridToolbar">
-        <GridToolbar
-          selectedTool={selectedDrawingTool}
-          {trackColor}
-          on:toolchange={handleToolChange}
-        />
-        <div class="note-length-group">
-          <ArrowSelector
-            label="Note length"
-            options={NOTE_LENGTH_OPTIONS}
-            value={selectedNoteLengthValue}
-            on:change={handleNoteLengthChange}
+        <!-- Primary tools: Drawing tools (most important, left-aligned) -->
+        <div class="toolbar-primary">
+          <GridToolbar
+            selectedTool={selectedDrawingTool}
+            {trackColor}
+            on:toolchange={handleToolChange}
           />
+          <div class="note-length-group">
+            <ArrowSelector
+              label="Note length"
+              options={NOTE_LENGTH_OPTIONS}
+              value={selectedNoteLengthValue}
+              on:change={handleNoteLengthChange}
+            />
+          </div>
         </div>
-        <ZoomControls
-          {zoomLevel}
-          {trackColor}
-          on:zoom={handleZoomChange}
-        />
-        <div class="window-switcher-group">
-          <WindowSwitcher
-            {currentWindow}
-            {totalWindows}
-            trackColor={trackColor}
-            on:switch={handleWindowSwitch}
+        
+        <!-- Secondary tools: Navigation and view controls (right-aligned) -->
+        <div class="toolbar-secondary">
+          <ZoomControls
+            {zoomLevel}
+            {trackColor}
+            on:zoom={handleZoomChange}
           />
+          <div class="window-switcher-group">
+            <WindowSwitcher
+              {currentWindow}
+              {totalWindows}
+              trackColor={trackColor}
+              on:switch={handleWindowSwitch}
+            />
+          </div>
         </div>
       </div>
         <div class="grid-backdrop" data-component="GridBackdrop">
@@ -1513,7 +1520,7 @@
 
   .track-controls-wrapper {
     padding: 0 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px; /* Increased from 16px for better breathing room */
   }
 
   .track-effects-wrapper {
@@ -1557,11 +1564,10 @@
 
   .grid-toolbar {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 0 0 14px;
+    gap: 16px; /* Design system: 2 × 8px base */
+    margin: 0 0 16px; /* Design system: 2 × 8px base */
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -1570,19 +1576,33 @@
     font-size: 0.95rem;
   }
 
+  /* Primary tools group: Drawing tools and note length (left side) */
+  .toolbar-primary {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px; /* Design system: 2 × 8px base */
+    flex: 1;
+    min-width: 0; /* Allow shrinking */
+  }
+
+  /* Secondary tools group: Zoom and window switcher (right side) */
+  .toolbar-secondary {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px; /* Slightly tighter spacing for secondary controls */
+    flex-shrink: 0; /* Don't shrink secondary tools */
+  }
+
   .note-length-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 240px;
-    align-self: flex-end;
+    min-width: 180px; /* Reduced from 240px for more compact feel */
+    max-width: 200px;
   }
 
   .window-switcher-group {
     display: flex;
-    align-items: flex-end;
-    margin-left: auto;
+    align-items: center; /* Changed from flex-end for better alignment */
   }
 
   .grid-backdrop {
@@ -1620,6 +1640,11 @@
     .rail-stats {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    /* Tablet: slightly tighter toolbar spacing */
+    .toolbar-primary {
+      gap: 12px;
+    }
   }
 
   @media (max-width: 720px) {
@@ -1639,14 +1664,22 @@
     }
 
     .grid-toolbar {
-      padding: 10px 14px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .toolbar-primary,
+    .toolbar-secondary {
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
     }
 
     .note-length-group {
-      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
     }
 
     .window-switcher-group {
