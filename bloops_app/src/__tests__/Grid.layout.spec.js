@@ -5,10 +5,10 @@ import Grid from '../components/Grid.svelte';
 const createNotes = (rows, cols) => Array.from({ length: rows }, () => Array.from({ length: cols }, () => false));
 
 describe('Grid layout', () => {
-  it('computes canvas width based on columns and note length grouping', async () => {
+  it('computes canvas width based on columns and zoom level', async () => {
     const rows = 4;
     const sourceColumns = 32; // underlying total steps
-  const noteLengthDenominator = 4; // e.g. 4 here acts as denominator for test (works with stepsPerBar)
+    const zoomLevel = 4; // zoom level controls grid resolution
 
   // jsdom doesn't implement CanvasRenderingContext2D; provide a minimal stub
     const fakeCtx = {
@@ -60,7 +60,7 @@ describe('Grid layout', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator
+        zoomLevel
       }
     });
 
@@ -73,9 +73,9 @@ describe('Grid layout', () => {
     // Trigger a resize by dispatching a window resize event so component recalculates layout
     window.dispatchEvent(new Event('resize'));
 
-    // displayColumns = Math.floor(32 / 4) = 8
-  // displayColumns = sourceColumns * denom / stepsPerBar (stepsPerBar default is 16 in component)
-  const displayColumns = Math.floor((sourceColumns * noteLengthDenominator) / 16);
+    // displayColumns = Math.floor(32 * 4 / 16) = 8
+  // displayColumns = sourceColumns * zoomLevel / stepsPerBar (stepsPerBar default is 16 in component)
+  const displayColumns = Math.floor((sourceColumns * zoomLevel) / 16);
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth;
     const expectedCellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
