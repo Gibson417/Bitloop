@@ -19,7 +19,8 @@ describe('Grid component', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator: 1
+        noteLengthDenominator: 16,
+        zoomLevel: 16
       }
     });
 
@@ -60,7 +61,8 @@ describe('Grid component', () => {
         follow: false,
         isPlaying: false,
         noteLengthDenominator: 16,
-        stepsPerBar: 16
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -101,7 +103,8 @@ describe('Grid component', () => {
         follow: false,
         isPlaying: false,
         noteLengthDenominator: 16,
-        stepsPerBar: 16
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -147,7 +150,8 @@ describe('Grid component', () => {
         follow: false,
         isPlaying: false,
         noteLengthDenominator: 16,
-        stepsPerBar: 16
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -194,7 +198,8 @@ describe('Grid component', () => {
         follow: false,
         isPlaying: false,
         noteLengthDenominator: 16,
-        stepsPerBar: 16
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
@@ -244,7 +249,8 @@ describe('Grid component', () => {
         follow: false,
         isPlaying: false,
         noteLengthDenominator: 16,
-        stepsPerBar: 16
+        stepsPerBar: 16,
+        zoomLevel: 16
       }
     });
 
