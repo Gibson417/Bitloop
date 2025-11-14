@@ -327,6 +327,7 @@
   const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
+      const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const glowIntensity = isPlaying 
         ? (prefersReducedMotion ? 0.3 : 0.3 + Math.sin(Date.now() * 0.003) * 0.1)
         : 0.2;
