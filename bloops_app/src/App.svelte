@@ -13,8 +13,6 @@
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
-  import ZoomControls from './components/ZoomControls.svelte';
-  import GridToolbar from './components/GridToolbar.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -344,24 +342,6 @@
 
   const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/8')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
   let selectedNoteLength = DEFAULT_NOTE_LENGTH;
-
-  // Zoom level state (separate from note length)
-  // Zoom level represents the grid resolution denominator (1, 2, 4, 8, 16, 32, 64)
-  // displayed as 1/1, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64
-  let gridZoomLevel = 16; // Default to 1/16 resolution (quarter note at 4/4 time)
-  const MIN_ZOOM = 1;
-  const MAX_ZOOM = 64;
-
-  // Drawing tool state
-  let selectedDrawingTool = 'paint'; // 'single', 'paint', 'erase'
-
-  const handleZoom = (event) => {
-    gridZoomLevel = event.detail.level;
-  };
-
-  const handleToolChange = (event) => {
-    selectedDrawingTool = event.detail.tool;
-  };
 
   const handleNoteChange = (event) => {
     const { row, start, length, value } = event.detail;
@@ -758,7 +738,7 @@
     });
     
     // Global keyboard handler for spacebar to control play/stop (DAW-style)
-    // Ctrl+Z/Ctrl+Y for undo/redo, and Ctrl+Shift+D for dev mode toggle
+    // and Ctrl+Shift+D for dev mode toggle
     const handleGlobalKeydown = (event) => {
       // Only handle spacebar if not in a text input or textarea
       const target = event.target;
@@ -769,22 +749,6 @@
       if (event.key === ' ' && !isTextInput) {
         event.preventDefault();
         handleTogglePlay();
-      }
-      
-      // Ctrl+Z for undo (or Cmd+Z on Mac)
-      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 'z') {
-        event.preventDefault();
-        if (canUndo) {
-          handleUndo();
-        }
-      }
-      
-      // Ctrl+Y or Ctrl+Shift+Z for redo (or Cmd+Shift+Z on Mac)
-      if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.shiftKey && event.key === 'z'))) {
-        event.preventDefault();
-        if (canRedo) {
-          handleRedo();
-        }
       }
       
       // Ctrl+Shift+D to toggle dev mode
@@ -1005,7 +969,7 @@
             class="icon-btn"
             on:click={handleUndo}
             disabled={!canUndo}
-            title="Undo (Ctrl+Z)"
+            title="Undo"
             aria-label="Undo"
           >
             ↶
@@ -1015,7 +979,7 @@
             class="icon-btn"
             on:click={handleRedo}
             disabled={!canRedo}
-            title="Redo (Ctrl+Y)"
+            title="Redo"
             aria-label="Redo"
           >
             ↷
@@ -1053,22 +1017,6 @@
             on:change={handleNoteLengthChange}
           />
         </div>
-        <div class="drawing-tools-group">
-          <GridToolbar
-            selectedTool={selectedDrawingTool}
-            trackColor={trackColor}
-            on:toolchange={handleToolChange}
-          />
-        </div>
-        <div class="zoom-controls-group">
-          <ZoomControls
-            zoomLevel={gridZoomLevel}
-            minZoom={MIN_ZOOM}
-            maxZoom={MAX_ZOOM}
-            trackColor={trackColor}
-            on:zoom={handleZoom}
-          />
-        </div>
         <div class="window-switcher-group">
           <WindowSwitcher
             {currentWindow}
@@ -1091,9 +1039,7 @@
           isPlaying={isPlaying}
           stepsPerBar={stepsPerBar}
           noteLengthDenominator={selectedNoteLengthValue}
-          gridZoom={gridZoomLevel}
           manualWindow={manualWindow}
-          drawingTool={selectedDrawingTool}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
         />
@@ -1204,16 +1150,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  
-  /* Better focus management - hide focus ring for mouse users, show for keyboard users */
-  :global(:focus:not(:focus-visible)) {
-    outline: none;
-  }
-  
-  :global(:focus-visible) {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
-    outline-offset: 2px;
-  }
 
   .app {
     min-height: 100vh;
@@ -1238,7 +1174,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
   }
 
   .brand {
@@ -1279,7 +1215,7 @@
 
   .brand-tag {
     margin: 0;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1357,7 +1293,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 16px 8px;
+    padding: 16px 20px 6px;
     gap: 18px;
     width: 100%;
     box-sizing: border-box;
@@ -1371,7 +1307,7 @@
   .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: rgba(var(--color-accent-rgb), 0.85);
   }
@@ -1380,7 +1316,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
     cursor: pointer;
   }
 
@@ -1392,7 +1328,7 @@
   }
 
   .project-eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -1467,7 +1403,7 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
     color: rgba(var(--color-accent-rgb), 0.9);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -1562,7 +1498,7 @@
 
   .volume-card {
     margin-top: 10px;
-    padding: 12px;
+    padding: 14px 12px 16px;
     border-radius: 14px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
@@ -1599,58 +1535,29 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 16px;
-    margin: 0 0 20px;
-    padding: 16px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, 
-      rgba(var(--color-panel, 34, 38, 50), 0.4), 
-      rgba(var(--color-panel, 34, 38, 50), 0.25));
-    border: 1px solid rgba(var(--color-accent-rgb), 0.12);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    gap: 12px;
+    margin: 0 0 14px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: none;
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.95rem;
   }
 
   .note-length-group {
     display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    min-height: 60px;
-  }
-
-  .zoom-controls-group {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    min-height: 60px;
-  }
-
-  .drawing-tools-group {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    min-height: 60px;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 240px;
+    align-self: flex-end;
   }
 
   .window-switcher-group {
     display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    align-items: flex-end;
     margin-left: auto;
-    min-height: 60px;
   }
 
   .grid-backdrop {
@@ -1707,28 +1614,20 @@
     }
 
     .grid-toolbar {
-      padding: 12px;
-      margin-bottom: 16px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px;
     }
 
     .note-length-group {
       width: 100%;
-      max-width: 100%;
-      min-width: auto;
-    }
-
-    .drawing-tools-group,
-    .zoom-controls-group,
-    .window-switcher-group {
-      flex: 1;
-      min-width: 0;
-      justify-content: center;
     }
 
     .window-switcher-group {
+      width: 100%;
       margin-left: 0;
+      justify-content: center;
     }
 
     .grid-backdrop {

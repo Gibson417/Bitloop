@@ -382,22 +382,4 @@
     outline: 2px solid rgba(255, 80, 80, 0.8);
     outline-offset: 2px;
   }
-  
-  /* Touch device improvements */
-  @media (hover: none) and (pointer: coarse) {
-    .action-button {
-      min-width: 40px;
-      min-height: 40px;
-    }
-    
-    .toggle-btn {
-      min-width: 40px;
-      min-height: 40px;
-    }
-    
-    .remove-button {
-      min-width: 40px;
-      min-height: 40px;
-    }
-  }
 </style>

@@ -55,9 +55,6 @@
     } else if (e.key === 'ArrowRight' || e.key === 'Right') {
       e.preventDefault();
       handleNext();
-    } else if (e.key === ' ') {
-      // Prevent default spacebar button activation and let it bubble to global handler
-      e.preventDefault();
     }
   };
 </script>
@@ -105,8 +102,8 @@
 <style>
   .arrow-selector {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
     color: var(--color-text);
     font-size: 0.78rem;
   }
@@ -117,7 +114,6 @@
     font-weight: 600;
     font-size: 0.75rem;
     color: var(--color-text-muted);
-    white-space: nowrap;
   }
 
   .selector-controls {
@@ -204,14 +200,6 @@
     .selector-controls {
       padding: 4px 6px;
       gap: 6px;
-    }
-  }
-  
-  /* Touch device improvements */
-  @media (hover: none) and (pointer: coarse) {
-    .arrow-button {
-      min-width: 44px;
-      min-height: 44px;
     }
   }
 </style>

@@ -61,7 +61,7 @@ describe('WindowSwitcher', () => {
     expect(nextButton).not.toBeDisabled();
   });
 
-  it('should render window position display', () => {
+  it('should render correct number of window indicators', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 1,
@@ -70,9 +70,8 @@ describe('WindowSwitcher', () => {
       }
     });
 
-    const positionDisplay = screen.getByLabelText('Current window position');
-    expect(positionDisplay).toBeInTheDocument();
-    expect(positionDisplay).toHaveTextContent('2 / 5');
+    const indicators = screen.getAllByRole('tab');
+    expect(indicators).toHaveLength(5);
   });
 
   it('should dispatch switch event when clicking next button', async () => {
@@ -123,11 +122,11 @@ describe('WindowSwitcher', () => {
     );
   });
 
-  it('should dispatch switch event when clicking next button from middle window', async () => {
+  it('should dispatch switch event when clicking window indicator', async () => {
     const user = userEvent.setup();
     const { component } = render(WindowSwitcher, {
       props: {
-        currentWindow: 1,
+        currentWindow: 0,
         totalWindows: 4,
         trackColor: '#78D2B9'
       }
@@ -136,8 +135,8 @@ describe('WindowSwitcher', () => {
     const switchHandler = vi.fn();
     component.$on('switch', switchHandler);
 
-    const nextButton = screen.getByLabelText('Next window');
-    await user.click(nextButton);
+    const indicators = screen.getAllByRole('tab');
+    await user.click(indicators[2]); // Click third window
 
     expect(switchHandler).toHaveBeenCalledTimes(1);
     expect(switchHandler).toHaveBeenCalledWith(
@@ -147,7 +146,7 @@ describe('WindowSwitcher', () => {
     );
   });
 
-  it('should display current window position correctly', () => {
+  it('should mark current window indicator as selected', () => {
     render(WindowSwitcher, {
       props: {
         currentWindow: 2,
@@ -156,8 +155,12 @@ describe('WindowSwitcher', () => {
       }
     });
 
-    const positionDisplay = screen.getByLabelText('Current window position');
-    expect(positionDisplay).toHaveTextContent('3 / 5');
+    const indicators = screen.getAllByRole('tab');
+    expect(indicators[2]).toHaveAttribute('aria-selected', 'true');
+    expect(indicators[0]).toHaveAttribute('aria-selected', 'false');
+    expect(indicators[1]).toHaveAttribute('aria-selected', 'false');
+    expect(indicators[3]).toHaveAttribute('aria-selected', 'false');
+    expect(indicators[4]).toHaveAttribute('aria-selected', 'false');
   });
 
   it('should have proper ARIA labels', () => {
@@ -170,13 +173,13 @@ describe('WindowSwitcher', () => {
     });
 
     const navigation = screen.getByRole('navigation', { name: 'Grid window navigation' });
-    const positionDisplay = screen.getByLabelText('Current window position');
+    const tablist = screen.getByRole('tablist', { name: 'Grid windows' });
 
     expect(navigation).toBeInTheDocument();
-    expect(positionDisplay).toBeInTheDocument();
+    expect(tablist).toBeInTheDocument();
   });
 
-  it('should meet minimum touch target size (32x32px for nav buttons)', () => {
+  it('should meet minimum touch target size (44x44px)', () => {
     const { container } = render(WindowSwitcher, {
       props: {
         currentWindow: 0,
@@ -188,8 +191,14 @@ describe('WindowSwitcher', () => {
     const prevButton = screen.getByLabelText('Previous window');
     const nextButton = screen.getByLabelText('Next window');
 
-    // Verify buttons have the window-nav-btn class which defines 32x32px in CSS
-    expect(prevButton).toHaveClass('window-nav-btn');
-    expect(nextButton).toHaveClass('window-nav-btn');
+    // Get computed styles
+    const prevStyles = window.getComputedStyle(prevButton);
+    const nextStyles = window.getComputedStyle(nextButton);
+
+    // CSS specifies 44px x 44px for nav buttons
+    expect(prevStyles.width).toBe('44px');
+    expect(prevStyles.height).toBe('44px');
+    expect(nextStyles.width).toBe('44px');
+    expect(nextStyles.height).toBe('44px');
   });
 });

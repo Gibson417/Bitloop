@@ -36,12 +36,6 @@
       return;
     }
 
-    // Prevent default spacebar behavior to allow global play/pause handler
-    if (event.key === ' ') {
-      event.preventDefault();
-      return;
-    }
-
     // Handle arrow key navigation
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       event.preventDefault();

@@ -26,7 +26,7 @@ All core MVP features have been successfully implemented and tested:
 - ✅ Per-track effects (filters, delays)
 - ✅ Social sharing capabilities
 - ✅ Comprehensive test coverage (52 passing tests)
-- ✅ WCAG 2.2 AA accessibility compliance (92%)
+- ✅ WCAG 2.2 AA accessibility compliance (~85%)
 
 ## 📸 Visual Identity
 
@@ -247,7 +247,6 @@ This ensures no jitter, no grid tearing, and no “off by one frame” desync.
 
 ### Design & Technical
 - [Design Tokens](docs/design/design-tokens.json) - UI design system and styling
-- [UI/UX Audit Report](docs/UX-FINAL-REPORT-2025-11-13.md) - Latest design and accessibility audit
 - [Test Reports](docs/reports/) - Quality assurance and testing documentation
 
 ## 🤝 Contributing
@@ -262,11 +261,11 @@ We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) 
 ## 📊 Quality & Testing
 
 - **Test Coverage:** 52 passing unit and integration tests
-- **Accessibility:** WCAG 2.2 AA compliance (92%)
+- **Accessibility:** WCAG 2.2 AA compliance (~85%)
 - **Performance:** Stable playback at 120-160 BPM
 - **Browser Support:** Chrome, Firefox, Safari, Edge (latest versions)
 
-For detailed test reports and the latest UI/UX audit, see [docs/UX-FINAL-REPORT-2025-11-13.md](docs/UX-FINAL-REPORT-2025-11-13.md)
+For detailed test reports, see [docs/reports/](docs/reports/)
 
 ## 🎨 Design Philosophy
 

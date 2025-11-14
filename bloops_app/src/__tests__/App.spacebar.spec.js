@@ -158,39 +158,4 @@ describe('App global spacebar functionality', () => {
       // the handler doesn't block the event when canvas has focus
     });
   });
-
-  it('handles spacebar press to toggle playback when arrow selector button has focus', async () => {
-    const { container } = render(App);
-    
-    // Wait for component to mount
-    await waitFor(() => {
-      expect(container.querySelector('.app')).toBeTruthy();
-    });
-
-    // Find an arrow selector button (e.g., the waveform selector previous button)
-    const arrowButton = container.querySelector('.arrow-button');
-    expect(arrowButton).toBeTruthy();
-    
-    // Focus the arrow button
-    arrowButton.focus();
-    expect(document.activeElement).toBe(arrowButton);
-
-    // Find the play button to check its initial state
-    const playButton = container.querySelector('.play-button');
-    expect(playButton).toBeTruthy();
-    expect(playButton.getAttribute('aria-pressed')).toBe('false');
-
-    // Press spacebar while arrow button has focus
-    await fireEvent.keyDown(arrowButton, { key: ' ', bubbles: true });
-
-    // The spacebar should NOT trigger the button click (which would change the waveform)
-    // Instead, it should toggle playback via the global handler
-    // This tests that preventDefault is called on the button to prevent default activation
-    await waitFor(() => {
-      const updatedButton = container.querySelector('.play-button');
-      expect(updatedButton).toBeTruthy();
-      // In a real environment, this would change to pressed, but we're mainly testing
-      // that the event doesn't trigger the arrow button's default behavior
-    });
-  });
 });

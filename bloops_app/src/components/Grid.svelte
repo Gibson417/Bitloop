@@ -17,9 +17,7 @@
   // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
-  export let gridZoom = 1; // Visual zoom level (1x, 2x, 3x, 4x) - separate from note length
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
-  export let drawingTool = 'paint'; // Drawing tool mode: 'single', 'paint', 'erase'
 
   const dispatch = createEventDispatcher();
 
@@ -31,8 +29,7 @@
   let paintValue = true;
   let paintedCells = new Set();
   let resizeObserver;
-  let eraseMode = false; // Track if alt key is held for explicit erase
-  let extendMode = false; // Track if shift key is held for extending/connecting notes
+  let eraseMode = false; // Track if shift/alt key is held for explicit erase
   
   // Keyboard navigation state
   let focusedRow = 0;
@@ -106,14 +103,10 @@
     const safeRows = Math.max(rows || 8, 1);
     const logicalColumns = Math.max(columns || 16, 1); // logical total steps (bars * stepsPerBar)
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    
-    // Calculate display resolution based on gridZoom
-    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
-    // e.g., gridZoom = 16 means show 1/16 note resolution (16 subdivisions per bar)
-    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
-    const displayResolution = resolutionDenominator;
-    const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
-    
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Fixed viewport: show only 16 columns at a time (one bar)
@@ -151,24 +144,20 @@
       ctx.fillStyle = backgroundGradient;
       ctx.fillRect(0, 0, layout.width, layout.height);
 
-      // Calculate display columns based on gridZoom (for visual resolution)
+      // Calculate display columns based on selected note denominator (e.g. 16,32,64) and storage mapping.
       const logicalColumns = Math.max(columns || 16, 1);
       const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-      
-      // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
-      const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
-      const displayResolution = resolutionDenominator;
-      const displayColumns = Math.max(1, Math.floor((logicalColumns * displayResolution) / stepsPerBarSafe));
-      
+      const denom = Number(noteLengthDenominator) || null;
+      const displayColumns = denom && Number.isFinite(denom) && denom > 0
+        ? Math.max(1, Math.floor((logicalColumns * denom) / stepsPerBarSafe))
+        : Math.max(1, Math.floor(logicalColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
       // Calculate which window to display (16 steps at a time)
       const visibleColumns = 16;
-      // Convert playhead from logical steps to display steps for correct window calculation
-      const playheadDisplayStep = Math.floor((playheadStep * displayColumns) / logicalColumns);
       // Use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadDisplayStep / visibleColumns);
+      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
@@ -182,8 +171,8 @@
       // Calculate quarter-bar step size in logical steps
       const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
       
-      // Determine if we're in a "zoomed" view (showing more detail than default)
-      const isZoomed = resolutionDenominator > 16;
+      // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
+      const isZoomed = denom && denom > stepsPerBarSafe;
       
       for (let col = 0; col <= visibleColumns; col++) {
         // Map displayed column back to logical step in the source columns (accounting for window offset)
@@ -330,8 +319,7 @@
       }
 
   // Playhead (show within current window)
-  // Reuse playheadDisplayStep calculated earlier in the window calculation
-  const playheadStepInWindow = playheadDisplayStep - windowOffset;
+  const playheadStepInWindow = playheadStep % visibleColumns;
   const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
@@ -368,10 +356,8 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Use drawingTool prop to determine mode, but allow Alt key override for erase
-    eraseMode = event.altKey || drawingTool === 'erase';
-    // Check if shift key is held for extend/connect mode
-    extendMode = event.shiftKey;
+    // Check if shift or alt key is held for explicit erase mode
+    eraseMode = event.shiftKey || event.altKey;
     pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set(); // Clear painted cells for new gesture
     handlePointer(event);
@@ -389,11 +375,10 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    
-    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
-    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
-    const displayResolution = resolutionDenominator;
-    const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
     
     const visibleColumns = 16;
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
@@ -408,26 +393,14 @@
 
     const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
 
-    // Compute storage indices for the start and length
-    // Use noteLengthDenominator to determine the quantization for note placement
+    // Compute storage indices for the start and length so the event carries
+    // high-resolution (internal) indices rather than logical indices.
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-    const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
-    
-    // For 'single' tool: place notes at exact display column positions without quantization grouping
-    // For other tools: use noteLength quantization
-    let storageStart, storageLength;
-    if (drawingTool === 'single') {
-      // For single tool, map each display column directly to storage without coarse quantization
-      // This ensures adjacent clicks place notes in adjacent (but separate) storage cells
-      storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
-      storageLength = 1; // Minimum quantum for isolated single notes
-    } else {
-      // Calculate the quantized storage start based on noteLengthDenominator
-      const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
-      const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
-      storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
-      storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
-    }
+    const storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+
+    // logical visible width of this displayed column (in logical steps)
+    const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
+    const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -438,29 +411,16 @@
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
     if (!pointerActive) {
       pointerActive = true;
-      // Determine paint behavior based on drawingTool:
-      // - 'erase': always erase
-      // - 'single': place one note (no drag)
-      // - 'paint': paint consecutive notes (drag to paint)
-      // - Alt key: override to erase mode
-      // - Shift key: toggle based on current state (for extending notes)
-      if (eraseMode) {
-        paintValue = false;
-      } else if (extendMode) {
-        paintValue = !current;
-      } else if (drawingTool === 'single') {
-        paintValue = !current; // Toggle on/off for single note tool
-      } else {
-        paintValue = true; // Always paint by default for paint tool
-      }
+      // If eraseMode is active (via shift/alt key), always erase
+      // Otherwise, toggle based on the current state of the first cell
+      paintValue = eraseMode ? false : !current;
     }
 
     const key = `${row}:${storageStart}`;
-    // For 'single' tool, only paint on initial click (not during drag)
-    // For other tools, allow drag painting but prevent repainting the same cell
-    const shouldSkip = paintedCells.has(key) && (drawingTool === 'single' || pointerActive);
-    if (shouldSkip) return;
-     paintedCells.add(key);
+    // Allow the same cell to be painted again if this is a fresh pointer down (consecutive clicks)
+    // but prevent repainting during the same drag gesture
+    if (paintedCells.has(key) && pointerActive) return;
+    paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
@@ -469,8 +429,6 @@
 
   const handlePointerMove = (event) => {
     if (!pointerActive) return;
-    // For 'single' tool, don't allow drag painting
-    if (drawingTool === 'single') return;
     handlePointer(event);
   };
 
@@ -485,7 +443,6 @@
     pointerActive = false;
     paintedCells = new Set();
     eraseMode = false; // Reset erase mode when pointer is released
-    extendMode = false; // Reset extend mode when pointer is released
   };
 
   const handlePointerUp = (event) => {
@@ -507,11 +464,10 @@
     
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    
-    // gridZoom represents the resolution denominator (1, 2, 4, 8, 16, 32, 64)
-    const resolutionDenominator = Math.max(1, Math.round(gridZoom || 16));
-    const displayResolution = resolutionDenominator;
-    const displayColumns = Math.max(1, Math.floor((sourceColumns * displayResolution) / stepsPerBarSafe));
+    const denom = Number(noteLengthDenominator) || null;
+    const displayColumns = denom && Number.isFinite(denom) && denom > 0
+      ? Math.max(1, Math.floor((sourceColumns * denom) / stepsPerBarSafe))
+      : Math.max(1, Math.floor(sourceColumns / Math.max(1, Math.round(noteLengthSteps || 1))));
     
     const visibleColumns = 16;
 
@@ -548,15 +504,11 @@
       const windowOffset = currentWindow * visibleColumns;
       const displayCol = windowOffset + focusedCol;
       
-      const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
-      
-      // Use noteLengthDenominator for note quantization
+      const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
+      const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
+      const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-      const denom = Number(noteLengthDenominator) || stepsPerBarSafe;
-      const stepsPerNote = Math.max(1, stepsPerBarSafe / denom);
-      const quantizedStep = Math.floor(stepIndex / stepsPerNote) * stepsPerNote;
-      const storageStart = Math.max(0, Math.floor(quantizedStep * storagePerLogical));
-      const storageLength = Math.max(1, Math.round(stepsPerNote * storagePerLogical));
+      const storageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
       
       // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
@@ -602,24 +554,17 @@
       if (scroller) resizeObserver.observe(scroller);
     }
     
-    // Track modifier keys for erase/extend mode while hovering
+    // Track modifier keys for erase mode while hovering
     const handleKeyDownGlobal = (e) => {
-      if (e.altKey) {
+      if (e.shiftKey || e.altKey) {
         eraseMode = true;
-      }
-      if (e.shiftKey) {
-        extendMode = true;
       }
     };
     
     const handleKeyUpGlobal = (e) => {
-      // Only disable erase mode if alt is not held
-      if (!e.altKey) {
+      // Only disable erase mode if neither shift nor alt is held
+      if (!e.shiftKey && !e.altKey) {
         eraseMode = false;
-      }
-      // Only disable extend mode if shift is not held
-      if (!e.shiftKey) {
-        extendMode = false;
       }
     };
     
@@ -653,9 +598,7 @@
     noteLengthSteps,
     columns,
     rows,
-    currentTheme,
-    manualWindow,
-    gridZoom
+    currentTheme
   };
 
   $: if (canvas && scroller && columns && rows) {
@@ -714,8 +657,8 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add notes, hold Alt to erase, hold Shift to toggle/extend notes, use arrow keys to navigate, Enter to toggle notes"
-      style="cursor: {eraseMode ? 'not-allowed' : extendMode ? 'cell' : 'crosshair'};"
+      aria-label="Note grid - click to add/remove notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
+      style="cursor: {eraseMode ? 'not-allowed' : 'crosshair'};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
       on:pointerup={handlePointerUp}

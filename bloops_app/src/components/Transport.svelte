@@ -21,7 +21,7 @@
 
 <div class="transport" data-component="Transport">
   <div class="transport-buttons">
-    <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar" title="Skip to previous bar">
+    <button class="control-button" on:click={handleBackClick} type="button" aria-label="Skip to previous bar">
       <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
         <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
       </svg>
@@ -32,7 +32,6 @@
       on:click={handlePlayClick} 
       type="button" 
       aria-label={playing ? 'Stop' : 'Play'}
-      title={playing ? 'Stop (Space)' : 'Play (Space)'}
       aria-pressed={playing}
     >
       {#if playing}
@@ -46,7 +45,7 @@
         </svg>
       {/if}
     </button>
-    <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar" title="Skip to next bar">
+    <button class="control-button" on:click={handleSkipClick} type="button" aria-label="Skip to next bar">
       <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
         <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
       </svg>

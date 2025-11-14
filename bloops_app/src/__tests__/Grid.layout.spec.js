@@ -8,10 +8,9 @@ describe('Grid layout', () => {
   it('computes canvas width based on columns and note length grouping', async () => {
     const rows = 4;
     const sourceColumns = 32; // underlying total steps
-    const noteLengthDenominator = 4; // e.g. 4 here acts as denominator for test (works with stepsPerBar)
-    const gridZoom = 1; // Default zoom level
+  const noteLengthDenominator = 4; // e.g. 4 here acts as denominator for test (works with stepsPerBar)
 
-    // jsdom doesn't implement CanvasRenderingContext2D; provide a minimal stub
+  // jsdom doesn't implement CanvasRenderingContext2D; provide a minimal stub
     const fakeCtx = {
       save: () => {},
       restore: () => {},
@@ -61,8 +60,7 @@ describe('Grid layout', () => {
         playheadProgress: 0,
         follow: false,
         isPlaying: false,
-        noteLengthDenominator,
-        gridZoom
+        noteLengthDenominator
       }
     });
 
@@ -75,16 +73,12 @@ describe('Grid layout', () => {
     // Trigger a resize by dispatching a window resize event so component recalculates layout
     window.dispatchEvent(new Event('resize'));
 
-    // displayColumns now depends on gridZoom as resolution denominator
-    // gridZoom = 1 means 1/1 resolution (1 subdivision per bar)
-    // displayResolution = gridZoom
-    // displayColumns = floor((sourceColumns * displayResolution) / stepsPerBar)
-    const stepsPerBar = 16; // default in Grid component
-    const displayResolution = gridZoom; // gridZoom is now the resolution denominator
-    const displayColumns = Math.floor((sourceColumns * displayResolution) / stepsPerBar);
+    // displayColumns = Math.floor(32 / 4) = 8
+  // displayColumns = sourceColumns * denom / stepsPerBar (stepsPerBar default is 16 in component)
+  const displayColumns = Math.floor((sourceColumns * noteLengthDenominator) / 16);
     const visibleColumns = Math.min(displayColumns, 16);
     const availableWidth = scroller.clientWidth;
-    const expectedCellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    const expectedCellSize = Math.max(18, Math.min(48, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (static grid with window switching)
     const expectedWidth = visibleColumns * expectedCellSize;
 

@@ -61,12 +61,6 @@
       return;
     }
 
-    // Prevent default spacebar behavior to allow global play/pause handler
-    if (event.key === ' ') {
-      event.preventDefault();
-      return;
-    }
-
     // Handle arrow key navigation
     if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       event.preventDefault();
@@ -669,22 +663,6 @@
     .action-btn {
       flex: 1 1 100%;
       min-width: 100%;
-    }
-  }
-  
-  /* Touch device improvements - ensure all interactive elements meet 44×44px minimum */
-  @media (hover: none) and (pointer: coarse) {
-    .pattern-action-btn {
-      min-width: 44px;
-      min-height: 44px;
-    }
-    
-    .action-btn {
-      min-height: 44px;
-    }
-    
-    .add-pattern-btn {
-      min-height: 44px;
     }
   }
 </style>
