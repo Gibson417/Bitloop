@@ -417,15 +417,15 @@
     // Use some(Boolean) instead of every(Boolean) to detect if ANY part has notes
     // This fixes erasing when notes were placed at different resolutions
     const current = currentSlice.length > 0 && currentSlice.some(Boolean);
-    
+
     // Determine the value to paint for this specific cell and the storage length to use
     let cellPaintValue;
     let storageLength;
-    
+
     if (!pointerActive) {
       // First cell in the gesture
       pointerActive = true;
-      
+
       if (eraseMode) {
         // Shift/Alt: always erase full cell width
         paintValue = false;
