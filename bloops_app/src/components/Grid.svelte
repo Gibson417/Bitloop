@@ -48,6 +48,7 @@
   // Compute cursor style based on drawing tool, erase mode, and extend mode
   $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : drawingTool === 'single' ? 'pointer' : 'crosshair';
 
+
   const hexToRgba = (hex, alpha = 1) => {
     const fallback = hex ?? colors.accent;
     const clean = fallback.replace('#', '');
