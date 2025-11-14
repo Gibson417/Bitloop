@@ -93,37 +93,37 @@
     gap: 6px;
     padding: 4px 6px;
     border-radius: 6px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(34, 38, 50, 0.6));
-    border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.06), rgba(34, 38, 50, 0.5)); /* Reduced opacity for subtler presence */
+    border: 1px solid rgba(var(--color-accent-rgb), 0.15); /* Reduced from 0.2 */
   }
 
   .window-nav-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 26px; /* Reduced from 28px for consistency with zoom controls */
+    height: 26px;
     padding: 0;
     border-radius: 6px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.25);
-    background: rgba(var(--color-accent-rgb), 0.12);
-    color: rgba(var(--color-accent-rgb), 0.9);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.2); /* Reduced from 0.25 */
+    background: rgba(var(--color-accent-rgb), 0.08); /* Reduced from 0.12 */
+    color: rgba(var(--color-accent-rgb), 0.85); /* Reduced from 0.9 */
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
   }
 
   .window-nav-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 13px; /* Reduced from 14px */
+    height: 13px;
   }
 
   .window-nav-btn:hover:not(:disabled) {
-    background: rgba(var(--color-accent-rgb), 0.22);
-    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.18); /* Reduced from 0.22 */
+    border-color: rgba(var(--color-accent-rgb), 0.4); /* Reduced from 0.5 */
     color: #fff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.25);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2); /* Reduced from 0.25 */
   }
 
   .window-nav-btn:focus-visible {
@@ -151,18 +151,18 @@
   }
 
   .window-number {
-    font-size: 0.7rem;
+    font-size: 0.68rem; /* Reduced from 0.7rem */
     font-weight: 600;
     letter-spacing: 0.02em;
     padding: 0 4px;
-    opacity: 0.9;
-    min-width: 36px;
+    opacity: 0.85; /* Reduced from 0.9 for subtler presence */
+    min-width: 34px; /* Reduced from 36px */
     text-align: center;
   }
 
   .window-indicator {
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 26px; /* Reduced from 28px for consistency */
+    min-height: 26px;
     padding: 0;
     border-radius: 50%;
     border: none;
