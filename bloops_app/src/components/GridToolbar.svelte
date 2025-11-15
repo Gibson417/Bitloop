@@ -43,10 +43,7 @@
     display: flex;
     align-items: center;
     gap: 12px; /* Design system: 1.5 × 8px base */
-    padding: 8px 12px; /* Consistent padding for proper alignment with other toolbar elements */
-    background: var(--color-panel);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.06); /* Reduced from 0.08 for subtler presence */
+    /* Background removed for cleaner toolbar integration */
   }
 
   .toolbar-label {

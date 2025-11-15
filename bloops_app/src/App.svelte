@@ -1012,13 +1012,14 @@
     </div>
     <div class="grid-shell" data-component="GridShell">
       <div class="grid-toolbar" data-component="GridToolbar">
-        <!-- Primary tools: Drawing tools (most important, left-aligned) -->
+        <!-- Primary tools: Drawing tools, note length, and zoom (left side) -->
         <div class="toolbar-primary">
           <GridToolbar
             selectedTool={selectedDrawingTool}
             {trackColor}
             on:toolchange={handleToolChange}
           />
+          <div class="toolbar-divider" aria-hidden="true"></div>
           <div class="note-length-group">
             <span class="note-icon" aria-hidden="true">♪</span>
             <ArrowSelector
@@ -1027,15 +1028,16 @@
               on:change={handleNoteLengthChange}
             />
           </div>
-        </div>
-        
-        <!-- Secondary tools: Navigation and view controls (right-aligned) -->
-        <div class="toolbar-secondary">
+          <div class="toolbar-divider" aria-hidden="true"></div>
           <ZoomControls
             {zoomLevel}
             {trackColor}
             on:zoom={handleZoomChange}
           />
+        </div>
+        
+        <!-- Secondary tools: Window navigation (right-aligned) -->
+        <div class="toolbar-secondary">
           <div class="window-switcher-group">
             <WindowSwitcher
               {currentWindow}
@@ -1596,6 +1598,14 @@
     font-size: 1.3rem;
     line-height: 1;
     color: rgba(var(--color-accent-rgb), 0.8);
+    flex-shrink: 0;
+  }
+
+  /* Subtle dividers between toolbar sections */
+  .toolbar-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.08); /* Subtle vertical line */
     flex-shrink: 0;
   }
 
