@@ -445,7 +445,11 @@
         paintValue = !current; // Store for reference, but each cell toggles independently
         cellPaintValue = !current;
         // Use noteStorageLength to create notes of specified duration
-        storageLength = noteStorageLength;
+        // For musical articulation, reduce length by 1 storage step to create gaps between notes
+        // This ensures adjacent notes remain separate for rhythm composition
+        storageLength = drawingTool === 'single' && cellPaintValue && noteStorageLength > 1 
+          ? noteStorageLength - 1 
+          : noteStorageLength;
       }
     } else {
       // Subsequent cells during drag
@@ -457,6 +461,7 @@
         // Default drag mode: toggle each cell independently based on its current state
         cellPaintValue = !current;
         // Use noteStorageLength to create notes of specified duration
+        // In paint mode (drag), use full length to create continuous notes
         storageLength = noteStorageLength;
       }
     }
