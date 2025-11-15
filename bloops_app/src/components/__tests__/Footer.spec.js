@@ -3,61 +3,66 @@ import { describe, it, expect, vi } from 'vitest';
 import Footer from '../Footer.svelte';
 
 describe('Footer component', () => {
-  it('renders placeholder when there are no saved sessions', () => {
+  it('renders patterns section', () => {
     const { getByText } = render(Footer, {
       props: {
-        projects: [],
-        currentId: null
+        patterns: [{ id: 'p1', name: 'Pattern 1' }],
+        selectedPattern: 0
       }
     });
 
-    expect(getByText('No saved sessions')).toBeTruthy();
+    expect(getByText('Patterns')).toBeTruthy();
   });
 
-  it('emits selectproject when a session is chosen', async () => {
-    const selectProject = vi.fn();
-    const { component, getByDisplayValue } = render(Footer, {
+  it('renders pattern list', () => {
+    const { getByDisplayValue } = render(Footer, {
       props: {
-        projects: [
-          { id: 'a', name: 'First loop' },
-          { id: 'b', name: 'Second loop' }
+        patterns: [
+          { id: 'p1', name: 'Pattern 1' },
+          { id: 'p2', name: 'Pattern 2' }
         ],
-        currentId: 'a'
+        selectedPattern: 0
       }
     });
 
-    component.$on('selectproject', selectProject);
-
-    const select = getByDisplayValue('First loop');
-    await fireEvent.change(select, { target: { value: 'b' } });
-
-    expect(selectProject).toHaveBeenCalledWith(expect.objectContaining({ detail: { id: 'b' } }));
+    expect(getByDisplayValue('Pattern 1')).toBeTruthy();
+    expect(getByDisplayValue('Pattern 2')).toBeTruthy();
   });
 
-  it('emits newproject when New is clicked', async () => {
-    const newProject = vi.fn();
+  it('emits patternadd when New Pattern is clicked', async () => {
+    const patternAdd = vi.fn();
     const { component, getByText } = render(Footer, {
       props: {
-        projects: [],
-        currentId: null
+        patterns: [{ id: 'p1', name: 'Pattern 1' }],
+        selectedPattern: 0
       }
     });
 
-    component.$on('newproject', newProject);
-    await fireEvent.click(getByText('New'));
+    component.$on('patternadd', patternAdd);
+    await fireEvent.click(getByText('New Pattern'));
 
-    expect(newProject).toHaveBeenCalled();
+    expect(patternAdd).toHaveBeenCalled();
   });
 
-  it('disables duplicate button when no session is selected', () => {
-    const { getByText } = render(Footer, {
+  it('emits patternselect when a pattern is clicked', async () => {
+    const patternSelect = vi.fn();
+    const { component, container } = render(Footer, {
       props: {
-        projects: [],
-        currentId: null
+        patterns: [
+          { id: 'p1', name: 'Pattern 1' },
+          { id: 'p2', name: 'Pattern 2' }
+        ],
+        selectedPattern: 0
       }
     });
 
-    const duplicateButton = getByText('Duplicate');
-    expect(duplicateButton.hasAttribute('disabled')).toBe(true);
+    component.$on('patternselect', patternSelect);
+    
+    const patternItems = container.querySelectorAll('.pattern-item');
+    await fireEvent.click(patternItems[1]);
+
+    expect(patternSelect).toHaveBeenCalledWith(expect.objectContaining({ 
+      detail: { index: 1 } 
+    }));
   });
 });
