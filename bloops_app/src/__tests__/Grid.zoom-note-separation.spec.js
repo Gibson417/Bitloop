@@ -46,8 +46,8 @@ describe('Zoom and Note Length Separation', () => {
     
     // Note duration should be based on noteLengthDenominator (16), not zoomLevel (32)
     // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
-    // noteStorageLength = 64/16 - 1 = 3 (reduced by 1 for visual separation)
-    expect(event.detail.length).toBe(3);
+    // noteStorageLength = 64/16 = 4 (full note length, no reduction)
+    expect(event.detail.length).toBe(4);
     expect(event.detail.value).toBe(true);
     expect(event.detail.storage).toBe(true);
   });
@@ -119,8 +119,8 @@ describe('Zoom and Note Length Separation', () => {
     // Both should have same note length despite different zoom levels
     expect(length1).toBe(length2);
     // With BASE_RESOLUTION=64 and noteLengthDenominator=32:
-    // noteStorageLength = 64/32 - 1 = 1 (reduced by 1 for visual separation)
-    expect(length1).toBe(1);
+    // noteStorageLength = 64/32 = 2 (full note length, no reduction)
+    expect(length1).toBe(2);
   });
 
   it('note length should determine note duration independently of zoom', async () => {
@@ -192,9 +192,9 @@ describe('Zoom and Note Length Separation', () => {
     expect(length1).toBeGreaterThan(length2);
     
     // With BASE_RESOLUTION=64:
-    // noteLengthDenominator=8: noteStorageLength=64/8 - 1 = 7 (reduced by 1 for visual separation)
-    // noteLengthDenominator=64: noteStorageLength=64/64 - 1 = 0, but Math.max(1, ...) = 1
-    expect(length1).toBe(7);
+    // noteLengthDenominator=8: noteStorageLength=64/8 = 8 (full note length, no reduction)
+    // noteLengthDenominator=64: noteStorageLength=64/64 = 1
+    expect(length1).toBe(8);
     expect(length2).toBe(1);
   });
 
@@ -244,7 +244,7 @@ describe('Zoom and Note Length Separation', () => {
     expect(results[1]).toBe(results[2]);
     expect(results[2]).toBe(results[3]);
     // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
-    // noteStorageLength = 64/16 - 1 = 3 (reduced by 1 for visual separation)
-    expect(results[0]).toBe(3);
+    // noteStorageLength = 64/16 = 4 (full note length, no reduction)
+    expect(results[0]).toBe(4);
   });
 });

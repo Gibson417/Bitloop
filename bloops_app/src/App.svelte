@@ -940,19 +940,6 @@
             class="stat-input"
           />
         </div>
-        <div class="stat-field">
-          <label for="rail-steps" class="label">Steps / bar</label>
-          <input
-            id="rail-steps"
-            type="number"
-            min="4"
-            max="64"
-            step="1"
-            value={stepsPerBar}
-            on:change={handleStepsChange}
-            class="stat-input"
-          />
-        </div>
         <div>
           <span class="label">Loop length</span>
           <span class="value">{loopSecondsDisplay}s</span>
@@ -962,7 +949,7 @@
   </aside>
   <section class="workspace" data-component="Workspace">
     <div class="workspace-header" data-component="WorkspaceHeader">
-      <div class="session-info">
+      <div class="project-info">
         <label class="project-label" for="project-name-input">
           <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1079,14 +1066,8 @@
       />
     </div>
     <Footer
-      projects={projects}
-      currentId={currentProjectId}
       patterns={patterns}
       selectedPattern={selectedPattern}
-      on:selectproject={handleProjectSelect}
-      on:newproject={handleNewProject}
-      on:duplicateproject={handleDuplicateProject}
-      on:deleteproject={handleDeleteProject}
       on:patternselect={handlePatternSelect}
       on:patternadd={handlePatternAdd}
       on:patternduplicate={handlePatternDuplicate}
@@ -1325,7 +1306,7 @@
     box-sizing: border-box;
   }
 
-  .session-info {
+  .project-info {
     display: flex;
     flex-direction: column;
   }

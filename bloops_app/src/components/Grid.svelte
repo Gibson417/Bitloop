@@ -409,9 +409,8 @@
     // This determines the duration of placed notes, independent of zoom level
     const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
     const fullNoteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
-    // Reduce note length by 1 storage step to create visual separation between adjacent notes
-    // This prevents notes from appearing merged in the grid while keeping audio playback continuous
-    const noteStorageLength = Math.max(1, fullNoteStorageLength - 1);
+    // Use full note length - no reduction. Notes should span their full duration.
+    const noteStorageLength = fullNoteStorageLength;
 
     // Calculate full cell width for detection purposes
     const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
@@ -560,8 +559,8 @@
       // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
       const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
       const fullNoteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
-      // Reduce note length by 1 storage step to create visual separation between adjacent notes
-      const noteStorageLength = Math.max(1, fullNoteStorageLength - 1);
+      // Use full note length - no reduction. Notes should span their full duration.
+      const noteStorageLength = fullNoteStorageLength;
       const storageLength = noteStorageLength;
       
       // Calculate full cell width for detection purposes
