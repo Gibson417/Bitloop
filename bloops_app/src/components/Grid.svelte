@@ -162,8 +162,8 @@
       const zoom = Number(zoomLevel) || 16;
       const visibleColumns = Math.min(zoom, logicalColumns);
       
-      // Use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+      // Use manual window if set, otherwise follow playhead only if follow mode is enabled
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
@@ -390,8 +390,8 @@
     const visibleColumns = Math.min(zoom, sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
-    // Calculate window offset - use manual window if set, otherwise follow playhead
-    const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+    // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
+    const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
     const windowOffset = currentWindow * visibleColumns;
     
     // Map window column to logical column
@@ -472,8 +472,9 @@
   };
 
   const handlePointerMove = (event) => {
-    // Allow dragging to continue drawing
-    if (!pointerActive) return;
+    // In normal draw mode (no modifiers), don't allow dragging - only single clicks
+    // Dragging is only allowed in extend mode (Ctrl/Cmd) or erase mode (Shift/Alt)
+    if (!pointerActive || (!eraseMode && !extendMode)) return;
     handlePointer(event);
   };
 
@@ -542,8 +543,8 @@
       event.preventDefault();
       keyboardMode = true;
       
-      // Calculate window offset - use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+      // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       const logicalCol = windowOffset + focusedCol;
       
@@ -714,7 +715,7 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add/remove notes, drag to place multiple notes, hold Ctrl/Cmd to extend notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
+      aria-label="Note grid - click to add/remove notes, hold Ctrl/Cmd and drag to extend notes, hold Shift or Alt and drag to erase, use arrow keys to navigate, Enter to toggle notes"
       style="cursor: {cursorStyle};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
