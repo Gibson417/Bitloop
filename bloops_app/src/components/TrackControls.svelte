@@ -167,8 +167,9 @@
 
 <style>
   .track-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
     gap: 16px;
     padding: 16px 20px; /* Reduced vertical padding from 20px to 16px */
     border-radius: 12px; /* Reduced from 16px for subtler corners */
@@ -183,6 +184,7 @@
     gap: 8px;
     color: var(--color-text);
     font-size: 0.78rem;
+    flex-shrink: 0;
   }
 
   .control.plain {
@@ -215,12 +217,15 @@
 
   .name-color-group input[type='text'] {
     flex: 1;
-    min-width: 0;
+    min-width: 140px;
+    max-width: 200px;
+    height: 40px;
+    box-sizing: border-box;
   }
 
   .name-color-group input[type='color'] {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     padding: 0;
@@ -250,7 +255,7 @@
   }
 
   .name-color-group input[type='color']:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
   }
 
@@ -265,6 +270,7 @@
     padding: 8px 12px;
     font-size: 0.95rem;
     width: 100%;
+    box-sizing: border-box;
   }
 
   select:focus,
@@ -301,9 +307,11 @@
 
   .number-field input {
     width: 72px;
+    height: 40px;
     text-align: center;
     font-weight: 600;
     appearance: textfield;
+    box-sizing: border-box;
   }
 
   .number-field input::-webkit-outer-spin-button,
