@@ -27,18 +27,19 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 8px 14px;
-    border-radius: 999px;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.75);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: 26px;
   }
 
   .follow-toggle:hover {
@@ -59,8 +60,8 @@
   }
 
   .follow-toggle .indicator {
-    width: 32px;
-    height: 16px;
+    width: 28px;
+    height: 14px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.25);
     position: relative;
@@ -70,12 +71,12 @@
   .follow-toggle .indicator::after {
     content: '';
     position: absolute;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #fff;
     top: 1px;
-    left: 2px;
+    left: 1px;
     transition: transform 0.2s ease;
   }
 

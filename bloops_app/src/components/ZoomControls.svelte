@@ -11,8 +11,8 @@
   // Valid resolution denominators: 8, 16, 32, 64 (range from 1/8 to 1/64)
   const VALID_RESOLUTIONS = [8, 16, 32, 64];
 
-  // Get the display text for the current zoom level (resolution)
-  $: displayResolution = `1/${zoomLevel}`;
+  // Get the display text for the current zoom level (resolution) - show denominator only
+  $: displayResolution = `${zoomLevel}`;
   
   // Check if we're at the boundaries
   $: currentIndex = VALID_RESOLUTIONS.indexOf(zoomLevel);
@@ -37,7 +37,12 @@
 </script>
 
 <div class="zoom-controls" data-component="ZoomControls">
-  <span class="zoom-label">Zoom</span>
+  <svg class="grid-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7"/>
+    <rect x="14" y="3" width="7" height="7"/>
+    <rect x="3" y="14" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/>
+  </svg>
   <div class="zoom-buttons">
     <button
       type="button"
@@ -73,13 +78,11 @@
     /* Background removed for cleaner toolbar integration */
   }
 
-  .zoom-label {
-    font-size: 0.7rem; /* Reduced from 0.75rem to match GridToolbar */
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0.6; /* Reduced from 0.7 for consistency */
-    margin: 0;
+  .grid-icon {
+    width: 18px;
+    height: 18px;
+    color: rgba(var(--color-accent-rgb), 0.8);
+    flex-shrink: 0;
   }
 
   .zoom-buttons {
