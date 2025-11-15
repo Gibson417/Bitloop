@@ -194,7 +194,12 @@
               }
               
               // Calculate note duration from storage steps
-              const noteDuration = noteLength * storageStepDuration;
+              // Notes placed in normal mode have a 1-step gap for visual separation,
+              // so we check if there's a gap immediately after this note and compensate
+              const hasGapAfter = nextIndex < rowNotes.length && !rowNotes[nextIndex];
+              const isLikelyShortened = hasGapAfter && noteLength > 1;
+              const playbackLength = isLikelyShortened ? noteLength + 1 : noteLength;
+              const noteDuration = playbackLength * storageStepDuration;
               
               const midi = getMidiForCell(track, row);
               const frequency = midiToFrequency(midi);
@@ -204,8 +209,6 @@
               const noteTime = time + noteStartOffset;
               
               // Apply minimum duration of 50ms to prevent clicks on very short notes
-              // Notes are stored with 1-step visual gaps to prevent merging in the grid,
-              // but we play them at full duration for continuous audio playback
               const minDuration = 0.05; // 50ms minimum gate time
               const safeDuration = Math.max(noteDuration, minDuration);
               

@@ -446,8 +446,12 @@
         // First click determines the action (add or remove)
         paintValue = !current;
         cellPaintValue = paintValue;
-        // Use noteStorageLength without gap to allow adjacent notes
-        storageLength = noteStorageLength;
+        // Add articulation gap to prevent adjacent notes from merging
+        // Reduce by 1 storage step when placing notes (paintValue=true) to create separation
+        // Use full length when erasing (paintValue=false) to fully clear notes
+        storageLength = paintValue && noteStorageLength > 1 
+          ? noteStorageLength - 1  // Gap for articulation
+          : noteStorageLength;      // Full length for erasing
       }
     } else {
       // Subsequent cells during drag - apply the same action consistently
@@ -458,7 +462,10 @@
       } else {
         // Unified draw mode: apply the same action (paintValue) to all dragged cells
         cellPaintValue = paintValue;
-        storageLength = noteStorageLength;
+        // Apply the same gap logic as the first cell
+        storageLength = paintValue && noteStorageLength > 1
+          ? noteStorageLength - 1  // Gap for articulation
+          : noteStorageLength;      // Full length for erasing
       }
     }
 
