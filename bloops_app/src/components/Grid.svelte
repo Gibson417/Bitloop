@@ -29,6 +29,7 @@
   let pointerActive = false;
   let paintValue = true;
   let paintedCells = new Set();
+  let paintedRanges = new Map(); // Track painted ranges per row: row -> array of {start, end}
   let resizeObserver;
   let eraseMode = false; // Track if shift/alt key is held for explicit erase
   let extendMode = false; // Track if ctrl/cmd key is held for note extension
@@ -370,6 +371,7 @@
     extendMode = event.ctrlKey || event.metaKey;
     pointerActive = false; // Reset to allow paintValue determination
     paintedCells = new Set(); // Clear painted cells for new gesture
+    paintedRanges = new Map(); // Clear painted ranges for new gesture
     handlePointer(event);
   };
 
@@ -473,6 +475,28 @@
     // Allow the same cell to be painted again if this is a fresh pointer down (consecutive clicks)
     // but prevent repainting during the same drag gesture
     if (paintedCells.has(key) && pointerActive) return;
+    
+    // Check if this position would overlap with any previously painted note on this row
+    // This prevents placing notes too close together during drag operations
+    if (cellPaintValue && pointerActive) {
+      const rowRanges = paintedRanges.get(row) || [];
+      const noteEnd = storageStart + storageLength;
+      
+      // Check if the new note would overlap with any existing painted range
+      const overlaps = rowRanges.some(range => {
+        // Two ranges overlap if: start1 < end2 && start2 < end1
+        return storageStart < range.end && noteEnd > range.start;
+      });
+      
+      if (overlaps) {
+        return; // Skip this note - it would overlap with a previously placed note
+      }
+      
+      // Add this range to the painted ranges for this row
+      rowRanges.push({ start: storageStart, end: noteEnd });
+      paintedRanges.set(row, rowRanges);
+    }
+    
     paintedCells.add(key);
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
@@ -499,6 +523,7 @@
     }
     pointerActive = false;
     paintedCells = new Set();
+    paintedRanges = new Map(); // Clear painted ranges when gesture ends
     eraseMode = false; // Reset erase mode when pointer is released
     extendMode = false; // Reset extend mode when pointer is released
   };
