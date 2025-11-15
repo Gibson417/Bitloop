@@ -1002,6 +1002,7 @@
               options={NOTE_LENGTH_OPTIONS}
               value={selectedNoteLengthValue}
               trackColor={trackColor}
+              compact={true}
               on:change={handleNoteLengthChange}
             />
           </div>

@@ -73,6 +73,8 @@
             label="Filter"
             options={filterOptions}
             value={currentEffects.filterType ?? 'none'}
+            fixedWidth={true}
+            useThemeColor={true}
             on:change={(event) => handleEffectsChange({ filterType: event.detail.value })}
           />
         </div>
