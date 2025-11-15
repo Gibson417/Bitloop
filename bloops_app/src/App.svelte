@@ -58,8 +58,7 @@
   let manualWindow = null; // null = auto-follow playhead
   let currentWindow = 0;
   let totalWindows = 1;
-  // Drawing tool and zoom state
-  let selectedDrawingTool = 'paint'; // 'single', 'paint', 'erase'
+  // Zoom state
   let zoomLevel = 16; // Grid resolution denominator: 8, 16, 32, 64 (default 1/16)
 
   const ensureAudio = async () => {
@@ -336,10 +335,6 @@
     if (manualWindow !== null && manualWindow >= totalWindows) {
       manualWindow = Math.max(0, totalWindows - 1);
     }
-  };
-
-  const handleToolChange = (event) => {
-    selectedDrawingTool = event.detail.tool;
   };
 
   const handleZoomChange = (event) => {
@@ -1016,11 +1011,9 @@
         <!-- Primary tools: Drawing tools, note length, and zoom (left side) -->
         <div class="toolbar-primary">
           <GridToolbar
-            selectedTool={selectedDrawingTool}
             {trackColor}
             {canUndo}
             {canRedo}
-            on:toolchange={handleToolChange}
             on:undo={handleUndo}
             on:redo={handleRedo}
           />
@@ -1071,7 +1064,6 @@
           stepsPerBar={stepsPerBar}
           noteLengthDenominator={selectedNoteLengthValue}
           manualWindow={manualWindow}
-          drawingTool={selectedDrawingTool}
           {zoomLevel}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}

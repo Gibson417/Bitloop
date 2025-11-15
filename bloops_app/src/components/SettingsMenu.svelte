@@ -2,10 +2,17 @@
   import { onMount, onDestroy, tick } from 'svelte';
   import ThemeSelector from './ThemeSelector.svelte';
   import HowToGuide from './HowToGuide.svelte';
+  import { devMode } from '../store/devModeStore.js';
 
   let settingsMenuOpen = false;
   let settingsMenuEl;
   let showGuide = false;
+  let devModeEnabled = false;
+
+  // Subscribe to dev mode store
+  const unsubscribeDevMode = devMode.subscribe((value) => {
+    devModeEnabled = value;
+  });
 
   const toggleSettingsMenu = async (event) => {
     event?.stopPropagation?.();
@@ -44,6 +51,17 @@
     showGuide = false;
   };
 
+  const toggleDevMode = () => {
+    devMode.toggle();
+  };
+
+  const resetApp = () => {
+    if (confirm('Are you sure you want to reset the app? This will clear all data and reload.')) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
   const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape' && settingsMenuOpen) {
       event.preventDefault();
@@ -65,6 +83,7 @@
       document.removeEventListener('click', closeOnClickOutside);
       document.removeEventListener('keydown', handleDocumentKeydown);
     }
+    unsubscribeDevMode();
   });
 </script>
 
@@ -103,6 +122,36 @@
         </svg>
         <span>How To / Guide</span>
       </button>
+      <div class="settings-divider"></div>
+      <div class="settings-section">
+        <div class="section-title">Developer Mode</div>
+        <button 
+          type="button" 
+          class="menu-item toggle-btn"
+          class:active={devModeEnabled}
+          on:click={toggleDevMode}
+          role="menuitemcheckbox"
+          aria-checked={devModeEnabled}
+        >
+          <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+          <span>Dev Mode {devModeEnabled ? 'ON' : 'OFF'}</span>
+        </button>
+        <button 
+          type="button" 
+          class="menu-item reset-btn"
+          on:click={resetApp}
+          role="menuitem"
+        >
+          <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          <span>Reset App</span>
+        </button>
+      </div>
     </div>
   {/if}
 </div>
@@ -183,6 +232,15 @@
     gap: 12px;
   }
 
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0 4px;
+  }
+
   .settings-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
@@ -231,6 +289,33 @@
 
   .menu-item:active {
     transform: translateX(0);
+  }
+
+  .menu-item.toggle-btn.active {
+    background: rgba(var(--color-accent-rgb), 0.2);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+
+  .menu-item.toggle-btn.active .menu-icon {
+    color: rgba(var(--color-accent-rgb), 1);
+  }
+
+  .menu-item.reset-btn {
+    border-color: rgba(255, 100, 100, 0.2);
+    background: rgba(255, 100, 100, 0.05);
+  }
+
+  .menu-item.reset-btn:hover {
+    background: rgba(255, 100, 100, 0.12);
+    border-color: rgba(255, 100, 100, 0.35);
+  }
+
+  .menu-item.reset-btn .menu-icon {
+    color: rgba(255, 120, 120, 0.8);
+  }
+
+  .menu-item.reset-btn:hover .menu-icon {
+    color: rgba(255, 120, 120, 1);
   }
 
   @media (max-width: 768px) {

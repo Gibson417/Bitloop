@@ -176,6 +176,7 @@
   .arrow-button:hover:not(:disabled) {
     background: rgba(var(--color-accent-rgb), 0.1);
     transform: scale(1.05);
+    will-change: transform;
   }
 
   .arrow-button:focus-visible {
@@ -185,6 +186,7 @@
 
   .arrow-button:active:not(:disabled) {
     transform: scale(0.95);
+    will-change: transform;
   }
 
   .arrow-button:disabled {
