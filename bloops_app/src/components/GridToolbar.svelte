@@ -3,6 +3,8 @@
 
   export let selectedTool = 'paint'; // 'single', 'paint', 'erase'
   export let trackColor = '#78d2b9';
+  export let canUndo = false;
+  export let canRedo = false;
 
   const dispatch = createEventDispatcher();
 
@@ -15,10 +17,18 @@
   const handleToolSelect = (toolId) => {
     dispatch('toolchange', { tool: toolId });
   };
+
+  const handleUndo = () => {
+    dispatch('undo');
+  };
+
+  const handleRedo = () => {
+    dispatch('redo');
+  };
 </script>
 
 <div class="grid-toolbar" data-component="GridToolbar">
-  <span class="toolbar-label">Drawing Tools</span>
+  <span class="toolbar-label">Tools</span>
   <div class="tool-buttons">
     {#each tools as tool}
       <button
@@ -35,6 +45,28 @@
         <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
       </button>
     {/each}
+  </div>
+  <div class="history-buttons">
+    <button
+      type="button"
+      class="history-btn"
+      on:click={handleUndo}
+      disabled={!canUndo}
+      title="Undo"
+      aria-label="Undo"
+    >
+      ↶
+    </button>
+    <button
+      type="button"
+      class="history-btn"
+      on:click={handleRedo}
+      disabled={!canRedo}
+      title="Redo"
+      aria-label="Redo"
+    >
+      ↷
+    </button>
   </div>
 </div>
 
@@ -100,6 +132,50 @@
     line-height: 1;
   }
 
+  .history-buttons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: 8px;
+  }
+
+  .history-btn {
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .history-btn:hover:not(:disabled) {
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.26);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
+  }
+
+  .history-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .history-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
   @media (max-width: 720px) {
     .tool-btn {
       padding: 12px; /* Larger touch targets on mobile */
@@ -109,6 +185,11 @@
     
     .tool-icon {
       font-size: 1.5rem; /* Slightly larger on mobile */
+    }
+
+    .history-btn {
+      min-width: 40px;
+      min-height: 40px;
     }
   }
 </style>

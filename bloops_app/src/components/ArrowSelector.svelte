@@ -120,15 +120,12 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--color-panel);
     border-radius: 8px; /* Consistent with other toolbar elements */
-    border: 1px solid rgba(var(--color-accent-rgb), 0.22);
     padding: 6px 8px; /* Adjusted padding for better alignment */
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .selector-controls:focus-within {
-    border-color: rgba(var(--color-accent-rgb), 0.55);
     box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2), 0 6px 18px rgba(0, 0, 0, 0.32);
   }
 
