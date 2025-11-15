@@ -18,7 +18,7 @@
   aria-label={active ? 'Disable follow mode' : 'Enable follow mode'}
   data-component="FollowToggle"
 >
-  <span class="label">{active ? 'Follow on' : 'Follow off'}</span>
+  <span class="label">Follow</span>
   <span class="indicator" aria-hidden="true"></span>
 </button>
 
@@ -31,7 +31,7 @@
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
+    background: transparent;
     color: rgba(255, 255, 255, 0.75);
     font-size: 0.7rem;
     font-weight: 600;

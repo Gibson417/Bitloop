@@ -99,12 +99,12 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 10px; /* Icon-only: square padding for better visual balance */
-    min-width: 44px; /* WCAG: minimum touch target size */
-    min-height: 44px;
+    padding: 0;
+    min-width: 36px;
+    min-height: 36px;
     background: transparent;
     border: 2px solid;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
@@ -128,7 +128,7 @@
   }
 
   .tool-icon {
-    font-size: 1.4rem; /* Increased from 1.1rem for prominence as icon-only */
+    font-size: 1.2rem;
     line-height: 1;
   }
 
@@ -146,7 +146,7 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
     color: rgba(var(--color-accent-rgb), 0.9);
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -178,18 +178,19 @@
 
   @media (max-width: 720px) {
     .tool-btn {
-      padding: 12px; /* Larger touch targets on mobile */
-      min-width: 48px; /* Increased for mobile touch */
-      min-height: 48px;
+      padding: 0;
+      min-width: 44px;
+      min-height: 44px;
     }
     
     .tool-icon {
-      font-size: 1.5rem; /* Slightly larger on mobile */
+      font-size: 1.3rem;
     }
 
     .history-btn {
-      min-width: 40px;
-      min-height: 40px;
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 1.3rem;
     }
   }
 </style>

@@ -122,10 +122,10 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    border-radius: 8px; /* Consistent with other toolbar elements */
-    padding: 6px 8px; /* Adjusted padding for better alignment */
+    border-radius: 6px;
+    padding: 0;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    height: 40px;
+    height: auto;
     box-sizing: border-box;
   }
 
@@ -137,23 +137,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 26px;
+    min-height: 26px;
     border-radius: 6px;
-    border: 1px solid rgba(var(--color-text), 0.2);
-    background: var(--color-panel);
-    color: var(--color-text-muted);
-    font-size: 0.75rem;
+    border: 1px solid;
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+    background: transparent;
+    color: rgba(var(--color-accent-rgb), 0.9);
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     padding: 0;
     flex-shrink: 0;
   }
 
   .arrow-button:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
-    background: rgba(var(--color-accent-rgb), 0.2);
-    color: var(--color-text);
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.1);
+    color: #fff;
     transform: scale(1.05);
   }
 
@@ -179,11 +180,11 @@
   .selector-value {
     flex: 1;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--color-text);
-    padding: 4px 4px;
-    min-width: 40px;
+    color: rgba(var(--color-accent-rgb), 1);
+    padding: 0 4px;
+    min-width: 30px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -196,13 +197,13 @@
     }
 
     .arrow-button {
-      min-width: 40px;
-      min-height: 40px;
-      font-size: 0.8rem;
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 1rem;
     }
 
     .selector-controls {
-      padding: 4px 6px;
+      padding: 0;
       gap: 6px;
     }
   }
