@@ -408,7 +408,10 @@
     // Calculate note length based on noteLengthDenominator (e.g., 16 for 1/16, 32 for 1/32)
     // This determines the duration of placed notes, independent of zoom level
     const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
-    const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+    const fullNoteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+    // Reduce note length by 1 storage step to create visual separation between adjacent notes
+    // This prevents notes from appearing merged in the grid while keeping audio playback continuous
+    const noteStorageLength = Math.max(1, fullNoteStorageLength - 1);
 
     // Calculate full cell width for detection purposes
     const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
@@ -472,9 +475,11 @@
   };
 
   const handlePointerMove = (event) => {
-    // In normal draw mode (no modifiers), don't allow dragging - only single clicks
-    // Dragging is only allowed in extend mode (Ctrl/Cmd) or erase mode (Shift/Alt)
-    if (!pointerActive || (!eraseMode && !extendMode)) return;
+    // Allow dragging in all modes: normal draw, extend, and erase
+    // In normal draw mode, each cell gets a note of the selected length
+    // In extend mode (Ctrl/Cmd), notes are extended to fill cells
+    // In erase mode (Shift/Alt), notes are erased
+    if (!pointerActive) return;
     handlePointer(event);
   };
 
@@ -554,7 +559,9 @@
       
       // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
       const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
-      const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+      const fullNoteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
+      // Reduce note length by 1 storage step to create visual separation between adjacent notes
+      const noteStorageLength = Math.max(1, fullNoteStorageLength - 1);
       const storageLength = noteStorageLength;
       
       // Calculate full cell width for detection purposes

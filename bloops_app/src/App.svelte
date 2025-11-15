@@ -204,9 +204,10 @@
               const noteTime = time + noteStartOffset;
               
               // Apply minimum duration of 50ms to prevent clicks on very short notes
-              // Reduce to 90% to add slight separation between adjacent notes
+              // Notes are stored with 1-step visual gaps to prevent merging in the grid,
+              // but we play them at full duration for continuous audio playback
               const minDuration = 0.05; // 50ms minimum gate time
-              const safeDuration = Math.max(noteDuration * 0.9, minDuration);
+              const safeDuration = Math.max(noteDuration, minDuration);
               
               playTone(track, frequency, noteTime, safeDuration);
             }
