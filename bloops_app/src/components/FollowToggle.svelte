@@ -53,7 +53,7 @@
   }
 
   .follow-toggle.active {
-    background: rgba(var(--color-accent-rgb), 0.2);
+    background: transparent;
     color: #fff;
   }
 
