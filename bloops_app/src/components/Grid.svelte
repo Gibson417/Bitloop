@@ -472,8 +472,9 @@
   };
 
   const handlePointerMove = (event) => {
-    // Allow dragging to continue drawing
-    if (!pointerActive) return;
+    // In normal draw mode (no modifiers), don't allow dragging - only single clicks
+    // Dragging is only allowed in extend mode (Ctrl/Cmd) or erase mode (Shift/Alt)
+    if (!pointerActive || (!eraseMode && !extendMode)) return;
     handlePointer(event);
   };
 
@@ -714,7 +715,7 @@
       bind:this={canvas}
       tabindex="0"
       role="grid"
-      aria-label="Note grid - click to add/remove notes, drag to place multiple notes, hold Ctrl/Cmd to extend notes, hold Shift or Alt to erase, use arrow keys to navigate, Enter to toggle notes"
+      aria-label="Note grid - click to add/remove notes, hold Ctrl/Cmd and drag to extend notes, hold Shift or Alt and drag to erase, use arrow keys to navigate, Enter to toggle notes"
       style="cursor: {cursorStyle};"
       on:pointerdown={handlePointerDown}
       on:pointermove={handlePointerMove}
