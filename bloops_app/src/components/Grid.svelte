@@ -110,12 +110,17 @@
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Calculate visible columns based on zoom level:
-    // - For zoom 8: show 8 columns (1/2 bar at 16 steps/bar)
+    // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
+    // As zoom increases (finer resolution), we show LESS time (more detail)
+    // As zoom decreases (coarser resolution), we show MORE time (less detail)
+    // Reference: at zoom 16, show 16 columns (1 bar at 16 steps/bar)
+    // Formula: visibleColumns = max(16, 256 / zoom) - ensures at least 1 bar visible
+    // - For zoom 8: show 32 columns (2 bars at 16 steps/bar)
     // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
-    // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
-    // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
+    // - For zoom 32: show 16 columns (1 bar at 16 steps/bar)
+    // - For zoom 64: show 16 columns (1 bar at 16 steps/bar)
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, logicalColumns);
+    const visibleColumns = Math.min(Math.max(16, Math.floor(256 / zoom)), logicalColumns);
     const availableWidth = scroller.clientWidth || visibleColumns * 32;
     const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
@@ -156,12 +161,17 @@
       const cellSize = layout.cellSize;
       
       // Calculate visible columns based on zoom level:
-      // - For zoom 8: show 8 columns (1/2 bar at 16 steps/bar)
+      // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
+      // As zoom increases (finer resolution), we show LESS time (more detail)
+      // As zoom decreases (coarser resolution), we show MORE time (less detail)
+      // Reference: at zoom 16, show 16 columns (1 bar at 16 steps/bar)
+      // Formula: visibleColumns = max(16, 256 / zoom) - ensures at least 1 bar visible
+      // - For zoom 8: show 32 columns (2 bars at 16 steps/bar)
       // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
-      // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
-      // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
+      // - For zoom 32: show 16 columns (1 bar at 16 steps/bar)
+      // - For zoom 64: show 16 columns (1 bar at 16 steps/bar)
       const zoom = Number(zoomLevel) || 16;
-      const visibleColumns = Math.min(zoom, logicalColumns);
+      const visibleColumns = Math.min(Math.max(16, Math.floor(256 / zoom)), logicalColumns);
       
       // Use manual window if set, otherwise follow playhead only if follow mode is enabled
       const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
@@ -389,7 +399,7 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, sourceColumns);
+    const visibleColumns = Math.min(Math.max(16, Math.floor(256 / zoom)), sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
@@ -549,7 +559,7 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, sourceColumns);
+    const visibleColumns = Math.min(Math.max(16, Math.floor(256 / zoom)), sourceColumns);
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
