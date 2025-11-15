@@ -169,7 +169,7 @@
   .track-controls {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 16px;
     padding: 16px 20px; /* Reduced vertical padding from 20px to 16px */
     border-radius: 12px; /* Reduced from 16px for subtler corners */

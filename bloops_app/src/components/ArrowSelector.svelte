@@ -125,7 +125,7 @@
     border-radius: 6px;
     padding: 0;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    height: auto;
+    height: 40px;
     box-sizing: border-box;
   }
 
