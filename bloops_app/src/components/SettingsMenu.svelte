@@ -3,6 +3,7 @@
   import ThemeSelector from './ThemeSelector.svelte';
   import HowToGuide from './HowToGuide.svelte';
   import { devMode } from '../store/devModeStore.js';
+  import { resetAll } from '../lib/persistence.js';
 
   let settingsMenuOpen = false;
   let settingsMenuEl;
@@ -55,10 +56,21 @@
     devMode.toggle();
   };
 
-  const resetApp = () => {
+  const resetApp = async () => {
     if (confirm('Are you sure you want to reset the app? This will clear all data and reload.')) {
-      localStorage.clear();
-      window.location.reload();
+      try {
+        // Clear IndexedDB (projects, library, etc.)
+        await resetAll();
+        // Clear localStorage (theme, dev mode, etc.)
+        localStorage.clear();
+        // Reload the page to reset all in-memory state
+        window.location.reload();
+      } catch (error) {
+        console.error('Error resetting app:', error);
+        // Even if there's an error, still try to clear localStorage and reload
+        localStorage.clear();
+        window.location.reload();
+      }
     }
   };
 
