@@ -960,33 +960,6 @@
         />
       </div>
       <div class="header-actions">
-        <div class="status-controls">
-          <span class={`pill ${isPlaying ? 'playing' : ''}`}>
-            {isPlaying ? 'Playing' : 'Stopped'}
-          </span>
-        </div>
-        <div class="history-buttons">
-          <button
-            type="button"
-            class="icon-btn"
-            on:click={handleUndo}
-            disabled={!canUndo}
-            title="Undo"
-            aria-label="Undo"
-          >
-            ↶
-          </button>
-          <button
-            type="button"
-            class="icon-btn"
-            on:click={handleRedo}
-            disabled={!canRedo}
-            title="Redo"
-            aria-label="Redo"
-          >
-            ↷
-          </button>
-        </div>
         <div class="utility-buttons">
           <ShareMenu
             shareStatus={shareStatus}
@@ -1016,7 +989,11 @@
           <GridToolbar
             selectedTool={selectedDrawingTool}
             {trackColor}
+            {canUndo}
+            {canRedo}
             on:toolchange={handleToolChange}
+            on:undo={handleUndo}
+            on:redo={handleRedo}
           />
           <div class="toolbar-divider" aria-hidden="true"></div>
           <div class="note-length-group">
@@ -1329,14 +1306,6 @@
     flex-direction: column;
   }
 
-  .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: rgba(var(--color-accent-rgb), 0.85);
-  }
-
   .project-label {
     display: flex;
     align-items: center;
@@ -1409,97 +1378,10 @@
     flex-wrap: wrap;
   }
 
-  .history-buttons {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
   .utility-buttons {
     display: flex;
     gap: 6px;
     align-items: center;
-  }
-
-  .icon-btn {
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 8px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(var(--color-accent-rgb), 0.16);
-    color: rgba(var(--color-accent-rgb), 0.9);
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  }
-
-  .icon-btn:hover:not(:disabled) {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.26);
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
-  }
-
-  .icon-btn:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
-    outline-offset: 2px;
-  }
-
-  .icon-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    color: rgba(255, 255, 255, 0.4);
-    border-color: rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .project-meta {
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .session-meta {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.95rem;
-  }
-
-  .status-controls {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .status-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .pill {
-    padding: 7px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.05);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.75);
-  }
-
-  .pill.playing,
-  .pill.following {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.12);
-    color: #fff;
   }
 
   .grid-shell {
@@ -1666,10 +1548,6 @@
       gap: 16px;
     }
 
-    .status-controls {
-      width: 100%;
-    }
-
     .grid-shell {
       padding: 0 16px 16px;
     }
@@ -1711,10 +1589,6 @@
       padding: 18px;
     }
 
-    .trackbar {
-      padding: 20px 20px 12px;
-    }
-    
     .project-name-input {
       font-size: 1.2rem;
       max-width: 100%;
@@ -1723,10 +1597,6 @@
     .header-actions {
       width: 100%;
       justify-content: space-between;
-    }
-    
-    .history-buttons {
-      flex-shrink: 0;
     }
   }
 
@@ -1750,17 +1620,6 @@
     .brand-logo {
       max-width: 160px;
     }
-    
-    .icon-btn {
-      min-width: 40px;
-      min-height: 40px;
-      font-size: 1.3rem;
-    }
-    
-    .pill {
-      padding: 6px 10px;
-      font-size: 0.7rem;
-    }
   }
   
   /* Reduced motion support */
@@ -1776,7 +1635,6 @@
 
     .play-button,
     .control-button,
-    .icon-btn,
     .follow,
     .toggle-btn,
     .share-btn {
@@ -1787,9 +1645,7 @@
   /* Touch improvements */
   @media (hover: none) and (pointer: coarse) {
     /* Keep essential buttons at 44px for touch on mobile */
-    .icon-btn,
-    button,
-    select {
+    button {
       min-height: 40px;
       min-width: 40px;
     }
