@@ -252,7 +252,7 @@
         // Draw note start dot
         const startX = windowDisplayStartCol * cellSize + cellSize / 2;
         const cy = row * cellSize + cellSize / 2;
-        const radius = cellSize * 0.28;
+        const radius = cellSize * 0.15;
         
         ctx.shadowColor = hexToRgba(trackColor, 0.7);
         ctx.shadowBlur = cellSize * 0.5;
@@ -307,7 +307,7 @@
           if (!isActive) {
             const cx = col * cellSize + cellSize / 2;
             const cy = row * cellSize + cellSize / 2;
-            const radius = cellSize * 0.28;
+            const radius = cellSize * 0.15;
             
             // Draw hollow circle (stroke only)
             ctx.strokeStyle = styles.inactive;
