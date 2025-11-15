@@ -1001,6 +1001,7 @@
             <ArrowSelector
               options={NOTE_LENGTH_OPTIONS}
               value={selectedNoteLengthValue}
+              trackColor={trackColor}
               on:change={handleNoteLengthChange}
             />
           </div>
@@ -1473,8 +1474,6 @@
     display: flex;
     align-items: center; /* Center icon with selector */
     gap: 8px; /* Space between icon and selector */
-    min-width: 180px;
-    max-width: 200px;
   }
 
   .note-icon {
@@ -1569,8 +1568,7 @@
     }
 
     .note-length-group {
-      max-width: 100%;
-      min-width: 100%;
+      width: 100%;
     }
 
     .window-switcher-group {

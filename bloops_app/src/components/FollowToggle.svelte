@@ -30,7 +30,7 @@
     gap: 8px;
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: none;
     background: transparent;
     color: rgba(255, 255, 255, 0.75);
     font-size: 0.7rem;
@@ -43,7 +43,6 @@
   }
 
   .follow-toggle:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.5);
     background: rgba(var(--color-accent-rgb), 0.15);
     color: #fff;
   }
@@ -54,7 +53,6 @@
   }
 
   .follow-toggle.active {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.2);
     color: #fff;
   }
