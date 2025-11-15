@@ -134,6 +134,7 @@
   .selector-controls {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 6px;
     border-radius: 6px;
     padding: 0;
@@ -202,7 +203,7 @@
   .selector-value {
     font-size: 0.8rem;
     font-weight: 600;
-    min-width: 30px;
+    flex: 1;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;

@@ -444,10 +444,8 @@
         // First click determines the action (add or remove)
         paintValue = !current;
         cellPaintValue = paintValue;
-        // Use noteStorageLength with gap for placed notes
-        storageLength = cellPaintValue && noteStorageLength > 1 
-          ? noteStorageLength - 1 
-          : noteStorageLength;
+        // Use noteStorageLength without gap to allow adjacent notes
+        storageLength = noteStorageLength;
       }
     } else {
       // Subsequent cells during drag - apply the same action consistently
@@ -656,7 +654,8 @@
     zoomLevel,
     columns,
     rows,
-    currentTheme
+    currentTheme,
+    manualWindow
   };
 
   $: if (canvas && scroller && columns && rows) {
