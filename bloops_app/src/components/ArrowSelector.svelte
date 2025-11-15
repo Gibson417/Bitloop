@@ -106,14 +106,16 @@
     gap: 8px;
     color: var(--color-text);
     font-size: 0.78rem;
+    width: 160px;
   }
 
   .selector-label {
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--color-text-muted);
+    opacity: 0.85;
   }
 
   .selector-controls {
@@ -123,6 +125,8 @@
     border-radius: 8px; /* Consistent with other toolbar elements */
     padding: 6px 8px; /* Adjusted padding for better alignment */
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    height: 40px;
+    box-sizing: border-box;
   }
 
   .selector-controls:focus-within {
@@ -154,7 +158,7 @@
   }
 
   .arrow-button:focus-visible {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
   }
 
@@ -178,8 +182,11 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--color-text);
-    padding: 4px 8px;
-    min-width: 50px;
+    padding: 4px 4px;
+    min-width: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   @media (max-width: 720px) {
