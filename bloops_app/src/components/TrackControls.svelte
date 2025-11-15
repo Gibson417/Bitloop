@@ -93,7 +93,7 @@
         options={waveformOptions}
         value={track.waveform}
         fixedWidth={true}
-        useThemeColor={true}
+        trackColor={track.color}
         on:change={(event) => handleChange('waveform', event.detail.value)}
       />
     </div>
@@ -122,7 +122,7 @@
         options={scaleOptions}
         value={track.scale}
         fixedWidth={true}
-        useThemeColor={true}
+        trackColor={track.color}
         on:change={(event) => handleScaleChange(event.detail.value)}
       />
     </div>
@@ -150,7 +150,7 @@
         options={rootNoteOptions}
         value={track.rootNote ?? 0}
         fixedWidth={true}
-        useThemeColor={true}
+        trackColor={track.color}
         on:change={(event) => handleChange('rootNote', event.detail.value)}
       />
     </div>
