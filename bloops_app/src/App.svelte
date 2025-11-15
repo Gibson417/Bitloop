@@ -170,39 +170,47 @@
       : state.tracks.filter((track) => !track.mute);
 
     audibleTracks.forEach((track) => {
-      // Map logical stepIndex -> storage index using BASE_RESOLUTION
-      const storageIndex = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
+      // Calculate the range of storage indices that correspond to this logical step
+      const storageStart = Math.floor(stepIndex * (BASE_RESOLUTION / state.stepsPerBar));
+      const storageEnd = Math.floor((stepIndex + 1) * (BASE_RESOLUTION / state.stepsPerBar));
+      const storageStepDuration = stepDuration / (storageEnd - storageStart);
       
       for (let row = 0; row < rows; row += 1) {
         const rowNotes = track.notes?.[row] ?? [];
         
-        // Check if this is the start of a note event
-        if (rowNotes[storageIndex]) {
-          // Only trigger if previous step was not active (this is note start)
-          const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : storageIndex;
-          const isNoteStart = !rowNotes[prevStorageIndex] || storageIndex === 0;
-          
-          if (isNoteStart) {
-            // Find note length by scanning forward
-            let noteLength = 1;
-            let nextIndex = storageIndex + 1;
-            while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
-              noteLength++;
-              nextIndex++;
+        // Check each storage index within this logical step for note starts
+        for (let storageIndex = storageStart; storageIndex < storageEnd; storageIndex++) {
+          if (rowNotes[storageIndex]) {
+            // Only trigger if this is the start of a note (previous storage step was not active)
+            const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : -1;
+            const isNoteStart = prevStorageIndex < 0 || !rowNotes[prevStorageIndex];
+            
+            if (isNoteStart) {
+              // Find note length by scanning forward
+              let noteLength = 1;
+              let nextIndex = storageIndex + 1;
+              while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+                noteLength++;
+                nextIndex++;
+              }
+              
+              // Calculate note duration from storage steps
+              const noteDuration = noteLength * storageStepDuration;
+              
+              const midi = getMidiForCell(track, row);
+              const frequency = midiToFrequency(midi);
+              
+              // Calculate when to start this note (offset from the logical step time)
+              const noteStartOffset = (storageIndex - storageStart) * storageStepDuration;
+              const noteTime = time + noteStartOffset;
+              
+              // Apply minimum duration of 50ms to prevent clicks on very short notes
+              // Reduce to 90% to add slight separation between adjacent notes
+              const minDuration = 0.05; // 50ms minimum gate time
+              const safeDuration = Math.max(noteDuration * 0.9, minDuration);
+              
+              playTone(track, frequency, noteTime, safeDuration);
             }
-            
-            // Convert storage steps to time duration
-            const storageStepDuration = stepDuration / (BASE_RESOLUTION / state.stepsPerBar);
-            const noteDuration = noteLength * storageStepDuration;
-            
-            const midi = getMidiForCell(track, row);
-            const frequency = midiToFrequency(midi);
-            
-            // Apply minimum duration of 50ms to prevent clicks on very short notes
-            const minDuration = 0.05; // 50ms minimum gate time
-            const safeDuration = Math.max(noteDuration * 0.95, minDuration);
-            
-            playTone(track, frequency, time, safeDuration);
           }
         }
       }
