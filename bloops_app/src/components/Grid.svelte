@@ -162,8 +162,8 @@
       const zoom = Number(zoomLevel) || 16;
       const visibleColumns = Math.min(zoom, logicalColumns);
       
-      // Use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+      // Use manual window if set, otherwise follow playhead only if follow mode is enabled
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
@@ -390,8 +390,8 @@
     const visibleColumns = Math.min(zoom, sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
-    // Calculate window offset - use manual window if set, otherwise follow playhead
-    const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+    // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
+    const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
     const windowOffset = currentWindow * visibleColumns;
     
     // Map window column to logical column
@@ -542,8 +542,8 @@
       event.preventDefault();
       keyboardMode = true;
       
-      // Calculate window offset - use manual window if set, otherwise follow playhead
-      const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
+      // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       const logicalCol = windowOffset + focusedCol;
       
