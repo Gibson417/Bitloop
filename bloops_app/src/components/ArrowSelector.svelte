@@ -6,6 +6,7 @@
   export let value = null; // Current selected value
   export let label = ''; // Label for the control
   export let disabled = false; // Disabled state
+  export let trackColor = '#78d2b9'; // Track color for styling
 
   const dispatch = createEventDispatcher();
 
@@ -73,6 +74,7 @@
       title="Previous"
       disabled={disabled}
       tabindex="0"
+      style="border-color: {trackColor}33; color: {trackColor};"
     >
       ◀
     </button>
@@ -81,6 +83,7 @@
       role="status"
       aria-live="polite"
       aria-atomic="true"
+      style="color: {trackColor};"
     >
       {displayValue}
     </div>
@@ -93,6 +96,7 @@
       title="Next"
       disabled={disabled}
       tabindex="0"
+      style="border-color: {trackColor}33; color: {trackColor};"
     >
       ▶
     </button>
@@ -106,7 +110,6 @@
     gap: 8px;
     color: var(--color-text);
     font-size: 0.78rem;
-    width: 160px;
   }
 
   .selector-label {
@@ -137,24 +140,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 26px;
-    min-height: 26px;
+    width: 26px;
+    height: 26px;
     border-radius: 6px;
     border: 1px solid;
-    border-color: rgba(var(--color-accent-rgb), 0.4);
     background: transparent;
-    color: rgba(var(--color-accent-rgb), 0.9);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.15s ease;
     padding: 0;
     flex-shrink: 0;
+    line-height: 1;
   }
 
-  .arrow-button:hover {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
+  .arrow-button:hover:not(:disabled) {
     background: rgba(var(--color-accent-rgb), 0.1);
-    color: #fff;
     transform: scale(1.05);
   }
 
@@ -163,12 +163,12 @@
     outline-offset: 2px;
   }
 
-  .arrow-button:active {
+  .arrow-button:active:not(:disabled) {
     transform: scale(0.95);
   }
 
   .arrow-button:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: not-allowed;
     pointer-events: none;
   }
@@ -178,13 +178,10 @@
   }
 
   .selector-value {
-    flex: 1;
-    text-align: center;
     font-size: 0.8rem;
     font-weight: 600;
-    color: rgba(var(--color-accent-rgb), 1);
-    padding: 0 4px;
     min-width: 30px;
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
