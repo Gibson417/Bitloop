@@ -107,11 +107,6 @@
     const safeRows = Math.max(rows || 8, 1);
     const logicalColumns = Math.max(columns || 16, 1); // logical total steps (bars * stepsPerBar)
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-    // Use zoomLevel to determine grid density/resolution, not note length
-    const zoom = Number(zoomLevel) || 1;
-    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
-      ? Math.max(1, Math.floor((logicalColumns * zoom) / stepsPerBarSafe))
-      : logicalColumns;
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Calculate visible columns based on zoom level:
@@ -119,8 +114,9 @@
     // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
     // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
     // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
-    const visibleColumns = displayColumns;
-    const availableWidth = scroller.clientWidth || displayColumns * 32;
+    const zoom = Number(zoomLevel) || 16;
+    const visibleColumns = Math.min(zoom, logicalColumns);
+    const availableWidth = scroller.clientWidth || visibleColumns * 32;
     const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
@@ -156,26 +152,23 @@
       // Calculate display columns based on zoom level (grid density/resolution)
       const logicalColumns = Math.max(columns || 16, 1);
       const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
-      // Use zoomLevel to determine grid density, not note length
-      const zoom = Number(zoomLevel) || 1;
-      const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
-        ? Math.max(1, Math.floor((logicalColumns * zoom) / stepsPerBarSafe))
-        : logicalColumns;
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
-      // Calculate which window to display based on zoom level
+      // Calculate visible columns based on zoom level:
       // - For zoom 8: show 8 columns (1/2 bar at 16 steps/bar)
       // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
       // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
       // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
-      const visibleColumns = displayColumns;
+      const zoom = Number(zoomLevel) || 16;
+      const visibleColumns = Math.min(zoom, logicalColumns);
+      
       // Use manual window if set, otherwise follow playhead
       const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
-      const totalWindows = Math.ceil(displayColumns / visibleColumns);
+      const totalWindows = Math.ceil(logicalColumns / visibleColumns);
       dispatch('windowinfo', { currentWindow, totalWindows });
 
       // Draw grid lines (vertical only, with different intensities for bars and quarter-bars)
@@ -191,7 +184,7 @@
       for (let col = 0; col <= visibleColumns; col++) {
         // Map displayed column back to logical step in the source columns (accounting for window offset)
         const displayCol = windowOffset + col;
-        const logicalStep = Math.floor((displayCol * logicalColumns) / displayColumns);
+        const logicalStep = displayCol;
         
         // Check if this logical step aligns with bar or quarter-bar boundaries
         const isBarBoundary = logicalStep % stepsPerBarSafe === 0;
@@ -234,17 +227,16 @@
       for (const event of noteEvents) {
         const { row, start, length } = event;
         
-        // Convert storage coordinates to display coordinates
-        const displayStartCol = Math.floor((start * displayColumns) / storageColumns);
-        const displayEndCol = Math.floor(((start + length) * displayColumns) / storageColumns);
-        const displayLength = Math.max(1, displayEndCol - displayStartCol);
+        // Convert storage coordinates to logical coordinates
+        const logicalStartCol = Math.floor((start * logicalColumns) / storageColumns);
+        const logicalEndCol = Math.floor(((start + length) * logicalColumns) / storageColumns);
         
         // Skip if note is outside current window
-        if (displayStartCol >= windowOffset + visibleColumns || displayEndCol < windowOffset) continue;
+        if (logicalStartCol >= windowOffset + visibleColumns || logicalEndCol < windowOffset) continue;
         
         // Adjust display position relative to window
-        const windowDisplayStartCol = displayStartCol - windowOffset;
-        const windowDisplayEndCol = displayEndCol - windowOffset;
+        const windowDisplayStartCol = logicalStartCol - windowOffset;
+        const windowDisplayEndCol = logicalEndCol - windowOffset;
         
         // Skip if note is completely outside visible area
         if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol < 0) continue;
@@ -267,6 +259,7 @@
         ctx.fill();
         
         // Draw duration bar if note spans multiple cells
+        const displayLength = windowDisplayEndCol - windowDisplayStartCol;
         if (displayLength > 1) {
           ctx.shadowColor = 'transparent';
           ctx.shadowBlur = 0;
@@ -297,9 +290,9 @@
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < visibleColumns; col++) {
           // Map displayed column (in current window) -> underlying storage step index range
-          const displayCol = windowOffset + col;
-          const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
-          const storageEnd = Math.floor(((displayCol + 1) * storageColumns) / displayColumns);
+          const logicalCol = windowOffset + col;
+          const storageStart = Math.floor((logicalCol * storageColumns) / logicalColumns);
+          const storageEnd = Math.floor(((logicalCol + 1) * storageColumns) / logicalColumns);
           // Check if ANY cell in the storage range is active
           const rowNotes = notes?.[row] ?? [];
           const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
@@ -333,7 +326,8 @@
       }
 
   // Playhead (show within current window)
-  const playheadStepInWindow = playheadStep % visibleColumns;
+  // Calculate playhead position relative to current window
+  const playheadStepInWindow = playheadStep - windowOffset;
   const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
@@ -393,24 +387,19 @@
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
-    const zoom = Number(zoomLevel) || 1;
-    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
-      ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
-      : sourceColumns;
-    
-    // Calculate visible columns based on zoom level
-    const visibleColumns = displayColumns;
+    const zoom = Number(zoomLevel) || 16;
+    const visibleColumns = Math.min(zoom, sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate window offset - use manual window if set, otherwise follow playhead
     const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
     const windowOffset = currentWindow * visibleColumns;
     
-    // Map window column to actual display column
-    const displayCol = windowOffset + col;
-    if (displayCol >= displayColumns) return;
+    // Map window column to logical column
+    const logicalCol = windowOffset + col;
+    if (logicalCol >= sourceColumns) return;
 
-    const stepIndex = Math.floor((displayCol * sourceColumns) / displayColumns);
+    const stepIndex = logicalCol;
 
     // Compute storage indices for the start and length so the event carries
     // high-resolution (internal) indices rather than logical indices.
@@ -423,8 +412,7 @@
     const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
 
     // Calculate full cell width for detection purposes
-    const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
-    const fullStorageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+    const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -525,13 +513,8 @@
     const sourceColumns = Math.max(columns || 16, 1);
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
-    const zoom = Number(zoomLevel) || 1;
-    const displayColumns = zoom && Number.isFinite(zoom) && zoom > 0
-      ? Math.max(1, Math.floor((sourceColumns * zoom) / stepsPerBarSafe))
-      : sourceColumns;
-    
-    // Calculate visible columns based on zoom level
-    const visibleColumns = displayColumns;
+    const zoom = Number(zoomLevel) || 16;
+    const visibleColumns = Math.min(zoom, sourceColumns);
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
@@ -564,10 +547,11 @@
       // Calculate window offset - use manual window if set, otherwise follow playhead
       const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
-      const displayCol = windowOffset + focusedCol;
+      const logicalCol = windowOffset + focusedCol;
       
       const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-      const storageStart = Math.floor((displayCol * storageColumns) / displayColumns);
+      const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
+      const storageStart = Math.floor(logicalCol * storagePerLogical);
       
       // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
       const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
@@ -575,9 +559,7 @@
       const storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
       
       // Calculate full cell width for detection purposes
-      const logicalColWidth = Math.max(1, Math.round(sourceColumns / displayColumns));
-      const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-      const fullStorageLength = Math.max(1, Math.round(logicalColWidth * storagePerLogical));
+      const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
       
       // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
