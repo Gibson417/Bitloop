@@ -4,92 +4,79 @@ import userEvent from '@testing-library/user-event';
 import GridToolbar from '../GridToolbar.svelte';
 
 describe('GridToolbar', () => {
-  it('renders all three drawing tools', () => {
-    render(GridToolbar, { selectedTool: 'paint' });
+  it('renders the unified Draw tool', () => {
+    render(GridToolbar);
     
-    expect(screen.getByRole('button', { name: /single note/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /paint/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /erase/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /draw/i })).toBeInTheDocument();
   });
 
-  it('shows the paint tool as active by default', () => {
-    render(GridToolbar, { selectedTool: 'paint' });
+  it('renders undo and redo buttons', () => {
+    render(GridToolbar, { canUndo: true, canRedo: true });
     
-    const paintBtn = screen.getByRole('button', { name: /paint/i });
-    expect(paintBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /undo/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /redo/i })).toBeInTheDocument();
   });
 
-  it('shows the single note tool as active when selected', () => {
-    render(GridToolbar, { selectedTool: 'single' });
+  it('disables undo button when canUndo is false', () => {
+    render(GridToolbar, { canUndo: false });
     
-    const singleBtn = screen.getByRole('button', { name: /single note/i });
-    expect(singleBtn).toHaveAttribute('aria-pressed', 'true');
+    const undoBtn = screen.getByRole('button', { name: /undo/i });
+    expect(undoBtn).toBeDisabled();
   });
 
-  it('shows the erase tool as active when selected', () => {
-    render(GridToolbar, { selectedTool: 'erase' });
+  it('disables redo button when canRedo is false', () => {
+    render(GridToolbar, { canRedo: false });
     
-    const eraseBtn = screen.getByRole('button', { name: /erase/i });
-    expect(eraseBtn).toHaveAttribute('aria-pressed', 'true');
+    const redoBtn = screen.getByRole('button', { name: /redo/i });
+    expect(redoBtn).toBeDisabled();
   });
 
-  it('dispatches toolchange event when single note tool is clicked', async () => {
+  it('enables undo button when canUndo is true', () => {
+    render(GridToolbar, { canUndo: true });
+    
+    const undoBtn = screen.getByRole('button', { name: /undo/i });
+    expect(undoBtn).not.toBeDisabled();
+  });
+
+  it('enables redo button when canRedo is true', () => {
+    render(GridToolbar, { canRedo: true });
+    
+    const redoBtn = screen.getByRole('button', { name: /redo/i });
+    expect(redoBtn).not.toBeDisabled();
+  });
+
+  it('dispatches undo event when undo button is clicked', async () => {
     const user = userEvent.setup();
-    const { component } = render(GridToolbar, { selectedTool: 'paint' });
+    const { component } = render(GridToolbar, { canUndo: true });
     
     const handler = vi.fn();
-    component.$on('toolchange', handler);
+    component.$on('undo', handler);
     
-    const singleBtn = screen.getByRole('button', { name: /single note/i });
-    await user.click(singleBtn);
+    const undoBtn = screen.getByRole('button', { name: /undo/i });
+    await user.click(undoBtn);
     
-    expect(handler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: { tool: 'single' }
-      })
-    );
+    expect(handler).toHaveBeenCalled();
   });
 
-  it('dispatches toolchange event when paint tool is clicked', async () => {
+  it('dispatches redo event when redo button is clicked', async () => {
     const user = userEvent.setup();
-    const { component } = render(GridToolbar, { selectedTool: 'single' });
+    const { component } = render(GridToolbar, { canRedo: true });
     
     const handler = vi.fn();
-    component.$on('toolchange', handler);
+    component.$on('redo', handler);
     
-    const paintBtn = screen.getByRole('button', { name: /paint/i });
-    await user.click(paintBtn);
+    const redoBtn = screen.getByRole('button', { name: /redo/i });
+    await user.click(redoBtn);
     
-    expect(handler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: { tool: 'paint' }
-      })
-    );
+    expect(handler).toHaveBeenCalled();
   });
 
-  it('dispatches toolchange event when erase tool is clicked', async () => {
-    const user = userEvent.setup();
-    const { component } = render(GridToolbar, { selectedTool: 'paint' });
-    
-    const handler = vi.fn();
-    component.$on('toolchange', handler);
-    
-    const eraseBtn = screen.getByRole('button', { name: /erase/i });
-    await user.click(eraseBtn);
-    
-    expect(handler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: { tool: 'erase' }
-      })
-    );
-  });
-
-  it('applies custom track color to buttons', () => {
+  it('applies custom track color to Draw button', () => {
     const customColor = '#ff5500';
-    render(GridToolbar, { selectedTool: 'paint', trackColor: customColor });
+    render(GridToolbar, { trackColor: customColor });
     
-    const paintBtn = screen.getByRole('button', { name: /paint/i });
+    const drawBtn = screen.getByRole('button', { name: /draw/i });
     // Browser converts hex to RGB, so check for the RGB equivalent
-    expect(paintBtn).toHaveAttribute('style', expect.stringContaining('rgb(255, 85, 0)'));
+    expect(drawBtn).toHaveAttribute('style', expect.stringContaining('rgb(255, 85, 0)'));
   });
 });

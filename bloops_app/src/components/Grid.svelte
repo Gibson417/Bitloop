@@ -18,7 +18,6 @@
   export let noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
-  export let drawingTool = 'paint'; // 'single', 'paint', 'erase'
   export let zoomLevel = 1; // Grid resolution denominator: 1, 2, 4, 8, 16, 32, 64 (controls grid density)
 
   const dispatch = createEventDispatcher();
@@ -45,8 +44,8 @@
     currentTheme = value;
   });
 
-  // Compute cursor style based on drawing tool, erase mode, and extend mode
-  $: cursorStyle = drawingTool === 'erase' || eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : drawingTool === 'single' ? 'pointer' : 'crosshair';
+  // Compute cursor style based on erase mode and extend mode
+  $: cursorStyle = eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : 'crosshair';
 
 
   const hexToRgba = (hex, alpha = 1) => {
@@ -365,8 +364,8 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    // Check if shift or alt key is held for explicit erase mode, or use the selected drawing tool
-    eraseMode = (drawingTool === 'erase') || event.shiftKey || event.altKey;
+    // Check if shift or alt key is held for explicit erase mode
+    eraseMode = event.shiftKey || event.altKey;
     // Check if ctrl/cmd key is held for note extension mode
     extendMode = event.ctrlKey || event.metaKey;
     pointerActive = false; // Reset to allow paintValue determination
@@ -427,7 +426,7 @@
     let storageLength;
 
     if (!pointerActive) {
-      // First cell in the gesture
+      // First cell in the gesture - determine action based on cell's current state
       pointerActive = true;
 
       if (eraseMode) {
@@ -441,27 +440,24 @@
         cellPaintValue = paintValue;
         storageLength = fullStorageLength; // Use full width to create continuous notes
       } else {
-        // Default: place note with length determined by noteLengthDenominator
-        paintValue = !current; // Store for reference, but each cell toggles independently
-        cellPaintValue = !current;
-        // Use noteStorageLength to create notes of specified duration
-        // For musical articulation, reduce length by 1 storage step to create gaps between notes
-        // This ensures adjacent notes remain separate for rhythm composition
-        storageLength = drawingTool === 'single' && cellPaintValue && noteStorageLength > 1 
+        // Unified draw mode: toggle based on current cell state
+        // First click determines the action (add or remove)
+        paintValue = !current;
+        cellPaintValue = paintValue;
+        // Use noteStorageLength with gap for placed notes
+        storageLength = cellPaintValue && noteStorageLength > 1 
           ? noteStorageLength - 1 
           : noteStorageLength;
       }
     } else {
-      // Subsequent cells during drag
+      // Subsequent cells during drag - apply the same action consistently
       if (extendMode || eraseMode) {
         // In extend or erase mode: use the initially determined paintValue and full width
         cellPaintValue = paintValue;
         storageLength = fullStorageLength;
       } else {
-        // Default drag mode: toggle each cell independently based on its current state
-        cellPaintValue = !current;
-        // Use noteStorageLength to create notes of specified duration
-        // In paint mode (drag), use full length to create continuous notes
+        // Unified draw mode: apply the same action (paintValue) to all dragged cells
+        cellPaintValue = paintValue;
         storageLength = noteStorageLength;
       }
     }
@@ -478,8 +474,7 @@
   };
 
   const handlePointerMove = (event) => {
-    // For single note tool, don't allow dragging
-    if (drawingTool === 'single') return;
+    // Allow dragging to continue drawing
     if (!pointerActive) return;
     handlePointer(event);
   };

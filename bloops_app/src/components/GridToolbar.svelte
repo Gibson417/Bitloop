@@ -1,22 +1,11 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let selectedTool = 'paint'; // 'single', 'paint', 'erase'
   export let trackColor = '#78d2b9';
   export let canUndo = false;
   export let canRedo = false;
 
   const dispatch = createEventDispatcher();
-
-  const tools = [
-    { id: 'single', label: 'Single Note', icon: '●', title: 'Place one note at a time' },
-    { id: 'paint', label: 'Paint', icon: '🖌', title: 'Drag to paint multiple notes' },
-    { id: 'erase', label: 'Erase', icon: '⌫', title: 'Drag to erase notes' }
-  ];
-
-  const handleToolSelect = (toolId) => {
-    dispatch('toolchange', { tool: toolId });
-  };
 
   const handleUndo = () => {
     dispatch('undo');
@@ -28,23 +17,18 @@
 </script>
 
 <div class="grid-toolbar" data-component="GridToolbar">
-  <span class="toolbar-label">Tools</span>
+  <span class="toolbar-label">Draw</span>
   <div class="tool-buttons">
-    {#each tools as tool}
-      <button
-        type="button"
-        class="tool-btn"
-        class:active={selectedTool === tool.id}
-        on:click={() => handleToolSelect(tool.id)}
-        title={tool.title}
-        aria-label={tool.label}
-        aria-pressed={selectedTool === tool.id}
-        style="border-color: {selectedTool === tool.id ? trackColor : 'rgba(255, 255, 255, 0.15)'}; 
-               color: {selectedTool === tool.id ? trackColor : 'rgba(255, 255, 255, 0.7)'};"
-      >
-        <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
-      </button>
-    {/each}
+    <button
+      type="button"
+      class="tool-btn active"
+      title="Draw - Click to toggle notes, drag to paint/erase"
+      aria-label="Draw tool"
+      aria-pressed="true"
+      style="border-color: {trackColor}; color: {trackColor};"
+    >
+      <span class="tool-icon" aria-hidden="true">✏️</span>
+    </button>
   </div>
   <div class="history-buttons">
     <button
