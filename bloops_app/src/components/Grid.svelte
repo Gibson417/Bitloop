@@ -232,18 +232,19 @@
         const { row, start, length } = event;
         
         // Convert storage coordinates to logical coordinates
-        const logicalStartCol = Math.floor((start * logicalColumns) / storageColumns);
-        const logicalEndCol = Math.floor(((start + length) * logicalColumns) / storageColumns);
+        const logicalStartCol = (start * logicalColumns) / storageColumns;
+        const logicalEndCol = ((start + length) * logicalColumns) / storageColumns;
         
-        // Skip if note is outside current window
-        if (logicalStartCol >= windowOffset + visibleColumns || logicalEndCol < windowOffset) continue;
+        // Skip if note is outside current window (window is in logical coordinates)
+        if (logicalStartCol >= windowOffset + visibleColumns || logicalEndCol <= windowOffset) continue;
         
         // Adjust display position relative to window
+        // Each logical step maps to one display column
         const windowDisplayStartCol = logicalStartCol - windowOffset;
         const windowDisplayEndCol = logicalEndCol - windowOffset;
         
         // Skip if note is completely outside visible area
-        if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol < 0) continue;
+        if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol <= 0) continue;
         
         // Draw note start dot
         const startX = windowDisplayStartCol * cellSize + cellSize / 2;
