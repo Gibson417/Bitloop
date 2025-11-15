@@ -47,8 +47,7 @@ describe('Zoom and Note Length Separation', () => {
     // Note duration should be based on noteLengthDenominator (16), not zoomLevel (32)
     // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
     // noteStorageLength = 64/16 = 4
-    // actual length = floor(4 * 0.75) = 3 (with 75% for gaps)
-    expect(event.detail.length).toBe(3);
+    expect(event.detail.length).toBe(4);
     expect(event.detail.value).toBe(true);
     expect(event.detail.storage).toBe(true);
   });
@@ -121,8 +120,7 @@ describe('Zoom and Note Length Separation', () => {
     expect(length1).toBe(length2);
     // With BASE_RESOLUTION=64 and noteLengthDenominator=32:
     // noteStorageLength = 64/32 = 2
-    // actual length = floor(2 * 0.75) = 1
-    expect(length1).toBe(1);
+    expect(length1).toBe(2);
   });
 
   it('note length should determine note duration independently of zoom', async () => {
@@ -194,10 +192,10 @@ describe('Zoom and Note Length Separation', () => {
     expect(length1).toBeGreaterThan(length2);
     
     // With BASE_RESOLUTION=64:
-    // noteLengthDenominator=8: noteStorageLength=64/8=8, actual=floor(8*0.75)=6
-    // noteLengthDenominator=64: noteStorageLength=64/64=1, actual=floor(1*0.75)=0, but Math.max(1,...)=1
-    expect(length1).toBe(6);
-    expect(length2).toBe(1); // Minimum length is 1
+    // noteLengthDenominator=8: noteStorageLength=64/8=8
+    // noteLengthDenominator=64: noteStorageLength=64/64=1
+    expect(length1).toBe(8);
+    expect(length2).toBe(1);
   });
 
   it('zoom level should only affect grid density, not note duration', async () => {
@@ -247,7 +245,6 @@ describe('Zoom and Note Length Separation', () => {
     expect(results[2]).toBe(results[3]);
     // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
     // noteStorageLength = 64/16 = 4
-    // actual length = floor(4 * 0.75) = 3
-    expect(results[0]).toBe(3);
+    expect(results[0]).toBe(4);
   });
 });
