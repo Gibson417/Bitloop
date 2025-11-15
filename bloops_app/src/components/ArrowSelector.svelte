@@ -7,6 +7,9 @@
   export let label = ''; // Label for the control
   export let disabled = false; // Disabled state
   export let trackColor = '#78d2b9'; // Track color for styling
+  export let compact = false; // Compact mode with smaller buttons (26px)
+  export let fixedWidth = false; // Fixed width mode for consistent layout
+  export let useThemeColor = false; // Use theme accent color instead of trackColor
 
   const dispatch = createEventDispatcher();
 
@@ -58,9 +61,12 @@
       handleNext();
     }
   };
+
+  // Determine color to use
+  $: colorToUse = useThemeColor ? 'rgba(var(--color-accent-rgb), 1)' : trackColor;
 </script>
 
-<div class="arrow-selector" class:disabled role="group" aria-labelledby={label ? `label-${uniqueId}` : undefined}>
+<div class="arrow-selector" class:disabled class:compact class:fixed-width={fixedWidth} role="group" aria-labelledby={label ? `label-${uniqueId}` : undefined}>
   {#if label}
     <div id="label-{uniqueId}" class="selector-label">{label}</div>
   {/if}
@@ -74,7 +80,7 @@
       title="Previous"
       disabled={disabled}
       tabindex="0"
-      style="border-color: {trackColor}33; color: {trackColor};"
+      style="border-color: {colorToUse}33; color: {colorToUse};"
     >
       ◀
     </button>
@@ -83,7 +89,7 @@
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      style="color: {trackColor};"
+      style="color: {colorToUse};"
     >
       {displayValue}
     </div>
@@ -96,7 +102,7 @@
       title="Next"
       disabled={disabled}
       tabindex="0"
-      style="border-color: {trackColor}33; color: {trackColor};"
+      style="border-color: {colorToUse}33; color: {colorToUse};"
     >
       ▶
     </button>
@@ -110,6 +116,10 @@
     gap: 8px;
     color: var(--color-text);
     font-size: 0.78rem;
+  }
+
+  .arrow-selector.fixed-width {
+    min-width: 140px;
   }
 
   .selector-label {
@@ -132,6 +142,10 @@
     box-sizing: border-box;
   }
 
+  .compact .selector-controls {
+    height: 26px;
+  }
+
   .selector-controls:focus-within {
     box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2), 0 6px 18px rgba(0, 0, 0, 0.32);
   }
@@ -151,6 +165,12 @@
     padding: 0;
     flex-shrink: 0;
     line-height: 1;
+  }
+
+  .compact .arrow-button {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
   }
 
   .arrow-button:hover:not(:disabled) {
@@ -185,6 +205,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .compact .selector-value {
+    font-size: 0.8rem;
+    min-width: 30px;
   }
 
   @media (max-width: 720px) {

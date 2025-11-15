@@ -27,6 +27,8 @@
     label="Theme"
     options={themeOptions}
     value={currentTheme}
+    fixedWidth={true}
+    useThemeColor={true}
     on:change={handleThemeChange}
   />
 </div>
