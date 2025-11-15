@@ -115,10 +115,11 @@
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
     // Calculate visible columns based on zoom level:
-    // - For zoom 8 or 16: show 16 columns (1 bar)
-    // - For zoom 32: show 32 columns (2 bars)
-    // - For zoom 64: show 64 columns (4 bars)
-    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
+    // - For zoom 8: show 8 columns (1/2 bar at 16 steps/bar)
+    // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
+    // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
+    // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
+    const visibleColumns = displayColumns;
     const availableWidth = scroller.clientWidth || displayColumns * 32;
     const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
@@ -164,10 +165,11 @@
       const cellSize = layout.cellSize;
       
       // Calculate which window to display based on zoom level
-      // For zoom 8 or 16: show 16 columns (1 bar)
-      // For zoom 32: show 32 columns (2 bars)
-      // For zoom 64: show 64 columns (4 bars)
-      const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
+      // - For zoom 8: show 8 columns (1/2 bar at 16 steps/bar)
+      // - For zoom 16: show 16 columns (1 bar at 16 steps/bar)
+      // - For zoom 32: show 32 columns (2 bars at 16 steps/bar)
+      // - For zoom 64: show 64 columns (4 bars at 16 steps/bar)
+      const visibleColumns = displayColumns;
       // Use manual window if set, otherwise follow playhead
       const currentWindow = manualWindow !== null ? manualWindow : Math.floor(playheadStep / visibleColumns);
       const windowOffset = currentWindow * visibleColumns;
@@ -397,7 +399,7 @@
       : sourceColumns;
     
     // Calculate visible columns based on zoom level
-    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
+    const visibleColumns = displayColumns;
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate window offset - use manual window if set, otherwise follow playhead
@@ -529,7 +531,7 @@
       : sourceColumns;
     
     // Calculate visible columns based on zoom level
-    const visibleColumns = Math.min(displayColumns, Math.max(16, zoom));
+    const visibleColumns = displayColumns;
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
