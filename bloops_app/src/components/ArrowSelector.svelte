@@ -74,7 +74,7 @@
       title="Previous"
       disabled={disabled}
       tabindex="0"
-      style="border-color: {trackColor}33; color: {trackColor};"
+      style={trackColor ? `border-color: ${trackColor}33; color: ${trackColor};` : ''}
     >
       ◀
     </button>
@@ -83,7 +83,7 @@
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      style="color: {trackColor};"
+      style={trackColor ? `color: ${trackColor};` : ''}
     >
       {displayValue}
     </div>
@@ -96,7 +96,7 @@
       title="Next"
       disabled={disabled}
       tabindex="0"
-      style="border-color: {trackColor}33; color: {trackColor};"
+      style={trackColor ? `border-color: ${trackColor}33; color: ${trackColor};` : ''}
     >
       ▶
     </button>
@@ -130,6 +130,7 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     height: 40px;
     box-sizing: border-box;
+    min-width: 120px;
   }
 
   .selector-controls:focus-within {
@@ -144,7 +145,9 @@
     height: 26px;
     border-radius: 6px;
     border: 1px solid;
+    border-color: rgba(var(--color-accent-rgb), 0.2);
     background: transparent;
+    color: var(--color-accent);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -180,11 +183,13 @@
   .selector-value {
     font-size: 0.8rem;
     font-weight: 600;
-    min-width: 30px;
+    min-width: 50px;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
+    color: var(--color-accent);
   }
 
   @media (max-width: 720px) {
