@@ -34,7 +34,6 @@
 <style>
   .theme-selector-wrapper {
     display: inline-flex;
-    min-width: 160px;
-    width: 160px;
+    min-width: 140px;
   }
 </style>
