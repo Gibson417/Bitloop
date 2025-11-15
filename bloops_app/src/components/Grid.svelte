@@ -445,7 +445,7 @@
         paintValue = !current; // Store for reference, but each cell toggles independently
         cellPaintValue = !current;
         // Use noteStorageLength to create notes of specified duration
-        storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
+        storageLength = noteStorageLength;
       }
     } else {
       // Subsequent cells during drag
@@ -457,7 +457,7 @@
         // Default drag mode: toggle each cell independently based on its current state
         cellPaintValue = !current;
         // Use noteStorageLength to create notes of specified duration
-        storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
+        storageLength = noteStorageLength;
       }
     }
 
@@ -556,7 +556,7 @@
       // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
       const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
       const noteStorageLength = Math.max(1, Math.round((BASE_RESOLUTION / noteDenom)));
-      const storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75)); // 75% to create gaps
+      const storageLength = noteStorageLength;
       
       // Calculate full cell width for detection purposes
       const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
