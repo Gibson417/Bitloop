@@ -323,6 +323,11 @@
   const handleWindowInfo = (event) => {
     currentWindow = event.detail.currentWindow;
     totalWindows = event.detail.totalWindows;
+    
+    // Clamp manualWindow if it's out of bounds after zoom change
+    if (manualWindow !== null && manualWindow >= totalWindows) {
+      manualWindow = Math.max(0, totalWindows - 1);
+    }
   };
 
   const handleToolChange = (event) => {
@@ -330,7 +335,23 @@
   };
 
   const handleZoomChange = (event) => {
+    const oldZoom = zoomLevel;
     zoomLevel = event.detail.level;
+    
+    // When zoom changes, reset manual window to ensure it's valid
+    // If we're in manual mode, try to keep approximately the same position
+    if (manualWindow !== null && oldZoom !== zoomLevel) {
+      // Calculate current logical position from old window
+      const oldVisibleCols = Math.min(oldZoom, columns);
+      const currentLogicalPos = manualWindow * oldVisibleCols;
+      
+      // Calculate new window from that position
+      const newVisibleCols = Math.min(zoomLevel, columns);
+      const newWindow = Math.floor(currentLogicalPos / newVisibleCols);
+      const maxWindow = Math.max(0, Math.ceil(columns / newVisibleCols) - 1);
+      
+      manualWindow = Math.min(newWindow, maxWindow);
+    }
   };
 
   const handleBpmChange = (event) => {

@@ -76,10 +76,9 @@ describe('Grid layout', () => {
     // Trigger a resize by dispatching a window resize event so component recalculates layout
     window.dispatchEvent(new Event('resize'));
 
-    // displayColumns now uses zoomLevel instead of noteLengthDenominator
-    // displayColumns = sourceColumns * zoom / stepsPerBar (stepsPerBar default is 16)
-    const displayColumns = Math.floor((sourceColumns * zoomLevel) / 16);
-    const visibleColumns = Math.min(displayColumns, 16);
+    // visibleColumns is now directly based on zoomLevel, clamped to sourceColumns
+    // For zoom level 8 and sourceColumns 32, visibleColumns = min(8, 32) = 8
+    const visibleColumns = Math.min(zoomLevel, sourceColumns);
     const availableWidth = scroller.clientWidth;
     const expectedCellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (static grid with window switching)
