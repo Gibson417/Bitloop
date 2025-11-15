@@ -964,7 +964,6 @@
           <span class={`pill ${isPlaying ? 'playing' : ''}`}>
             {isPlaying ? 'Playing' : 'Stopped'}
           </span>
-          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
         </div>
         <div class="history-buttons">
           <button
@@ -1036,8 +1035,10 @@
           />
         </div>
         
-        <!-- Secondary tools: Window navigation (right-aligned) -->
+        <!-- Secondary tools: Follow toggle and window navigation (right-aligned) -->
         <div class="toolbar-secondary">
+          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+          <div class="toolbar-divider" aria-hidden="true"></div>
           <div class="window-switcher-group">
             <WindowSwitcher
               {currentWindow}
