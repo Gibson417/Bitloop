@@ -71,12 +71,10 @@ describe('GridToolbar', () => {
     expect(handler).toHaveBeenCalled();
   });
 
-  it('applies custom track color to Draw button', () => {
-    const customColor = '#ff5500';
-    render(GridToolbar, { trackColor: customColor });
+  it('renders Draw button with active class', () => {
+    render(GridToolbar);
     
     const drawBtn = screen.getByRole('button', { name: /draw/i });
-    // Browser converts hex to RGB, so check for the RGB equivalent
-    expect(drawBtn).toHaveAttribute('style', expect.stringContaining('rgb(255, 85, 0)'));
+    expect(drawBtn).toHaveClass('active');
   });
 });

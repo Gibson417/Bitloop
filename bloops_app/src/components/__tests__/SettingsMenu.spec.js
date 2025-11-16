@@ -58,21 +58,21 @@ describe('SettingsMenu component', () => {
   });
 
   it('renders Reset App button in the menu', async () => {
-    const { getByLabelText, getByText } = render(SettingsMenu);
+    const { getByLabelText } = render(SettingsMenu);
 
     await fireEvent.click(getByLabelText('Settings'));
 
-    // Check that Reset App button is visible
-    expect(getByText(/Reset App/i)).toBeTruthy();
+    // Check that Reset App button is visible by its aria-label
+    expect(getByLabelText('Reset App')).toBeTruthy();
   });
 
   it('toggles dev mode when Dev Mode button is clicked', async () => {
-    const { getByLabelText, getByText } = render(SettingsMenu);
+    const { getByLabelText } = render(SettingsMenu);
 
     await fireEvent.click(getByLabelText('Settings'));
     
-    // Find the button by looking for the text "Dev Mode OFF" (initial state)
-    const devModeBtn = getByText(/Dev Mode OFF/i);
+    // Find the button by its aria-label (initial state is OFF)
+    const devModeBtn = getByLabelText('Toggle Dev Mode ON');
     
     // Initially should be off (false or null)
     const initialValue = localStorage.getItem('bloops-dev-mode');
@@ -82,14 +82,14 @@ describe('SettingsMenu component', () => {
     await fireEvent.click(devModeBtn);
     expect(localStorage.getItem('bloops-dev-mode')).toBe('true');
     
-    // Click to toggle off
-    const devModeBtnOn = getByText(/Dev Mode ON/i);
+    // Click to toggle off - after toggle, aria-label changes
+    const devModeBtnOn = getByLabelText('Toggle Dev Mode OFF');
     await fireEvent.click(devModeBtnOn);
     expect(localStorage.getItem('bloops-dev-mode')).toBe('false');
   });
 
   it('clears localStorage and reloads when Reset App is clicked', async () => {
-    const { getByLabelText, getByText } = render(SettingsMenu);
+    const { getByLabelText } = render(SettingsMenu);
     
     // Set some localStorage data
     localStorage.setItem('test-key', 'test-value');
@@ -97,7 +97,7 @@ describe('SettingsMenu component', () => {
 
     await fireEvent.click(getByLabelText('Settings'));
     
-    const resetBtn = getByText(/Reset App/i);
+    const resetBtn = getByLabelText('Reset App');
     await fireEvent.click(resetBtn);
     
     // Check that confirm was called
@@ -112,7 +112,7 @@ describe('SettingsMenu component', () => {
   });
 
   it('does not clear localStorage when Reset App is cancelled', async () => {
-    const { getByLabelText, getByText } = render(SettingsMenu);
+    const { getByLabelText } = render(SettingsMenu);
     
     // Mock confirm to return false (user cancelled)
     window.confirm = vi.fn(() => false);
@@ -122,7 +122,7 @@ describe('SettingsMenu component', () => {
 
     await fireEvent.click(getByLabelText('Settings'));
     
-    const resetBtn = getByText(/Reset App/i);
+    const resetBtn = getByLabelText('Reset App');
     await fireEvent.click(resetBtn);
     
     // Check that confirm was called
