@@ -167,12 +167,20 @@
       const zoom = Number(zoomLevel) || 16;
       const visibleColumns = Math.min(zoom, logicalColumns);
       
+      // Calculate scale factor for mapping logical steps to display columns
+      // When zoom < stepsPerBar: multiple logical steps per display column
+      // When zoom > stepsPerBar: multiple display columns per logical step
+      // Example: stepsPerBar=16, zoom=8 → scale=0.5 (2 logical steps per display column)
+      const logicalToDisplayScale = zoom / stepsPerBarSafe;
+      
       // Use manual window if set, otherwise follow playhead only if follow mode is enabled
-      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       
       // Dispatch window info for external components
-      const totalWindows = Math.ceil(logicalColumns / visibleColumns);
+      // Total windows should be calculated in display coordinates
+      const totalDisplayColumns = logicalColumns * logicalToDisplayScale;
+      const totalWindows = Math.ceil(totalDisplayColumns / visibleColumns);
       dispatch('windowinfo', { currentWindow, totalWindows });
 
       // Draw grid lines (vertical only, with different intensities for bars and quarter-bars)
@@ -186,13 +194,14 @@
       const isZoomed = zoom && zoom > stepsPerBarSafe;
       
       for (let col = 0; col <= visibleColumns; col++) {
-        // Map displayed column back to logical step in the source columns (accounting for window offset)
+        // Map displayed column back to logical step using inverse scale
+        // Display column → logical step
         const displayCol = windowOffset + col;
-        const logicalStep = displayCol;
+        const logicalStep = displayCol / logicalToDisplayScale;
         
         // Check if this logical step aligns with bar or quarter-bar boundaries
-        const isBarBoundary = logicalStep % stepsPerBarSafe === 0;
-        const isQuarterBarBoundary = logicalStep % stepsPerQuarterBar === 0;
+        const isBarBoundary = Math.abs(logicalStep % stepsPerBarSafe) < 0.01;
+        const isQuarterBarBoundary = Math.abs(logicalStep % stepsPerQuarterBar) < 0.01;
         
         // In zoomed mode, draw sub-beat ticks for all columns
         // In normal mode, only draw lines at quarter-bar increments or bar boundaries
@@ -235,13 +244,16 @@
         const logicalStartCol = (start * logicalColumns) / storageColumns;
         const logicalEndCol = ((start + length) * logicalColumns) / storageColumns;
         
-        // Skip if note is outside current window (window is in logical coordinates)
-        if (logicalStartCol >= windowOffset + visibleColumns || logicalEndCol <= windowOffset) continue;
+        // Convert logical coordinates to display coordinates using scale factor
+        const displayStartCol = logicalStartCol * logicalToDisplayScale;
+        const displayEndCol = logicalEndCol * logicalToDisplayScale;
+        
+        // Skip if note is outside current window (window is in display coordinates)
+        if (displayStartCol >= windowOffset + visibleColumns || displayEndCol <= windowOffset) continue;
         
         // Adjust display position relative to window
-        // Each logical step maps to one display column
-        const windowDisplayStartCol = logicalStartCol - windowOffset;
-        const windowDisplayEndCol = logicalEndCol - windowOffset;
+        const windowDisplayStartCol = displayStartCol - windowOffset;
+        const windowDisplayEndCol = displayEndCol - windowOffset;
         
         // Skip if note is completely outside visible area
         if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol <= 0) continue;
@@ -294,10 +306,15 @@
       ctx.shadowBlur = 0;
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < visibleColumns; col++) {
-          // Map displayed column (in current window) -> underlying storage step index range
-          const logicalCol = windowOffset + col;
-          const storageStart = Math.floor((logicalCol * storageColumns) / logicalColumns);
-          const storageEnd = Math.floor(((logicalCol + 1) * storageColumns) / logicalColumns);
+          // Map displayed column (in current window) back to logical step
+          // Each display column represents (stepsPerBarSafe / zoom) logical steps
+          const logicalStartStep = (windowOffset + col) / logicalToDisplayScale;
+          const logicalEndStep = (windowOffset + col + 1) / logicalToDisplayScale;
+          
+          // Map logical steps to storage indices
+          const storageStart = Math.floor((logicalStartStep * storageColumns) / logicalColumns);
+          const storageEnd = Math.ceil((logicalEndStep * storageColumns) / logicalColumns);
+          
           // Check if ANY cell in the storage range is active
           const rowNotes = notes?.[row] ?? [];
           const isActive = rowNotes.slice(storageStart, storageEnd).some(Boolean);
@@ -332,8 +349,10 @@
 
   // Playhead (show within current window)
   // Calculate playhead position relative to current window
-  const playheadStepInWindow = playheadStep - windowOffset;
-  const playheadX = (playheadStepInWindow + playheadProgress) * layout.cellSize;
+  // Convert playhead logical step to display coordinates
+  const playheadDisplayStep = playheadStep * logicalToDisplayScale;
+  const playheadStepInWindow = playheadDisplayStep - windowOffset;
+  const playheadX = (playheadStepInWindow + playheadProgress * logicalToDisplayScale) * layout.cellSize;
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
       const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -397,15 +416,20 @@
     const visibleColumns = Math.min(zoom, sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
+    // Calculate scale factor for mapping logical steps to display columns
+    const logicalToDisplayScale = zoom / stepsPerBarSafe;
+
     // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
-    const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
+    const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
     const windowOffset = currentWindow * visibleColumns;
     
-    // Map window column to logical column
-    const logicalCol = windowOffset + col;
+    // Map window column to logical column using inverse scale
+    // Display column → logical step
+    const displayCol = windowOffset + col;
+    const logicalCol = displayCol / logicalToDisplayScale;
     if (logicalCol >= sourceColumns) return;
 
-    const stepIndex = logicalCol;
+    const stepIndex = Math.floor(logicalCol);
 
     // Compute storage indices for the start and length so the event carries
     // high-resolution (internal) indices rather than logical indices.
@@ -584,10 +608,16 @@
       event.preventDefault();
       keyboardMode = true;
       
+      // Calculate scale factor for mapping logical steps to display columns
+      const logicalToDisplayScale = zoom / stepsPerBarSafe;
+      
       // Calculate window offset - use manual window if set, otherwise follow playhead only if follow mode is enabled
-      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor(playheadStep / visibleColumns) : 0);
+      const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
-      const logicalCol = windowOffset + focusedCol;
+      
+      // Map display column to logical column using inverse scale
+      const displayCol = windowOffset + focusedCol;
+      const logicalCol = displayCol / logicalToDisplayScale;
       
       const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
