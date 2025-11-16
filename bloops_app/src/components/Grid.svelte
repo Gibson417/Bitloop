@@ -112,12 +112,13 @@
     // Calculate visible columns based on zoom level:
     // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
     // Show exactly as many columns as the zoom level indicates (one bar at that resolution)
-    // - For zoom 8: show 8 columns (1 bar of 8th notes)
+    // Exception: For zoom 8, show 16 columns (2 bars) to better utilize window space
+    // - For zoom 8: show 16 columns (2 bars of 8th notes)
     // - For zoom 16: show 16 columns (1 bar of 16th notes)
     // - For zoom 32: show 32 columns (1 bar of 32nd notes)
     // - For zoom 64: show 64 columns (1 bar of 64th notes)
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, logicalColumns);
+    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
     const availableWidth = scroller.clientWidth || visibleColumns * 32;
     const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
@@ -160,12 +161,13 @@
       // Calculate visible columns based on zoom level:
       // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
       // Show exactly as many columns as the zoom level indicates (one bar at that resolution)
-      // - For zoom 8: show 8 columns (1 bar of 8th notes)
+      // Exception: For zoom 8, show 16 columns (2 bars) to better utilize window space
+      // - For zoom 8: show 16 columns (2 bars of 8th notes)
       // - For zoom 16: show 16 columns (1 bar of 16th notes)
       // - For zoom 32: show 32 columns (1 bar of 32nd notes)
       // - For zoom 64: show 64 columns (1 bar of 64th notes)
       const zoom = Number(zoomLevel) || 16;
-      const visibleColumns = Math.min(zoom, logicalColumns);
+      const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
       
       // Calculate scale factor for mapping logical steps to display columns
       // When zoom < stepsPerBar: multiple logical steps per display column
@@ -414,7 +416,7 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, sourceColumns);
+    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, sourceColumns);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate scale factor for mapping logical steps to display columns
@@ -579,7 +581,7 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom, sourceColumns);
+    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, sourceColumns);
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
