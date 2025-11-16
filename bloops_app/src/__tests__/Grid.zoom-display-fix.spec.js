@@ -122,18 +122,21 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
 
     const windowInfo = vi.fn();
     component.$on('windowinfo', windowInfo);
+    // Trigger a redraw by changing playheadStep
+    component.$set({ playheadStep: 7 });
+    await new Promise(resolve => setTimeout(resolve, 25));
     component.$set({ playheadStep: 8 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
     // At zoom 8 with 32 logical columns:
     // - logicalToDisplayScale = 8/16 = 0.5
     // - totalDisplayColumns = 32 * 0.5 = 16
-    // - visibleColumns = 8
-    // - totalWindows = ceil(16/8) = 2
+    // - visibleColumns = 16 (2 bars of 8th notes)
+    // - totalWindows = ceil(16/16) = 1 (entire loop fits in one window)
     // - playhead at step 8 → displayStep = 8 * 0.5 = 4
-    // - currentWindow = floor(4/8) = 0 (still in first window)
+    // - currentWindow = floor(4/16) = 0 (in the single window)
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.totalWindows).toBe(2);
+    expect(info.totalWindows).toBe(1);
     expect(info.currentWindow).toBe(0);
   });
 
@@ -163,14 +166,19 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
 
     const windowInfo = vi.fn();
     component.$on('windowinfo', windowInfo);
+    // Trigger a redraw by changing playheadStep
+    component.$set({ playheadStep: 15 });
+    await new Promise(resolve => setTimeout(resolve, 25));
     component.$set({ playheadStep: 16 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
     // At zoom 8:
+    // - visibleColumns = 16 (2 bars of 8th notes)
+    // - totalWindows = 1 (entire 2-bar loop fits in one window)
     // - playhead at step 16 → displayStep = 16 * 0.5 = 8
-    // - currentWindow = floor(8/8) = 1 (second window)
+    // - currentWindow = floor(8/16) = 0 (still in the single window)
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.currentWindow).toBe(1);
+    expect(info.currentWindow).toBe(0);
   });
 
   it('should maintain visual proportions when switching zoom levels', async () => {

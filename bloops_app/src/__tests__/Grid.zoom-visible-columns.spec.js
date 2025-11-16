@@ -44,7 +44,7 @@ describe('Grid Zoom Visible Columns', () => {
     expect(info.totalWindows).toBe(1);
   });
 
-  it('should show 2 windows at zoom 8 with 2 bars', async () => {
+  it('should show 1 window at zoom 8 with 2 bars', async () => {
     const rows = 4;
     const columns = 32; // 2 bars × 16 steps per bar
     const stepsPerBar = 16;
@@ -74,11 +74,11 @@ describe('Grid Zoom Visible Columns', () => {
 
     // At zoom 8 with stepsPerBar=16, logicalToDisplayScale = 8/16 = 0.5
     // totalDisplayColumns = 32 * 0.5 = 16
-    // visibleColumns = 8
-    // totalWindows = ceil(16 / 8) = 2 (2 windows needed at this zoom)
+    // visibleColumns = 16 (2 bars of 8th notes)
+    // totalWindows = ceil(16 / 16) = 1 (entire loop fits in one window)
     expect(windowInfo).toHaveBeenCalled();
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.totalWindows).toBe(2);
+    expect(info.totalWindows).toBe(1);
   });
 
   it('should show 16 columns at zoom level 16', async () => {
@@ -145,10 +145,12 @@ describe('Grid Zoom Visible Columns', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     // At zoom 32, visibleColumns should be min(32, 16) = 16 (limited by total columns)
-    // totalWindows = ceil(16 / 16) = 1 (1 window showing all available columns)
+    // logicalToDisplayScale = 32/16 = 2
+    // totalDisplayColumns = 16 * 2 = 32
+    // totalWindows = ceil(32 / 16) = 2 (2 windows needed to show all detail)
     expect(windowInfo).toHaveBeenCalled();
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.totalWindows).toBe(1);
+    expect(info.totalWindows).toBe(2);
   });
 
   it('should show 16 columns at zoom level 64 (limited by total columns)', async () => {
@@ -180,10 +182,12 @@ describe('Grid Zoom Visible Columns', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     // At zoom 64, visibleColumns should be min(64, 16) = 16 (limited by total columns)
-    // totalWindows = ceil(16 / 16) = 1 (1 window showing all available columns)
+    // logicalToDisplayScale = 64/16 = 4
+    // totalDisplayColumns = 16 * 4 = 64
+    // totalWindows = ceil(64 / 16) = 4 (4 windows needed to show all detail)
     expect(windowInfo).toHaveBeenCalled();
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.totalWindows).toBe(1);
+    expect(info.totalWindows).toBe(4);
   });
 
   it('should have more columns visible at higher zoom levels', async () => {
@@ -222,7 +226,7 @@ describe('Grid Zoom Visible Columns', () => {
       const info = windowInfo.mock.calls[0][0].detail;
       
       // Calculate expected values with scale factor
-      const visibleColumns = Math.min(zoom, columns);
+      const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, columns);
       const logicalToDisplayScale = zoom / stepsPerBar;
       const totalDisplayColumns = columns * logicalToDisplayScale;
       const expectedWindows = Math.ceil(totalDisplayColumns / visibleColumns);
@@ -239,11 +243,11 @@ describe('Grid Zoom Visible Columns', () => {
       expect(info.totalWindows).toBe(expectedWindows);
     }
     
-    // Verify that zoom 8 shows 8 columns
+    // Verify that zoom 8 shows 16 columns (2 bars)
     const zoom8 = results.find(r => r.zoom === 8);
-    expect(zoom8.visibleColumns).toBe(8);
-    // At zoom 8: totalDisplayColumns = 64 * (8/16) = 32, windows = ceil(32/8) = 4
-    expect(zoom8.expectedWindows).toBe(4);
+    expect(zoom8.visibleColumns).toBe(16);
+    // At zoom 8: totalDisplayColumns = 64 * (8/16) = 32, windows = ceil(32/16) = 2
+    expect(zoom8.expectedWindows).toBe(2);
     
     // Verify that zoom 16 shows 16 columns
     const zoom16 = results.find(r => r.zoom === 16);
@@ -263,8 +267,9 @@ describe('Grid Zoom Visible Columns', () => {
     // At zoom 64: totalDisplayColumns = 64 * (64/16) = 256, windows = ceil(256/64) = 4
     expect(zoom64.expectedWindows).toBe(4);
     
-    // Verify that higher zoom levels have more visible columns
-    expect(results[1].visibleColumns).toBeGreaterThan(results[0].visibleColumns); // 16 > 8
+    // Verify that higher zoom levels have more or equal visible columns
+    // Note: zoom 8 shows 16 columns (2 bars), same as zoom 16 (1 bar)
+    expect(results[1].visibleColumns).toBeGreaterThanOrEqual(results[0].visibleColumns); // 16 >= 16
     expect(results[2].visibleColumns).toBeGreaterThan(results[1].visibleColumns); // 32 > 16
     expect(results[3].visibleColumns).toBeGreaterThan(results[2].visibleColumns); // 64 > 32
   });
