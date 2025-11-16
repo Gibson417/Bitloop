@@ -25,7 +25,6 @@
       title="Draw - Click to toggle notes, drag to paint/erase"
       aria-label="Draw tool"
       aria-pressed="true"
-      style="border-color: {trackColor}; color: {trackColor};"
     >
       <span class="tool-icon" aria-hidden="true">✏️</span>
     </button>
@@ -87,23 +86,26 @@
     min-width: 36px;
     min-height: 36px;
     background: transparent;
-    border: 2px solid;
+    border: 2px solid rgba(var(--color-accent-rgb), 0.4);
     border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    color: rgba(var(--color-accent-rgb), 0.8);
   }
 
   .tool-btn:hover:not(.active) {
     background: rgba(255, 255, 255, 0.04); /* Reduced from 0.05 for subtler hover */
-    border-color: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(var(--color-accent-rgb), 0.5);
     transform: translateY(-1px);
   }
 
   .tool-btn.active {
+    border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.12); /* Reduced from 0.15 */
+    color: rgba(var(--color-accent-rgb), 1);
     box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.25); /* Reduced glow for subtler active state */
   }
 

@@ -1,12 +1,20 @@
 # UX/Grid Audit Report - Bloops Music Sequencer
 
-**Date:** 2025-11-15  
+**Date:** 2025-11-16  
 **Auditor:** UI/UX Design QA Specialist  
 **Repository:** /home/runner/work/Bitloop/Bitloop/bloops_app
 
 ## Executive Summary
 
-This audit focused on three key UI/UX improvements for the retro dot-grid music sequencer:
+This audit focused on visual UI improvements for the retro dot-grid music sequencer:
+
+### Latest Updates (2025-11-16)
+
+1. **Theme Switcher Centering** - Centered theme selector in settings menu
+2. **Developer Settings Layout** - Made Dev Mode & Reset buttons square and side-by-side
+3. **Draw Tool Theme Integration** - Fixed draw tool to properly use theme accent colors
+
+### Previous Updates (2025-11-15)
 
 1. **Developer Mode Settings** - Added UI controls for Dev Mode in SettingsMenu
 2. **ArrowSelector Visual Stability** - Fixed visual shifting on interaction
@@ -14,11 +22,11 @@ This audit focused on three key UI/UX improvements for the retro dot-grid music 
 
 ### Top 5 Wins
 
-1. ✅ **Unified Draw Tool** - Simplified interaction model from 3 tools to 1 intelligent tool
-2. ✅ **Developer Mode Accessibility** - Dev Mode now accessible via UI, not just keyboard shortcut
-3. ✅ **Reset Function** - Added safe app reset with confirmation dialog
-4. ✅ **Visual Stability** - Fixed ArrowSelector transform issues with `will-change` optimization
-5. ✅ **Maintained Aesthetic** - All changes preserve the retro/minimalist design language
+1. ✅ **Theme-Aware Draw Tool** - Draw tool now properly uses dynamic theme accent colors
+2. ✅ **Improved Settings Layout** - Theme switcher centered; dev buttons now square & horizontal
+3. ✅ **Visual Consistency** - All buttons follow same design language with proper glow effects
+4. ✅ **Unified Draw Tool** - Simplified interaction model from 3 tools to 1 intelligent tool
+5. ✅ **Developer Mode Accessibility** - Dev Mode now accessible via UI, not just keyboard shortcut
 
 ### Top 5 Risks
 
@@ -29,6 +37,81 @@ This audit focused on three key UI/UX improvements for the retro dot-grid music 
 5. ⚠️ **Motion Accessibility** - Some animations don't check `prefers-reduced-motion`
 
 ## Implementation Details
+
+### Latest Changes (2025-11-16)
+
+#### 1. Theme Switcher Centering (SettingsMenu.svelte)
+
+**Issue:**
+- Theme selector was left-aligned in the settings dropdown
+- Visual imbalance in the settings menu layout
+
+**Fix:**
+- Added CSS rule to center items in first `.settings-section`
+- Used `align-items: center` to horizontally center the ThemeSelector component
+
+**Files Modified:**
+- `/src/components/SettingsMenu.svelte`
+
+**Design Rationale:**
+- Improves visual balance in dropdown menu
+- Centers the most frequently used control
+- Maintains flex-direction for vertical stacking
+
+#### 2. Developer Settings Buttons (SettingsMenu.svelte)
+
+**Issue:**
+- Dev Mode toggle and Reset App were full-width stacked buttons
+- Used too much vertical space
+- Buttons had text labels making them rectangular
+
+**Fix:**
+- Created `.dev-buttons-row` container with flexbox horizontal layout
+- Added `.square-btn` class with fixed 56×56px dimensions
+- Removed text labels (`<span>` elements) from both buttons
+- Kept icons at 24×24px for better visibility
+- Centered buttons within the row with `justify-content: center`
+- Enhanced hover effect with `translateY(-2px)` for better feedback
+- Added descriptive `title` and `aria-label` attributes for accessibility
+
+**Files Modified:**
+- `/src/components/SettingsMenu.svelte`
+
+**Design Tokens Used:**
+- Button size: 56×56px (7 × 8px base unit)
+- Icon size: 24×24px (3 × 8px base unit)
+- Gap: 12px (1.5 × 8px base unit)
+
+#### 3. Draw Tool Theme Integration (GridToolbar.svelte)
+
+**Issue:**
+- Draw tool button used inline styles `style="border-color: {trackColor}; color: {trackColor};"`
+- Didn't properly leverage theme accent color system
+- Inconsistent with other themed buttons in the app
+- Missing proper glow effect on active state
+
+**Fix:**
+- Removed inline `style` attribute from button
+- Updated CSS to use `rgba(var(--color-accent-rgb), ...)` pattern
+- Added explicit `color` property to both default and active states
+- Consistent border, background, and glow effects using theme variables
+- Active state now has proper 0.6 border opacity and 1.0 color opacity
+
+**Files Modified:**
+- `/src/components/GridToolbar.svelte`
+
+**Design Tokens Used:**
+- Border (default): `rgba(var(--color-accent-rgb), 0.4)`
+- Border (hover): `rgba(var(--color-accent-rgb), 0.5)`
+- Border (active): `rgba(var(--color-accent-rgb), 0.6)`
+- Background (active): `rgba(var(--color-accent-rgb), 0.12)`
+- Color (default): `rgba(var(--color-accent-rgb), 0.8)`
+- Color (active): `rgba(var(--color-accent-rgb), 1)`
+- Box-shadow (active): `0 0 8px rgba(var(--color-accent-rgb), 0.25)`
+
+---
+
+### Previous Changes (2025-11-15)
 
 ### 1. Developer Mode Settings (SettingsMenu.svelte)
 
@@ -145,7 +228,23 @@ This audit focused on three key UI/UX improvements for the retro dot-grid music 
 
 ## Change Log
 
-### Files Edited (5 files)
+### Files Edited (Latest - 2025-11-16)
+
+1. **SettingsMenu.svelte**
+   - Added centering to first `.settings-section` using `align-items: center`
+   - Restructured Developer Mode section with `.dev-buttons-row` container
+   - Made Dev Mode and Reset buttons square (56×56px) with `.square-btn` class
+   - Removed text labels from both buttons (icon-only)
+   - Added enhanced hover transform (`translateY(-2px)`)
+   - Improved accessibility with `title` and `aria-label` attributes
+
+2. **GridToolbar.svelte**
+   - Removed inline `style` attribute from draw tool button
+   - Updated `.tool-btn` CSS to use `rgba(var(--color-accent-rgb), ...)` consistently
+   - Added explicit `color` property for default and active states
+   - Enhanced active state with proper theme-aware border, background, and glow
+
+### Files Edited (Previous - 2025-11-15)
 
 1. **SettingsMenu.svelte**
    - Added DevMode import and subscription
@@ -181,7 +280,27 @@ This audit focused on three key UI/UX improvements for the retro dot-grid music 
 
 ## Test Coverage
 
+### Tests Updated (2025-11-16)
+
+**SettingsMenu.spec.js:**
+- Updated "renders Reset App button" test to use `getByLabelText('Reset App')` instead of text search
+- Updated "toggles dev mode" test to use aria-label selectors instead of text content
+- Updated "clears localStorage" test to use aria-label selector
+- Updated "does not clear localStorage" test to use aria-label selector
+- All tests now work with icon-only button design
+
+**GridToolbar.spec.js:**
+- Removed "applies custom track color" test (no longer uses inline styles)
+- Added "renders Draw button with active class" test to verify theme integration
+- Tests now validate theme-aware CSS classes instead of inline styles
+
 ### Manual Testing Performed
+- ✅ Theme switcher is centered in settings menu
+- ✅ Dev Mode and Reset buttons are square and side-by-side
+- ✅ Draw tool uses theme accent colors consistently
+- ✅ All hover states work correctly with proper transforms
+- ✅ Focus states are visible on all buttons
+- ✅ Accessibility labels are present and descriptive
 - ✅ Dev Mode toggle works (UI and keyboard shortcut)
 - ✅ Reset App clears localStorage and reloads
 - ✅ ArrowSelector buttons don't shift visually

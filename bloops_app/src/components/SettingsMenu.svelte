@@ -137,32 +137,36 @@
       <div class="settings-divider"></div>
       <div class="settings-section">
         <div class="section-title">Developer Mode</div>
-        <button 
-          type="button" 
-          class="menu-item toggle-btn"
-          class:active={devModeEnabled}
-          on:click={toggleDevMode}
-          role="menuitemcheckbox"
-          aria-checked={devModeEnabled}
-        >
-          <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6"/>
-            <polyline points="8 6 2 12 8 18"/>
-          </svg>
-          <span>Dev Mode {devModeEnabled ? 'ON' : 'OFF'}</span>
-        </button>
-        <button 
-          type="button" 
-          class="menu-item reset-btn"
-          on:click={resetApp}
-          role="menuitem"
-        >
-          <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-            <path d="M3 3v5h5"/>
-          </svg>
-          <span>Reset App</span>
-        </button>
+        <div class="dev-buttons-row">
+          <button 
+            type="button" 
+            class="menu-item toggle-btn square-btn"
+            class:active={devModeEnabled}
+            on:click={toggleDevMode}
+            role="menuitemcheckbox"
+            aria-checked={devModeEnabled}
+            title="Toggle Dev Mode {devModeEnabled ? 'OFF' : 'ON'}"
+            aria-label="Toggle Dev Mode {devModeEnabled ? 'OFF' : 'ON'}"
+          >
+            <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </button>
+          <button 
+            type="button" 
+            class="menu-item reset-btn square-btn"
+            on:click={resetApp}
+            role="menuitem"
+            title="Reset App"
+            aria-label="Reset App"
+          >
+            <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   {/if}
@@ -242,6 +246,11 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  /* Center theme selector in first section */
+  .settings-section:first-of-type {
+    align-items: center;
   }
 
   .section-title {
@@ -328,6 +337,32 @@
 
   .menu-item.reset-btn:hover .menu-icon {
     color: rgba(255, 120, 120, 1);
+  }
+
+  /* Developer buttons row layout */
+  .dev-buttons-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  /* Square button styling */
+  .menu-item.square-btn {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-item.square-btn .menu-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .menu-item.square-btn:hover {
+    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {
