@@ -11,7 +11,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise', 'custom'];
+  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise'];
   const scaleOptions = [...Object.keys(scales), 'custom'];
   const filterOptions = ['none', 'lowpass', 'highpass', 'bandpass'];
 
@@ -154,24 +154,6 @@
           {/each}
         </select>
       </div>
-
-      {#if currentTrack.waveform === 'custom'}
-        <div class="control">
-          <label for="custom-shape">Custom shape</label>
-          <div class="slider-field">
-            <input
-              id="custom-shape"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={currentTrack.customShape ?? 0.5}
-              on:input={(event) => handleChange('customShape', Number(event.target.value))}
-            />
-            <span>{Math.round((currentTrack.customShape ?? 0.5) * 100)}%</span>
-          </div>
-        </div>
-      {/if}
 
       <div class="control">
         <label for="scale">Scale</label>
