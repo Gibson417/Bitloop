@@ -216,11 +216,11 @@
         
         // Use different opacity/color for bar boundaries vs quarter-bar boundaries vs sub-beats
         if (isBarBoundary) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.55); // Increased from 0.35 for better visibility
+          ctx.strokeStyle = hexToRgba(trackColor, 0.75); // Increased for better visibility
         } else if (isQuarterBarBoundary) {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)'; // Increased from grid style for better visibility
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)'; // Increased for better visibility
         } else if (isZoomed) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.12); // Increased from 0.08 for better visibility
+          ctx.strokeStyle = hexToRgba(trackColor, 0.18); // Increased for better visibility
         } else {
           continue; // Skip non-boundary lines in normal view
         }

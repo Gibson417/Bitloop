@@ -8,7 +8,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise', 'custom'];
+  const waveformOptions = ['sine', 'square', 'triangle', 'sawtooth', 'noise'];
   const scaleOptions = [...Object.keys(scales), 'custom'];
   const rootNoteOptions = [
     { value: 0, label: 'C' },
@@ -97,24 +97,6 @@
         on:change={(event) => handleChange('waveform', event.detail.value)}
       />
     </div>
-
-    {#if track.waveform === 'custom'}
-      <div class="control slider-control">
-        <label for={`custom-shape-${trackIndex}`}>Custom shape</label>
-        <div class="slider-field">
-          <input
-            id={`custom-shape-${trackIndex}`}
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={track.customShape ?? 0.5}
-            on:input={(event) => handleChange('customShape', Number(event.target.value))}
-          />
-          <span>{Math.round((track.customShape ?? 0.5) * 100)}%</span>
-        </div>
-      </div>
-    {/if}
 
     <div class="control plain">
       <ArrowSelector
