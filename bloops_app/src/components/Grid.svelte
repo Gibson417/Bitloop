@@ -174,6 +174,7 @@
       const logicalToDisplayScale = zoom / stepsPerBarSafe;
       
       // Use manual window if set, otherwise follow playhead only if follow mode is enabled
+      // Window offset is in display coordinates
       const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       
