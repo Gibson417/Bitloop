@@ -86,7 +86,7 @@
   }
 </script>
 
-<div class="trackbar">
+<div class="trackbar" data-component="TrackBar">
   <div class="track-list" role="tablist" aria-label="Tracks">
     {#each tracks as track, idx}
       <button

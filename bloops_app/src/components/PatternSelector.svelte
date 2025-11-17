@@ -82,7 +82,7 @@
   $: canRemove = patterns.length > 1;
 </script>
 
-<div class="pattern-selector">
+<div class="pattern-selector" data-component="PatternSelector">
   <div class="pattern-header">
     <h3 class="pattern-title">Patterns</h3>
     <button

@@ -34,6 +34,7 @@
   let loopDurationValue = 0;
   let maxBarsValue = 0;
   let devModeEnabled = false;
+  let hoveredComponent = '';
 
   const unsubscribers = [
     project.subscribe((value) => (projectState = value)),
@@ -833,6 +834,25 @@
     
     window.addEventListener('wheel', handleGlobalWheel, { passive: true });
     
+    // Dev mode hover tracking
+    const handleGlobalMouseOver = (event) => {
+      if (!devModeEnabled) return;
+      
+      // Find the closest element with data-component attribute
+      let target = event.target;
+      while (target && target !== document.body) {
+        if (target.dataset && target.dataset.component) {
+          hoveredComponent = target.dataset.component;
+          return;
+        }
+        target = target.parentElement;
+      }
+      // If no data-component found, clear the tooltip
+      hoveredComponent = '';
+    };
+    
+    window.addEventListener('mouseover', handleGlobalMouseOver);
+    
     return () => {
       disposed = true;
       stopPlayback();
@@ -841,6 +861,7 @@
       }
       window.removeEventListener('keydown', handleGlobalKeydown);
       window.removeEventListener('wheel', handleGlobalWheel);
+      window.removeEventListener('mouseover', handleGlobalMouseOver);
     };
   });
 
@@ -885,6 +906,13 @@
     <div class="dev-mode-indicator">
       <span>DEV MODE</span>
       <kbd>Ctrl+Shift+D</kbd>
+    </div>
+    <div class="dev-mode-tooltip">
+      {#if hoveredComponent}
+        <div class="tooltip-content">{hoveredComponent}</div>
+      {:else}
+        <div class="tooltip-content tooltip-empty">Hover over components</div>
+      {/if}
     </div>
   {/if}
   {#if mountError}
@@ -1747,35 +1775,41 @@
     font-family: monospace;
   }
 
-  /* Dev mode tooltips - only show when dev mode is enabled */
-  .dev-mode [data-component] {
-    position: relative;
+  /* Dev mode fixed tooltip box in bottom-right corner */
+  .dev-mode-tooltip {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 200px;
+    max-width: 400px;
+    pointer-events: none;
   }
 
-  .dev-mode [data-component]:hover::after {
-    content: attr(data-component);
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 9999;
-    padding: 6px 10px;
+  .tooltip-content {
+    padding: 12px 16px;
     background: rgba(255, 165, 0, 0.95);
     color: #000;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     font-weight: 700;
     font-family: 'Courier New', monospace;
     letter-spacing: 0.05em;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    white-space: nowrap;
-    pointer-events: none;
-    animation: devTooltipFade 0.15s ease-in;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    word-break: break-word;
+    animation: tooltipFadeIn 0.2s ease-out;
   }
 
-  @keyframes devTooltipFade {
+  .tooltip-empty {
+    opacity: 0.6;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  @keyframes tooltipFadeIn {
     from {
       opacity: 0;
-      transform: translateY(-4px);
+      transform: translateY(8px);
     }
     to {
       opacity: 1;
@@ -1783,9 +1817,9 @@
     }
   }
 
-  /* Hide dev tooltips on reduced motion */
+  /* Hide tooltip animation on reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .dev-mode [data-component]:hover::after {
+    .tooltip-content {
       animation: none;
     }
   }
