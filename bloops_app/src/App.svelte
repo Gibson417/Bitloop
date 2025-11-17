@@ -1104,17 +1104,17 @@
       </div>
     </div>
     <div class="arranger-panel" data-component="PatternArrangerPanel">
-      <PatternArranger />
+      <PatternArranger
+        {patterns}
+        {selectedPattern}
+        on:patternselect={handlePatternSelect}
+        on:patternadd={handlePatternAdd}
+        on:patternduplicate={handlePatternDuplicate}
+        on:patternremove={handlePatternRemove}
+        on:patternrename={handlePatternRename}
+      />
     </div>
-    <Footer
-      patterns={patterns}
-      selectedPattern={selectedPattern}
-      on:patternselect={handlePatternSelect}
-      on:patternadd={handlePatternAdd}
-      on:patternduplicate={handlePatternDuplicate}
-      on:patternremove={handlePatternRemove}
-      on:patternrename={handlePatternRename}
-    />
+    <Footer />
   </section>
 </main>
 
