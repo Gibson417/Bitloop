@@ -345,9 +345,8 @@
     const oldZoom = zoomLevel;
     zoomLevel = event.detail.level;
     
-    // When zoom changes, automatically update note length to match the new zoom level
-    // This ensures that the note length selector stays in sync with the grid resolution
-    selectedNoteLength = `${zoomLevel}`;
+    // Note: Zoom and note length are now independent
+    // Users can view the grid at any zoom level while placing notes of any duration
     
     // When zoom changes, reset manual window to ensure it's valid
     // If we're in manual mode, try to keep approximately the same position
@@ -796,6 +795,42 @@
     
     window.addEventListener('keydown', handleGlobalKeydown);
     
+    // Track last wheel event time to debounce rapid events
+    let lastWheelTime = 0;
+    const WHEEL_DEBOUNCE = 300; // ms between window switches
+    
+    // Global wheel handler for horizontal trackpad swipes to switch windows
+    const handleGlobalWheel = (event) => {
+      // Only handle horizontal scrolling (trackpad swipes)
+      // deltaX > 0 means swipe left (next window), deltaX < 0 means swipe right (previous window)
+      const absX = Math.abs(event.deltaX);
+      const absY = Math.abs(event.deltaY);
+      
+      // Only handle if horizontal movement is dominant and significant
+      if (absX > absY && absX > 20) {
+        const now = Date.now();
+        if (now - lastWheelTime < WHEEL_DEBOUNCE) {
+          return; // Too soon, ignore
+        }
+        lastWheelTime = now;
+        
+        // Determine direction and switch windows
+        if (event.deltaX > 0) {
+          // Swipe left -> next window
+          if (currentWindow < totalWindows - 1) {
+            handleWindowSwitch({ detail: { window: currentWindow + 1 } });
+          }
+        } else {
+          // Swipe right -> previous window
+          if (currentWindow > 0) {
+            handleWindowSwitch({ detail: { window: currentWindow - 1 } });
+          }
+        }
+      }
+    };
+    
+    window.addEventListener('wheel', handleGlobalWheel, { passive: true });
+    
     return () => {
       disposed = true;
       stopPlayback();
@@ -803,6 +838,7 @@
         audioContext.close?.();
       }
       window.removeEventListener('keydown', handleGlobalKeydown);
+      window.removeEventListener('wheel', handleGlobalWheel);
     };
   });
 
