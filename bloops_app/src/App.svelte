@@ -1069,20 +1069,6 @@
             on:zoom={handleZoomChange}
           />
         </div>
-        
-        <!-- Secondary tools: Follow toggle and window navigation (right-aligned) -->
-        <div class="toolbar-secondary">
-          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
-          <div class="toolbar-divider" aria-hidden="true"></div>
-          <div class="window-switcher-group">
-            <WindowSwitcher
-              {currentWindow}
-              {totalWindows}
-              trackColor={trackColor}
-              on:switch={handleWindowSwitch}
-            />
-          </div>
-        </div>
       </div>
         <div class="grid-backdrop" data-component="GridBackdrop">
           <Grid
@@ -1132,6 +1118,16 @@
         <div class="tempo-bar-field">
           <span class="tempo-bar-label">Loop length</span>
           <span class="tempo-bar-value">{loopSecondsDisplay}s</span>
+        </div>
+        <div class="tempo-bar-divider" aria-hidden="true"></div>
+        <div class="tempo-bar-controls">
+          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+          <WindowSwitcher
+            {currentWindow}
+            {totalWindows}
+            trackColor={trackColor}
+            on:switch={handleWindowSwitch}
+          />
         </div>
       </div>
     </div>
@@ -1511,7 +1507,7 @@
   .grid-toolbar {
     display: flex;
     align-items: center; /* Center all toolbar items vertically */
-    justify-content: space-between;
+    justify-content: flex-start; /* Align to left since we removed secondary tools */
     gap: 16px; /* Design system: 2 × 8px base */
     margin: 0 0 0; /* Remove bottom margin to anchor to grid */
     padding: 12px 14px; /* Add padding to create internal spacing */
@@ -1530,14 +1526,6 @@
     gap: 16px; /* Design system: 2 × 8px base */
     flex: 1;
     min-width: 0; /* Allow shrinking */
-  }
-
-  /* Secondary tools group: Zoom and window switcher (right side) */
-  .toolbar-secondary {
-    display: flex;
-    align-items: center; /* Center items vertically for alignment */
-    gap: 12px; /* Slightly tighter spacing for secondary controls */
-    flex-shrink: 0; /* Don't shrink secondary tools */
   }
 
   .note-length-group {
@@ -1559,11 +1547,6 @@
     height: 32px;
     background: rgba(255, 255, 255, 0.08); /* Subtle vertical line */
     flex-shrink: 0;
-  }
-
-  .window-switcher-group {
-    display: flex;
-    align-items: center; /* Center for consistent toolbar alignment */
   }
 
   .grid-backdrop {
@@ -1604,6 +1587,20 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .tempo-bar-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+  }
+
+  .tempo-bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto; /* Push to the right */
   }
 
   .tempo-bar-label {
@@ -1694,8 +1691,7 @@
       border-radius: 12px 12px 0 0; /* Maintain connection */
     }
 
-    .toolbar-primary,
-    .toolbar-secondary {
+    .toolbar-primary {
       flex-direction: column;
       gap: 12px;
       width: 100%;
@@ -1703,12 +1699,6 @@
 
     .note-length-group {
       width: 100%;
-    }
-
-    .window-switcher-group {
-      width: 100%;
-      margin-left: 0;
-      justify-content: center;
     }
 
     .grid-backdrop {
@@ -1744,6 +1734,13 @@
 
     .tempo-bar-input {
       width: 80px;
+    }
+
+    .tempo-bar-controls {
+      flex-direction: column;
+      width: 100%;
+      margin-left: 0;
+      gap: 12px;
     }
   }
 

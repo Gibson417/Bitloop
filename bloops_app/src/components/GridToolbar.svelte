@@ -17,7 +17,7 @@
 </script>
 
 <div class="grid-toolbar" data-component="GridToolbar">
-  <span class="toolbar-label">Draw</span>
+  <span class="toolbar-label">Tools</span>
   <div class="tool-buttons">
     <button
       type="button"
@@ -79,7 +79,7 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    opacity: 0.6; /* Reduced from 0.7 for subtler label */
+    opacity: 0.7; /* Increased for better visibility */
     margin: 0;
     white-space: nowrap;
   }
@@ -136,16 +136,16 @@
     display: flex;
     gap: 6px;
     align-items: center;
-    margin-left: 8px;
+    margin-left: 0; /* Remove left margin to anchor buttons next to draw tool */
   }
 
   .history-btn {
-    min-width: 44px; /* WCAG 2.2 AA touch target minimum */
-    min-height: 44px;
+    min-width: 36px; /* Match draw tool button size */
+    min-height: 36px;
     border-radius: 8px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
-    background: rgba(var(--color-accent-rgb), 0.16);
-    color: rgba(var(--color-accent-rgb), 0.9);
+    border: 2px solid rgba(var(--color-accent-rgb), 0.4); /* Match draw tool border thickness */
+    background: rgba(var(--color-accent-rgb), 0.12); /* Match draw tool background */
+    color: rgba(var(--color-accent-rgb), 0.8); /* Match draw tool color */
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -162,11 +162,11 @@
   }
 
   .history-btn:hover:not(:disabled) {
-    border-color: rgba(var(--color-accent-rgb), 0.6);
-    background: rgba(var(--color-accent-rgb), 0.26);
-    color: var(--color-text);
+    border-color: rgba(var(--color-accent-rgb), 0.5); /* Match draw tool hover */
+    background: rgba(var(--color-accent-rgb), 0.18); /* Subtle hover like draw tool */
+    color: rgba(var(--color-accent-rgb), 1);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
+    box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.25); /* Match draw tool glow */
   }
 
   .history-btn:focus-visible {
