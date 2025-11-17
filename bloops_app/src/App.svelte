@@ -6,8 +6,7 @@
   import GridToolbar from './components/GridToolbar.svelte';
   import ZoomControls from './components/ZoomControls.svelte';
   import TrackSelector from './components/TrackSelector.svelte';
-  import TrackControls from './components/TrackControls.svelte';
-  import TrackEffectsPanel from './components/TrackEffectsPanel.svelte';
+  import TrackConfigPanel from './components/TrackConfigPanel.svelte';
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
   import SettingsMenu from './components/SettingsMenu.svelte';
@@ -1031,8 +1030,8 @@
         </div>
       </div>
     </div>
-    <div class="track-controls-wrapper" data-component="TrackControlsWrapper">
-      <TrackControls
+    <div class="track-config-wrapper" data-component="TrackConfigWrapper">
+      <TrackConfigPanel
         track={activeTrack}
         trackIndex={projectState?.selectedTrack ?? 0}
         on:update={handleTrackUpdate}
@@ -1101,13 +1100,6 @@
           on:windowinfo={handleWindowInfo}
         />
       </div>
-    </div>
-    <div class="track-effects-wrapper" data-component="TrackEffectsWrapper">
-      <TrackEffectsPanel
-        track={activeTrack}
-        trackIndex={projectState?.selectedTrack ?? 0}
-        on:update={handleTrackUpdate}
-      />
     </div>
     <div class="arranger-panel" data-component="PatternArrangerPanel">
       <PatternArranger />
@@ -1445,14 +1437,9 @@
     flex-direction: column;
   }
 
-  .track-controls-wrapper {
+  .track-config-wrapper {
     padding: 0 20px;
-    margin-bottom: 20px; /* Increased from 16px for better breathing room */
-  }
-
-  .track-effects-wrapper {
-    padding: 0 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .arranger-panel {
