@@ -1515,14 +1515,15 @@
 
   .grid-backdrop {
     position: relative;
-    border-radius: 0 0 16px 16px; /* Round only bottom corners to connect with toolbar */
+    border-radius: 0; /* No rounding - connects toolbar above and tempo bar below */
     padding: 14px;
     box-sizing: border-box;
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
     border-top: none; /* Remove top border to merge with toolbar */
+    border-bottom: none; /* Remove bottom border to merge with tempo bar */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    margin-bottom: 16px;
+    margin-bottom: 0; /* Remove gap to connect with tempo bar */
     min-height: 300px;
     flex: 1;
     display: flex;
@@ -1538,10 +1539,12 @@
     justify-content: flex-start;
     gap: 24px;
     padding: 12px 16px;
-    margin-top: 12px;
-    border-radius: 12px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
-    border: 1px solid rgba(var(--color-accent-rgb), 0.24);
+    margin-top: 0; /* Remove gap to anchor to grid */
+    margin-bottom: 16px; /* Add bottom margin for spacing from content below */
+    border-radius: 0 0 12px 12px; /* Round only bottom corners to complete the anchored unit */
+    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88))); /* Match grid background */
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3); /* Match grid border */
+    border-top: none; /* Remove top border to merge with grid */
   }
 
   .tempo-bar-field {
@@ -1657,8 +1660,9 @@
 
     .grid-backdrop {
       padding: 12px;
-      border-radius: 0 0 18px 18px; /* Maintain connection, slightly larger radius on mobile */
+      border-radius: 0; /* Maintain connection on mobile */
       border-top: none;
+      border-bottom: none; /* Keep anchored to tempo bar */
     }
 
     .app-rail {
