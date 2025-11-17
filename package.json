@@ -2,6 +2,10 @@
   "name": "bitloop-repo",
   "private": true,
   "scripts": {
+    "postinstall": "npm --prefix bloops_app install",
+    "dev": "npm --prefix bloops_app run dev",
+    "build": "npm --prefix bloops_app run build",
+    "preview": "npm --prefix bloops_app run preview",
     "test:run": "npm --prefix bloops_app run test:run",
     "test": "npm --prefix bloops_app test"
   }
