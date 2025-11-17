@@ -432,12 +432,12 @@
     const logicalCol = displayCol / logicalToDisplayScale;
     if (logicalCol >= sourceColumns) return;
 
-    const stepIndex = Math.floor(logicalCol);
-
-    // Compute storage indices for the start and length so the event carries
-    // high-resolution (internal) indices rather than logical indices.
+    // Calculate storage position directly from display column to support fine-grained placement
+    // When zoom > stepsPerBar, we have finer resolution than logical grid
+    // Map display column directly to storage resolution to preserve precision
     const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-    const storageStart = Math.max(0, Math.floor(stepIndex * storagePerLogical));
+    const storagePerDisplay = BASE_RESOLUTION / Math.max(1, zoom);
+    const storageStart = Math.max(0, Math.floor(displayCol * storagePerDisplay));
 
     // Calculate note length based on noteLengthDenominator (e.g., 16 for 1/16, 32 for 1/32)
     // This determines the duration of placed notes, independent of zoom level
@@ -446,8 +446,9 @@
     // Use full note length - no reduction. Notes should span their full duration.
     const noteStorageLength = fullNoteStorageLength;
 
-    // Calculate full cell width for detection purposes
-    const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
+    // Calculate full cell width for detection purposes based on current zoom level
+    // This ensures we detect notes at the correct resolution for the current grid density
+    const fullStorageLength = Math.max(1, Math.round(storagePerDisplay));
 
     // Determine current state at the underlying storage slice we're about to modify
     const sliceStart = storageStart;
@@ -618,13 +619,12 @@
       const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
       const windowOffset = currentWindow * visibleColumns;
       
-      // Map display column to logical column using inverse scale
+      // Map display column directly to storage position for fine-grained placement
       const displayCol = windowOffset + focusedCol;
-      const logicalCol = displayCol / logicalToDisplayScale;
+      const storagePerDisplay = BASE_RESOLUTION / Math.max(1, zoom);
+      const storageStart = Math.floor(displayCol * storagePerDisplay);
       
       const storageColumns = Math.max(1, Math.floor(sourceColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-      const storagePerLogical = BASE_RESOLUTION / Math.max(1, stepsPerBarSafe);
-      const storageStart = Math.floor(logicalCol * storagePerLogical);
       
       // Calculate note length based on noteLengthDenominator (for duration, independent of zoom)
       const noteDenom = Number(noteLengthDenominator) || stepsPerBarSafe;
@@ -633,8 +633,8 @@
       const noteStorageLength = fullNoteStorageLength;
       const storageLength = noteStorageLength;
       
-      // Calculate full cell width for detection purposes
-      const fullStorageLength = Math.max(1, Math.round(storagePerLogical));
+      // Calculate full cell width for detection purposes based on current zoom level
+      const fullStorageLength = Math.max(1, Math.round(storagePerDisplay));
       
       // Get current state of the cell - use some() to detect ANY active notes
       const sliceStart = storageStart;
