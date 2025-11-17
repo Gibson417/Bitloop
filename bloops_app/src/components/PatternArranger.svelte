@@ -76,7 +76,7 @@
   };
 </script>
 
-<section class="arranger">
+<section class="arranger" data-component="PatternArranger">
   <header class="arranger__header">
     <div>
       <h2>Pattern Arranger</h2>

@@ -66,7 +66,7 @@
   $: colorToUse = useThemeColor ? 'rgba(var(--color-accent-rgb), 1)' : trackColor;
 </script>
 
-<div class="arrow-selector" class:disabled class:compact class:fixed-width={fixedWidth} role="group" aria-labelledby={label ? `label-${uniqueId}` : undefined}>
+<div class="arrow-selector" class:disabled class:compact class:fixed-width={fixedWidth} role="group" aria-labelledby={label ? `label-${uniqueId}` : undefined} data-component="ArrowSelector">
   {#if label}
     <div id="label-{uniqueId}" class="selector-label">{label}</div>
   {/if}
@@ -81,6 +81,7 @@
       disabled={disabled}
       tabindex="0"
       style="border-color: {colorToUse}33; color: {colorToUse};"
+      data-component="ArrowButton:Previous"
     >
       ◀
     </button>
@@ -103,6 +104,7 @@
       disabled={disabled}
       tabindex="0"
       style="border-color: {colorToUse}33; color: {colorToUse};"
+      data-component="ArrowButton:Next"
     >
       ▶
     </button>

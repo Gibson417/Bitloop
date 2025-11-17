@@ -79,7 +79,7 @@
   $: formattedValue = formatValue(numericValue);
 </script>
 
-<label class={`knob-control ${className}`}>
+<label class={`knob-control ${className}`} data-component="KnobControl">
   {#if label}
     <span class="knob-label">{label}</span>
   {/if}

@@ -15,7 +15,7 @@
   };
 </script>
 
-<section class="transport" aria-label="Pattern Arranger Transport Controls">
+<section class="transport" aria-label="Pattern Arranger Transport Controls" data-component="ArrangerTransport">
   <div class="transport__controls">
     <button 
       class="transport__button" 
@@ -23,6 +23,7 @@
       on:click={togglePlayback}
       aria-label={$playback.isPlaying ? 'Stop playback' : 'Play arrangement'}
       aria-pressed={$playback.isPlaying}
+      data-component="ArrangerPlayButton"
     >
       {$playback.isPlaying ? 'Stop' : 'Play'}
     </button>
