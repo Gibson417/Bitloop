@@ -5,6 +5,7 @@
   import {
     BEAT_SNAP,
     addPatternToLane,
+    blocks,
     blocksWithPattern,
     moveBlock,
     patterns as arrangerPatterns,
@@ -33,13 +34,21 @@
   );
 
   // Sync arrangerStore patterns with projectStore patterns
+  // Also filter out blocks that reference invalid pattern IDs
   $: if (patterns.length > 0) {
-    arrangerPatterns.set(patterns.map((p, idx) => ({
+    const newPatterns = patterns.map((p, idx) => ({
       id: p.id,
       name: p.name,
       color: getPatternColor(idx),
       lengthInBeats: Math.round((p.bars || 2) * (beatsPerBar || 4))
-    })));
+    }));
+    arrangerPatterns.set(newPatterns);
+    
+    // Remove blocks with invalid pattern IDs
+    const validPatternIds = new Set(newPatterns.map(p => p.id));
+    blocks.update(current => 
+      current.filter(block => validPatternIds.has(block.patternId))
+    );
   }
 
   const handlePaletteAdd = (patternId, lane = 0) => {
