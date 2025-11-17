@@ -45,7 +45,13 @@ export const resetArrangerState = () => {
   patterns.set(clonePatterns());
   blocks.set(cloneBlocks());
   blockCounter = DEMO_BLOCKS.length + 1;
-  stopPlayback();
+  
+  // Clear any existing playback interval
+  if (playbackInterval) {
+    clearInterval(playbackInterval);
+    playbackInterval = null;
+  }
+  
   playback.set({ ...INITIAL_PLAYBACK, isPlaying: false, playheadBeat: 0 });
 };
 
