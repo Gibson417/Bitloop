@@ -960,36 +960,6 @@
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
       />
-      <div class="rail-stats" data-component="RailStats">
-        <div class="stat-field">
-          <label for="rail-tempo" class="label">Tempo</label>
-          <input
-            id="rail-tempo"
-            type="number"
-            min="30"
-            max="260"
-            value={projectState?.bpm ?? 120}
-            on:input={handleBpmChange}
-            class="stat-input"
-          />
-        </div>
-        <div class="stat-field">
-          <label for="rail-bars" class="label">Bars</label>
-          <input
-            id="rail-bars"
-            type="number"
-            min="1"
-            max={maxBarsValue}
-            value={totalBars}
-            on:change={handleBarsChange}
-            class="stat-input"
-          />
-        </div>
-        <div>
-          <span class="label">Loop length</span>
-          <span class="value">{loopSecondsDisplay}s</span>
-        </div>
-      </div>
     </div>
   </aside>
   <section class="workspace" data-component="Workspace">
@@ -1101,6 +1071,37 @@
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
         />
+      </div>
+      <div class="tempo-bar" data-component="TempoBar">
+        <div class="tempo-bar-field">
+          <label for="tempo-bar-bpm" class="tempo-bar-label">Tempo</label>
+          <input
+            id="tempo-bar-bpm"
+            type="number"
+            min="30"
+            max="260"
+            value={projectState?.bpm ?? 120}
+            on:input={handleBpmChange}
+            class="tempo-bar-input"
+          />
+          <span class="tempo-bar-unit">BPM</span>
+        </div>
+        <div class="tempo-bar-field">
+          <label for="tempo-bar-bars" class="tempo-bar-label">Bars</label>
+          <input
+            id="tempo-bar-bars"
+            type="number"
+            min="1"
+            max={maxBarsValue}
+            value={totalBars}
+            on:change={handleBarsChange}
+            class="tempo-bar-input"
+          />
+        </div>
+        <div class="tempo-bar-field">
+          <span class="tempo-bar-label">Loop length</span>
+          <span class="tempo-bar-value">{loopSecondsDisplay}s</span>
+        </div>
       </div>
     </div>
     <div class="arranger-panel" data-component="PatternArrangerPanel">
@@ -1269,62 +1270,6 @@
     text-transform: uppercase;
     line-height: 1.1;
     white-space: nowrap;
-  }
-
-  .rail-stats {
-    margin-top: auto;
-    display: grid;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 14px;
-    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
-    border: 1px solid rgba(var(--color-accent-rgb), 0.24);
-  }
-
-  .rail-stats .label {
-    display: block;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
-    margin-bottom: 5px;
-    font-weight: 600;
-  }
-
-  .rail-stats .value {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--color-text, #fff);
-  }
-
-  .stat-field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .stat-input {
-    background: rgba(0, 0, 0, 0.35);
-    color: var(--color-text, #fff);
-    border-radius: 8px;
-    border: 1px solid rgba(var(--color-text, 255, 255, 255), 0.15);
-    padding: 7px 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    appearance: textfield;
-    width: 100%;
-    display: block;
-  }
-
-  .stat-input::-webkit-outer-spin-button,
-  .stat-input::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
-  }
-
-  .stat-input:focus {
-    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
-    outline-offset: 2px;
   }
 
   .workspace {
@@ -1559,6 +1504,71 @@
     height: auto;
   }
 
+  .tempo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 24px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.24);
+  }
+
+  .tempo-bar-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tempo-bar-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tempo-bar-input {
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--color-text, #fff);
+    border-radius: 8px;
+    border: 1px solid rgba(var(--color-text, 255, 255, 255), 0.15);
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    appearance: textfield;
+    width: 70px;
+    text-align: center;
+  }
+
+  .tempo-bar-input::-webkit-outer-spin-button,
+  .tempo-bar-input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .tempo-bar-input:focus {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
+    outline-offset: 2px;
+  }
+
+  .tempo-bar-unit {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.6));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tempo-bar-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text, #fff);
+  }
+
   @media (max-width: 960px) {
     .app {
       grid-template-columns: 1fr;
@@ -1571,10 +1581,6 @@
     
     .rail-inner {
       max-width: 100%;
-    }
-    
-    .rail-stats {
-      grid-template-columns: repeat(2, 1fr);
     }
 
     /* Tablet: slightly tighter toolbar spacing */
@@ -1640,6 +1646,20 @@
       width: 100%;
       justify-content: space-between;
     }
+
+    .tempo-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .tempo-bar-field {
+      justify-content: space-between;
+    }
+
+    .tempo-bar-input {
+      width: 80px;
+    }
   }
 
   @media (max-width: 560px) {
@@ -1653,10 +1673,6 @@
     
     .app-rail {
       padding: 12px;
-    }
-    
-    .rail-stats {
-      grid-template-columns: 1fr;
     }
     
     .brand-logo {
