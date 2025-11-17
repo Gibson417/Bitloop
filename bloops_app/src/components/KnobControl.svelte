@@ -119,7 +119,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text);
     font-size: 0.8rem;
     text-align: center;
     user-select: none;
@@ -130,7 +130,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
   }
 
   .knob-shell {
@@ -211,7 +211,7 @@
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.82);
+    color: var(--color-text-muted);
   }
 
   .knob-control:has(.knob-input:disabled) {

@@ -769,7 +769,7 @@
 <div class="grid-container" data-component="Grid">
   <div class="note-labels" style={`height: ${layout.height || 256}px`}>
     {#if noteLabels.length === 0}
-      <div class="note-label" style={`color: rgba(255,255,255,0.5); height: 32px;`}>
+      <div class="note-label" style={`color: var(--color-text-muted); height: 32px;`}>
         Loading...
       </div>
     {/if}

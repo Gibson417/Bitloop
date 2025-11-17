@@ -176,7 +176,7 @@
     border: 1.5px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.3);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -188,7 +188,7 @@
   .close-btn:hover {
     background: rgba(255, 100, 100, 0.15);
     border-color: rgba(255, 100, 100, 0.4);
-    color: #fff;
+    color: var(--color-text);
     transform: scale(1.05);
   }
 
@@ -230,14 +230,14 @@
   .guide-header h2 {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text);
     margin: 0 0 8px;
     letter-spacing: -0.01em;
   }
 
   .guide-subtitle {
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     margin: 0;
     line-height: 1.5;
   }
@@ -261,7 +261,7 @@
   .guide-section p {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
     margin: 0;
   }
 
@@ -296,7 +296,7 @@
 
   .shortcut-item span {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-muted);
   }
 
   .tips-list {
@@ -329,7 +329,7 @@
   .tips-list li span {
     font-size: 0.9rem;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-muted);
   }
 
   @media (max-width: 640px) {

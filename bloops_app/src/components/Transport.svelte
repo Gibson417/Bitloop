@@ -99,7 +99,7 @@
   .play-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(var(--color-accent-rgb), 0.3);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .play-button:focus-visible {
@@ -133,7 +133,7 @@
     transform: translateY(-1px);
     background: rgba(var(--color-accent-rgb), 0.24);
     border-color: rgba(var(--color-accent-rgb), 0.5);
-    color: #fff;
+    color: var(--color-text);
     box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 

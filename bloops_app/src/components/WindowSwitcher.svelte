@@ -89,7 +89,7 @@
   .window-nav-btn:hover:not(:disabled) {
     background: rgba(var(--color-accent-rgb), 0.18); /* Reduced from 0.22 */
     border-color: rgba(var(--color-accent-rgb), 0.4); /* Reduced from 0.5 */
-    color: #fff;
+    color: var(--color-text);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2); /* Reduced from 0.25 */
   }

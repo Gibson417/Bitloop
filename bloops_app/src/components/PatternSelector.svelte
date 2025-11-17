@@ -167,7 +167,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-muted);
   }
 
   .add-pattern-btn {
@@ -266,7 +266,7 @@
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.3);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
     font-size: 1.2rem;
     line-height: 1;
     cursor: pointer;
@@ -280,14 +280,14 @@
   .pattern-action-btn:hover {
     border-color: rgba(var(--color-accent-rgb), 0.5);
     background: rgba(var(--color-accent-rgb), 0.2);
-    color: #fff;
+    color: var(--color-text);
     transform: scale(1.05);
   }
 
   .pattern-action-btn.remove:hover {
     border-color: rgba(255, 100, 100, 0.5);
     background: rgba(255, 100, 100, 0.2);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .pattern-action-btn:focus-visible {

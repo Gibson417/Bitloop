@@ -87,7 +87,7 @@
   }
 
   .transport__label {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

@@ -32,7 +32,7 @@
     border-radius: 6px;
     border: none;
     background: transparent;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -44,7 +44,7 @@
 
   .follow-toggle:hover {
     background: rgba(var(--color-accent-rgb), 0.15);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .follow-toggle:focus-visible {
@@ -54,7 +54,7 @@
 
   .follow-toggle.active {
     background: transparent;
-    color: #fff;
+    color: var(--color-text);
   }
 
   .follow-toggle .indicator {
@@ -72,7 +72,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--color-text);
     top: 1px;
     left: 1px;
     transition: transform 0.2s ease;

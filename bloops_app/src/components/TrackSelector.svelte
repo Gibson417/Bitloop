@@ -160,7 +160,7 @@
     text-transform: uppercase;
     letter-spacing: 0.14em;
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
     font-weight: 700;
   }
 
@@ -197,7 +197,7 @@
     border-color: rgba(var(--color-accent-rgb), 0.6);
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .action-button:focus-visible {
@@ -244,7 +244,7 @@
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(var(--color-background, 17, 20, 29), 0.5);
-    color: var(--color-text, #fff);
+    color: var(--color-text);
     text-align: left;
     gap: 6px;
     transition: all 0.2s ease;
@@ -310,7 +310,7 @@
   .track-meta {
     font-size: 0.75rem;
     text-transform: capitalize;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
   }
 
   .toggle-btn {
@@ -319,7 +319,7 @@
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-muted);
     font-weight: 700;
     font-size: 0.8rem;
     cursor: pointer;
@@ -344,7 +344,7 @@
   .toggle-btn.active {
     border-color: rgba(var(--color-accent-rgb), 0.7);
     background: rgba(var(--color-accent-rgb), 0.25);
-    color: #fff;
+    color: var(--color-text);
     box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.3);
   }
 
@@ -360,7 +360,7 @@
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-muted);
     font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
@@ -374,7 +374,7 @@
   .remove-button:hover {
     background: rgba(255, 80, 80, 0.3);
     border-color: rgba(255, 80, 80, 0.5);
-    color: #fff;
+    color: var(--color-text);
     transform: scale(1.05);
   }
 
