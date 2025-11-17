@@ -14,6 +14,7 @@
   import KnobControl from './components/KnobControl.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
+  import PatternArranger from './components/PatternArranger.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
@@ -1108,6 +1109,9 @@
         on:update={handleTrackUpdate}
       />
     </div>
+    <div class="arranger-panel" data-component="PatternArrangerPanel">
+      <PatternArranger />
+    </div>
     <Footer
       patterns={patterns}
       selectedPattern={selectedPattern}
@@ -1449,6 +1453,10 @@
   .track-effects-wrapper {
     padding: 0 20px;
     margin-bottom: 16px;
+  }
+
+  .arranger-panel {
+    padding: 0 20px 20px;
   }
 
   .volume-card {
