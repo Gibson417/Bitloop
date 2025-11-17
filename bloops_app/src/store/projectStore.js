@@ -416,6 +416,16 @@ const initialState = normalizeState({
 
 const snapshotSignature = (snapshot) => JSON.stringify(snapshot);
 
+// Grid-specific history for note changes only
+const gridHistoryStatusStore = writable({ canUndo: false, canRedo: false });
+
+// Helper to create a snapshot of only the grid/note data
+const toGridSnapshot = (state) => ({
+  tracks: snapshotTracks(state.tracks)
+});
+
+const gridSnapshotSignature = (snapshot) => JSON.stringify(snapshot);
+
 const historyStatusStore = writable({ canUndo: false, canRedo: false });
 
 const createProjectStore = () => {
@@ -426,8 +436,17 @@ const createProjectStore = () => {
   let historyFuture = [];
   let suppressHistory = false;
 
+  // Grid-specific history (only tracks note changes)
+  let gridHistoryPast = [];
+  let gridHistoryFuture = [];
+  let suppressGridHistory = false;
+
   const updateHistoryStatus = () => {
     historyStatusStore.set({ canUndo: historyPast.length > 0, canRedo: historyFuture.length > 0 });
+  };
+
+  const updateGridHistoryStatus = () => {
+    gridHistoryStatusStore.set({ canUndo: gridHistoryPast.length > 0, canRedo: gridHistoryFuture.length > 0 });
   };
 
   const pushHistory = (snapshot) => {
@@ -437,6 +456,13 @@ const createProjectStore = () => {
     updateHistoryStatus();
   };
 
+  const pushGridHistory = (gridSnapshot) => {
+    if (suppressGridHistory) return;
+    gridHistoryPast = [...gridHistoryPast, gridSnapshot].slice(-MAX_HISTORY);
+    gridHistoryFuture = [];
+    updateGridHistoryStatus();
+  };
+
   const applySnapshot = (snapshot) => {
     suppressHistory = true;
     set(normalizeState({ ...snapshot, playing: false, follow: snapshot.follow ?? DEFAULT_FOLLOW }));
@@ -444,8 +470,33 @@ const createProjectStore = () => {
     updateHistoryStatus();
   };
 
+  const applyGridSnapshot = (gridSnapshot) => {
+    suppressGridHistory = true;
+    update((state) => {
+      // Only update tracks/notes, preserve all other state
+      const tracks = gridSnapshot.tracks.map((track, index) => ({
+        ...state.tracks[index],
+        notes: track.notes.map(row => [...row])
+      }));
+      
+      // Update patterns if they exist
+      if (state.patterns && Array.isArray(state.patterns)) {
+        const patterns = state.patterns.map((pattern, idx) => {
+          if (idx !== state.selectedPattern) return pattern;
+          return { ...pattern, tracks };
+        });
+        return { ...state, tracks, patterns };
+      }
+      
+      return { ...state, tracks };
+    });
+    suppressGridHistory = false;
+    updateGridHistoryStatus();
+  };
+
   const applyNoteRange = (trackIndex, row, start, length, value) => {
     const prevSnapshot = toSnapshot(get(store));
+    const prevGridSnapshot = toGridSnapshot(get(store));
     let changed = false;
     update((state) => {
       const totalLogicalSteps = state.bars * state.stepsPerBar;
@@ -520,8 +571,13 @@ const createProjectStore = () => {
 
     if (changed) {
       const nextSnapshot = toSnapshot(get(store));
+      const nextGridSnapshot = toGridSnapshot(get(store));
       if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
         pushHistory(prevSnapshot);
+      }
+      // Also track grid-specific history for note changes
+      if (gridSnapshotSignature(prevGridSnapshot) !== gridSnapshotSignature(nextGridSnapshot)) {
+        pushGridHistory(prevGridSnapshot);
       }
     }
   };
@@ -530,6 +586,7 @@ const createProjectStore = () => {
   // storage (high-resolution) indices (0..bars*BASE_RESOLUTION-1).
   const applyNoteRangeStorage = (trackIndex, row, storageStart, storageLength, value) => {
     const prevSnapshot = toSnapshot(get(store));
+    const prevGridSnapshot = toGridSnapshot(get(store));
     let changed = false;
     update((state) => {
       const storageSteps = state.bars * BASE_RESOLUTION;
@@ -601,8 +658,13 @@ const createProjectStore = () => {
 
     if (changed) {
       const nextSnapshot = toSnapshot(get(store));
+      const nextGridSnapshot = toGridSnapshot(get(store));
       if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
         pushHistory(prevSnapshot);
+      }
+      // Also track grid-specific history for note changes
+      if (gridSnapshotSignature(prevGridSnapshot) !== gridSnapshotSignature(nextGridSnapshot)) {
+        pushGridHistory(prevGridSnapshot);
       }
     }
   };
@@ -905,6 +967,25 @@ const createProjectStore = () => {
       updateHistoryStatus();
       return true;
     },
+    // Grid-specific undo/redo (only affects notes/grid changes)
+    gridUndo() {
+      if (!gridHistoryPast.length) return false;
+      const currentGridSnapshot = toGridSnapshot(get(store));
+      const previous = gridHistoryPast.pop();
+      gridHistoryFuture = [currentGridSnapshot, ...gridHistoryFuture].slice(0, MAX_HISTORY);
+      applyGridSnapshot(previous);
+      updateGridHistoryStatus();
+      return true;
+    },
+    gridRedo() {
+      if (!gridHistoryFuture.length) return false;
+      const currentGridSnapshot = toGridSnapshot(get(store));
+      const nextSnapshot = gridHistoryFuture.shift();
+      gridHistoryPast = [...gridHistoryPast, currentGridSnapshot].slice(-MAX_HISTORY);
+      applyGridSnapshot(nextSnapshot);
+      updateGridHistoryStatus();
+      return true;
+    },
     canUndo() {
       return historyPast.length > 0;
     },
@@ -964,7 +1045,11 @@ const createProjectStore = () => {
       suppressHistory = false;
       historyPast = [];
       historyFuture = [];
+      // Also reset grid-specific history
+      gridHistoryPast = [];
+      gridHistoryFuture = [];
       updateHistoryStatus();
+      updateGridHistoryStatus();
       return true;
     },
     // Pattern management functions
@@ -1073,6 +1158,7 @@ export const TRACK_LIMIT = MAX_TRACKS;
 
 export const project = createProjectStore();
 export const historyStatus = historyStatusStore;
+export const gridHistoryStatus = gridHistoryStatusStore;
 
 export const totalSteps = derived(project, ($project) => $project.bars * $project.stepsPerBar);
 export const loopDuration = derived(project, ($project) => ($project.bars * 240) / $project.bpm);

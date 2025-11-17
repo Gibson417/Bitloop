@@ -16,7 +16,7 @@
   import PatternArranger from './components/PatternArranger.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
   import { Scheduler } from './lib/scheduler.js';
-  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, BASE_RESOLUTION } from './store/projectStore.js';
+  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
@@ -28,6 +28,7 @@
 
   let projectState;
   let historyState;
+  let gridHistoryState;
   let libraryState;
   let totalStepsValue = 0;
   let loopDurationValue = 0;
@@ -40,6 +41,7 @@
     loopDuration.subscribe((value) => (loopDurationValue = value)),
     maxBars.subscribe((value) => (maxBarsValue = value)),
     historyStatus.subscribe((value) => (historyState = value)),
+    gridHistoryStatus.subscribe((value) => (gridHistoryState = value)),
     library.subscribe((value) => (libraryState = value)),
     devMode.subscribe((value) => (devModeEnabled = value))
   ];
@@ -533,11 +535,11 @@
   };
 
   const handleUndo = () => {
-    project.undo();
+    project.gridUndo();
   };
 
   const handleRedo = () => {
-    project.redo();
+    project.gridRedo();
   };
 
   const handleProjectRename = (event) => {
@@ -863,8 +865,8 @@
   $: totalBars = projectState?.bars ?? 0;
   $: stepsPerBar = projectState?.stepsPerBar ?? 0;
   $: loopSecondsDisplay = (loopDurationValue ?? 0).toFixed(1);
-  $: canUndo = historyState?.canUndo ?? false;
-  $: canRedo = historyState?.canRedo ?? false;
+  $: canUndo = gridHistoryState?.canUndo ?? false;
+  $: canRedo = gridHistoryState?.canRedo ?? false;
   $: autosaveStatus = libraryState?.status ?? 'idle';
   $: isSaving = autosaveStatus === 'saving';
   $: projects = libraryState?.projects ?? [];
