@@ -150,7 +150,7 @@
   .history-btn:hover:not(:disabled) {
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.26);
-    color: #fff;
+    color: var(--color-text);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }

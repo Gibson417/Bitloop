@@ -204,7 +204,7 @@
   .settings-btn:hover:not(:disabled) {
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.26);
-    color: #fff;
+    color: var(--color-text);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }
@@ -258,7 +258,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     padding: 0 4px;
   }
 
@@ -277,7 +277,7 @@
     border: 1px solid rgba(var(--color-accent-rgb), 0.2);
     border-radius: 8px;
     background: rgba(var(--color-accent-rgb), 0.05);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;

@@ -187,7 +187,7 @@
     align-items: flex-start;
     gap: 24px;
     padding: 16px 24px;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-muted);
     box-sizing: border-box;
     width: 100%;
   }
@@ -299,7 +299,7 @@
     border: 1px solid transparent;
     border-radius: 4px;
     padding: 4px 8px;
-    color: var(--color-text, #fff);
+    color: var(--color-text);
     font-size: 0.85rem;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -329,7 +329,7 @@
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -348,14 +348,14 @@
   .pattern-action-btn:hover {
     border-color: rgba(var(--color-accent-rgb), 0.5);
     background: rgba(var(--color-accent-rgb), 0.2);
-    color: #fff;
+    color: var(--color-text);
     transform: scale(1.05);
   }
 
   .pattern-action-btn.remove:hover {
     border-color: rgba(255, 100, 100, 0.5);
     background: rgba(255, 100, 100, 0.2);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .pattern-action-btn:focus-visible {
@@ -371,7 +371,7 @@
     border-radius: 10px;
     border: 1.5px solid rgba(var(--color-accent-rgb), 0.3);
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(0, 0, 0, 0.35));
-    color: #fff;
+    color: var(--color-text);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;

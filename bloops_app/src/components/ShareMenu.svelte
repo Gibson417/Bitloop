@@ -185,7 +185,7 @@
   .share-btn:hover:not(:disabled) {
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.26);
-    color: #fff;
+    color: var(--color-text);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.2);
   }
@@ -239,7 +239,7 @@
     border-radius: 8px;
     border: 1px solid transparent;
     background: rgba(255, 255, 255, 0.04);
-    color: #fff;
+    color: var(--color-text);
     text-align: left;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -274,7 +274,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-muted);
   }
 
   .share-feedback.error {
@@ -295,7 +295,7 @@
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.35);
     background: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    color: var(--color-text);
     font-size: 0.8rem;
     letter-spacing: 0.04em;
   }

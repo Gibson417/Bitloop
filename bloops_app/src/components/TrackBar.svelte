@@ -368,7 +368,7 @@
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(17, 20, 29, 0.85);
-    color: #fff;
+    color: var(--color-text);
     text-align: left;
     gap: 14px;
     cursor: pointer;
@@ -411,7 +411,7 @@
   .chip-remove {
     background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-muted);
     border-radius: 50%;
     width: 28px;
     height: 28px;
@@ -427,7 +427,7 @@
   .chip-remove:hover,
   .chip-remove:focus {
     background: rgba(255, 80, 80, 0.25);
-    color: #fff;
+    color: var(--color-text);
     outline: none;
   }
 
@@ -470,7 +470,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    color: #fff;
+    color: var(--color-text);
     font-size: 0.8rem;
   }
 
@@ -478,7 +478,7 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
   }
 
   select,
@@ -486,7 +486,7 @@
   input[type='range'],
   input[type='text'] {
     background: rgba(0, 0, 0, 0.35);
-    color: #fff;
+    color: var(--color-text);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 8px 12px;
@@ -537,7 +537,7 @@
     top: -20px;
     right: 0;
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
   }
 
   .slider-field {
@@ -553,7 +553,7 @@
   .slider-field span {
     font-size: 0.75rem;
     letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--color-text-muted);
     white-space: nowrap;
   }
 
@@ -575,7 +575,7 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
   }
 
   .effect-header select {
@@ -594,7 +594,7 @@
     font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--color-text-muted);
   }
 
   .effect-row.compact label {
@@ -612,7 +612,7 @@
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.75rem;
@@ -623,7 +623,7 @@
   .toggles button.active {
     border-color: rgba(var(--color-accent-rgb), 0.6);
     background: rgba(var(--color-accent-rgb), 0.2);
-    color: #fff;
+    color: var(--color-text);
   }
 
   .error-message {
@@ -636,7 +636,7 @@
   .help-text {
     display: block;
     font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--color-text-muted);
     margin-top: 4px;
     line-height: 1.3;
   }
