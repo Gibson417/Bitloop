@@ -8,6 +8,7 @@
     blocks,
     blocksWithPattern,
     moveBlock,
+    removeBlock,
     patterns as arrangerPatterns,
     playback
   } from '../store/arrangerStore.js';
@@ -191,6 +192,21 @@
     const blockEnd = block.startBeat + block.pattern.lengthInBeats;
     return $playback.playheadBeat >= blockStart && $playback.playheadBeat < blockEnd;
   };
+
+  const handleBlockRemove = (event, blockId) => {
+    event.stopPropagation();
+    removeBlock(blockId);
+  };
+
+  const handleBlockKeydown = (event, blockId) => {
+    // Delete or Backspace to remove block
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      event.preventDefault();
+      removeBlock(blockId);
+    }
+  };
+
+  let hoveredBlockId = null;
 </script>
 
 <section class="arranger" data-component="PatternArranger">
@@ -309,11 +325,28 @@
                   class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''}`}
                   style={`width: ${beatsToPixels(block.pattern?.lengthInBeats ?? 0)}px; transform: translateX(${beatsToPixels(block.startBeat)}px); background: ${block.pattern?.color ?? '#78D2B9'};`}
                   on:pointerdown={(event) => handleBlockPointerDown(event, block)}
+                  on:mouseenter={() => hoveredBlockId = block.id}
+                  on:mouseleave={() => hoveredBlockId = null}
+                  on:keydown={(event) => handleBlockKeydown(event, block.id)}
                   role="button"
                   tabindex="0"
-                  aria-label={`${block.pattern?.name ?? 'Pattern'} block in lane ${block.lane + 1}, starting at beat ${block.startBeat}. Click and drag to reposition.`}
+                  aria-label={`${block.pattern?.name ?? 'Pattern'} block in lane ${block.lane + 1}, starting at beat ${block.startBeat}. Click and drag to reposition. Press Delete or Backspace to remove.`}
                 >
-                  <span>{block.pattern?.name ?? 'Pattern'}</span>
+                  <span class="block-label">{block.pattern?.name ?? 'Pattern'}</span>
+                  {#if hoveredBlockId === block.id}
+                    <button
+                      class="block-remove-btn"
+                      on:click={(event) => handleBlockRemove(event, block.id)}
+                      on:pointerdown={(event) => event.stopPropagation()}
+                      title="Remove block"
+                      aria-label="Remove this block from the lane"
+                    >
+                      <svg class="remove-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  {/if}
                 </div>
               {/each}
             </div>
@@ -627,6 +660,51 @@
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
     transition: filter 150ms ease, box-shadow 150ms ease;
     user-select: none;
+    position: relative;
+  }
+
+  .block-label {
+    pointer-events: none;
+  }
+
+  .block-remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: none;
+    background: rgba(255, 50, 50, 0.9);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
+
+  .block-remove-btn .remove-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .block-remove-btn:hover {
+    background: rgba(255, 30, 30, 1);
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .block-remove-btn:active {
+    transform: scale(0.95);
+  }
+
+  .block-remove-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
   }
 
   .arranger__block:hover {

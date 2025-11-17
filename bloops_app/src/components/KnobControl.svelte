@@ -11,6 +11,7 @@
   export let disabled = false;
   export let valueFormatter = null;
   export let className = '';
+  export let defaultValue = null; // Default value for reset functionality
 
   const dispatch = createEventDispatcher();
   const KNOB_SWEEP = 270;
@@ -72,6 +73,32 @@
     dispatch('change', { value: nextValue });
   };
 
+  const handleDoubleClick = (event) => {
+    if (disabled) return;
+    event.preventDefault();
+    
+    // Use provided defaultValue or midpoint if not provided
+    const resetValue = defaultValue !== null ? defaultValue : (min + max) / 2;
+    const nextValue = clamp(resetValue);
+    
+    dispatch('input', { value: nextValue });
+    dispatch('change', { value: nextValue });
+    dispatch('reset', { value: nextValue });
+  };
+
+  const handleContextMenu = (event) => {
+    if (disabled) return;
+    event.preventDefault();
+    
+    // Reset on right-click
+    const resetValue = defaultValue !== null ? defaultValue : (min + max) / 2;
+    const nextValue = clamp(resetValue);
+    
+    dispatch('input', { value: nextValue });
+    dispatch('change', { value: nextValue });
+    dispatch('reset', { value: nextValue });
+  };
+
   $: numericValue = clamp(value);
   $: normalized = Math.min(Math.max(getNormalized(numericValue), 0), 1);
   $: rotation = normalized * KNOB_SWEEP - KNOB_OFFSET;
@@ -83,7 +110,13 @@
   {#if label}
     <span class="knob-label">{label}</span>
   {/if}
-  <div class="knob-shell" on:wheel={handleWheel}>
+  <div 
+    class="knob-shell" 
+    on:wheel={handleWheel}
+    on:dblclick={handleDoubleClick}
+    on:contextmenu={handleContextMenu}
+    title="Double-click or right-click to reset"
+  >
     <input
       id={id}
       type="range"
@@ -97,6 +130,7 @@
       aria-valuemax={max}
       aria-valuenow={numericValue}
       aria-valuetext={formattedValue}
+      aria-description="Double-click or right-click to reset to default value"
       class="knob-input"
       disabled={disabled}
     />

@@ -966,6 +966,7 @@
             max={1}
             step={0.01}
             value={activeTrack.volume ?? 0}
+            defaultValue={0.8}
             accent={trackColor}
             valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
             className="volume-knob"
@@ -1831,12 +1832,12 @@
     font-family: monospace;
   }
 
-  /* Dev mode fixed tooltip box in bottom-right corner */
+  /* Dev mode fixed tooltip box in top-right corner - always visible */
   .dev-mode-tooltip {
     position: fixed;
-    bottom: 20px;
+    top: 60px;
     right: 20px;
-    z-index: 9999;
+    z-index: 10001;
     min-width: 200px;
     max-width: 400px;
     pointer-events: none;
