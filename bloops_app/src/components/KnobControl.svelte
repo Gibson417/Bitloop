@@ -86,9 +86,14 @@
     dispatch('reset', { value: nextValue });
   };
 
+
   const handleContextMenu = (event) => {
     if (disabled) return;
     event.preventDefault();
+    
+    // Show confirmation dialog before resetting
+    const confirmed = window.confirm(`Reset "${label}" to default value?`);
+    if (!confirmed) return;
     
     // Reset on right-click
     const resetValue = defaultValue !== null ? defaultValue : (min + max) / 2;

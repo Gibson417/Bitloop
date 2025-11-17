@@ -306,8 +306,10 @@ const snapshotPattern = (pattern) => ({
 
 const snapshotPatterns = (patterns) => patterns.map(snapshotPattern);
 
-const normalizePattern = (pattern, rows, bpm) => {
-  const bars = ensureBarsWithinLimit(bpm, ensurePositiveInteger(pattern.bars, DEFAULT_BARS, 1, 512));
+const normalizePattern = (pattern, rows, bpm, stateBars = null) => {
+  // Use stateBars if provided (when synchronizing with global state), otherwise use pattern's own bars
+  const patternBars = stateBars !== null ? stateBars : pattern.bars;
+  const bars = ensureBarsWithinLimit(bpm, ensurePositiveInteger(patternBars, DEFAULT_BARS, 1, 512));
   const storageSteps = bars * BASE_RESOLUTION;
   const tracks = normalizeTracks(pattern.tracks, rows, storageSteps);
   return {
@@ -318,13 +320,13 @@ const normalizePattern = (pattern, rows, bpm) => {
   };
 };
 
-const normalizePatterns = (patterns, rows, bpm) => {
+const normalizePatterns = (patterns, rows, bpm, stateBars = null) => {
   if (!Array.isArray(patterns) || patterns.length === 0) {
-    const defaultBars = ensureBarsWithinLimit(bpm, DEFAULT_BARS);
+    const defaultBars = stateBars !== null ? stateBars : ensureBarsWithinLimit(bpm, DEFAULT_BARS);
     const storageSteps = defaultBars * BASE_RESOLUTION;
     return [createPattern('A', 'Pattern A', defaultBars, rows, storageSteps)];
   }
-  return patterns.map(p => normalizePattern(p, rows, bpm));
+  return patterns.map(p => normalizePattern(p, rows, bpm, stateBars));
 };
 
 const toSnapshot = (state) => ({
@@ -356,8 +358,8 @@ const normalizeState = (state) => {
   let tracks, patterns, selectedPattern;
   
   if (state.patterns && Array.isArray(state.patterns) && state.patterns.length > 0) {
-    // Pattern-based model
-    patterns = normalizePatterns(state.patterns, rows, bpm);
+    // Pattern-based model - pass bars from state to synchronize pattern storage
+    patterns = normalizePatterns(state.patterns, rows, bpm, bars);
     selectedPattern = clamp(state.selectedPattern ?? 0, 0, Math.max(patterns.length - 1, 0));
     // Use current pattern's tracks
     tracks = patterns[selectedPattern].tracks;

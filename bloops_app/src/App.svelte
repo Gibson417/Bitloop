@@ -966,7 +966,7 @@
             max={1}
             step={0.01}
             value={activeTrack.volume ?? 0}
-            defaultValue={0.8}
+            defaultValue={0.7}
             accent={trackColor}
             valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
             className="volume-knob"
