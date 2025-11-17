@@ -28,7 +28,17 @@
         on:click={() => togglePanel('controls')}
         aria-expanded={activePanel === 'controls'}
       >
-        <span class="button-icon">🎛️</span>
+        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <line x1="12" y1="1" x2="12" y2="10"/>
+          <line x1="12" y1="14" x2="12" y2="23"/>
+          <circle cx="5" cy="19" r="3"/>
+          <line x1="5" y1="10" x2="5" y2="16"/>
+          <line x1="5" y1="22" x2="5" y2="23"/>
+          <circle cx="19" cy="5" r="3"/>
+          <line x1="19" y1="1" x2="19" y2="2"/>
+          <line x1="19" y1="8" x2="19" y2="23"/>
+        </svg>
         <span class="button-label">Track Settings</span>
         <span class="chevron" aria-hidden="true">{activePanel === 'controls' ? '▼' : '▶'}</span>
       </button>
@@ -38,7 +48,11 @@
         on:click={() => togglePanel('effects')}
         aria-expanded={activePanel === 'effects'}
       >
-        <span class="button-icon">🎚️</span>
+        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg>
         <span class="button-label">Sound Shaping</span>
         <span class="chevron" aria-hidden="true">{activePanel === 'effects' ? '▼' : '▶'}</span>
       </button>
@@ -119,8 +133,10 @@
   }
 
   .button-icon {
-    font-size: 1.2rem;
-    line-height: 1;
+    width: 22px; /* Slightly larger for primary panel buttons */
+    height: 22px;
+    color: rgba(var(--color-accent-rgb), 0.8);
+    flex-shrink: 0;
   }
 
   .button-label {
