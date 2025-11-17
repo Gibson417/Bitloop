@@ -1,14 +1,21 @@
 <script>
   import { onDestroy } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import ArrangerTransport from './ArrangerTransport.svelte';
   import {
     BEAT_SNAP,
     addPatternToLane,
     blocksWithPattern,
     moveBlock,
-    patterns,
+    patterns as arrangerPatterns,
     playback
   } from '../store/arrangerStore.js';
+
+  // Props for pattern management from projectStore
+  export let patterns = [];
+  export let selectedPattern = 0;
+
+  const dispatch = createEventDispatcher();
 
   const LANE_COUNT = 2;
   const PIXELS_PER_BEAT = 32;
@@ -25,9 +32,110 @@
       .sort((a, b) => a.startBeat - b.startBeat)
   );
 
+  // Sync arrangerStore patterns with projectStore patterns
+  $: if (patterns.length > 0) {
+    arrangerPatterns.set(patterns.map((p, idx) => ({
+      id: p.id,
+      name: p.name,
+      color: getPatternColor(idx),
+      lengthInBeats: Math.round((p.bars || 2) * (beatsPerBar || 4))
+    })));
+  }
+
   const handlePaletteAdd = (patternId, lane = 0) => {
     addPatternToLane(patternId, lane);
   };
+
+  // Pattern management handlers
+  const handlePatternSelect = (index) => {
+    dispatch('patternselect', { index });
+  };
+
+  const handlePatternAdd = () => {
+    dispatch('patternadd');
+  };
+
+  const handlePatternDuplicate = (index) => {
+    dispatch('patternduplicate', { index });
+  };
+
+  const handlePatternRemove = (index) => {
+    dispatch('patternremove', { index });
+  };
+
+  const handlePatternRename = (index, event) => {
+    const newName = event.target.value;
+    if (newName && newName.trim()) {
+      dispatch('patternrename', { index, name: newName });
+    }
+  };
+
+  // Generate a color for each pattern based on index
+  const getPatternColor = (index) => {
+    const colors = [
+      '#78d2b9', // accent (default)
+      '#ff6b9d', // pink
+      '#ffd93d', // yellow
+      '#6bcf7f', // green
+      '#a78bfa', // purple
+      '#60a5fa', // blue
+      '#fb923c', // orange
+      '#ec4899', // magenta
+    ];
+    return colors[index % colors.length];
+  };
+
+  const handleKeyNavigation = (event, index) => {
+    // Handle Enter key for selection
+    if (event.key === 'Enter') {
+      handlePatternSelect(index);
+      return;
+    }
+
+    // Handle arrow key navigation
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const nextIndex = Math.min(index + 1, patterns.length - 1);
+      if (nextIndex !== index) {
+        handlePatternSelect(nextIndex);
+        // Focus the next pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[nextIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      const prevIndex = Math.max(index - 1, 0);
+      if (prevIndex !== index) {
+        handlePatternSelect(prevIndex);
+        // Focus the previous pattern item
+        setTimeout(() => {
+          const items = document.querySelectorAll('.pattern-item');
+          items[prevIndex]?.focus();
+        }, 0);
+      }
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      handlePatternSelect(0);
+      // Focus the first pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[0]?.focus();
+      }, 0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      const lastIndex = patterns.length - 1;
+      handlePatternSelect(lastIndex);
+      // Focus the last pattern item
+      setTimeout(() => {
+        const items = document.querySelectorAll('.pattern-item');
+        items[lastIndex]?.focus();
+      }, 0);
+    }
+  };
+
+  $: canRemovePattern = patterns.length > 1;
 
   let dragContext = null;
 
@@ -80,27 +188,96 @@
   <header class="arranger__header">
     <div>
       <h2>Pattern Arranger</h2>
-      <p>Create a linear structure with drag-and-drop blocks.</p>
+      <p>Manage patterns and create a linear arrangement with drag-and-drop blocks.</p>
     </div>
     <ArrangerTransport />
   </header>
 
   <div class="arranger__content">
     <aside class="arranger__palette">
-      <h3>Pattern palette</h3>
-      <p class="arranger__palette-hint">Click a pattern to append it to the lane.</p>
+      <div class="palette-header">
+        <div>
+          <h3>Patterns</h3>
+          <p class="arranger__palette-hint">Manage patterns and arrange them in lanes.</p>
+        </div>
+        <button
+          type="button"
+          class="add-pattern-btn"
+          on:click={handlePatternAdd}
+          title="Add new pattern"
+          aria-label="Add new pattern"
+        >
+          <svg class="btn-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </div>
       <div class="arranger__palette-list">
-        {#each $patterns as pattern}
-          <button
-            type="button"
-            class="palette-item"
-            style={`--pattern-color: ${pattern.color}`}
-            on:click={() => handlePaletteAdd(pattern.id)}
-            aria-label={`Add ${pattern.name} pattern (${pattern.lengthInBeats} beats) to lane`}
+        {#each patterns as pattern, index (pattern.id)}
+          <div 
+            class="pattern-item" 
+            class:selected={index === selectedPattern}
+            role="button"
+            tabindex="0"
+            on:click={() => handlePatternSelect(index)}
+            on:keydown={(e) => handleKeyNavigation(e, index)}
+            aria-label="Pattern {index + 1}: {pattern.name}"
           >
-            <span class="palette-item__name">{pattern.name}</span>
-            <span class="palette-item__meta">{pattern.lengthInBeats} beats</span>
-          </button>
+            <div class="pattern-main">
+              <span class="pattern-strip" style={`background:${getPatternColor(index)}`}></span>
+              <span class="pattern-id" style={`color:${getPatternColor(index)}`}>P{index + 1}</span>
+              <input
+                type="text"
+                class="pattern-name"
+                value={pattern.name}
+                on:change={(e) => handlePatternRename(index, e)}
+                on:click={(e) => e.stopPropagation()}
+                placeholder="Pattern name"
+                aria-label="Pattern name"
+              />
+            </div>
+            <div class="pattern-actions">
+              <button
+                type="button"
+                class="pattern-action-btn palette-action"
+                on:click|stopPropagation={() => handlePaletteAdd(pattern.id)}
+                title="Add to lane"
+                aria-label="Add pattern to lane"
+              >
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="pattern-action-btn"
+                on:click|stopPropagation={() => handlePatternDuplicate(index)}
+                title="Duplicate pattern"
+                aria-label="Duplicate pattern"
+              >
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+              {#if canRemovePattern}
+                <button
+                  type="button"
+                  class="pattern-action-btn remove"
+                  on:click|stopPropagation={() => handlePatternRemove(index)}
+                  title="Remove pattern"
+                  aria-label="Remove pattern"
+                >
+                  <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              {/if}
+            </div>
+          </div>
         {/each}
       </div>
     </aside>
@@ -187,15 +364,54 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
+  .palette-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
   .arranger__palette h3 {
     margin: 0;
     font-size: 0.95rem;
   }
 
   .arranger__palette-hint {
-    margin: 0;
+    margin: 4px 0 0 0;
     color: var(--color-text-muted);
     font-size: 0.7rem;
+  }
+
+  .add-pattern-btn {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.4);
+    background: rgba(var(--color-accent-rgb), 0.16);
+    color: rgba(var(--color-accent-rgb), 0.9);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .add-pattern-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.6);
+    background: rgba(var(--color-accent-rgb), 0.26);
+    transform: scale(1.05);
+  }
+
+  .add-pattern-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .add-pattern-btn .btn-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .arranger__palette-list {
@@ -204,56 +420,129 @@
     gap: 8px;
   }
 
-  .palette-item {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    padding: 10px 12px;
-    min-height: 44px;
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--color-text);
-    text-align: left;
-    cursor: pointer;
-    transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+  .pattern-item {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .palette-item::before {
-    content: '';
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: var(--pattern-color, var(--color-accent));
-    margin-right: 8px;
-  }
-
-  .palette-item:hover {
-    background: rgba(var(--color-accent-rgb), 0.1);
+  .pattern-item:hover {
+    background: rgba(0, 0, 0, 0.3);
     border-color: rgba(var(--color-accent-rgb), 0.3);
-    transform: translateX(2px);
   }
 
-  .palette-item:focus-visible {
+  .pattern-item.selected {
+    background: rgba(var(--color-accent-rgb), 0.18);
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+  }
+
+  .pattern-item:focus-visible {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
     outline-offset: 2px;
+  }
+
+  .pattern-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pattern-strip {
+    width: 6px;
+    height: 24px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .pattern-id {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+    flex-shrink: 0;
+    min-width: 24px;
+  }
+
+  .pattern-name {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--color-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 0;
+  }
+
+  .pattern-name:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .pattern-name:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
     border-color: rgba(var(--color-accent-rgb), 0.4);
   }
 
-  .palette-item:active {
-    transform: translateX(1px) scale(0.98);
+  .pattern-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    justify-content: flex-end;
   }
 
-  .palette-item__name {
-    font-weight: 600;
-  }
-
-  .palette-item__meta {
-    display: block;
-    font-size: 0.7rem;
+  .pattern-action-btn {
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.3);
     color: var(--color-text-muted);
-    margin-top: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .pattern-action-btn .action-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  .pattern-action-btn:hover {
+    border-color: rgba(var(--color-accent-rgb), 0.5);
+    background: rgba(var(--color-accent-rgb), 0.2);
+    color: var(--color-text);
+    transform: scale(1.05);
+  }
+
+  .pattern-action-btn.palette-action:hover {
+    border-color: rgba(var(--color-accent-bright-rgb), 0.6);
+    background: rgba(var(--color-accent-bright-rgb), 0.25);
+  }
+
+  .pattern-action-btn.remove:hover {
+    border-color: rgba(255, 100, 100, 0.5);
+    background: rgba(255, 100, 100, 0.2);
+    color: var(--color-text);
+  }
+
+  .pattern-action-btn:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
   }
 
   .arranger__timeline {
