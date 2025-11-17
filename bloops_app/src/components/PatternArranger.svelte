@@ -96,6 +96,7 @@
             class="palette-item"
             style={`--pattern-color: ${pattern.color}`}
             on:click={() => handlePaletteAdd(pattern.id)}
+            aria-label={`Add ${pattern.name} pattern (${pattern.lengthInBeats} beats) to lane`}
           >
             <span class="palette-item__name">{pattern.name}</span>
             <span class="palette-item__meta">{pattern.lengthInBeats} beats</span>
@@ -122,6 +123,9 @@
                   class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''}`}
                   style={`width: ${beatsToPixels(block.pattern?.lengthInBeats ?? 0)}px; transform: translateX(${beatsToPixels(block.startBeat)}px); background: ${block.pattern?.color ?? '#78D2B9'};`}
                   on:pointerdown={(event) => handleBlockPointerDown(event, block)}
+                  role="button"
+                  tabindex="0"
+                  aria-label={`${block.pattern?.name ?? 'Pattern'} block in lane ${block.lane + 1}, starting at beat ${block.startBeat}. Click and drag to reposition.`}
                 >
                   <span>{block.pattern?.name ?? 'Pattern'}</span>
                 </div>
@@ -175,7 +179,7 @@
 
   .arranger__palette {
     background: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -189,7 +193,7 @@
 
   .arranger__palette-hint {
     margin: 0;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.65);
     font-size: 0.7rem;
   }
 
@@ -200,14 +204,18 @@
   }
 
   .palette-item {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: 10px 12px;
+    min-height: 44px;
     background: rgba(0, 0, 0, 0.2);
     color: white;
     text-align: left;
     cursor: pointer;
-    transition: background 120ms ease, transform 120ms ease;
+    transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .palette-item::before {
@@ -222,7 +230,18 @@
 
   .palette-item:hover {
     background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateX(2px);
+  }
+
+  .palette-item:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+  }
+
+  .palette-item:active {
+    transform: translateX(1px) scale(0.98);
   }
 
   .palette-item__name {
@@ -233,6 +252,7 @@
     display: block;
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.65);
+    margin-top: 2px;
   }
 
   .arranger__timeline {
@@ -248,7 +268,7 @@
   }
 
   .ruler__segment {
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
     padding-left: 8px;
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.7);
@@ -266,7 +286,7 @@
   .arranger__lane {
     position: relative;
     height: 70px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
   }
 
   .arranger__lane:last-child {
@@ -277,7 +297,7 @@
     position: absolute;
     top: 12px;
     height: 46px;
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--color-background);
     display: flex;
     align-items: center;
@@ -285,16 +305,30 @@
     font-weight: 600;
     cursor: grab;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-    transition: filter 120ms ease;
+    transition: filter 150ms ease, box-shadow 150ms ease;
+    user-select: none;
   }
 
   .arranger__block:hover {
     filter: brightness(1.08);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  }
+
+  .arranger__block:focus-visible {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
+  .arranger__block:active {
+    cursor: grabbing;
+    filter: brightness(1.05);
   }
 
   .arranger__block--active {
-    outline: 2px solid var(--color-accent-bright);
+    outline: 3px solid var(--color-accent-bright);
+    outline-offset: -1px;
     color: var(--color-background);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(var(--color-accent-bright-rgb), 0.4);
   }
 
   .arranger__playhead {
@@ -314,6 +348,24 @@
 
     .arranger__palette {
       order: 2;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .palette-item,
+    .arranger__block {
+      transition: none;
+    }
+
+    .palette-item:hover,
+    .palette-item:active {
+      transform: none;
+    }
+
+    .arranger__block:hover,
+    .arranger__block:active {
+      transform: none;
     }
   }
 </style>
