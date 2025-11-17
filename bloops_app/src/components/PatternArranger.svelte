@@ -1,6 +1,5 @@
 <script>
   import { onDestroy } from 'svelte';
-  import { colors, spacing, radius, typography } from '../lib/colorTokens.js';
   import ArrangerTransport from './ArrangerTransport.svelte';
   import {
     BEAT_SNAP,
@@ -121,7 +120,7 @@
               {#each laneBlockMap[laneIndex] as block (block.id)}
                 <div
                   class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''}`}
-                  style={`width: ${beatsToPixels(block.pattern?.lengthInBeats ?? 0)}px; transform: translateX(${beatsToPixels(block.startBeat)}px); background: ${block.pattern?.color ?? colors.accent};`}
+                  style={`width: ${beatsToPixels(block.pattern?.lengthInBeats ?? 0)}px; transform: translateX(${beatsToPixels(block.startBeat)}px); background: ${block.pattern?.color ?? '#78D2B9'};`}
                   on:pointerdown={(event) => handleBlockPointerDown(event, block)}
                 >
                   <span>{block.pattern?.name ?? 'Pattern'}</span>
@@ -138,17 +137,13 @@
 </section>
 
 <style>
-  :global(body) {
-    background: {colors.background};
-  }
-
   .arranger {
     display: flex;
     flex-direction: column;
-    gap: {spacing.lg};
+    gap: 24px;
     background: rgba(34, 38, 50, 0.9);
-    padding: {spacing.lg};
-    border-radius: {radius.xl};
+    padding: 24px;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: white;
   }
@@ -157,57 +152,57 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: {spacing.lg};
+    gap: 24px;
     flex-wrap: wrap;
   }
 
   .arranger__header h2 {
     margin: 0;
-    font-size: {typography.size.lg};
+    font-size: 1.2rem;
   }
 
   .arranger__header p {
     margin: 0;
     color: rgba(255, 255, 255, 0.7);
-    font-size: {typography.size.sm};
+    font-size: 0.75rem;
   }
 
   .arranger__content {
     display: grid;
     grid-template-columns: 220px 1fr;
-    gap: {spacing.lg};
+    gap: 24px;
   }
 
   .arranger__palette {
     background: rgba(0, 0, 0, 0.25);
-    border-radius: {radius.lg};
-    padding: {spacing.md};
+    border-radius: 10px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: {spacing.sm};
+    gap: 12px;
   }
 
   .arranger__palette h3 {
     margin: 0;
-    font-size: {typography.size.base};
+    font-size: 0.95rem;
   }
 
   .arranger__palette-hint {
     margin: 0;
     color: rgba(255, 255, 255, 0.6);
-    font-size: {typography.size.xs};
+    font-size: 0.7rem;
   }
 
   .arranger__palette-list {
     display: flex;
     flex-direction: column;
-    gap: {spacing.xs};
+    gap: 8px;
   }
 
   .palette-item {
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: {radius.md};
-    padding: {spacing.xs} {spacing.sm};
+    border-radius: 8px;
+    padding: 8px 12px;
     background: rgba(0, 0, 0, 0.2);
     color: white;
     text-align: left;
@@ -220,9 +215,9 @@
     display: inline-block;
     width: 10px;
     height: 10px;
-    border-radius: {radius.round};
-    background: var(--pattern-color, {colors.accent});
-    margin-right: {spacing.xs};
+    border-radius: 999px;
+    background: var(--pattern-color, var(--color-accent));
+    margin-right: 8px;
   }
 
   .palette-item:hover {
@@ -231,31 +226,31 @@
   }
 
   .palette-item__name {
-    font-weight: {typography.weight.semibold};
+    font-weight: 600;
   }
 
   .palette-item__meta {
     display: block;
-    font-size: {typography.size.xs};
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.65);
   }
 
   .arranger__timeline {
     overflow-x: auto;
-    padding-bottom: {spacing.sm};
+    padding-bottom: 12px;
   }
 
   .arranger__ruler {
     display: flex;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: {spacing.sm};
+    margin-bottom: 12px;
     position: relative;
   }
 
   .ruler__segment {
     border-left: 1px solid rgba(255, 255, 255, 0.08);
-    padding-left: {spacing.xs};
-    font-size: {typography.size.xs};
+    padding-left: 8px;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.7);
   }
 
@@ -282,12 +277,12 @@
     position: absolute;
     top: 12px;
     height: 46px;
-    border-radius: {radius.lg};
-    color: {colors.background};
+    border-radius: 10px;
+    color: var(--color-background);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: {typography.weight.semibold};
+    font-weight: 600;
     cursor: grab;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
     transition: filter 120ms ease;
@@ -298,8 +293,8 @@
   }
 
   .arranger__block--active {
-    outline: 2px solid {colors.accentBright};
-    color: {colors.background};
+    outline: 2px solid var(--color-accent-bright);
+    color: var(--color-background);
   }
 
   .arranger__playhead {
@@ -307,8 +302,8 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background: {colors.accentBright};
-    box-shadow: 0 0 10px {colors.accentBright};
+    background: var(--color-accent-bright);
+    box-shadow: 0 0 10px var(--color-accent-bright);
     pointer-events: none;
   }
 

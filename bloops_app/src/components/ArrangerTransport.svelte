@@ -1,6 +1,5 @@
 <script>
   import { playback, startPlayback, stopPlayback } from '../store/arrangerStore.js';
-  import { colors, spacing, radius, typography } from '../lib/colorTokens.js';
 
   $: beatsPerBar = $playback.beatsPerBar ?? 4;
   $: currentBar = Math.floor(($playback.playheadBeat ?? 0) / beatsPerBar) + 1;
@@ -33,26 +32,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: {colors.panel};
-    padding: {spacing.sm} {spacing.md};
-    border-radius: {radius.lg};
+    background: var(--color-panel);
+    padding: 12px 16px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    gap: {spacing.md};
+    gap: 16px;
   }
 
   .transport__controls {
     display: flex;
-    gap: {spacing.sm};
+    gap: 12px;
   }
 
   .transport__button {
-    background: {colors.accent};
-    color: {colors.background};
+    background: var(--color-accent);
+    color: var(--color-background);
     border: none;
-    border-radius: {radius.md};
-    padding: {spacing.xs} {spacing.lg};
-    font-size: {typography.size.sm};
-    font-weight: {typography.weight.semibold};
+    border-radius: 8px;
+    padding: 8px 24px;
+    font-size: 0.75rem;
+    font-weight: 600;
     cursor: pointer;
     transition: filter 120ms ease;
   }
@@ -69,13 +68,13 @@
 
   .transport__label {
     color: rgba(255, 255, 255, 0.6);
-    font-size: {typography.size.xs};
-    letter-spacing: {typography.letterSpacing.wide};
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .transport__value {
-    font-size: {typography.size.lg};
-    font-weight: {typography.weight.semibold};
+    font-size: 1.2rem;
+    font-weight: 600;
   }
 </style>
