@@ -86,6 +86,7 @@
           max={8000}
           step={10}
           value={currentEffects.filterCutoff ?? 1800}
+          defaultValue={1800}
           accent={track.color}
           valueFormatter={(val) => `${Math.round(val ?? 0)} Hz`}
           on:change={(event) => handleEffectsChange({ filterCutoff: event.detail.value })}
@@ -98,6 +99,7 @@
           max={20}
           step={0.1}
           value={currentEffects.filterQ ?? 0.7}
+          defaultValue={0.7}
           accent={track.color}
           valueFormatter={(val) => `${(val ?? 0).toFixed(1)}`}
           on:change={(event) => handleEffectsChange({ filterQ: event.detail.value })}
@@ -110,6 +112,7 @@
           max={0.9}
           step={0.01}
           value={currentEffects.delayMix ?? 0}
+          defaultValue={0}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
           on:change={(event) => handleEffectsChange({ delayMix: event.detail.value })}
@@ -122,6 +125,7 @@
           max={0.8}
           step={0.01}
           value={currentEffects.delayTime ?? 0.28}
+          defaultValue={0.28}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 1000)} ms`}
           on:change={(event) => handleEffectsChange({ delayTime: event.detail.value })}
@@ -134,6 +138,7 @@
           max={0.9}
           step={0.01}
           value={currentEffects.delayFeedback ?? 0.35}
+          defaultValue={0.35}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
           on:change={(event) => handleEffectsChange({ delayFeedback: event.detail.value })}
@@ -146,6 +151,7 @@
           max={1}
           step={0.01}
           value={currentEffects.reverbMix ?? 0}
+          defaultValue={0}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
           on:change={(event) => handleEffectsChange({ reverbMix: event.detail.value })}
@@ -158,6 +164,7 @@
           max={5}
           step={0.1}
           value={currentEffects.reverbTime ?? 1}
+          defaultValue={1}
           accent={track.color}
           valueFormatter={(val) => `${(val ?? 0).toFixed(1)}s`}
           on:change={(event) => handleEffectsChange({ reverbTime: event.detail.value })}
@@ -170,6 +177,7 @@
           max={16}
           step={1}
           value={currentEffects.bitcrushBits ?? 16}
+          defaultValue={16}
           accent={track.color}
           valueFormatter={(val) => `${Math.round(val ?? 0)} bits`}
           on:change={(event) => handleEffectsChange({ bitcrushBits: event.detail.value })}
@@ -182,6 +190,7 @@
           max={50}
           step={1}
           value={currentEffects.bitcrushRate ?? 1}
+          defaultValue={1}
           accent={track.color}
           valueFormatter={(val) => `${Math.round(val ?? 0)}x`}
           on:change={(event) => handleEffectsChange({ bitcrushRate: event.detail.value })}
@@ -199,6 +208,7 @@
           max={2}
           step={0.001}
           value={currentAdsr.attack}
+          defaultValue={0.01}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 1000)} ms`}
           on:change={(event) => handleAdsrChange({ attack: event.detail.value })}
@@ -211,6 +221,7 @@
           max={2}
           step={0.001}
           value={currentAdsr.decay}
+          defaultValue={0.1}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 1000)} ms`}
           on:change={(event) => handleAdsrChange({ decay: event.detail.value })}
@@ -223,6 +234,7 @@
           max={1}
           step={0.01}
           value={currentAdsr.sustain}
+          defaultValue={0.7}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
           on:change={(event) => handleAdsrChange({ sustain: event.detail.value })}
@@ -235,6 +247,7 @@
           max={5}
           step={0.001}
           value={currentAdsr.release}
+          defaultValue={0.3}
           accent={track.color}
           valueFormatter={(val) => `${Math.round((val ?? 0) * 1000)} ms`}
           on:change={(event) => handleAdsrChange({ release: event.detail.value })}
