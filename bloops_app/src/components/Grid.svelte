@@ -417,7 +417,6 @@
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
     const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, sourceColumns);
-    console.log('[Grid handlePointer] row:', row, 'col:', col, 'columns:', columns, 'sourceColumns:', sourceColumns, 'visibleColumns:', visibleColumns, 'manualWindow:', manualWindow);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate scale factor for mapping logical steps to display columns
@@ -431,7 +430,6 @@
     // Display column → logical step
     const displayCol = windowOffset + col;
     const logicalCol = displayCol / logicalToDisplayScale;
-    console.log('[Grid handlePointer] displayCol:', displayCol, 'logicalCol:', logicalCol, 'check:', logicalCol >= sourceColumns);
     if (logicalCol >= sourceColumns) return;
 
     // Calculate storage position directly from display column to support fine-grained placement
@@ -536,7 +534,6 @@
 
     // Dispatch notechange using storage indices: { row, start, length, value, storage: true }
     // The `storage: true` flag helps consumers know start/length are high-resolution indices.
-    console.log('[Grid dispatch notechange]', { row, start: storageStart, length: storageLength, value: cellPaintValue, storage: true });
     dispatch('notechange', { row, start: storageStart, length: storageLength, value: cellPaintValue, storage: true });
   };
 
