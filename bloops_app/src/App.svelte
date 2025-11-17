@@ -63,6 +63,8 @@
   let totalWindows = 1;
   // Zoom state
   let zoomLevel = 16; // Grid resolution denominator: 8, 16, 32, 64 (default 1/16)
+  // Pattern Arranger visibility state
+  let arrangerVisible = false;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -1133,15 +1135,26 @@
       </div>
     </div>
     <div class="arranger-panel" data-component="PatternArrangerPanel">
-      <PatternArranger
-        {patterns}
-        {selectedPattern}
-        on:patternselect={handlePatternSelect}
-        on:patternadd={handlePatternAdd}
-        on:patternduplicate={handlePatternDuplicate}
-        on:patternremove={handlePatternRemove}
-        on:patternrename={handlePatternRename}
-      />
+      <button 
+        class="arranger-toggle" 
+        on:click={() => arrangerVisible = !arrangerVisible}
+        aria-expanded={arrangerVisible}
+        aria-label={arrangerVisible ? 'Hide Pattern Arranger' : 'Show Pattern Arranger'}
+      >
+        <span class="arranger-toggle-icon">{arrangerVisible ? '▼' : '▶'}</span>
+        <span class="arranger-toggle-text">Pattern Arranger</span>
+      </button>
+      {#if arrangerVisible}
+        <PatternArranger
+          {patterns}
+          {selectedPattern}
+          on:patternselect={handlePatternSelect}
+          on:patternadd={handlePatternAdd}
+          on:patternduplicate={handlePatternDuplicate}
+          on:patternremove={handlePatternRemove}
+          on:patternrename={handlePatternRename}
+        />
+      {/if}
     </div>
     <Footer />
   </section>
@@ -1419,6 +1432,45 @@
 
   .arranger-panel {
     padding: 0 20px 20px;
+  }
+
+  .arranger-toggle {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.08), rgba(34, 38, 50, 0.6));
+    border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+    border-radius: 12px;
+    color: var(--color-text);
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .arranger-toggle:hover {
+    background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(34, 38, 50, 0.8));
+    border-color: rgba(var(--color-accent-rgb), 0.3);
+    transform: translateY(-1px);
+  }
+
+  .arranger-toggle:active {
+    transform: translateY(0);
+  }
+
+  .arranger-toggle-icon {
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    transition: transform 0.2s ease;
+  }
+
+  .arranger-toggle-text {
+    flex: 1;
+    text-align: left;
+    letter-spacing: 0.02em;
   }
 
   .volume-card {
