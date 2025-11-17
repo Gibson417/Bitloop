@@ -43,7 +43,11 @@
       title="Undo"
       aria-label="Undo"
     >
-      ↶
+      <svg class="history-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 7v6h6"/>
+        <path d="M21 17a9 9 0 00-9-9 9 9 0 00-9 9"/>
+        <path d="M3 13l6-6"/>
+      </svg>
     </button>
     <button
       type="button"
@@ -53,7 +57,11 @@
       title="Redo"
       aria-label="Redo"
     >
-      ↷
+      <svg class="history-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 7v6h-6"/>
+        <path d="M3 17a9 9 0 019-9 9 9 0 019 9"/>
+        <path d="M21 13l-6-6"/>
+      </svg>
     </button>
   </div>
 </div>
@@ -132,8 +140,8 @@
   }
 
   .history-btn {
-    min-width: 36px;
-    min-height: 36px;
+    min-width: 44px; /* WCAG 2.2 AA touch target minimum */
+    min-height: 44px;
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.16);
@@ -145,6 +153,12 @@
     align-items: center;
     justify-content: center;
     padding: 0;
+  }
+
+  .history-icon {
+    width: 20px; /* Consistent icon sizing */
+    height: 20px;
+    display: block;
   }
 
   .history-btn:hover:not(:disabled) {

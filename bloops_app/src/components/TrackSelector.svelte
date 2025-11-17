@@ -57,7 +57,10 @@
         aria-label="Add track"
         title="Add track"
       >
-        +
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
       </button>
       <button
         class="action-button"
@@ -67,7 +70,7 @@
         aria-label="Duplicate track"
         title="Duplicate track"
       >
-        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
@@ -80,7 +83,7 @@
         aria-label="Delete track"
         title="Delete track"
       >
-        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="3 6 5 6 21 6"/>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           <line x1="10" y1="11" x2="10" y2="17"/>
@@ -115,7 +118,17 @@
           title={track.mute ? 'Unmute' : 'Mute'}
           on:click={(event) => handleToggleMute(event, idx)}
         >
-          M
+          <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            {#if track.mute}
+              <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+              <line x1="23" y1="9" x2="17" y2="15"/>
+              <line x1="17" y1="9" x2="23" y2="15"/>
+            {:else}
+              <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            {/if}
+          </svg>
         </button>
         <button
           type="button"
@@ -125,7 +138,10 @@
           title={track.solo ? 'Unsolo' : 'Solo'}
           on:click={(event) => handleToggleSolo(event, idx)}
         >
-          S
+          <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
         </button>
         {#if canRemoveTrack(idx)}
           <button
@@ -134,7 +150,10 @@
             aria-label={`Remove ${track.name}`}
             on:click={(event) => handleRemoveTrack(event, idx)}
           >
-            ×
+            <svg class="remove-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
           </button>
         {/if}
       </div>
@@ -170,8 +189,8 @@
   }
 
   .action-button {
-    min-width: 32px;
-    min-height: 32px;
+    min-width: 44px; /* WCAG 2.2 AA touch target minimum */
+    min-height: 44px;
     border-radius: 8px;
     border: 1px solid rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-accent-rgb), 0.15);
@@ -187,8 +206,8 @@
   }
 
   .action-icon {
-    width: 16px;
-    height: 16px;
+    width: 20px; /* Consistent icon size across all actions */
+    height: 20px;
     display: block;
   }
 
@@ -314,8 +333,8 @@
   }
 
   .toggle-btn {
-    min-width: 36px;
-    min-height: 36px;
+    min-width: 44px; /* WCAG 2.2 AA touch target minimum */
+    min-height: 44px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.08);
@@ -328,6 +347,12 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+
+  .toggle-icon {
+    width: 20px; /* Consistent with other action icons */
+    height: 20px;
+    display: block;
   }
 
   .toggle-btn:hover {
@@ -355,8 +380,8 @@
   }
 
   .remove-button {
-    min-width: 36px;
-    min-height: 36px;
+    min-width: 44px; /* WCAG 2.2 AA touch target minimum */
+    min-height: 44px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
@@ -369,6 +394,12 @@
     justify-content: center;
     transition: all 0.2s ease;
     flex-shrink: 0;
+  }
+
+  .remove-icon {
+    width: 20px; /* Consistent with other action icons */
+    height: 20px;
+    display: block;
   }
 
   .remove-button:hover {
