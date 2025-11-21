@@ -975,7 +975,7 @@
         </div>
       </div>
       <div class="playback-control-card" data-component="PlaybackControlCard">
-        <div class="mobile-project-name">
+        <div class="mobile-project-name playback-card-section">
           <label class="project-label" for="project-name-mobile">
             <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -997,14 +997,16 @@
             aria-label="Project name"
           />
         </div>
-        <Transport
-          playing={isPlaying}
-          on:toggleplay={handleTogglePlay}
-          on:skipback={handleSkipBack}
-          on:skip={handleSkip}
-        />
+        <div class="transport-wrapper playback-card-section">
+          <Transport
+            playing={isPlaying}
+            on:toggleplay={handleTogglePlay}
+            on:skipback={handleSkipBack}
+            on:skip={handleSkip}
+          />
+        </div>
         {#if activeTrack}
-          <div class="volume-control">
+          <div class="volume-control playback-card-section">
             <div class="volume-heading">
               <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
             </div>
@@ -1556,6 +1558,28 @@
     width: 100%;
     gap: 6px;
     text-align: left;
+  }
+
+  .transport-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .playback-card-section {
+    width: 100%;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(var(--color-accent-rgb), 0.18);
+    position: relative;
+  }
+
+  .playback-card-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .playback-card-section + .playback-card-section {
+    padding-top: 6px;
   }
 
   .volume-control {
