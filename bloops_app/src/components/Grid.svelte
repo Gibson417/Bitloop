@@ -103,6 +103,7 @@
   const MIN_CELL_SIZE_MOBILE = 28; // WCAG 2.2 AA touch target minimum (24px) with comfortable margin
   const MIN_VISIBLE_COLUMNS = 8; // Minimum columns to show (half bar of 16th notes)
   const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+  const MOBILE_BREAKPOINT = 768; // Width threshold for mobile vs desktop cell sizing
 
   const updateLayout = () => {
     if (!canvas || !scroller) {
@@ -129,21 +130,20 @@
     // Use smaller cell size on mobile to fit more beats while maintaining touch accessibility
     // Mobile: 28px cells (exceeds WCAG 2.2 AA 24px requirement)
     // Desktop: 44px cells (meets WCAG 2.2 AAA requirement)
-    const isMobile = availableWidth < 768;
+    const isMobile = availableWidth < MOBILE_BREAKPOINT;
     const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : MIN_CELL_SIZE;
     
     // Calculate how many columns can fit with the minimum cell size
     const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
     
     // Ensure we show at least MIN_VISIBLE_COLUMNS (8 beats/half bar) on mobile
-    // If we can't fit that many, enable horizontal scrolling
+    // On desktop or when enough space is available, fit as many as possible
     if (maxColumnsForWidth < visibleColumns) {
-      if (isMobile && maxColumnsForWidth < MIN_VISIBLE_COLUMNS) {
-        // Force showing MIN_VISIBLE_COLUMNS even if it requires scrolling
-        visibleColumns = MIN_VISIBLE_COLUMNS;
-      } else {
-        visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
-      }
+      // On mobile with limited space, prioritize showing MIN_VISIBLE_COLUMNS (enables horizontal scroll if needed)
+      // On desktop or with adequate space, show what fits while respecting MIN_VISIBLE_COLUMNS minimum
+      visibleColumns = (isMobile && maxColumnsForWidth < MIN_VISIBLE_COLUMNS) 
+        ? MIN_VISIBLE_COLUMNS 
+        : Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
     }
     
     const cellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
