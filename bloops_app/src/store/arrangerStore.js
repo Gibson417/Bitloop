@@ -1,17 +1,8 @@
 import { derived, get, writable } from 'svelte/store';
 
-const DEMO_PATTERNS = [
-  { id: 'intro', name: 'Intro', color: '#78D2B9', lengthInBeats: 8 },
-  { id: 'verse', name: 'Verse', color: '#D27AD2', lengthInBeats: 16 },
-  { id: 'chorus', name: 'Chorus', color: '#F7C873', lengthInBeats: 16 },
-  { id: 'bridge', name: 'Bridge', color: '#7F9BFF', lengthInBeats: 8 }
-];
+const DEMO_PATTERNS = [];
 
-const DEMO_BLOCKS = [
-  { id: 'block-1', patternId: 'intro', lane: 0, startBeat: 0 },
-  { id: 'block-2', patternId: 'verse', lane: 0, startBeat: 8 },
-  { id: 'block-3', patternId: 'chorus', lane: 0, startBeat: 24 }
-];
+const DEMO_BLOCKS = [];
 
 const INITIAL_PLAYBACK = {
   isPlaying: false,

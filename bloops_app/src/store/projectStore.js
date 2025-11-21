@@ -176,7 +176,7 @@ const resizeTrack = (track, rows, storageSteps) => {
 
 const normalizeTracks = (tracks, rows, storageSteps) => {
   const safeTracks = Array.isArray(tracks) && tracks.length > 0 ? tracks.slice(0, MAX_TRACKS) : [];
-  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, storageSteps), createTrack(1, rows, storageSteps)];
+  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, storageSteps)];
   return fallback.map((track, index) => {
     const color = track.color ?? TRACK_COLORS[index % TRACK_COLORS.length];
     const waveform = track.waveform ?? 'square';
@@ -294,7 +294,7 @@ const createPattern = (id, name, bars, rows, storageSteps, tracks = null) => ({
   id: id || `pattern-${Date.now()}`,
   name: name || `Pattern ${id}`,
   bars,
-  tracks: tracks || [createTrack(0, rows, storageSteps), createTrack(1, rows, storageSteps)]
+  tracks: tracks || [createTrack(0, rows, storageSteps)]
 });
 
 const snapshotPattern = (pattern) => ({
@@ -411,8 +411,7 @@ const initialState = normalizeState({
   lastStepTime: 0,
   nextStepTime: 0,
   tracks: [
-    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION),
-    createTrack(1, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION)
+    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION)
   ]
 });
 
