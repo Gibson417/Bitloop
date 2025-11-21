@@ -349,9 +349,15 @@
   const handleZoomChange = (event) => {
     const oldZoom = zoomLevel;
     zoomLevel = event.detail.level;
-    
-    // Note: Zoom and note length are now independent
-    // Users can view the grid at any zoom level while placing notes of any duration
+
+    // Keep the note length selector aligned with the zoom level for predictable editing.
+    // This preserves the existing default (1/8) until the first zoom change, then
+    // updates the selected note length to match the current zoom resolution.
+    const zoomAlignedLength = `${zoomLevel}`;
+    const hasMatchingNoteLength = NOTE_LENGTH_OPTIONS.some((option) => `${option.value}` === zoomAlignedLength);
+    if (hasMatchingNoteLength) {
+      selectedNoteLength = zoomAlignedLength;
+    }
     
     // When zoom changes, reset manual window to ensure it's valid
     // If we're in manual mode, try to keep approximately the same position
