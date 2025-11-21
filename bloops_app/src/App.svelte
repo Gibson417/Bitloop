@@ -1217,6 +1217,21 @@
     border-width: 0;
   }
 
+  /* Focus styles for accessibility - visible indicators */
+  :global(*:focus) {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.6);
+    outline-offset: 2px;
+  }
+
+  :global(*:focus:not(:focus-visible)) {
+    outline: none;
+  }
+
+  :global(*:focus-visible) {
+    outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: 2px;
+  }
+
   :global(*),
   :global(*::before),
   :global(*::after) {
@@ -1682,30 +1697,62 @@
       padding: 0 16px 16px;
     }
 
+    /* Mobile: Horizontal scrolling toolbar for better space efficiency */
     .grid-toolbar {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 12px;
-      margin-bottom: 0; /* Keep anchored on mobile */
-      padding: 12px;
-      border-radius: 12px 12px 0 0; /* Maintain connection */
+      padding: 10px 12px;
+      border-radius: 12px 12px 0 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      /* Smooth scrolling on touch devices */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--color-accent-rgb), 0.3) transparent;
     }
 
+    /* Webkit scrollbar styling for better mobile UX */
+    .grid-toolbar::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .grid-toolbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .grid-toolbar::-webkit-scrollbar-thumb {
+      background: rgba(var(--color-accent-rgb), 0.3);
+      border-radius: 3px;
+    }
+
+    .grid-toolbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(var(--color-accent-rgb), 0.5);
+    }
+
+    /* Keep toolbar horizontal with compact spacing */
     .toolbar-primary {
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
+      flex-direction: row;
+      gap: 8px; /* Reduced from 16px - using design token xs */
+      min-width: min-content;
+      flex-wrap: nowrap;
+    }
+
+    /* Ensure toolbar items don't shrink below touch target size */
+    .toolbar-primary > * {
+      flex-shrink: 0;
     }
 
     .note-length-group {
-      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .toolbar-divider {
+      height: 28px; /* Slightly shorter on mobile */
     }
 
     .grid-backdrop {
       padding: 12px;
-      border-radius: 0; /* Maintain connection on mobile */
+      border-radius: 0;
       border-top: none;
-      border-bottom: none; /* Keep anchored to tempo bar */
+      border-bottom: none;
     }
 
     .app-rail {
@@ -1722,35 +1769,83 @@
       justify-content: space-between;
     }
 
+    /* Mobile tempo bar: 2-column grid for fields, controls in own row */
     .tempo-bar {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 12px; /* Design token: sm (1.5 × base) */
+      padding: 12px 14px;
+      align-items: start;
+    }
+
+    /* First row: Tempo and Bars side by side */
+    .tempo-bar-field:nth-child(1) {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .tempo-bar-field:nth-child(2) {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    /* Second row: Loop length spans both columns */
+    .tempo-bar-field:nth-child(3) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-content: center;
+    }
+
+    /* Divider spans both columns */
+    .tempo-bar-divider {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      width: 100%;
+      height: 1px;
+      margin: 4px 0;
+    }
+
+    /* Controls span both columns, horizontal layout */
+    .tempo-bar-controls {
+      grid-column: 1 / -1;
+      grid-row: 4;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      margin-left: 0;
+      gap: 16px; /* Design token: md (2 × base) */
     }
 
     .tempo-bar-field {
-      justify-content: space-between;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
     }
 
     .tempo-bar-input {
-      width: 80px;
-    }
-
-    .tempo-bar-controls {
-      flex-direction: column;
       width: 100%;
-      margin-left: 0;
-      gap: 12px;
+      min-width: 60px;
+      max-width: 100px;
     }
   }
 
+  /* Small mobile devices (iPhone SE, etc.) */
   @media (max-width: 560px) {
-    .app {
-      padding: 12px;
+    .grid-shell {
+      padding: 0 12px 12px;
     }
 
-    .grid-backdrop {
-      border-radius: 14px;
+    .grid-toolbar {
+      padding: 8px 10px;
+      gap: 12px;
+    }
+
+    .toolbar-primary {
+      gap: 6px; /* Even tighter spacing on small screens */
     }
     
     .app-rail {
@@ -1759,6 +1854,41 @@
     
     .brand-logo {
       max-width: 160px;
+    }
+
+    .tempo-bar {
+      padding: 10px 12px;
+      gap: 10px;
+    }
+
+    .tempo-bar-input {
+      font-size: 0.9rem;
+      padding: 5px 8px;
+    }
+  }
+
+  /* Extra small devices - ensure no horizontal scroll */
+  @media (max-width: 375px) {
+    .grid-toolbar {
+      padding: 6px 8px;
+    }
+
+    .toolbar-primary {
+      gap: 4px; /* Minimal spacing for very small screens */
+    }
+
+    .tempo-bar {
+      gap: 8px;
+      padding: 8px 10px;
+    }
+
+    .tempo-bar-label {
+      font-size: 0.7rem;
+    }
+
+    .tempo-bar-input {
+      font-size: 0.85rem;
+      min-width: 50px;
     }
   }
   
@@ -1784,12 +1914,14 @@
   
   /* Touch improvements */
   @media (hover: none) and (pointer: coarse) {
-    /* Keep essential buttons at 44px for touch on mobile */
+    /* Ensure all interactive elements meet 44px minimum touch target */
     button {
-      min-height: 40px;
-      min-width: 40px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 12px;
     }
     
+    /* Larger touch targets for primary transport controls */
     .play-button {
       width: 72px;
       height: 72px;
@@ -1797,6 +1929,22 @@
     
     .follow {
       padding: 12px 16px;
+      min-height: 44px;
+    }
+
+    /* Ensure input fields are easy to tap */
+    input[type="number"],
+    input[type="text"] {
+      min-height: 44px;
+      padding: 8px 12px;
+      font-size: 16px; /* Prevents iOS zoom on focus - iOS zooms on input fields < 16px */
+    }
+
+    /* Tempo bar inputs should be easily tappable */
+    .tempo-bar-input {
+      min-height: 44px;
+      padding: 8px 12px;
+      font-size: 16px; /* Prevents iOS zoom on focus - iOS zooms on input fields < 16px */
     }
   }
 
