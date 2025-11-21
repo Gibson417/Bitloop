@@ -1937,14 +1937,14 @@
     input[type="text"] {
       min-height: 44px;
       padding: 8px 12px;
-      font-size: 16px; /* Prevents zoom on iOS */
+      font-size: 16px; /* Prevents iOS zoom on focus - iOS zooms on input fields < 16px */
     }
 
     /* Tempo bar inputs should be easily tappable */
     .tempo-bar-input {
       min-height: 44px;
       padding: 8px 12px;
-      font-size: 16px; /* Prevents iOS zoom */
+      font-size: 16px; /* Prevents iOS zoom on focus - iOS zooms on input fields < 16px */
     }
   }
 
