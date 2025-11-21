@@ -19,7 +19,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const LANE_COUNT = 2;
+  const LANE_COUNT = 1;
   const PIXELS_PER_BEAT = 32;
 
   const beatsToPixels = (beats) => beats * PIXELS_PER_BEAT;
@@ -148,8 +148,24 @@
   $: canRemovePattern = patterns.length > 1;
 
   let dragContext = null;
+  let draggedPatternId = null;
+  let laneDragOver = false;
 
   const snapBeat = (beat) => Math.round(beat / BEAT_SNAP) * BEAT_SNAP;
+
+  const handlePatternDragStart = (event, patternId) => {
+    draggedPatternId = patternId;
+    laneDragOver = false;
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('text/plain', patternId);
+      event.dataTransfer.effectAllowed = 'copy';
+    }
+  };
+
+  const handlePatternDragEnd = () => {
+    draggedPatternId = null;
+    laneDragOver = false;
+  };
 
   const handleBlockPointerDown = (event, block) => {
     event.preventDefault();
@@ -178,6 +194,28 @@
     window.removeEventListener('pointermove', handlePointerMove);
     window.removeEventListener('pointerup', handlePointerUp);
     dragContext = null;
+  };
+
+  const handleLaneDragOver = (event) => {
+    const patternId = draggedPatternId || event.dataTransfer?.getData('text/plain');
+    if (!patternId) return;
+    event.preventDefault();
+    laneDragOver = true;
+  };
+
+  const handleLaneDragLeave = () => {
+    laneDragOver = false;
+  };
+
+  const handleLaneDrop = (event, laneIndex) => {
+    const patternId = draggedPatternId || event.dataTransfer?.getData('text/plain');
+    if (!patternId) return;
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const beat = (event.clientX - rect.left) / PIXELS_PER_BEAT;
+    addPatternToLane(patternId, laneIndex, beat);
+    laneDragOver = false;
+    draggedPatternId = null;
   };
 
   onDestroy(() => {
@@ -241,12 +279,15 @@
       <div class="arranger__palette-list">
         {#each patterns as pattern, index (pattern.id)}
           <div 
-            class="pattern-item" 
+            class="pattern-item"
             class:selected={index === selectedPattern}
             role="button"
             tabindex="0"
             on:click={() => handlePatternSelect(index)}
             on:keydown={(e) => handleKeyNavigation(e, index)}
+            draggable="true"
+            on:dragstart={(event) => handlePatternDragStart(event, pattern.id)}
+            on:dragend={handlePatternDragEnd}
             aria-label="Pattern {index + 1}: {pattern.name}"
           >
             <div class="pattern-main">
@@ -319,7 +360,14 @@
       <div class="arranger__lanes-wrapper">
         <div class="arranger__lanes" style={`width: ${laneWidth}px`}>
           {#each Array.from({ length: LANE_COUNT }) as _, laneIndex}
-            <div class="arranger__lane" data-lane={laneIndex}>
+            <div
+              class="arranger__lane"
+              class:arranger__lane--dragging={laneDragOver}
+              data-lane={laneIndex}
+              on:dragover={handleLaneDragOver}
+              on:dragleave={handleLaneDragLeave}
+              on:drop={(event) => handleLaneDrop(event, laneIndex)}
+            >
               {#each laneBlockMap[laneIndex] as block (block.id)}
                 <div
                   class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''}`}
@@ -629,11 +677,13 @@
 
   .arranger__lanes-wrapper {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    min-width: 100%;
   }
 
   .arranger__lanes {
     position: relative;
+    min-width: 100%;
   }
 
   .arranger__lane {
@@ -644,6 +694,12 @@
 
   .arranger__lane:last-child {
     border-bottom: none;
+  }
+
+  .arranger__lane--dragging {
+    background: linear-gradient(90deg, rgba(var(--color-accent-rgb), 0.08), rgba(var(--color-note-active-rgb), 0.08));
+    outline: 2px dashed rgba(var(--color-accent-rgb), 0.6);
+    outline-offset: -6px;
   }
 
   .arranger__block {
