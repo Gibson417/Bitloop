@@ -99,8 +99,9 @@
     };
   };
 
-  const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
-  const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
+  const MIN_CELL_SIZE = 44; // WCAG 2.2 AAA touch target (desktop)
+  const MIN_CELL_SIZE_MOBILE = 28; // WCAG 2.2 AA touch target minimum (24px) with comfortable margin
+  const MIN_VISIBLE_COLUMNS = 8; // Minimum columns to show (half bar of 16th notes)
   const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
 
   const updateLayout = () => {
@@ -125,15 +126,28 @@
     let visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
     const availableWidth = scroller.clientWidth || visibleColumns * MIN_CELL_SIZE;
     
-    // On mobile/narrow screens, reduce visible columns to fit within available width
-    // while maintaining minimum cell size for touch targets
-    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
+    // Use smaller cell size on mobile to fit more beats while maintaining touch accessibility
+    // Mobile: 28px cells (exceeds WCAG 2.2 AA 24px requirement)
+    // Desktop: 44px cells (meets WCAG 2.2 AAA requirement)
+    const isMobile = availableWidth < 768;
+    const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : MIN_CELL_SIZE;
+    
+    // Calculate how many columns can fit with the minimum cell size
+    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    
+    // Ensure we show at least MIN_VISIBLE_COLUMNS (8 beats/half bar) on mobile
+    // If we can't fit that many, enable horizontal scrolling
     if (maxColumnsForWidth < visibleColumns) {
-      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
+      if (isMobile && maxColumnsForWidth < MIN_VISIBLE_COLUMNS) {
+        // Force showing MIN_VISIBLE_COLUMNS even if it requires scrolling
+        visibleColumns = MIN_VISIBLE_COLUMNS;
+      } else {
+        visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
+      }
     }
     
-    const cellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
-    // Width is now fixed to visible columns only (no scrolling)
+    const cellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
+    // Width is calculated based on visible columns
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
 
@@ -857,7 +871,7 @@
     flex: 1; /* Expand to fill available space */
     height: 100%;
     min-height: 256px;
-    overflow-x: hidden;
+    overflow-x: auto; /* Allow horizontal scrolling on mobile when needed */
     overflow-y: hidden;
     background: var(--color-panel);
     border-radius: 12px;
@@ -867,6 +881,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 
   .grid-canvas {
