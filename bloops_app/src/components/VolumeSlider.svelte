@@ -115,7 +115,7 @@
   $: formattedValue = formatValue(numericValue);
 </script>
 
-<div class={`volume-slider ${className}`} data-component="VolumeSlider">
+<div class={`volume-slider ${className} ${disabled ? 'is-disabled' : ''}`} data-component="VolumeSlider">
   <div class="slider-header">
     {#if label}
       <label for={id} class="slider-label">{label}</label>
@@ -283,7 +283,13 @@
     transform: translate(-50%, -50%) scale(1.1);
   }
 
-  /* Disabled State */
+  /* Disabled State - using class for better browser compatibility */
+  .volume-slider.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  /* Fallback for browsers that support :has() */
   .volume-slider:has(.slider-input:disabled) {
     opacity: 0.4;
     pointer-events: none;

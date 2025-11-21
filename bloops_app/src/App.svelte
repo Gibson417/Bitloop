@@ -527,7 +527,7 @@
     } catch (error) {
       console.error('Failed to import project', error);
       // eslint-disable-next-line no-alert
-      alert('Unable to import project file. Please ensure it is a valid Bloops JSON export.');
+      alert('Unable to import project file. Please ensure it is a valid UNKNOWN JSON export.');
       return false;
     }
   };
@@ -951,7 +951,7 @@
             </svg>
           </div>
           <div class="brand-text">
-            <h1 class="brand-mark">Bloops</h1>
+            <h1 class="brand-mark">UNKNOWN</h1>
             <p class="brand-tag">Dot grid sequencer</p>
           </div>
         </div>
