@@ -975,6 +975,28 @@
         </div>
       </div>
       <div class="playback-control-card" data-component="PlaybackControlCard">
+        <div class="mobile-project-name">
+          <label class="project-label" for="project-name-mobile">
+            <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+            <span class="project-eyebrow">Project Name</span>
+          </label>
+          <input
+            id="project-name-mobile"
+            class="project-name-input"
+            type="text"
+            value={projectName}
+            on:change={handleProjectRename}
+            on:blur={handleProjectRename}
+            placeholder="Untitled loop"
+            title="Click to edit project name"
+            aria-label="Project name"
+          />
+        </div>
         <Transport
           playing={isPlaying}
           on:toggleplay={handleTogglePlay}
@@ -1311,7 +1333,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
   }
 
   .brand-utility-buttons {
@@ -1527,6 +1549,13 @@
     gap: 16px;
     align-items: center;
     text-align: center;
+  }
+
+  .mobile-project-name {
+    display: none;
+    width: 100%;
+    gap: 6px;
+    text-align: left;
   }
 
   .volume-control {
@@ -1745,6 +1774,14 @@
       align-items: flex-start;
       padding: 20px 20px 12px;
       gap: 16px;
+    }
+
+    .mobile-project-name {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      padding: 0 8px;
     }
 
     .grid-shell {

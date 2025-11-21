@@ -512,14 +512,16 @@
 
   .pattern-item {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
     padding: 10px 12px;
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.08);
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-wrap: nowrap;
   }
 
   .pattern-item:hover {
@@ -541,6 +543,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1;
+    min-width: 0;
   }
 
   .pattern-strip {
@@ -570,6 +574,9 @@
     font-weight: 500;
     transition: all 0.2s ease;
     min-width: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .pattern-name:hover {
@@ -585,7 +592,7 @@
 
   .pattern-actions {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
     justify-content: flex-end;
   }
@@ -717,6 +724,14 @@
     transition: filter 150ms ease, box-shadow 150ms ease;
     user-select: none;
     position: relative;
+  }
+
+  .arranger__block .block-label {
+    padding: 0 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   .block-label {
