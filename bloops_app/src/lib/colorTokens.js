@@ -1,4 +1,4 @@
-// Color tokens used throughout the Bloops UI.
+// Color tokens used throughout the UNKNOWN UI.
 // These values mirror the design spec (B‑Warm accent, etc.).
 
 export const colors = {

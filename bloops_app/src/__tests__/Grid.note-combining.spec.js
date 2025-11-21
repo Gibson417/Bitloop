@@ -51,7 +51,7 @@ describe('Grid - Note Combining Prevention', () => {
     });
 
     const rect = canvas.getBoundingClientRect();
-    const cellSize = 32; // default cell size
+    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
 
     // Place first 8th note at column 0
     await fireEvent.pointerDown(canvas, {
@@ -129,7 +129,7 @@ describe('Grid - Note Combining Prevention', () => {
     });
 
     const rect = canvas.getBoundingClientRect();
-    const cellSize = 32;
+    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
 
     // Place first 16th note at column 0
     await fireEvent.pointerDown(canvas, {
@@ -196,7 +196,7 @@ describe('Grid - Note Combining Prevention', () => {
     });
 
     const rect = canvas.getBoundingClientRect();
-    const cellSize = 32;
+    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
 
     // Place note with Ctrl key held (extend mode)
     await fireEvent.pointerDown(canvas, {
@@ -260,7 +260,7 @@ describe('Grid - Note Combining Prevention', () => {
     });
 
     const rect = canvas.getBoundingClientRect();
-    const cellSize = 32;
+    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
 
     // Click on the cell with existing note
     await fireEvent.pointerDown(canvas, {

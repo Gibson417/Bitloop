@@ -1,4 +1,4 @@
-// Scale definitions for Bloops.
+// Scale definitions for UNKNOWN.
 
 // Each array is a list of semitone offsets from the root note.
 // For example, the minor pentatonic scale uses [0, 3, 5, 7, 10].

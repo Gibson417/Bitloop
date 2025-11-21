@@ -75,17 +75,17 @@ describe('SettingsMenu component', () => {
     const devModeBtn = getByLabelText('Toggle Dev Mode ON');
     
     // Initially should be off (false or null)
-    const initialValue = localStorage.getItem('bloops-dev-mode');
+    const initialValue = localStorage.getItem('unknown-dev-mode');
     expect(initialValue === null || initialValue === 'false').toBe(true);
     
     // Click to toggle on
     await fireEvent.click(devModeBtn);
-    expect(localStorage.getItem('bloops-dev-mode')).toBe('true');
+    expect(localStorage.getItem('unknown-dev-mode')).toBe('true');
     
     // Click to toggle off - after toggle, aria-label changes
     const devModeBtnOn = getByLabelText('Toggle Dev Mode OFF');
     await fireEvent.click(devModeBtnOn);
-    expect(localStorage.getItem('bloops-dev-mode')).toBe('false');
+    expect(localStorage.getItem('unknown-dev-mode')).toBe('false');
   });
 
   it('clears localStorage and reloads when Reset App is clicked', async () => {
@@ -93,7 +93,7 @@ describe('SettingsMenu component', () => {
     
     // Set some localStorage data
     localStorage.setItem('test-key', 'test-value');
-    localStorage.setItem('bloops-project', '{}');
+    localStorage.setItem('unknown-project', '{}');
 
     await fireEvent.click(getByLabelText('Settings'));
     
@@ -105,7 +105,7 @@ describe('SettingsMenu component', () => {
     
     // Check that localStorage was cleared
     expect(localStorage.getItem('test-key')).toBeNull();
-    expect(localStorage.getItem('bloops-project')).toBeNull();
+    expect(localStorage.getItem('unknown-project')).toBeNull();
     
     // Check that page reload was called
     expect(window.location.reload).toHaveBeenCalled();

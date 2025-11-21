@@ -47,14 +47,14 @@
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
       </div>
-      <h2 id="guide-title">Welcome to Bloops!</h2>
+      <h2 id="guide-title">Welcome to UNKNOWN!</h2>
       <p class="guide-subtitle">A chiptune loop sequencer for creating retro-style music</p>
     </div>
     
     <div class="guide-content">
       <section class="guide-section">
         <h3>Getting Started</h3>
-        <p>Bloops is a browser-based music sequencer inspired by classic chiptune trackers. Click on the grid to add notes, adjust track parameters, and create your own retro loops.</p>
+        <p>UNKNOWN is a browser-based music sequencer inspired by classic chiptune trackers. Click on the grid to add notes, adjust track parameters, and create your own retro loops.</p>
       </section>
       
       <section class="guide-section">

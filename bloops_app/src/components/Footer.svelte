@@ -4,7 +4,7 @@
 
 <footer class="footer" data-component="Footer">
   <div class="footer-content">
-    <p class="footer-text">Bloops - Dot grid sequencer</p>
+    <p class="footer-text">UNKNOWN - Dot grid sequencer</p>
   </div>
 </footer>
 

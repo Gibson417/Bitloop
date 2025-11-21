@@ -1,10 +1,10 @@
-# Bloops  
+# UNKNOWN  
 *A modern, intuitive chiptune loop composer for the browser.*
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/Gibson417/Bitloop)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/Gibson417/Bitloop)
 
-Bloops is designed to feel effortless, musical, and inspiring. Instead of rows of piano-roll rectangles, Bloops uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
+UNKNOWN is designed to feel effortless, musical, and inspiring. Instead of rows of piano-roll rectangles, UNKNOWN uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
 
 This is a tool for capturing ideas quickly, looping them, refining them, and *staying in the creative headspace* rather than wrestling with technical machinery.
 
@@ -30,9 +30,9 @@ All core MVP features have been successfully implemented and tested:
 
 ## 📸 Visual Identity
 
-![Bloops hero mockup of the full application](docs/images/bloops-app-overview.svg)
+![UNKNOWN hero mockup of the full application](docs/images/bloops-app-overview.svg)
 
-![Bloops wordmark and dot grid logo](docs/images/bloops-logo.svg)
+![UNKNOWN wordmark and dot grid logo](docs/images/bloops-logo.svg)
 
 ## ✨ Core Experience
 
@@ -45,7 +45,7 @@ All core MVP features have been successfully implemented and tested:
 - **Built-in scale chooser** keeps melodies musical without forcing theory knowledge  
 - **Warm chiptune sound palette** (square, triangle, saw, noise, light-softening envelope)
 
-Bloops encourages **flow** — curiosity, repetition, listening, adjusting, evolving.
+UNKNOWN encourages **flow** — curiosity, repetition, listening, adjusting, evolving.
 
 ## 🎨 Visual Identity & Design Language
 
@@ -67,7 +67,7 @@ Most browser-based music makers fall into one of two extremes:
 1. **Overly technical** (trackers, modular patching, chip-accurate systems), or  
 2. **Toy-like quick sketch pads** that flatten expression.
 
-Bloops aims for the middle space:
+UNKNOWN aims for the middle space:
 
 **Simple enough to start instantly.**  
 **Deep enough to shape real music.**
@@ -269,7 +269,7 @@ For detailed test reports, see [docs/reports/](docs/reports/)
 
 ## 🎨 Design Philosophy
 
-Bloops prioritizes **feel** over features:
+UNKNOWN prioritizes **feel** over features:
 - **Smooth playback:** Stable scheduler and precise timing
 - **Fast, intuitive editing:** Zero perceived lag
 - **Calm, minimal UI:** Encourages creative flow

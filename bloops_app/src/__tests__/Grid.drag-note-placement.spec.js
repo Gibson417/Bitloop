@@ -32,15 +32,15 @@ describe('Grid drag note placement', () => {
     component.$on('notechange', noteChange);
 
     const canvas = container.querySelector('canvas');
-    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 512, height: 128 });
+    // Update to use 44px minimum cell size (WCAG 2.2 AA): 16 cells * 44px = 704px
+    const canvasWidth = 704;
+    const cellSize = 44;
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: 176 });
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
-    // Calculate cell size
-    const cellSize = 512 / 16; // 32 pixels per cell
-
     // Drag from dot 1 (column 0) to dot 3 (column 2)
-    // Start at column 0, center of cell: 16 pixels
+    // Start at column 0, center of cell
     await fireEvent.pointerDown(canvas, { clientX: cellSize * 0.5, clientY: 10, pointerId: 1 });
     
     // Move to column 1, center of cell
@@ -176,11 +176,12 @@ describe('Grid drag note placement', () => {
     component.$on('notechange', noteChange);
 
     const canvas = container.querySelector('canvas');
-    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 512, height: 128 });
+    // Update to use 44px minimum cell size (WCAG 2.2 AA): 16 cells * 44px = 704px
+    const canvasWidth = 704;
+    const cellSize = 44;
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: 176 });
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
-
-    const cellSize = 512 / 16;
 
     // Drag from column 0 to column 3
     await fireEvent.pointerDown(canvas, { clientX: cellSize * 0.5, clientY: 10, pointerId: 1 });

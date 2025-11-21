@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const DEV_MODE_KEY = 'bloops-dev-mode';
+const DEV_MODE_KEY = 'unknown-dev-mode';
 
 const loadDevMode = () => {
   if (typeof window === 'undefined') return false;
