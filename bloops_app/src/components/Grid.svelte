@@ -99,6 +99,10 @@
     };
   };
 
+  const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
+  const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
+  const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+
   const updateLayout = () => {
     if (!canvas || !scroller) {
       return;
@@ -119,17 +123,16 @@
     // - For zoom 64: show 64 columns (1 bar of 64th notes)
     const zoom = Number(zoomLevel) || 16;
     let visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
-    const availableWidth = scroller.clientWidth || visibleColumns * 44;
+    const availableWidth = scroller.clientWidth || visibleColumns * MIN_CELL_SIZE;
     
     // On mobile/narrow screens, reduce visible columns to fit within available width
-    // while maintaining 44px minimum cell size for touch targets
-    const minCellSize = 44; // WCAG 2.2 AA touch target minimum
-    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    // while maintaining minimum cell size for touch targets
+    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
     if (maxColumnsForWidth < visibleColumns) {
-      visibleColumns = Math.max(4, maxColumnsForWidth); // Show at least 4 columns
+      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
     }
     
-    const cellSize = Math.max(minCellSize, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    const cellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;

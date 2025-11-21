@@ -78,18 +78,21 @@ describe('Grid layout', () => {
 
     // visibleColumns uses new formula: min(zoom === 8 ? 16 : zoom, sourceColumns)
     // For zoom level 8 and sourceColumns 32, visibleColumns = min(16, 32) = 16
+    const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
+    const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
+    const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+    
     let visibleColumns = Math.min(zoomLevel === 8 ? 16 : zoomLevel, sourceColumns);
     const availableWidth = scroller.clientWidth;
     
     // On mobile/narrow screens, reduce visible columns to fit within available width
-    // while maintaining 44px minimum cell size for touch targets
-    const minCellSize = 44;
-    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    // while maintaining minimum cell size for touch targets
+    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
     if (maxColumnsForWidth < visibleColumns) {
-      visibleColumns = Math.max(4, maxColumnsForWidth); // Show at least 4 columns
+      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
     }
     
-    const expectedCellSize = Math.max(minCellSize, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    const expectedCellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (static grid with window switching)
     const expectedWidth = visibleColumns * expectedCellSize;
 
