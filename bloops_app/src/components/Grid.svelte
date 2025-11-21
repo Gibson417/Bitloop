@@ -99,6 +99,10 @@
     };
   };
 
+  const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
+  const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
+  const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+
   const updateLayout = () => {
     if (!canvas || !scroller) {
       return;
@@ -118,10 +122,17 @@
     // - For zoom 32: show 32 columns (1 bar of 32nd notes)
     // - For zoom 64: show 64 columns (1 bar of 64th notes)
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
-    const availableWidth = scroller.clientWidth || visibleColumns * 44;
-    // Minimum 44px for WCAG 2.2 AA touch target compliance
-    const cellSize = Math.max(44, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    let visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
+    const availableWidth = scroller.clientWidth || visibleColumns * MIN_CELL_SIZE;
+    
+    // On mobile/narrow screens, reduce visible columns to fit within available width
+    // while maintaining minimum cell size for touch targets
+    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
+    if (maxColumnsForWidth < visibleColumns) {
+      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
+    }
+    
+    const cellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
@@ -861,14 +872,20 @@
   .grid-canvas {
     touch-action: none;
     display: block;
-    min-width: 512px;
-    min-height: 352px; /* Increased from 256px to ensure 44px cells for 8 rows */
     /* Reset debug visuals */
     background: transparent;
     border: none;
     outline: none;
     /* Improve touch responsiveness */
     -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Remove min-width constraint on mobile to prevent overflow and touch input misalignment */
+  @media (min-width: 768px) {
+    .grid-canvas {
+      min-width: 512px;
+      min-height: 352px; /* Ensure 44px cells for 8 rows on desktop */
+    }
   }
 
   .grid-canvas:focus-visible {
