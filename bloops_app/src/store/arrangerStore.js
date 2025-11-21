@@ -71,17 +71,39 @@ const getLaneEndBeat = (lane) => {
     .reduce((max, block) => Math.max(max, block.startBeat + (patternMap.get(block.patternId) ?? 0)), 0);
 };
 
+const getSafeStartBeat = (lane, desiredStart, patternLength, movingBlockId = null) => {
+  const snapped = snapBeat(desiredStart);
+  const laneBlocks = get(blocks)
+    .filter((block) => block.lane === lane && block.id !== movingBlockId)
+    .sort((a, b) => a.startBeat - b.startBeat);
+
+  let startBeat = Math.max(0, snapped);
+
+  for (const block of laneBlocks) {
+    const blockPatternLength = getPatternById(block.patternId)?.lengthInBeats ?? 0;
+    const blockEnd = block.startBeat + blockPatternLength;
+    const overlaps = startBeat < blockEnd && startBeat + patternLength > block.startBeat;
+
+    if (overlaps) {
+      startBeat = blockEnd;
+    }
+  }
+
+  return startBeat;
+};
+
 export const addPatternToLane = (patternId, lane = 0, explicitStartBeat = null) => {
   const pattern = getPatternById(patternId);
   if (!pattern) return;
 
   blocks.update((current) => {
-    const laneEnd = explicitStartBeat ?? getLaneEndBeat(lane);
-    const startBeat = snapBeat(laneEnd);
+    const laneIndex = 0; // Single lane layout
+    const laneEnd = explicitStartBeat ?? getLaneEndBeat(laneIndex);
+    const startBeat = getSafeStartBeat(laneIndex, laneEnd, pattern.lengthInBeats);
     const newBlock = {
       id: `block-${blockCounter++}`,
       patternId,
-      lane,
+      lane: laneIndex,
       startBeat
     };
     return [...current, newBlock];
@@ -92,8 +114,10 @@ export const moveBlock = (blockId, { startBeat, lane } = {}) => {
   blocks.update((current) =>
     current.map((block) => {
       if (block.id !== blockId) return block;
-      const nextLane = typeof lane === 'number' ? lane : block.lane;
-      const nextStart = typeof startBeat === 'number' ? snapBeat(startBeat) : block.startBeat;
+      const patternLength = getPatternById(block.patternId)?.lengthInBeats ?? 0;
+      const nextLane = 0; // Single lane layout
+      const desiredStart = typeof startBeat === 'number' ? startBeat : block.startBeat;
+      const nextStart = getSafeStartBeat(nextLane, desiredStart, patternLength, block.id);
       return { ...block, lane: nextLane, startBeat: nextStart };
     })
   );
