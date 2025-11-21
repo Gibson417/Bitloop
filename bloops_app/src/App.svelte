@@ -933,53 +933,70 @@
   </div>
   <aside class="app-rail" data-component="AppRail">
     <div class="rail-inner">
-      <div class="brand" data-component="Brand">
-        <div class="brand-logo" aria-hidden="true">
-          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
-            <!-- Stylized "B" made of dots -->
-            <circle cx="8" cy="8" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="8" cy="20" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="8" cy="32" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="8" cy="44" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="20" cy="8" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="20" cy="24" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="20" cy="40" r="4" fill="currentColor" opacity="0.9" />
-            <circle cx="32" cy="12" r="4" fill="currentColor" opacity="0.8" />
-            <circle cx="32" cy="24" r="4" fill="currentColor" opacity="0.8" />
-            <circle cx="32" cy="36" r="4" fill="currentColor" opacity="0.8" />
-          </svg>
+      <div class="brand-wrapper">
+        <div class="brand" data-component="Brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+              <!-- Stylized "B" made of dots -->
+              <circle cx="8" cy="8" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="8" cy="20" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="8" cy="32" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="8" cy="44" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="20" cy="8" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="20" cy="24" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="20" cy="40" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="32" cy="12" r="4" fill="currentColor" opacity="0.8" />
+              <circle cx="32" cy="24" r="4" fill="currentColor" opacity="0.8" />
+              <circle cx="32" cy="36" r="4" fill="currentColor" opacity="0.8" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-mark">Bloops</h1>
+            <p class="brand-tag">Dot grid sequencer</p>
+          </div>
         </div>
-        <div class="brand-text">
-          <h1 class="brand-mark">Bloops</h1>
-          <p class="brand-tag">Dot grid sequencer</p>
+        <div class="brand-utility-buttons">
+          <ShareMenu
+            shareStatus={shareStatus}
+            shareMessage={shareMessage}
+            shareLink={shareLink}
+            on:share={handleShareMenuShare}
+            on:render={handleShareMenuRender}
+            on:rendermidi={handleShareMenuRenderMidi}
+            on:export={handleShareMenuExport}
+            on:import={handleShareMenuImport}
+          />
+          <SettingsMenu />
         </div>
       </div>
-      {#if activeTrack}
-        <div class="volume-card" data-component="VolumeCard">
-          <div class="volume-heading">
-            <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
+      <div class="playback-control-card" data-component="PlaybackControlCard">
+        <Transport
+          playing={isPlaying}
+          on:toggleplay={handleTogglePlay}
+          on:skipback={handleSkipBack}
+          on:skip={handleSkip}
+        />
+        {#if activeTrack}
+          <div class="volume-control">
+            <div class="volume-heading">
+              <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
+            </div>
+            <KnobControl
+              id={`rail-volume-${projectState?.selectedTrack ?? 0}`}
+              label="Volume"
+              min={0}
+              max={1}
+              step={0.01}
+              value={activeTrack.volume ?? 0}
+              defaultValue={0.7}
+              accent={trackColor}
+              valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
+              className="volume-knob"
+              on:change={handleVolumeChange}
+            />
           </div>
-          <KnobControl
-            id={`rail-volume-${projectState?.selectedTrack ?? 0}`}
-            label="Volume"
-            min={0}
-            max={1}
-            step={0.01}
-            value={activeTrack.volume ?? 0}
-            defaultValue={0.7}
-            accent={trackColor}
-            valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
-            className="volume-knob"
-            on:change={handleVolumeChange}
-          />
-        </div>
-      {/if}
-    <Transport
-      playing={isPlaying}
-      on:toggleplay={handleTogglePlay}
-      on:skipback={handleSkipBack}
-      on:skip={handleSkip}
-    />
+        {/if}
+      </div>
       <TrackSelector
         tracks={projectState?.tracks ?? []}
         selected={projectState?.selectedTrack ?? 0}
@@ -1089,9 +1106,18 @@
           on:windowinfo={handleWindowInfo}
         />
       </div>
+      <div class="grid-controls-bar" data-component="GridControlsBar">
+        <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+        <WindowSwitcher
+          {currentWindow}
+          {totalWindows}
+          trackColor={trackColor}
+          on:switch={handleWindowSwitch}
+        />
+      </div>
       <div class="tempo-bar" data-component="TempoBar">
         <div class="tempo-bar-field">
-          <label for="tempo-bar-bpm" class="tempo-bar-label">Tempo</label>
+          <label for="tempo-bar-bpm" class="tempo-bar-label">BPM</label>
           <input
             id="tempo-bar-bpm"
             type="number"
@@ -1101,7 +1127,6 @@
             on:input={handleBpmChange}
             class="tempo-bar-input"
           />
-          <span class="tempo-bar-unit">BPM</span>
         </div>
         <div class="tempo-bar-field">
           <label for="tempo-bar-bars" class="tempo-bar-label">Bars</label>
@@ -1118,16 +1143,6 @@
         <div class="tempo-bar-field">
           <span class="tempo-bar-label">Loop length</span>
           <span class="tempo-bar-value">{loopSecondsDisplay}s</span>
-        </div>
-        <div class="tempo-bar-divider" aria-hidden="true"></div>
-        <div class="tempo-bar-controls">
-          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
-          <WindowSwitcher
-            {currentWindow}
-            {totalWindows}
-            trackColor={trackColor}
-            on:switch={handleWindowSwitch}
-          />
         </div>
       </div>
     </div>
@@ -1279,11 +1294,23 @@
     gap: 28px;
   }
 
+  .brand-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
   .brand {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+  }
+
+  .brand-utility-buttons {
+    display: none; /* Hidden on desktop, shown on mobile */
   }
 
   .brand-logo {
@@ -1485,17 +1512,24 @@
     letter-spacing: 0.02em;
   }
 
-  .volume-card {
-    margin-top: 10px;
+  .playback-control-card {
     padding: 14px 12px 16px;
     border-radius: 14px;
     background: linear-gradient(145deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-panel, 22, 26, 36), 0.6));
     border: 1px solid rgba(var(--color-accent-rgb), 0.24);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
     align-items: center;
     text-align: center;
+  }
+
+  .volume-control {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
   }
 
   .volume-heading {
@@ -1514,7 +1548,7 @@
     color: inherit;
   }
 
-  .volume-card :global(.volume-knob) {
+  .playback-control-card :global(.volume-knob) {
     transform: scale(0.85);
     transform-origin: center top;
   }
@@ -1566,15 +1600,15 @@
 
   .grid-backdrop {
     position: relative;
-    border-radius: 0; /* No rounding - connects toolbar above and tempo bar below */
+    border-radius: 0; /* No rounding - connects toolbar above and grid-controls-bar below */
     padding: 14px;
     box-sizing: border-box;
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
     border-top: none; /* Remove top border to merge with toolbar */
-    border-bottom: none; /* Remove bottom border to merge with tempo bar */
+    border-bottom: none; /* Remove bottom border to merge with grid-controls-bar */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    margin-bottom: 0; /* Remove gap to connect with tempo bar */
+    margin-bottom: 0; /* Remove gap to connect with grid-controls-bar */
     min-height: 300px;
     flex: 1;
     display: flex;
@@ -1584,13 +1618,27 @@
     height: auto;
   }
 
+  .grid-controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 24px;
+    padding: 12px 16px;
+    margin-top: 0; /* No gap - connects to grid */
+    margin-bottom: 0; /* No gap - connects to tempo bar */
+    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
+    border-top: none; /* Remove top border to merge with grid */
+    border-bottom: none; /* Remove bottom border to merge with tempo bar */
+  }
+
   .tempo-bar {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 24px;
     padding: 12px 16px;
-    margin-top: 0; /* Remove gap to anchor to grid */
+    margin-top: 0; /* Remove gap to anchor to grid-controls-bar */
     margin-bottom: 16px; /* Add bottom margin for spacing from content below */
     border-radius: 0 0 12px 12px; /* Round only bottom corners to complete the anchored unit */
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88))); /* Match grid background */
@@ -1602,20 +1650,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .tempo-bar-divider {
-    width: 1px;
-    height: 32px;
-    background: rgba(255, 255, 255, 0.08);
-    flex-shrink: 0;
-  }
-
-  .tempo-bar-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-left: auto; /* Push to the right */
   }
 
   .tempo-bar-label {
@@ -1677,6 +1711,18 @@
     
     .rail-inner {
       max-width: 100%;
+    }
+
+    /* Show utility buttons in brand wrapper on mobile */
+    .brand-utility-buttons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Hide utility buttons from workspace header on mobile */
+    .workspace-header .utility-buttons {
+      display: none;
     }
 
     /* Tablet: slightly tighter toolbar spacing */
@@ -1769,61 +1815,25 @@
       justify-content: space-between;
     }
 
-    /* Mobile tempo bar: 2-column grid for fields, controls in own row */
+    /* Mobile tempo bar: simple 3-column grid for fields */
     .tempo-bar {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px; /* Design token: sm (1.5 × base) */
       padding: 12px 14px;
-      align-items: start;
-    }
-
-    /* First row: Tempo and Bars side by side */
-    .tempo-bar-field:nth-child(1) {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .tempo-bar-field:nth-child(2) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    /* Second row: Loop length spans both columns */
-    .tempo-bar-field:nth-child(3) {
-      grid-column: 1 / -1;
-      grid-row: 2;
-      justify-content: center;
-    }
-
-    /* Divider spans both columns */
-    .tempo-bar-divider {
-      grid-column: 1 / -1;
-      grid-row: 3;
-      width: 100%;
-      height: 1px;
-      margin: 4px 0;
-    }
-
-    /* Controls span both columns, horizontal layout */
-    .tempo-bar-controls {
-      grid-column: 1 / -1;
-      grid-row: 4;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
       align-items: center;
-      width: 100%;
-      margin-left: 0;
-      gap: 16px; /* Design token: md (2 × base) */
     }
 
     .tempo-bar-field {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       gap: 6px;
+    }
+
+    .tempo-bar-field:nth-child(3) {
+      /* Loop length field can stay centered */
+      justify-content: center;
     }
 
     .tempo-bar-input {
