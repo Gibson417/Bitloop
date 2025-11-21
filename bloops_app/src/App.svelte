@@ -1784,6 +1784,11 @@
       padding: 0 8px;
     }
 
+    /* Hide duplicate project title in workspace header on mobile */
+    .workspace-header .project-info {
+      display: none;
+    }
+
     .grid-shell {
       padding: 0 16px 16px;
     }
