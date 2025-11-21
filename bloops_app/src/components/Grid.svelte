@@ -118,10 +118,18 @@
     // - For zoom 32: show 32 columns (1 bar of 32nd notes)
     // - For zoom 64: show 64 columns (1 bar of 64th notes)
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
+    let visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
     const availableWidth = scroller.clientWidth || visibleColumns * 44;
-    // Minimum 44px for WCAG 2.2 AA touch target compliance
-    const cellSize = Math.max(44, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    
+    // On mobile/narrow screens, reduce visible columns to fit within available width
+    // while maintaining 44px minimum cell size for touch targets
+    const minCellSize = 44; // WCAG 2.2 AA touch target minimum
+    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    if (maxColumnsForWidth < visibleColumns) {
+      visibleColumns = Math.max(4, maxColumnsForWidth); // Show at least 4 columns
+    }
+    
+    const cellSize = Math.max(minCellSize, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
@@ -861,14 +869,20 @@
   .grid-canvas {
     touch-action: none;
     display: block;
-    min-width: 512px;
-    min-height: 352px; /* Increased from 256px to ensure 44px cells for 8 rows */
     /* Reset debug visuals */
     background: transparent;
     border: none;
     outline: none;
     /* Improve touch responsiveness */
     -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Remove min-width constraint on mobile to prevent overflow and touch input misalignment */
+  @media (min-width: 768px) {
+    .grid-canvas {
+      min-width: 512px;
+      min-height: 352px; /* Ensure 44px cells for 8 rows on desktop */
+    }
   }
 
   .grid-canvas:focus-visible {
