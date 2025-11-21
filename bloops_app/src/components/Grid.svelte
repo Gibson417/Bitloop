@@ -100,7 +100,7 @@
   };
 
   const MIN_CELL_SIZE = 44; // WCAG 2.5.5 Level AAA touch target size (desktop)
-  const MIN_CELL_SIZE_MOBILE = 28; // Exceeds WCAG 2.5.8 Level AA minimum (24px) with comfortable margin
+  const MIN_CELL_SIZE_MOBILE = 28; // Exceeds WCAG 2.5.5 Level AA minimum (24px) with comfortable margin
   const MIN_VISIBLE_COLUMNS = 8; // Minimum columns to show (half bar of 16th notes)
   const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
   const MOBILE_BREAKPOINT = 768; // Width threshold for mobile vs desktop cell sizing
@@ -118,7 +118,7 @@
     
     // Calculate visible columns based on available screen width and minimum cell size
     // Use smaller cell size on mobile to maintain touch accessibility while fitting more columns
-    // Mobile: 28px cells (exceeds WCAG 2.5.8 Level AA 24px requirement)
+    // Mobile: 28px cells (exceeds WCAG 2.5.5 Level AA 24px requirement)
     // Desktop: 44px cells (meets WCAG 2.5.5 Level AAA requirement)
     const isMobile = (scroller.clientWidth || 0) < MOBILE_BREAKPOINT;
     const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : MIN_CELL_SIZE;
