@@ -943,17 +943,16 @@
         <div class="brand" data-component="Brand">
           <div class="brand-logo" aria-hidden="true">
             <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
-              <!-- Stylized "B" made of dots -->
+              <!-- Stylized "U" made of dots -->
               <circle cx="8" cy="8" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="8" cy="20" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="8" cy="32" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="8" cy="44" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="20" cy="8" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="20" cy="24" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="20" cy="40" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="32" cy="12" r="4" fill="currentColor" opacity="0.8" />
-              <circle cx="32" cy="24" r="4" fill="currentColor" opacity="0.8" />
-              <circle cx="32" cy="36" r="4" fill="currentColor" opacity="0.8" />
+              <circle cx="20" cy="44" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="32" cy="8" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="32" cy="20" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="32" cy="32" r="4" fill="currentColor" opacity="0.9" />
+              <circle cx="32" cy="44" r="4" fill="currentColor" opacity="0.9" />
             </svg>
           </div>
           <div class="brand-text">
