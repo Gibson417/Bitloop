@@ -1600,15 +1600,15 @@
 
   .grid-backdrop {
     position: relative;
-    border-radius: 0; /* No rounding - connects toolbar above and grid-controls-bar below */
+    border-radius: 0; /* Part of 3-tier unit: grid-toolbar → grid-backdrop → grid-controls-bar */
     padding: 14px;
     box-sizing: border-box;
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    border-top: none; /* Remove top border to merge with toolbar */
-    border-bottom: none; /* Remove bottom border to merge with grid-controls-bar */
+    border-top: none; /* Merge with grid-toolbar above */
+    border-bottom: none; /* Merge with grid-controls-bar below */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    margin-bottom: 0; /* Remove gap to connect with grid-controls-bar */
+    margin-bottom: 0; /* Connect seamlessly to grid-controls-bar */
     min-height: 300px;
     flex: 1;
     display: flex;
@@ -1619,17 +1619,19 @@
   }
 
   .grid-controls-bar {
+    /* Middle tier of 5-tier anchored unit: toolbar → grid → controls-bar → tempo-bar */
+    /* Contains Follow toggle and Window Switcher for grid navigation */
     display: flex;
     align-items: center;
     justify-content: space-around;
     gap: 24px;
     padding: 12px 16px;
-    margin-top: 0; /* No gap - connects to grid */
-    margin-bottom: 0; /* No gap - connects to tempo bar */
+    margin-top: 0; /* Connects to grid-backdrop above */
+    margin-bottom: 0; /* Connects to tempo-bar below */
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    border-top: none; /* Remove top border to merge with grid */
-    border-bottom: none; /* Remove bottom border to merge with tempo bar */
+    border-top: none; /* Merge with grid-backdrop above */
+    border-bottom: none; /* Merge with tempo-bar below */
   }
 
   .tempo-bar {
@@ -1638,12 +1640,12 @@
     justify-content: flex-start;
     gap: 24px;
     padding: 12px 16px;
-    margin-top: 0; /* Remove gap to anchor to grid-controls-bar */
-    margin-bottom: 16px; /* Add bottom margin for spacing from content below */
-    border-radius: 0 0 12px 12px; /* Round only bottom corners to complete the anchored unit */
-    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88))); /* Match grid background */
-    border: 2px solid rgba(var(--color-accent-rgb), 0.3); /* Match grid border */
-    border-top: none; /* Remove top border to merge with grid */
+    margin-top: 0; /* Connects to grid-controls-bar above */
+    margin-bottom: 16px; /* Spacing from content below */
+    border-radius: 0 0 12px 12px; /* Bottom tier - round bottom corners only */
+    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
+    border-top: none; /* Merge with grid-controls-bar above */
   }
 
   .tempo-bar-field {
