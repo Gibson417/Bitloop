@@ -1,4 +1,4 @@
-// Note name utilities for Bloops
+// Note name utilities for UNKNOWN
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 

@@ -80,7 +80,7 @@ describe('Grid layout', () => {
     // For zoom level 8 and sourceColumns 32, visibleColumns = min(16, 32) = 16
     const visibleColumns = Math.min(zoomLevel === 8 ? 16 : zoomLevel, sourceColumns);
     const availableWidth = scroller.clientWidth;
-    const expectedCellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    const expectedCellSize = Math.max(44, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (static grid with window switching)
     const expectedWidth = visibleColumns * expectedCellSize;
 

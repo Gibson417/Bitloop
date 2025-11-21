@@ -10,7 +10,7 @@
   import Transport from './components/Transport.svelte';
   import Footer from './components/Footer.svelte';
   import SettingsMenu from './components/SettingsMenu.svelte';
-  import KnobControl from './components/KnobControl.svelte';
+  import VolumeSlider from './components/VolumeSlider.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import PatternArranger from './components/PatternArranger.svelte';
@@ -981,7 +981,7 @@
             <div class="volume-heading">
               <span class="track-name" style={`color: ${trackColor}`}>{activeTrack.name ?? `Track ${(projectState?.selectedTrack ?? 0) + 1}`}</span>
             </div>
-            <KnobControl
+            <VolumeSlider
               id={`rail-volume-${projectState?.selectedTrack ?? 0}`}
               label="Volume"
               min={0}
@@ -991,7 +991,7 @@
               defaultValue={0.7}
               accent={trackColor}
               valueFormatter={(val) => `${Math.round((val ?? 0) * 100)}%`}
-              className="volume-knob"
+              className="volume-slider-control"
               on:change={handleVolumeChange}
             />
           </div>
@@ -1527,9 +1527,10 @@
   .volume-control {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    align-items: center;
+    gap: 12px;
+    align-items: stretch;
     width: 100%;
+    padding: 0 8px;
   }
 
   .volume-heading {
@@ -1548,9 +1549,9 @@
     color: inherit;
   }
 
-  .playback-control-card :global(.volume-knob) {
-    transform: scale(0.85);
-    transform-origin: center top;
+  .playback-control-card :global(.volume-slider-control) {
+    width: 100%;
+    max-width: 100%;
   }
 
   .grid-toolbar {

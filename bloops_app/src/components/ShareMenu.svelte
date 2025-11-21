@@ -142,7 +142,7 @@
   {/if}
   <input
     type="file"
-    accept=".json,.bloops.json"
+    accept=".json,.unknown.json"
     bind:this={importInput}
     on:change={handleImportChange}
     hidden

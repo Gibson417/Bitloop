@@ -1,6 +1,6 @@
-# Contributing to Bloops
+# Contributing to UNKNOWN
 
-Thank you for your interest in contributing to Bloops! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to UNKNOWN! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -13,13 +13,13 @@ Thank you for your interest in contributing to Bloops! This document provides gu
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Gibson417/Bloops.git
-cd Bloops
+git clone https://github.com/Gibson417/Bitloop.git
+cd Bitloop
 ```
 
 2. Install dependencies:
 ```bash
-cd bloops_app
+cd unknown_app
 npm install
 ```
 
@@ -33,8 +33,8 @@ npm run dev
 ## Project Structure
 
 ```
-Bloops/
-├── bloops_app/          # Main application code
+UNKNOWN/
+├── unknown_app/          # Main application code
 │   ├── src/
 │   │   ├── components/    # Svelte components
 │   │   ├── lib/          # Utility libraries
@@ -139,9 +139,9 @@ Bloops prioritizes **feel** over features:
 ## Questions or Issues?
 
 - Check the [documentation](docs/)
-- Review existing [issues](https://github.com/Gibson417/Bloops/issues)
+- Review existing [issues](https://github.com/Gibson417/Bitloop/issues)
 - Open a new issue for bugs or feature requests
 
 ## License
 
-By contributing to Bloops, you agree that your contributions will be licensed under the project's license.
+By contributing to UNKNOWN, you agree that your contributions will be licensed under the project's license.

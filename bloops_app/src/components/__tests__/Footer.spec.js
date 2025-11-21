@@ -5,7 +5,7 @@ import Footer from '../Footer.svelte';
 describe('Footer component', () => {
   it('renders footer text', () => {
     const { getByText } = render(Footer);
-    expect(getByText('Bloops - Dot grid sequencer')).toBeTruthy();
+    expect(getByText('UNKNOWN - Dot grid sequencer')).toBeTruthy();
   });
 
   it('has correct structure', () => {

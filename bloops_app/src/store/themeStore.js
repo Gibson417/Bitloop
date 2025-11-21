@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const THEME_KEY = 'bloops-theme';
+const THEME_KEY = 'unknown-theme';
 const THEMES = {
   dark: {
     name: 'Dark',

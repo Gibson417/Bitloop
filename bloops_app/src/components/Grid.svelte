@@ -119,8 +119,9 @@
     // - For zoom 64: show 64 columns (1 bar of 64th notes)
     const zoom = Number(zoomLevel) || 16;
     const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
-    const availableWidth = scroller.clientWidth || visibleColumns * 32;
-    const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleColumns)));
+    const availableWidth = scroller.clientWidth || visibleColumns * 44;
+    // Minimum 44px for WCAG 2.2 AA touch target compliance
+    const cellSize = Math.max(44, Math.min(96, Math.floor(availableWidth / visibleColumns)));
     // Width is now fixed to visible columns only (no scrolling)
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
@@ -861,11 +862,13 @@
     touch-action: none;
     display: block;
     min-width: 512px;
-    min-height: 256px;
+    min-height: 352px; /* Increased from 256px to ensure 44px cells for 8 rows */
     /* Reset debug visuals */
     background: transparent;
     border: none;
     outline: none;
+    /* Improve touch responsiveness */
+    -webkit-tap-highlight-color: transparent;
   }
 
   .grid-canvas:focus-visible {

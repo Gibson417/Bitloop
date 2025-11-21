@@ -1,4 +1,4 @@
-const DB_NAME = 'bloops-workspace';
+const DB_NAME = 'unknown-workspace';
 const DB_VERSION = 1;
 const PROJECT_STORE = 'projects';
 const META_STORE = 'meta';
