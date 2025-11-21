@@ -99,9 +99,11 @@
     };
   };
 
-  const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
-  const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
+  const MIN_CELL_SIZE = 44; // WCAG 2.5.5 Level AAA touch target size (desktop)
+  const MIN_CELL_SIZE_MOBILE = 28; // Exceeds WCAG 2.5.5 Level AA minimum (24px) with comfortable margin
+  const MIN_VISIBLE_COLUMNS = 8; // Minimum columns to show (half bar of 16th notes)
   const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+  const MOBILE_BREAKPOINT = 768; // Width threshold for mobile vs desktop cell sizing
 
   const updateLayout = () => {
     if (!canvas || !scroller) {
@@ -113,27 +115,34 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // storageColumns is high-res internal storage length (bars * BASE_RESOLUTION)
     const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
-    // Calculate visible columns based on zoom level:
-    // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
-    // Show exactly as many columns as the zoom level indicates (one bar at that resolution)
-    // Exception: For zoom 8, show 16 columns (2 bars) to better utilize window space
-    // - For zoom 8: show 16 columns (2 bars of 8th notes)
-    // - For zoom 16: show 16 columns (1 bar of 16th notes)
-    // - For zoom 32: show 32 columns (1 bar of 32nd notes)
-    // - For zoom 64: show 64 columns (1 bar of 64th notes)
-    const zoom = Number(zoomLevel) || 16;
-    let visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
-    const availableWidth = scroller.clientWidth || visibleColumns * MIN_CELL_SIZE;
     
-    // On mobile/narrow screens, reduce visible columns to fit within available width
-    // while maintaining minimum cell size for touch targets
-    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
-    if (maxColumnsForWidth < visibleColumns) {
-      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
+    // Calculate visible columns based on available screen width and minimum cell size
+    // Use smaller cell size on mobile to maintain touch accessibility while fitting more columns
+    // Mobile: 28px cells (exceeds WCAG 2.5.5 Level AA 24px requirement)
+    // Desktop: 44px cells (meets WCAG 2.5.5 Level AAA requirement)
+    const isMobile = (scroller.clientWidth || 0) < MOBILE_BREAKPOINT;
+    const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : MIN_CELL_SIZE;
+    
+    // Determine how many columns can fit at the minimum cell size
+    const availableWidth = scroller.clientWidth || (MIN_VISIBLE_COLUMNS * minCellSize);
+    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    
+    // Calculate total display columns based on zoom level
+    // Zoom determines grid resolution: how many columns represent the full sequence
+    const zoom = Number(zoomLevel) || 16;
+    const logicalToDisplayScale = zoom / stepsPerBarSafe;
+    const totalDisplayColumns = Math.floor(logicalColumns * logicalToDisplayScale);
+    
+    // Visible columns is constrained by screen width, not zoom level
+    // Must be divisible by 4 for proper 4/4 time signature alignment (quarter notes)
+    let rawVisibleColumns = Math.max(MIN_VISIBLE_COLUMNS, Math.min(maxColumnsForWidth, totalDisplayColumns));
+    let visibleColumns = Math.floor(rawVisibleColumns / 4) * 4; // Round down to nearest multiple of 4
+    if (visibleColumns < MIN_VISIBLE_COLUMNS) {
+      visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
     }
     
-    const cellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
-    // Width is now fixed to visible columns only (no scrolling)
+    const cellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
+    // Width is calculated based on visible columns
     const width = visibleColumns * cellSize;
     const height = safeRows * cellSize;
 
@@ -170,22 +179,16 @@
       const storageColumns = Math.max(1, Math.floor(logicalColumns * (BASE_RESOLUTION / stepsPerBarSafe)));
       const cellSize = layout.cellSize;
       
-      // Calculate visible columns based on zoom level:
-      // The zoom level represents note resolution (8=8th, 16=16th, 32=32nd, 64=64th notes)
-      // Show exactly as many columns as the zoom level indicates (one bar at that resolution)
-      // Exception: For zoom 8, show 16 columns (2 bars) to better utilize window space
-      // - For zoom 8: show 16 columns (2 bars of 8th notes)
-      // - For zoom 16: show 16 columns (1 bar of 16th notes)
-      // - For zoom 32: show 32 columns (1 bar of 32nd notes)
-      // - For zoom 64: show 64 columns (1 bar of 64th notes)
+      // Calculate display columns and visible columns
+      // Zoom determines the grid resolution/density
+      // Visible columns is determined by physical screen constraints (from updateLayout)
       const zoom = Number(zoomLevel) || 16;
-      const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, logicalColumns);
-      
-      // Calculate scale factor for mapping logical steps to display columns
-      // When zoom < stepsPerBar: multiple logical steps per display column
-      // When zoom > stepsPerBar: multiple display columns per logical step
-      // Example: stepsPerBar=16, zoom=8 → scale=0.5 (2 logical steps per display column)
       const logicalToDisplayScale = zoom / stepsPerBarSafe;
+      
+      // Calculate visible columns from layout width (matches updateLayout calculation)
+      const isMobile = (scroller?.clientWidth || 0) < MOBILE_BREAKPOINT;
+      const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : MIN_CELL_SIZE;
+      const visibleColumns = Math.floor(layout.width / layout.cellSize);
       
       // Use manual window if set, otherwise follow playhead only if follow mode is enabled
       // Window offset is in display coordinates
@@ -428,7 +431,8 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, sourceColumns);
+    // Visible columns is determined by layout width, not zoom level
+    const visibleColumns = Math.floor(layout.width / layout.cellSize);
     if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
 
     // Calculate scale factor for mapping logical steps to display columns
@@ -594,7 +598,8 @@
     const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
     // Use zoomLevel for grid density calculation
     const zoom = Number(zoomLevel) || 16;
-    const visibleColumns = Math.min(zoom === 8 ? 16 : zoom, sourceColumns);
+    // Visible columns is determined by layout width, not zoom level
+    const visibleColumns = Math.floor(layout.width / layout.cellSize);
 
     // Arrow keys for navigation
     if (event.key === 'ArrowUp') {
@@ -857,7 +862,7 @@
     flex: 1; /* Expand to fill available space */
     height: 100%;
     min-height: 256px;
-    overflow-x: hidden;
+    overflow-x: auto; /* Allow horizontal scrolling on mobile when needed */
     overflow-y: hidden;
     background: var(--color-panel);
     border-radius: 12px;
@@ -867,6 +872,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 
   .grid-canvas {
