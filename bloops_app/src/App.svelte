@@ -1746,14 +1746,6 @@
     outline-offset: 2px;
   }
 
-  .tempo-bar-unit {
-    font-size: 0.75rem;
-    color: var(--color-text-muted, rgba(255, 255, 255, 0.6));
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
   .tempo-bar-value {
     font-size: 1rem;
     font-weight: 700;
@@ -1986,14 +1978,6 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-
-    .play-button,
-    .control-button,
-    .follow,
-    .toggle-btn,
-    .share-btn {
-      transform: none !important;
-    }
   }
   
   /* Touch improvements */
@@ -2003,17 +1987,6 @@
       min-height: 44px;
       min-width: 44px;
       padding: 8px 12px;
-    }
-    
-    /* Larger touch targets for primary transport controls */
-    .play-button {
-      width: 72px;
-      height: 72px;
-    }
-    
-    .follow {
-      padding: 12px 16px;
-      min-height: 44px;
     }
 
     /* Ensure input fields are easy to tap */

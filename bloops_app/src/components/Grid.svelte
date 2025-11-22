@@ -15,7 +15,7 @@
   export let isPlaying = false;
   export let noteLabels = [];
   // noteLengthDenominator: e.g. 16 for 1/16, 32 for 1/32, 64 for 1/64 - used for note duration when placing
-  export let noteLengthSteps = 1; // backwards-compat (grouping factor)
+  export const noteLengthSteps = 1; // backwards-compat (grouping factor)
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
   export let zoomLevel = 1; // Grid resolution denominator: 1, 2, 4, 8, 16, 32, 64 (controls grid density)

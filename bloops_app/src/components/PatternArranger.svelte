@@ -364,6 +364,8 @@
               class="arranger__lane"
               class:arranger__lane--dragging={laneDragOver}
               data-lane={laneIndex}
+              role="group"
+              aria-label={`Lane ${laneIndex + 1}`}
               on:dragover={handleLaneDragOver}
               on:dragleave={handleLaneDragLeave}
               on:drop={(event) => handleLaneDrop(event, laneIndex)}
