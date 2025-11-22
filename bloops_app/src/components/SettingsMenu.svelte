@@ -347,6 +347,9 @@
     .settings-dropdown {
       right: auto;
       left: 0;
+      max-width: calc(100vw - 32px); /* Ensure dropdown doesn't exceed viewport width with padding */
+      min-width: auto; /* Override min-width on mobile */
+      width: max-content; /* Fit content width */
     }
   }
 </style>
