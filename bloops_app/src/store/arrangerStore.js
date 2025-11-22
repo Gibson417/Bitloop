@@ -104,8 +104,8 @@ export const moveBlock = (blockId, { startBeat, lane } = {}) => {
   blocks.update((current) =>
     current.map((block) => {
       if (block.id !== blockId) return block;
-      const nextLane = typeof lane === 'number' ? lane : block.lane;
-      const desiredStart = typeof startBeat === 'number' ? startBeat : block.startBeat;
+      const nextLane = lane ?? block.lane;
+      const desiredStart = startBeat ?? block.startBeat;
       const snappedStart = snapBeat(desiredStart);
 
       // Moving a block should honor the requested position while snapping to the beat grid.
