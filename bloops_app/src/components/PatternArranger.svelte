@@ -647,6 +647,7 @@
     padding-bottom: 12px;
     scrollbar-width: thin;
     scrollbar-color: rgba(var(--color-accent-rgb), 0.4) rgba(0, 0, 0, 0.4);
+    max-width: 100%;
   }
 
   .arranger__timeline::-webkit-scrollbar {
@@ -813,10 +814,17 @@
   @media (max-width: 900px) {
     .arranger__content {
       grid-template-columns: 1fr;
+      min-width: 0;
     }
 
     .arranger__palette {
       order: 2;
+      min-width: 0;
+    }
+
+    .arranger__timeline {
+      min-width: 0;
+      width: 100%;
     }
   }
 
