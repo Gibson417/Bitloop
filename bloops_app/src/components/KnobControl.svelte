@@ -132,7 +132,7 @@
       step={step}
       value={numericValue}
       on:input={handleInput}
-      aria-label={label ? `${label}. Double-click or right-click to reset` : "Knob control. Double-click or right-click to reset"}
+      aria-label={label}
       aria-valuemin={min}
       aria-valuemax={max}
       aria-valuenow={numericValue}
