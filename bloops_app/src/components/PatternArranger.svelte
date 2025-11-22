@@ -724,7 +724,6 @@
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
     transition: filter 150ms ease, box-shadow 150ms ease;
     user-select: none;
-    position: relative;
   }
 
   .arranger__block .block-label {
