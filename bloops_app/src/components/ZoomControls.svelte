@@ -2,8 +2,8 @@
   import { createEventDispatcher } from 'svelte';
 
   export let zoomLevel = 16;
-  export let minZoom = 8;
-  export let maxZoom = 64;
+  export const minZoom = 8;
+  export const maxZoom = 64;
   export let trackColor = '#78d2b9';
 
   const dispatch = createEventDispatcher();

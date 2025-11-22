@@ -117,6 +117,8 @@
   {/if}
   <div 
     class="knob-shell" 
+    role="group"
+    aria-label={label ? `${label} control` : "Knob control"}
     on:wheel={handleWheel}
     on:dblclick={handleDoubleClick}
     on:contextmenu={handleContextMenu}
@@ -135,7 +137,7 @@
       aria-valuemax={max}
       aria-valuenow={numericValue}
       aria-valuetext={formattedValue}
-      aria-description="Double-click or right-click to reset to default value"
+      title="Double-click or right-click to reset to default value"
       class="knob-input"
       disabled={disabled}
     />

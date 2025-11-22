@@ -247,9 +247,7 @@
     outline-offset: 2px;
   }
 
-  select,
   input[type='number'],
-  input[type='range'],
   input[type='text'] {
     background: var(--color-panel);
     color: var(--color-text);
@@ -261,36 +259,10 @@
     box-sizing: border-box;
   }
 
-  select:focus,
   input[type='number']:focus,
-  input[type='range']:focus,
   input[type='text']:focus {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.5);
     outline-offset: 2px;
-  }
-
-  .slider-control {
-    grid-column: 1 / -1;
-  }
-
-  .slider-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .slider-field input[type='range'] {
-    flex: 1;
-  }
-
-  .slider-field span {
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    white-space: nowrap;
-    min-width: 60px;
-    text-align: right;
   }
 
   .number-field input {

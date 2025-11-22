@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  export let trackColor = '#78d2b9';
+  export const trackColor = '#78d2b9';
   export let canUndo = false;
   export let canRedo = false;
 
