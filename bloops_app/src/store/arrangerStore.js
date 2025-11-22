@@ -88,13 +88,12 @@ export const addPatternToLane = (patternId, lane = 0, explicitStartBeat = null) 
   if (!pattern) return;
 
   blocks.update((current) => {
-    const laneIndex = 0; // Single lane layout
-    const laneEnd = explicitStartBeat ?? getLaneEndBeat(laneIndex);
-    const startBeat = getSafeStartBeat(laneIndex, laneEnd, pattern.lengthInBeats);
+    const laneEnd = explicitStartBeat ?? getLaneEndBeat(lane);
+    const startBeat = getSafeStartBeat(lane, laneEnd, pattern.lengthInBeats);
     const newBlock = {
       id: `block-${blockCounter++}`,
       patternId,
-      lane: laneIndex,
+      lane,
       startBeat
     };
     return [...current, newBlock];
@@ -105,8 +104,8 @@ export const moveBlock = (blockId, { startBeat, lane } = {}) => {
   blocks.update((current) =>
     current.map((block) => {
       if (block.id !== blockId) return block;
-      const nextLane = 0; // Single lane layout
-      const desiredStart = typeof startBeat === 'number' ? startBeat : block.startBeat;
+      const nextLane = lane ?? block.lane;
+      const desiredStart = startBeat ?? block.startBeat;
       const snappedStart = snapBeat(desiredStart);
 
       // Moving a block should honor the requested position while snapping to the beat grid.
