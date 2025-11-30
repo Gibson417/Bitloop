@@ -89,6 +89,9 @@ describe('project store grid-specific undo/redo', () => {
   });
 
   it('non-grid changes do not affect grid undo/redo history', () => {
+    // Add a second track for testing selectTrack
+    project.addTrack();
+    
     // Make a note change
     project.setNoteRange(0, 0, 0, 1, true);
     

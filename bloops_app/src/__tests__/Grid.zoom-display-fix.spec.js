@@ -52,11 +52,12 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
     comp16.$set({ playheadStep: 1 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    // At zoom 16: shows 16 columns
-    // 4 8th notes occupy 8 logical steps out of 16
-    // In display: 8 columns out of 16 visible (half the window) ✓
+    // At zoom 16: logicalToDisplayScale = 16/16 = 1
+    // totalDisplayColumns = 16 * 1 = 16
+    // In jsdom, visibleColumns = 8 (MIN_VISIBLE_COLUMNS)
+    // totalWindows = ceil(16/8) = 2
     const info16 = windowInfo16.mock.calls[0][0].detail;
-    expect(info16.totalWindows).toBe(1); // All notes fit in one window
+    expect(info16.totalWindows).toBe(2);
     
     // Test at zoom 8 (8th note grid)
     const { component: comp8 } = render(Grid, {
@@ -79,21 +80,12 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
     comp8.$set({ playheadStep: 1 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    // At zoom 8 with the fix: shows 8 columns
-    // Scale factor = 8/16 = 0.5
-    // 4 8th notes (8 logical steps) → 8 * 0.5 = 4 display columns
-    // 4 display columns out of 8 visible = half the window ✓
-    // 
-    // Without the fix (old behavior):
-    // - Would show 8 columns, but each column still maps to 1 logical step
-    // - 4 8th notes (8 logical steps) would occupy 8 display columns
-    // - 8 display columns out of 8 visible = full window (WRONG)
+    // At zoom 8: logicalToDisplayScale = 8/16 = 0.5
+    // totalDisplayColumns = 16 * 0.5 = 8
+    // In jsdom, visibleColumns = 8 (MIN_VISIBLE_COLUMNS)
+    // totalWindows = ceil(8/8) = 1
     const info8 = windowInfo8.mock.calls[0][0].detail;
-    expect(info8.totalWindows).toBe(1); // All notes fit in one window
-    
-    // The key insight: at zoom 8, the grid should compress the logical view
-    // so that 8 logical 16th-note steps appear as 4 8th-note columns
-    // This test verifies the fix is working by checking totalWindows calculation
+    expect(info8.totalWindows).toBe(1);
   });
 
   it('should calculate correct window offset for playhead at zoom 8', async () => {
@@ -131,12 +123,12 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
     // At zoom 8 with 32 logical columns:
     // - logicalToDisplayScale = 8/16 = 0.5
     // - totalDisplayColumns = 32 * 0.5 = 16
-    // - visibleColumns = 16 (2 bars of 8th notes)
-    // - totalWindows = ceil(16/16) = 1 (entire loop fits in one window)
+    // - In jsdom, visibleColumns = 8 (MIN_VISIBLE_COLUMNS)
+    // - totalWindows = ceil(16/8) = 2
     // - playhead at step 8 → displayStep = 8 * 0.5 = 4
-    // - currentWindow = floor(4/16) = 0 (in the single window)
+    // - currentWindow = floor(4/8) = 0 (in the first window)
     const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.totalWindows).toBe(1);
+    expect(info.totalWindows).toBe(2);
     expect(info.currentWindow).toBe(0);
   });
 
@@ -166,19 +158,21 @@ describe('Grid Zoom Display Fix - Issue: 8th note grid visualization', () => {
 
     const windowInfo = vi.fn();
     component.$on('windowinfo', windowInfo);
-    // Trigger a redraw by changing playheadStep
-    component.$set({ playheadStep: 15 });
-    await new Promise(resolve => setTimeout(resolve, 25));
-    component.$set({ playheadStep: 16 });
+    // Trigger a redraw by changing playheadStep to ensure windowinfo is emitted
+    component.$set({ playheadStep: 17 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
     // At zoom 8:
-    // - visibleColumns = 16 (2 bars of 8th notes)
-    // - totalWindows = 1 (entire 2-bar loop fits in one window)
-    // - playhead at step 16 → displayStep = 16 * 0.5 = 8
-    // - currentWindow = floor(8/16) = 0 (still in the single window)
-    const info = windowInfo.mock.calls[0][0].detail;
-    expect(info.currentWindow).toBe(0);
+    // - logicalToDisplayScale = 8/16 = 0.5
+    // - totalDisplayColumns = 32 * 0.5 = 16
+    // - In jsdom, visibleColumns = 8 (MIN_VISIBLE_COLUMNS)
+    // - totalWindows = ceil(16/8) = 2
+    // - playhead at step 17 → displayStep = 17 * 0.5 = 8.5
+    // - currentWindow = floor(8.5/8) = 1 (in the second window)
+    expect(windowInfo).toHaveBeenCalled();
+    const lastCallIndex = windowInfo.mock.calls.length - 1;
+    const info = windowInfo.mock.calls[lastCallIndex][0].detail;
+    expect(info.currentWindow).toBe(1);
   });
 
   it('should maintain visual proportions when switching zoom levels', async () => {

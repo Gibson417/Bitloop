@@ -76,24 +76,35 @@ describe('Grid layout', () => {
     // Trigger a resize by dispatching a window resize event so component recalculates layout
     window.dispatchEvent(new Event('resize'));
 
-    // visibleColumns uses new formula: min(zoom === 8 ? 16 : zoom, sourceColumns)
-    // For zoom level 8 and sourceColumns 32, visibleColumns = min(16, 32) = 16
-    const MIN_CELL_SIZE = 44; // WCAG 2.2 AA touch target minimum
-    const MIN_VISIBLE_COLUMNS = 4; // Minimum columns to show on narrow screens
-    const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
+    // In the Grid component with scroller.clientWidth=300:
+    // - 300 < 768 (mobile breakpoint), so isMobile = true, minCellSize = 28
+    // - availableWidth = 300
+    // - maxColumnsForWidth = floor(300/28) = 10
+    // - logicalToDisplayScale = zoomLevel/stepsPerBar = 8/16 = 0.5
+    // - totalDisplayColumns = 32 * 0.5 = 16
+    // - rawVisibleColumns = max(8, min(10, 16)) = 10
+    // - visibleColumns = floor(10/4)*4 = 8 (rounded to multiple of 4)
+    // - cellSize = max(28, min(96, floor(300/8))) = max(28, min(96, 37)) = 37
+    // - width = 8 * 37 = 296
+    const MIN_VISIBLE_COLUMNS = 8;
+    const MIN_CELL_SIZE_MOBILE = 28;
+    const MAX_CELL_SIZE = 96;
+    const MOBILE_BREAKPOINT = 768;
     
-    let visibleColumns = Math.min(zoomLevel === 8 ? 16 : zoomLevel, sourceColumns);
-    const availableWidth = scroller.clientWidth;
+    const availableWidth = 300;
+    const isMobile = availableWidth < MOBILE_BREAKPOINT;
+    const minCellSize = isMobile ? MIN_CELL_SIZE_MOBILE : 44;
+    const maxColumnsForWidth = Math.floor(availableWidth / minCellSize);
+    const logicalToDisplayScale = zoomLevel / 16;
+    const totalDisplayColumns = Math.floor(sourceColumns * logicalToDisplayScale);
     
-    // On mobile/narrow screens, reduce visible columns to fit within available width
-    // while maintaining minimum cell size for touch targets
-    const maxColumnsForWidth = Math.floor(availableWidth / MIN_CELL_SIZE);
-    if (maxColumnsForWidth < visibleColumns) {
-      visibleColumns = Math.max(MIN_VISIBLE_COLUMNS, maxColumnsForWidth);
+    let rawVisibleColumns = Math.max(MIN_VISIBLE_COLUMNS, Math.min(maxColumnsForWidth, totalDisplayColumns));
+    let visibleColumns = Math.floor(rawVisibleColumns / 4) * 4;
+    if (visibleColumns < MIN_VISIBLE_COLUMNS) {
+      visibleColumns = MIN_VISIBLE_COLUMNS;
     }
     
-    const expectedCellSize = Math.max(MIN_CELL_SIZE, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
-    // Width is now fixed to visible columns only (static grid with window switching)
+    const expectedCellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
     const expectedWidth = visibleColumns * expectedCellSize;
 
     // Allow Svelte next tick for DOM updates
