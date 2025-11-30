@@ -161,6 +161,28 @@ npm run build       # Build optimized production bundle
 npm run preview     # Preview production build locally
 ```
 
+### Building Desktop Application (Windows .exe)
+
+UNKNOWN can be installed as a desktop application with a Windows installer (.exe):
+
+```bash
+# Build for Windows (creates installer in bloops_app/release/)
+npm run electron:build
+
+# Test the Electron app locally (development mode)
+npm run electron:dev
+
+# Build for all platforms (Windows, macOS, Linux)
+npm run electron:build:all
+```
+
+**Note:** Building for Windows on a non-Windows platform requires [Wine](https://www.winehq.org/) to be installed.
+
+The installer will be created in `bloops_app/release/` directory:
+- Windows: `UNKNOWN Setup x.x.x.exe` (NSIS installer)
+- macOS: `UNKNOWN-x.x.x.dmg`
+- Linux: `UNKNOWN-x.x.x.AppImage`
+
 ## 📁 Project Structure
 
 ```
@@ -171,6 +193,8 @@ Bitloop/
 │   │   ├── lib/            # Utilities (scales, audio, timing)
 │   │   ├── store/          # State management (projectStore)
 │   │   └── __tests__/      # Component and integration tests
+│   ├── electron/           # Electron main process files
+│   │   └── main.js         # Electron entry point
 │   ├── index.html
 │   ├── package.json
 │   └── vite.config.js
