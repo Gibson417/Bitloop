@@ -32,10 +32,11 @@ describe('Grid drag note placement', () => {
     component.$on('notechange', noteChange);
 
     const canvas = container.querySelector('canvas');
-    // Update to use 44px minimum cell size (WCAG 2.2 AA): 16 cells * 44px = 704px
-    const canvasWidth = 704;
-    const cellSize = 44;
-    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: 176 });
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const canvasWidth = 8 * cellSize; // 224px
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: rows * cellSize });
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
@@ -59,8 +60,8 @@ describe('Grid drag note placement', () => {
     // We should NOT place a note at column 1 (dot 2) because that would overlap
     // with the note starting at column 0
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16:
-    // storagePerLogical = 64/16 = 4
+    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // storagePerDisplay = 64/16 = 4
     // 8th note = 64/8 = 8 storage steps (with gap: 7 storage steps)
     // Column 0: storageStart = 0, noteEnd = 7
     // Column 1: storageStart = 4, noteEnd = 11 (OVERLAPS with column 0, should be skipped)
@@ -105,13 +106,15 @@ describe('Grid drag note placement', () => {
     component.$on('notechange', noteChange);
 
     const canvas = container.querySelector('canvas');
-    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 512, height: 128 });
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 8 * cellSize, height: rows * cellSize });
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
-    const cellSize = 512 / 16;
-
-    // Drag from column 0 to column 7 (8 columns)
+    // Drag from column 0 to column 7 (8 columns, but in jsdom only 8 visible)
+    // Since visibleColumns=8 in jsdom, column 7 is at the edge
     await fireEvent.pointerDown(canvas, { clientX: cellSize * 0.5, clientY: 10, pointerId: 1 });
     await fireEvent.pointerMove(canvas, { clientX: cellSize * 1.5, clientY: 10, pointerId: 1 });
     await fireEvent.pointerMove(canvas, { clientX: cellSize * 2.5, clientY: 10, pointerId: 1 });
@@ -129,8 +132,8 @@ describe('Grid drag note placement', () => {
     // 
     // We should NOT place notes at columns 1, 2, 3, 5, 6, 7
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16:
-    // storagePerLogical = 64/16 = 4
+    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // storagePerDisplay = 64/16 = 4
     // Quarter note = 64/4 = 16 storage steps (with gap: 15 storage steps)
     // Column 0: storageStart = 0, noteEnd = 15
     // Column 1-3: storageStart = 4,8,12, all overlap with column 0 note
@@ -176,14 +179,15 @@ describe('Grid drag note placement', () => {
     component.$on('notechange', noteChange);
 
     const canvas = container.querySelector('canvas');
-    // Update to use 44px minimum cell size (WCAG 2.2 AA): 16 cells * 44px = 704px
-    const canvasWidth = 704;
-    const cellSize = 44;
-    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: 176 });
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const canvasWidth = 8 * cellSize; // 224px
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: canvasWidth, height: rows * cellSize });
     canvas.setPointerCapture = vi.fn();
     canvas.releasePointerCapture = vi.fn();
 
-    // Drag from column 0 to column 3
+    // Drag from column 0 to column 3 (using actual jsdom cell size)
     await fireEvent.pointerDown(canvas, { clientX: cellSize * 0.5, clientY: 10, pointerId: 1 });
     await fireEvent.pointerMove(canvas, { clientX: cellSize * 1.5, clientY: 10, pointerId: 1 });
     await fireEvent.pointerMove(canvas, { clientX: cellSize * 2.5, clientY: 10, pointerId: 1 });
@@ -193,19 +197,19 @@ describe('Grid drag note placement', () => {
     // A 16th note spans 1 logical column (16/16 = 1)
     // So when dragging across 4 columns, we should place 4 separate notes
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16:
-    // storagePerLogical = 64/16 = 4
+    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // storagePerDisplay = 64/16 = 4
     // 16th note = 64/16 = 4 storage steps (with gap: 3 storage steps)
-    // Column 0: storageStart = 0, noteEnd = 3
-    // Column 1: storageStart = 4, noteEnd = 7 (does not overlap)
-    // Column 2: storageStart = 8, noteEnd = 11 (does not overlap)
-    // Column 3: storageStart = 12, noteEnd = 15 (does not overlap)
+    // Column 0: storageStart = 0
+    // Column 1: storageStart = 4
+    // Column 2: storageStart = 8
+    // Column 3: storageStart = 12
     
     expect(noteChange).toHaveBeenCalledTimes(4); // All 4 columns
     
     for (let i = 0; i < 4; i++) {
       const call = noteChange.mock.calls[i][0].detail;
-      expect(call.start).toBe(i * 4); // Column i
+      expect(call.start).toBe(i * 4); // Column i → storage i*4
       expect(call.length).toBe(3); // 16th note with articulation gap
       expect(call.value).toBe(true);
     }

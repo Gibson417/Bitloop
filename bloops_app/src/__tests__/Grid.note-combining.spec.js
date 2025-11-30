@@ -50,8 +50,11 @@ describe('Grid - Note Combining Prevention', () => {
       dispatchedEvents.push(event.detail);
     });
 
-    const rect = canvas.getBoundingClientRect();
-    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const rect = { left: 0, top: 0, width: 8 * cellSize, height: 8 * cellSize };
+    canvas.getBoundingClientRect = () => rect;
 
     // Place first 8th note at column 0
     await fireEvent.pointerDown(canvas, {
@@ -128,8 +131,11 @@ describe('Grid - Note Combining Prevention', () => {
       dispatchedEvents.push(event.detail);
     });
 
-    const rect = canvas.getBoundingClientRect();
-    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const rect = { left: 0, top: 0, width: 8 * cellSize, height: 8 * cellSize };
+    canvas.getBoundingClientRect = () => rect;
 
     // Place first 16th note at column 0
     await fireEvent.pointerDown(canvas, {
@@ -195,8 +201,11 @@ describe('Grid - Note Combining Prevention', () => {
       dispatchedEvents.push(event.detail);
     });
 
-    const rect = canvas.getBoundingClientRect();
-    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const rect = { left: 0, top: 0, width: 8 * cellSize, height: 8 * cellSize };
+    canvas.getBoundingClientRect = () => rect;
 
     // Place note with Ctrl key held (extend mode)
     await fireEvent.pointerDown(canvas, {
@@ -259,8 +268,11 @@ describe('Grid - Note Combining Prevention', () => {
       dispatchedEvents.push(event.detail);
     });
 
-    const rect = canvas.getBoundingClientRect();
-    const cellSize = 44; // WCAG 2.2 AA minimum touch target size
+    // In jsdom, scroller.clientWidth = 0, so:
+    // availableWidth = 8 * 28 = 224, visibleColumns = 8, cellSize = 28
+    const cellSize = 28;
+    const rect = { left: 0, top: 0, width: 8 * cellSize, height: 8 * cellSize };
+    canvas.getBoundingClientRect = () => rect;
 
     // Click on the cell with existing note
     await fireEvent.pointerDown(canvas, {

@@ -35,6 +35,8 @@ describe('project store', () => {
   });
 
   it('enforces solo exclusivity', () => {
+    // Add a second track for testing solo exclusivity
+    project.addTrack();
     project.setTrackSetting(0, 'solo', true);
     project.setTrackSetting(1, 'solo', true);
     const state = get(project);

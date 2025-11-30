@@ -120,6 +120,9 @@ describe('cursor painting with undo', () => {
   });
 
   it('should maintain track integrity after undo', () => {
+    // Add a second track for multi-track testing
+    project.addTrack();
+    
     const initialState = get(project);
     const initialTrackCount = initialState.tracks.length;
     
