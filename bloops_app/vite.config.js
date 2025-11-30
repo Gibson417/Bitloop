@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   root: '.',
+  base: './', // Use relative paths for Electron compatibility
   plugins: [svelte()],
   resolve: {
     alias: {

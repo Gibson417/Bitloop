@@ -1,1 +1,5 @@
 /tmp/playwright-logs/
+
+# Electron build output
+/release/
+/dist/
