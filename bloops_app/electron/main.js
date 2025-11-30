@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,17 @@ function createWindow() {
 
   // Load the built application from dist folder
   const indexPath = path.join(__dirname, '../dist/index.html');
+  
+  // Check if the build exists before loading
+  if (!fs.existsSync(indexPath)) {
+    dialog.showErrorBox(
+      'Build Not Found',
+      'The application build was not found. Please run "npm run build" first.'
+    );
+    app.quit();
+    return;
+  }
+  
   mainWindow.loadFile(indexPath);
 
   // Open DevTools in development mode

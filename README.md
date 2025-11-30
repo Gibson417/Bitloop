@@ -169,12 +169,14 @@ UNKNOWN can be installed as a desktop application with a Windows installer (.exe
 # Build for Windows (creates installer in bloops_app/release/)
 npm run electron:build
 
-# Test the Electron app locally (development mode)
+# Test the Electron app locally (rebuilds and launches)
 npm run electron:dev
 
 # Build for all platforms (Windows, macOS, Linux)
 npm run electron:build:all
 ```
+
+**Development tip:** For active development, use `npm run dev` to start the Vite development server with hot reloading. Use `npm run electron:dev` only to test the final packaged application behavior.
 
 **Note:** Building for Windows on a non-Windows platform requires [Wine](https://www.winehq.org/) to be installed.
 
