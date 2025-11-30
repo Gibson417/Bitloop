@@ -6,7 +6,8 @@ Use the sections below to locate the artifact you need.
 ## 📁 Directory Overview
 
 - **`design/`** – Visual identity resources, including `design-tokens.json` for colors, type, and spacing
-- **`process/`** – Developer onboarding and delivery guides such as `quick_onboarding.md` and `build-checklist.md`
+- **`process/`** – Developer onboarding, workflow guides, and developer tools
+  - `quick_onboarding.md`, `build-checklist.md`, `DEV_MODE.md`
 - **`product/`** – Product planning material like `mvp-scope.md`, `milestone-plan.md`, and `user-stories.md`
 - **`reports/`** – Test reports, QA audits, and implementation summaries
   - **`reports/archive/`** – Historical documentation superseded by current reports
@@ -48,6 +49,8 @@ The most recent comprehensive UI/UX audit and improvements are documented in:
 ### For Contributors
 - [Quick Onboarding](process/quick_onboarding.md) - Get started developing
 - [Build Checklist](process/build-checklist.md) - Implementation roadmap
+- [Dev Mode Guide](process/DEV_MODE.md) - Developer mode feature documentation
+- [Architecture](ARCHITECTURE.md) - System architecture overview
 - [Contributing Guide](../CONTRIBUTING.md) - Contribution guidelines
 
 ### For Product & Design
