@@ -47,8 +47,13 @@
     window.electronAPI.onUpdateError((error) => {
       updateStatus = 'error';
       errorMessage = typeof error === 'string' ? error : 'Update check failed';
-      // Don't show error banner for normal "no releases" scenario
-      if (!errorMessage.includes('net::') && !errorMessage.includes('ENOENT')) {
+      // Only show error banner for user-actionable errors
+      // Skip common expected scenarios:
+      // - Network errors (net::, ENOENT, ECONNREFUSED) - might be offline
+      // - 404 errors - no releases published yet
+      // - Rate limiting - transient issue
+      const isExpectedError = /net::|ENOENT|ECONNREFUSED|404|rate.?limit/i.test(errorMessage);
+      if (!isExpectedError) {
         visible = true;
         // Auto-hide error after 5 seconds
         setTimeout(() => {
