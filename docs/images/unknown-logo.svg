@@ -8,29 +8,28 @@
       <stop offset="0%" stop-color="#9bffe0" />
       <stop offset="100%" stop-color="#78d2b9" />
     </linearGradient>
-    <linearGradient id="dotSecondary" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#9fb3ff" />
-      <stop offset="100%" stop-color="#6285ff" />
-    </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#0a0d14" flood-opacity="0.6" />
     </filter>
   </defs>
   <rect width="512" height="512" rx="48" fill="url(#bg)" />
-  <g filter="url(#shadow)" transform="translate(86 70)">
+  <!-- U shape rendered in dots, matching the favicon design proportions (taller than wide) -->
+  <g filter="url(#shadow)" transform="translate(131 50)">
     <g fill="url(#dotAccent)">
-      <circle cx="0" cy="0" r="36" />
-      <circle cx="0" cy="96" r="36" />
-      <circle cx="0" cy="192" r="36" />
-      <circle cx="0" cy="288" r="36" />
-      <circle cx="96" cy="0" r="36" />
-      <circle cx="96" cy="144" r="36" />
-      <circle cx="96" cy="288" r="36" />
-    </g>
-    <g fill="url(#dotSecondary)">
-      <circle cx="192" cy="48" r="32" />
-      <circle cx="192" cy="144" r="32" />
-      <circle cx="192" cy="240" r="32" />
+      <!-- Left vertical column (4 dots) -->
+      <circle cx="0" cy="0" r="28" />
+      <circle cx="0" cy="80" r="28" />
+      <circle cx="0" cy="160" r="28" />
+      <circle cx="0" cy="240" r="28" />
+      <!-- Bottom row (5 dots including corners) -->
+      <circle cx="50" cy="240" r="28" />
+      <circle cx="100" cy="240" r="28" />
+      <circle cx="150" cy="240" r="28" />
+      <circle cx="200" cy="240" r="28" />
+      <!-- Right vertical column (3 dots, not including bottom which is shared with row) -->
+      <circle cx="200" cy="0" r="28" />
+      <circle cx="200" cy="80" r="28" />
+      <circle cx="200" cy="160" r="28" />
     </g>
   </g>
   <text x="256" y="436" fill="#ffffff" font-family="'DM Sans', 'Segoe UI', sans-serif" font-weight="600" font-size="72" text-anchor="middle">UNKNOWN</text>
