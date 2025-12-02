@@ -1136,42 +1136,44 @@
         />
       </div>
       <div class="grid-controls-bar" data-component="GridControlsBar">
-        <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
-        <WindowSwitcher
-          {currentWindow}
-          {totalWindows}
-          trackColor={trackColor}
-          on:switch={handleWindowSwitch}
-        />
-      </div>
-      <div class="tempo-bar" data-component="TempoBar">
-        <div class="tempo-bar-field">
-          <label for="tempo-bar-bpm" class="tempo-bar-label">BPM</label>
-          <input
-            id="tempo-bar-bpm"
-            type="number"
-            min="30"
-            max="260"
-            value={projectState?.bpm ?? 120}
-            on:input={handleBpmChange}
-            class="tempo-bar-input"
-          />
+        <div class="tempo-bar-section" data-component="TempoBar">
+          <div class="tempo-bar-field">
+            <label for="tempo-bar-bpm" class="tempo-bar-label">BPM</label>
+            <input
+              id="tempo-bar-bpm"
+              type="number"
+              min="30"
+              max="260"
+              value={projectState?.bpm ?? 120}
+              on:input={handleBpmChange}
+              class="tempo-bar-input"
+            />
+          </div>
+          <div class="tempo-bar-field">
+            <label for="tempo-bar-bars" class="tempo-bar-label">Bars</label>
+            <input
+              id="tempo-bar-bars"
+              type="number"
+              min="1"
+              max={maxBarsValue}
+              value={totalBars}
+              on:change={handleBarsChange}
+              class="tempo-bar-input"
+            />
+          </div>
+          <div class="tempo-bar-field">
+            <span class="tempo-bar-label">Loop length</span>
+            <span class="tempo-bar-value">{loopSecondsDisplay}s</span>
+          </div>
         </div>
-        <div class="tempo-bar-field">
-          <label for="tempo-bar-bars" class="tempo-bar-label">Bars</label>
-          <input
-            id="tempo-bar-bars"
-            type="number"
-            min="1"
-            max={maxBarsValue}
-            value={totalBars}
-            on:change={handleBarsChange}
-            class="tempo-bar-input"
+        <div class="grid-nav-section">
+          <FollowToggle active={isFollowing} on:toggle={handleFollowToggle} />
+          <WindowSwitcher
+            {currentWindow}
+            {totalWindows}
+            trackColor={trackColor}
+            on:switch={handleWindowSwitch}
           />
-        </div>
-        <div class="tempo-bar-field">
-          <span class="tempo-bar-label">Loop length</span>
-          <span class="tempo-bar-value">{loopSecondsDisplay}s</span>
         </div>
       </div>
     </div>
@@ -1678,33 +1680,33 @@
   }
 
   .grid-controls-bar {
-    /* Middle tier of 5-tier anchored unit: toolbar → grid → controls-bar → tempo-bar */
-    /* Contains Follow toggle and Window Switcher for grid navigation */
+    /* Bottom tier: single row with tempo controls + follow/window navigation */
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     gap: 24px;
     padding: 12px 16px;
     margin-top: 0; /* Connects to grid-backdrop above */
-    margin-bottom: 0; /* Connects to tempo-bar below */
-    background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
-    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    border-top: none; /* Merge with grid-backdrop above */
-    border-bottom: none; /* Merge with tempo-bar below */
-  }
-
-  .tempo-bar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 24px;
-    padding: 12px 16px;
-    margin-top: 0; /* Connects to grid-controls-bar above */
     margin-bottom: 16px; /* Spacing from content below */
     border-radius: 0 0 12px 12px; /* Bottom tier - round bottom corners only */
     background: linear-gradient(135deg, var(--color-grid-bg, rgba(22, 26, 36, 0.92)), var(--color-grid-bg-end, rgba(12, 14, 20, 0.88)));
     border: 2px solid rgba(var(--color-accent-rgb), 0.3);
-    border-top: none; /* Merge with grid-controls-bar above */
+    border-top: none; /* Merge with grid-backdrop above */
+    flex-wrap: nowrap; /* Keep everything in a single row on desktop */
+  }
+
+  .tempo-bar-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+
+  .grid-nav-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
   }
 
   .tempo-bar-field {
@@ -1881,13 +1883,17 @@
       justify-content: space-between;
     }
 
-    /* Mobile tempo bar: simple 3-column grid for fields */
-    .tempo-bar {
+    /* Mobile: stack tempo and navigation sections vertically */
+    .grid-controls-bar {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tempo-bar-section {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 12px; /* Design token: sm (1.5 × base) */
-      padding: 12px 14px;
-      align-items: center;
+      width: 100%;
     }
 
     .tempo-bar-field {
@@ -1906,6 +1912,11 @@
       width: 100%;
       min-width: 60px;
       max-width: 100px;
+    }
+
+    .grid-nav-section {
+      width: 100%;
+      justify-content: space-around;
     }
   }
 
@@ -1932,8 +1943,12 @@
       max-width: 160px;
     }
 
-    .tempo-bar {
+    .grid-controls-bar {
       padding: 10px 12px;
+      gap: 10px;
+    }
+
+    .tempo-bar-section {
       gap: 10px;
     }
 
@@ -1953,9 +1968,13 @@
       gap: 4px; /* Minimal spacing for very small screens */
     }
 
-    .tempo-bar {
+    .grid-controls-bar {
       gap: 8px;
       padding: 8px 10px;
+    }
+
+    .tempo-bar-section {
+      gap: 8px;
     }
 
     .tempo-bar-label {
