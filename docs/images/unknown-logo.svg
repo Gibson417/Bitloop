@@ -13,24 +13,23 @@
     </filter>
   </defs>
   <rect width="512" height="512" rx="48" fill="url(#bg)" />
-  <!-- U shape rendered in dots, matching the favicon design -->
-  <g filter="url(#shadow)" transform="translate(106 60)">
+  <!-- U shape rendered in dots, matching the favicon design proportions (taller than wide) -->
+  <g filter="url(#shadow)" transform="translate(131 50)">
     <g fill="url(#dotAccent)">
-      <!-- Left vertical column -->
+      <!-- Left vertical column (4 dots) -->
       <circle cx="0" cy="0" r="28" />
-      <circle cx="0" cy="72" r="28" />
-      <circle cx="0" cy="144" r="28" />
-      <circle cx="0" cy="216" r="28" />
-      <!-- Bottom row (connecting left and right) -->
-      <circle cx="60" cy="216" r="28" />
-      <circle cx="120" cy="216" r="28" />
-      <circle cx="180" cy="216" r="28" />
-      <circle cx="240" cy="216" r="28" />
-      <!-- Right vertical column -->
-      <circle cx="300" cy="0" r="28" />
-      <circle cx="300" cy="72" r="28" />
-      <circle cx="300" cy="144" r="28" />
-      <circle cx="300" cy="216" r="28" />
+      <circle cx="0" cy="80" r="28" />
+      <circle cx="0" cy="160" r="28" />
+      <circle cx="0" cy="240" r="28" />
+      <!-- Bottom row (5 dots including corners) -->
+      <circle cx="50" cy="240" r="28" />
+      <circle cx="100" cy="240" r="28" />
+      <circle cx="150" cy="240" r="28" />
+      <circle cx="200" cy="240" r="28" />
+      <!-- Right vertical column (3 dots, not including bottom which is shared with row) -->
+      <circle cx="200" cy="0" r="28" />
+      <circle cx="200" cy="80" r="28" />
+      <circle cx="200" cy="160" r="28" />
     </g>
   </g>
   <text x="256" y="436" fill="#ffffff" font-family="'DM Sans', 'Segoe UI', sans-serif" font-weight="600" font-size="72" text-anchor="middle">UNKNOWN</text>
