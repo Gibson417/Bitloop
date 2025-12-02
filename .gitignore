@@ -5,6 +5,7 @@ bloops_app/dist/
 .coverage/
 bloops_app/coverage/
 bloops_app/.svelte-kit/
+bloops_app/release/
 .DS_Store
 *.log
 screenshots/

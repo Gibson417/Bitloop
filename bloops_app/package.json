@@ -19,6 +19,7 @@
     "electron:build:all": "vite build && electron-builder --win --mac --linux"
   },
   "dependencies": {
+    "electron-updater": "^6.6.2",
     "svelte": "^4.2.0"
   },
   "devDependencies": {
@@ -48,22 +49,18 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
+          "target": "portable",
           "arch": ["x64"]
         }
       ]
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
     },
-    "mac": {
-      "target": ["dmg"]
-    },
-    "linux": {
-      "target": ["AppImage"]
+    "publish": {
+      "provider": "github",
+      "owner": "Gibson417",
+      "repo": "Bitloop"
     }
   }
 }

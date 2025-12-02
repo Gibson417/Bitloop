@@ -15,6 +15,7 @@
   import FollowToggle from './components/FollowToggle.svelte';
   import PatternArranger from './components/PatternArranger.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
+  import UpdateNotification from './components/UpdateNotification.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
@@ -1201,6 +1202,7 @@
     </div>
     <Footer />
   </section>
+  <UpdateNotification />
 </main>
 
 <style>
