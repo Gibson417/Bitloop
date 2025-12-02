@@ -32,7 +32,7 @@ All core MVP features have been successfully implemented and tested:
 
 ![UNKNOWN application screenshot](https://github.com/user-attachments/assets/9a0b48cf-1fd1-4a1b-a956-f2b66cc2ac73)
 
-![UNKNOWN wordmark and dot grid logo](docs/images/unknown-logo.svg)
+![UNKNOWN wordmark and dot grid logo](docs/images/brand-section.png)
 
 ## ✨ Core Experience
 
