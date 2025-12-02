@@ -30,9 +30,9 @@ All core MVP features have been successfully implemented and tested:
 
 ## 📸 Visual Identity
 
-![UNKNOWN hero mockup of the full application](docs/images/bloops-app-overview.svg)
+![UNKNOWN application screenshot](https://github.com/user-attachments/assets/9a0b48cf-1fd1-4a1b-a956-f2b66cc2ac73)
 
-![UNKNOWN wordmark and dot grid logo](docs/images/bloops-logo.svg)
+![UNKNOWN wordmark and dot grid logo](docs/images/unknown-logo.svg)
 
 ## ✨ Core Experience
 
