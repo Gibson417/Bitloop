@@ -163,27 +163,35 @@ npm run preview     # Preview production build locally
 
 ### Building Desktop Application (Windows .exe)
 
-UNKNOWN can be installed as a desktop application with a Windows installer (.exe):
+UNKNOWN can be run as a portable Windows application - no installation required:
 
 ```bash
-# Build for Windows (creates installer in bloops_app/release/)
+# Build for Windows (creates portable .exe in bloops_app/release/)
 npm run electron:build
 
 # Test the Electron app locally (rebuilds and launches)
 npm run electron:dev
-
-# Build for all platforms (Windows, macOS, Linux)
-npm run electron:build:all
 ```
 
 **Development tip:** For active development, use `npm run dev` to start the Vite development server with hot reloading. Use `npm run electron:dev` only to test the final packaged application behavior.
 
 **Note:** Building for Windows on a non-Windows platform requires [Wine](https://www.winehq.org/) to be installed.
 
-The installer will be created in `bloops_app/release/` directory:
-- Windows: `UNKNOWN Setup x.x.x.exe` (NSIS installer)
-- macOS: `UNKNOWN-x.x.x.dmg`
-- Linux: `UNKNOWN-x.x.x.AppImage`
+The portable executable will be created in `bloops_app/release/` directory:
+- Windows: `UNKNOWN-Portable-x.x.x.exe` (portable, no installation required)
+
+### Auto-Updates
+
+The desktop application includes integrated auto-update functionality:
+- Updates are checked automatically on startup
+- When a new version is available, it downloads automatically in the background
+- Users are notified when an update is ready to install
+- Click "Restart & Install" to apply the update
+
+Updates are distributed via GitHub Releases. To publish an update:
+1. Update the version in `bloops_app/package.json`
+2. Create a new GitHub Release with the portable `.exe` attached
+3. Users running older versions will automatically be notified
 
 ## 📁 Project Structure
 
