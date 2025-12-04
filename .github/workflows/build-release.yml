@@ -2,6 +2,8 @@ name: Build and Release Windows App
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -65,5 +67,47 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Create/update a "latest" pre-release on main branch pushes
+  latest-release:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: windows-portable-exe
+          path: ./release
+
+      - name: Delete existing latest release
+        uses: dev-drprasad/delete-tag-and-release@v1.1
+        with:
+          tag_name: latest
+          delete_release: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Create Latest Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Build
+          body: |
+            This is an automatically updated release containing the latest Windows portable executable built from the main branch.
+            
+            **Note:** This is a development build and may contain bugs. For stable releases, please download a versioned release (e.g., v0.1.0).
+            
+            **How to use:**
+            1. Download the `.exe` file below
+            2. Run the executable - no installation required!
+          files: ./release/*.exe
+          draft: false
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
