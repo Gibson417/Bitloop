@@ -5,7 +5,9 @@ bloops_app/dist/
 .coverage/
 bloops_app/coverage/
 bloops_app/.svelte-kit/
-bloops_app/release/
+# Ignore release folder contents except the portable exe
+bloops_app/release/*
+!bloops_app/release/*.exe
 .DS_Store
 *.log
 screenshots/
