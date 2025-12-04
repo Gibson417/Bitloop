@@ -163,11 +163,15 @@ npm run preview     # Preview production build locally
 
 ### Downloading the Desktop Application (Windows .exe)
 
-You can download the latest portable Windows executable directly from [GitHub Releases](https://github.com/Gibson417/Bitloop/releases):
+You can download the portable Windows executable directly from [GitHub Releases](https://github.com/Gibson417/Bitloop/releases):
 
 1. Go to the [Releases page](https://github.com/Gibson417/Bitloop/releases)
-2. Download `UNKNOWN-Portable-x.x.x.exe` from the latest release
+2. Download the `.exe` file from either:
+   - **Latest Build** (pre-release): Most recent build from the main branch
+   - **Versioned releases** (e.g., v0.1.0): Stable releases
 3. Run the executable - no installation required!
+
+**Note:** The "Latest Build" release is automatically updated whenever changes are merged to the main branch.
 
 ### Building Desktop Application (Windows .exe)
 
