@@ -161,9 +161,17 @@ npm run build       # Build optimized production bundle
 npm run preview     # Preview production build locally
 ```
 
+### Downloading the Desktop Application (Windows .exe)
+
+You can download the latest portable Windows executable directly from [GitHub Releases](https://github.com/Gibson417/Bitloop/releases):
+
+1. Go to the [Releases page](https://github.com/Gibson417/Bitloop/releases)
+2. Download `UNKNOWN-Portable-x.x.x.exe` from the latest release
+3. Run the executable - no installation required!
+
 ### Building Desktop Application (Windows .exe)
 
-UNKNOWN can be run as a portable Windows application - no installation required:
+If you prefer to build from source, UNKNOWN can be built as a portable Windows application:
 
 ```bash
 # Build for Windows (creates portable .exe in bloops_app/release/)
