@@ -1,6 +1,5 @@
 /tmp/playwright-logs/
 
 # Electron build output
-/release/*
-!/release/*-Portable-*.exe
+/release/
 /dist/
