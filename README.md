@@ -4,6 +4,14 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/Gibson417/Bitloop)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/Gibson417/Bitloop)
 
+## 📥 Download
+
+**[⬇️ Download UNKNOWN for Windows (.exe)](https://github.com/Gibson417/Bitloop/releases/download/latest/UNKNOWN-Portable.exe)**
+
+> No installation required - just download and run! This download is automatically updated with the latest build whenever changes are merged to main.
+
+---
+
 UNKNOWN is designed to feel effortless, musical, and inspiring. Instead of rows of piano-roll rectangles, UNKNOWN uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
 
 This is a tool for capturing ideas quickly, looping them, refining them, and *staying in the creative headspace* rather than wrestling with technical machinery.
@@ -190,7 +198,7 @@ npm run electron:dev
 **Note:** Building for Windows on a non-Windows platform requires [Wine](https://www.winehq.org/) to be installed.
 
 The portable executable will be created in `bloops_app/release/` directory:
-- Windows: `UNKNOWN-Portable-x.x.x.exe` (portable, no installation required)
+- Windows: `UNKNOWN-Portable.exe` (portable, no installation required)
 
 ### Auto-Updates
 

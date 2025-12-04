@@ -55,7 +55,7 @@
       ]
     },
     "portable": {
-      "artifactName": "${productName}-Portable-${version}.${ext}"
+      "artifactName": "${productName}-Portable.${ext}"
     },
     "publish": {
       "provider": "github",
