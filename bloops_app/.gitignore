@@ -2,5 +2,5 @@
 
 # Electron build output
 /release/*
-!/release/*.exe
+!/release/*-Portable-*.exe
 /dist/
