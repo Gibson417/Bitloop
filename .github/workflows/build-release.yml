@@ -34,8 +34,12 @@ jobs:
         run: npm install
         working-directory: bloops_app
 
+      - name: Build Vite app
+        run: npm run build
+        working-directory: bloops_app
+
       - name: Build Electron app for Windows
-        run: npm run electron:build
+        run: npx electron-builder --win --publish never
         working-directory: bloops_app
 
       - name: Upload Windows portable executable
