@@ -36,9 +36,8 @@ jobs:
       - name: Build for GitHub Pages
         run: npm run build
         working-directory: unknown_app
-        env:
-          # Set base path for GitHub Pages deployment
-          VITE_BASE_PATH: /Bitloop/
+        # Note: unknown_app/vite.config.js uses base: './' for relative paths
+        # This works for both GitHub Pages and Electron deployments
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
