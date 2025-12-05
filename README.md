@@ -28,6 +28,8 @@ UNKNOWN is available as a Progressive Web App (PWA) that works great on Chromebo
 ### Web Browser
 Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed! The browser version automatically stays up to date.
 
+> **Troubleshooting:** If you see a blank page or the README instead of the app, try clearing your browser cache or opening in an incognito/private window. Repository owners: make sure GitHub Pages is configured to deploy from "GitHub Actions" in Settings → Pages.
+
 ---
 
 UNKNOWN is designed to feel effortless, musical, and inspiring. Instead of rows of piano-roll rectangles, UNKNOWN uses a **dot-grid melody interface** that feels playful and fluid — almost like sketching with sound.
@@ -174,11 +176,13 @@ npm run preview     # Preview production build locally
 The app automatically deploys to GitHub Pages on every push to `main`. For first-time setup:
 
 1. Go to **Settings → Pages** in your repository
-2. Under **Source**, select **GitHub Actions**
+2. Under **Source**, select **GitHub Actions** (NOT "Deploy from a branch")
 3. Save the settings
 4. Push to `main` or manually trigger the workflow
 
 The app will be available at `https://<username>.github.io/<repo>/`
+
+> **Important:** If you see the README rendered instead of the app, GitHub Pages is likely configured incorrectly. Go to Settings → Pages and change the Source to "GitHub Actions".
 
 ### Downloading the Desktop Application (Windows .exe)
 
