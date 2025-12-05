@@ -4,11 +4,24 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/Gibson417/Bitloop)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/Gibson417/Bitloop)
 
-## 📥 Download
+## 📥 Download & Install
 
+### Windows
 **[⬇️ Download UNKNOWN for Windows (.exe)](https://github.com/Gibson417/Bitloop/releases/download/latest/UNKNOWN-Portable.exe)**
 
 > No installation required - just download and run! This download is automatically updated with the latest build whenever changes are merged to main.
+
+### Chromebook / Chrome OS
+UNKNOWN is available as a Progressive Web App (PWA) that works great on Chromebooks:
+
+1. Open the app in Chrome: [Launch UNKNOWN](https://gibson417.github.io/Bitloop/) *(or your hosted URL)*
+2. Click the **install icon** (⊕) in the address bar, or open Chrome menu (⋮) → "Install UNKNOWN..."
+3. The app will install and appear in your app launcher like a native app
+
+> **Tip:** The PWA works offline after first install and runs in its own window without browser UI.
+
+### Web Browser
+Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed!
 
 ---
 
@@ -35,6 +48,7 @@ All core MVP features have been successfully implemented and tested:
 - ✅ Social sharing capabilities
 - ✅ Comprehensive test coverage (52 passing tests)
 - ✅ WCAG 2.2 AA accessibility compliance (~85%)
+- ✅ PWA support (installable on Chromebooks and mobile devices)
 
 ## 📸 Visual Identity
 
