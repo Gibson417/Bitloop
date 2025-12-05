@@ -120,25 +120,25 @@
 
 ### Modified Files
 
-#### 1. `/bloops_app/src/components/GridToolbar.svelte`
+#### 1. `/unknown_app/src/components/GridToolbar.svelte`
 **Lines 42-50** – Removed container styling  
 - **Removed:** `padding: 8px 12px`, `background: var(--color-panel)`, `border-radius: 8px`, `border: 1px solid`
 - **Kept:** `display: flex`, `align-items: center`, `gap: 12px`
 - **Reason:** Eliminate panel background for cleaner toolbar integration
 
-#### 2. `/bloops_app/src/components/WindowSwitcher.svelte`
+#### 2. `/unknown_app/src/components/WindowSwitcher.svelte`
 **Lines 59-69** – Removed container styling  
 - **Removed:** `padding: 8px 12px`, `background: var(--color-panel)`, `border-radius: 8px`, `border: 1px solid`
 - **Kept:** `display: flex`, `align-items: center`, `gap: 8px`, `width: 140px`, `justify-content: space-between`
 - **Reason:** Consistency with other toolbar components; maintain right-alignment
 
-#### 3. `/bloops_app/src/components/ZoomControls.svelte`
+#### 3. `/unknown_app/src/components/ZoomControls.svelte`
 **Lines 69-77** – Removed container styling  
 - **Removed:** `padding: 8px 12px`, `background: var(--color-panel)`, `border-radius: 8px`, `border: 1px solid`
 - **Kept:** `display: flex`, `align-items: center`, `gap: 8px`
 - **Reason:** Consistency with other toolbar components
 
-#### 4. `/bloops_app/src/App.svelte`
+#### 4. `/unknown_app/src/App.svelte`
 **Lines 1014-1048** – Reorganized toolbar layout  
 - **Changed:** Moved `<ZoomControls />` from `.toolbar-secondary` to `.toolbar-primary`
 - **Added:** Two `<div class="toolbar-divider">` elements (before and after note-length-group)

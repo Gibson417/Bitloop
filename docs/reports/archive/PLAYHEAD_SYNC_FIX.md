@@ -111,7 +111,7 @@ This formula ensures:
 - Handles edge cases (division by zero protected by prior validation)
 
 ## Files Changed
-- `bloops_app/src/components/Grid.svelte`
+- `unknown_app/src/components/Grid.svelte`
   - Lines 159-162: Window calculation
   - Lines 323-325: Playhead position calculation
   - Total: 7 lines (5 additions, 2 deletions)

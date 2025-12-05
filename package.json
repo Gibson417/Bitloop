@@ -2,14 +2,14 @@
   "name": "bitloop-repo",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix bloops_app install",
-    "dev": "npm --prefix bloops_app run dev",
-    "build": "npm --prefix bloops_app run build",
-    "preview": "npm --prefix bloops_app run preview",
-    "test:run": "npm --prefix bloops_app run test:run",
-    "test": "npm --prefix bloops_app test",
-    "electron:dev": "npm --prefix bloops_app run electron:dev",
-    "electron:build": "npm --prefix bloops_app run electron:build",
-    "electron:build:all": "npm --prefix bloops_app run electron:build:all"
+    "postinstall": "npm --prefix unknown_app install",
+    "dev": "npm --prefix unknown_app run dev",
+    "build": "npm --prefix unknown_app run build",
+    "preview": "npm --prefix unknown_app run preview",
+    "test:run": "npm --prefix unknown_app run test:run",
+    "test": "npm --prefix unknown_app test",
+    "electron:dev": "npm --prefix unknown_app run electron:dev",
+    "electron:build": "npm --prefix unknown_app run electron:build",
+    "electron:build:all": "npm --prefix unknown_app run electron:build:all"
   }
 }

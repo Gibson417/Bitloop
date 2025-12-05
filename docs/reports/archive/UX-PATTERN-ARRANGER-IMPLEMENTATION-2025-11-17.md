@@ -205,12 +205,12 @@ Performed a comprehensive UI/UX audit and polish of the Pattern Arranger compone
 
 ## Files Changed
 
-1. **bloops_app/src/components/PatternArranger.svelte**
+1. **unknown_app/src/components/PatternArranger.svelte**
    - 12 style rule changes
    - 4 markup/accessibility enhancements
    - Added reduced-motion support
 
-2. **bloops_app/src/components/ArrangerTransport.svelte**
+2. **unknown_app/src/components/ArrangerTransport.svelte**
    - 5 style rule changes
    - 5 markup/accessibility enhancements
    - Added reduced-motion support

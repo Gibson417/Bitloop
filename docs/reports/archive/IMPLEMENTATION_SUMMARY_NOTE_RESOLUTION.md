@@ -65,12 +65,12 @@ Applied same logic to:
 ## Code Changes
 
 ### Files Modified
-1. `bloops_app/src/App.svelte` - scheduleAudio() function
-2. `bloops_app/src/lib/offlineRenderer.js` - renderProjectToWav() function
-3. `bloops_app/src/lib/midiExporter.js` - renderProjectToMidi() and createNoteEvents() functions
+1. `unknown_app/src/App.svelte` - scheduleAudio() function
+2. `unknown_app/src/lib/offlineRenderer.js` - renderProjectToWav() function
+3. `unknown_app/src/lib/midiExporter.js` - renderProjectToMidi() and createNoteEvents() functions
 
 ### Files Added
-1. `bloops_app/src/__tests__/notePlayback.spec.js` - Unit tests for duration calculation
+1. `unknown_app/src/__tests__/notePlayback.spec.js` - Unit tests for duration calculation
 2. `docs/MANUAL_TESTING_NOTE_RESOLUTION.md` - Manual testing guide
 
 ### Lines Changed

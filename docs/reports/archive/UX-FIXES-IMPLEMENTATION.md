@@ -19,7 +19,7 @@ This document details three critical UI/UX fixes implemented for the Bloops musi
 - Maintains fixed positioning for consistency across scroll states
 
 **Files Modified:**
-- `/bloops_app/src/App.svelte` (lines 1835-1843)
+- `/unknown_app/src/App.svelte` (lines 1835-1843)
 
 **Changes:**
 ```css
@@ -63,8 +63,8 @@ This document details three critical UI/UX fixes implemented for the Bloops musi
 - **Event dispatching**: New `reset` event for parent components
 
 **Files Modified:**
-- `/bloops_app/src/components/KnobControl.svelte` (lines 1-14, 52-93, 82-113)
-- `/bloops_app/src/App.svelte` (line 969)
+- `/unknown_app/src/components/KnobControl.svelte` (lines 1-14, 52-93, 82-113)
+- `/unknown_app/src/App.svelte` (line 969)
 
 **New Functionality:**
 ```javascript
@@ -140,7 +140,7 @@ const handleContextMenu = (event) => {
 - **Enhanced ARIA labels**: Updated to announce removal capability
 
 **Files Modified:**
-- `/bloops_app/src/components/PatternArranger.svelte` (lines 194-212, 307-326, 617-668)
+- `/unknown_app/src/components/PatternArranger.svelte` (lines 194-212, 307-326, 617-668)
 
 **New Functionality:**
 ```javascript
@@ -282,17 +282,17 @@ All changes maintain the existing 8pt grid system:
 ## Files Changed Summary
 
 ```
-bloops_app/src/App.svelte
+unknown_app/src/App.svelte
   - Dev tooltip repositioned (line 1835-1843)
   - Volume knob defaultValue added (line 969)
 
-bloops_app/src/components/KnobControl.svelte
+unknown_app/src/components/KnobControl.svelte
   - Added defaultValue prop (line 14)
   - Added handleDoubleClick (lines 75-87)
   - Added handleContextMenu (lines 89-101)
   - Updated template with handlers and ARIA (lines 82-113)
 
-bloops_app/src/components/PatternArranger.svelte
+unknown_app/src/components/PatternArranger.svelte
   - Added removeBlock import (line 8)
   - Added hoveredBlockId state (line 212)
   - Added handleBlockRemove (lines 202-205)

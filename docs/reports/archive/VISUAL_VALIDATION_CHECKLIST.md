@@ -4,7 +4,7 @@ Use this checklist to quickly verify the grid visual changes are working correct
 
 ## Setup
 
-1. Navigate to the `bloops_app` directory
+1. Navigate to the `unknown_app` directory
 2. Run `npm install` (if not already done)
 3. Run `npm run dev`
 4. Open browser to `http://localhost:5173`
@@ -220,7 +220,7 @@ If any check fails:
 1. **Stop the dev server** (Ctrl+C)
 2. **Clean install:**
    ```bash
-   cd bloops_app
+   cd unknown_app
    rm -rf node_modules package-lock.json
    npm install
    ```

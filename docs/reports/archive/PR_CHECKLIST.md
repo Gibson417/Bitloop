@@ -104,7 +104,7 @@
 
 ## Files Changed
 
-- [x] `bloops_app/src/App.svelte` - Mobile responsive improvements
+- [x] `unknown_app/src/App.svelte` - Mobile responsive improvements
 
 ## Performance Considerations
 

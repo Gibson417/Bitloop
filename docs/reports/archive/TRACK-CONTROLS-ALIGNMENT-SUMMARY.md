@@ -35,7 +35,7 @@ Successfully improved the alignment and visual consistency of the TrackControls 
 
 ## Files Modified
 
-### 1. `bloops_app/src/components/ArrowSelector.svelte`
+### 1. `unknown_app/src/components/ArrowSelector.svelte`
 **Changes:**
 - Updated label styling to match TrackControls (font-size, letter-spacing, opacity)
 - Changed border from accent-based to standard text-based for consistency
@@ -46,7 +46,7 @@ Successfully improved the alignment and visual consistency of the TrackControls 
 
 **Impact:** 4 style rule changes, ~20 lines modified
 
-### 2. `bloops_app/src/components/TrackControls.svelte`
+### 2. `unknown_app/src/components/TrackControls.svelte`
 **Changes:**
 - Made name input flexible (min 140px, max 200px) with fixed 40px height
 - Increased color picker from 32px to 40px for alignment

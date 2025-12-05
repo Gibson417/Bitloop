@@ -229,9 +229,9 @@ This handles cases where `logicalStep` might be 15.999999... due to floating-poi
 
 ## Related Files
 
-- `/bloops_app/src/components/Grid.svelte` - Main grid component with coordinate scaling
-- `/bloops_app/src/__tests__/Grid.zoom-visible-columns.spec.js` - Updated tests
-- `/bloops_app/src/__tests__/Grid.zoom-display-fix.spec.js` - New tests demonstrating fix
+- `/unknown_app/src/components/Grid.svelte` - Main grid component with coordinate scaling
+- `/unknown_app/src/__tests__/Grid.zoom-visible-columns.spec.js` - Updated tests
+- `/unknown_app/src/__tests__/Grid.zoom-display-fix.spec.js` - New tests demonstrating fix
 - `/docs/ZOOM-NOTE-LENGTH-SEPARATION.md` - Original zoom/note-length independence doc
 
 ## Future Enhancements

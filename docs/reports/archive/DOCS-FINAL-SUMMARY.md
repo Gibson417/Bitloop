@@ -51,11 +51,11 @@ This PR successfully addresses both parts of the problem statement:
 - Grid remains the visual focal point
 
 ### Components Modified
-1. `bloops_app/src/App.svelte` - Typography, spacing, keyboard shortcuts
-2. `bloops_app/src/components/ArrowSelector.svelte` - Touch targets
-3. `bloops_app/src/components/TrackSelector.svelte` - Touch targets
-4. `bloops_app/src/components/Footer.svelte` - Touch targets
-5. `bloops_app/src/components/Transport.svelte` - Enhanced tooltips
+1. `unknown_app/src/App.svelte` - Typography, spacing, keyboard shortcuts
+2. `unknown_app/src/components/ArrowSelector.svelte` - Touch targets
+3. `unknown_app/src/components/TrackSelector.svelte` - Touch targets
+4. `unknown_app/src/components/Footer.svelte` - Touch targets
+5. `unknown_app/src/components/Transport.svelte` - Enhanced tooltips
 6. `docs/design/design-tokens.json` - Improved muted text color
 
 ### New Documentation Created
@@ -199,11 +199,11 @@ docs/reports/archive/
 
 ### Modified (6 files)
 - `README.md` - Updated accessibility score and audit links
-- `bloops_app/src/App.svelte` - Typography, spacing, keyboard shortcuts
-- `bloops_app/src/components/ArrowSelector.svelte` - Touch targets
-- `bloops_app/src/components/TrackSelector.svelte` - Touch targets
-- `bloops_app/src/components/Footer.svelte` - Touch targets
-- `bloops_app/src/components/Transport.svelte` - Enhanced tooltips
+- `unknown_app/src/App.svelte` - Typography, spacing, keyboard shortcuts
+- `unknown_app/src/components/ArrowSelector.svelte` - Touch targets
+- `unknown_app/src/components/TrackSelector.svelte` - Touch targets
+- `unknown_app/src/components/Footer.svelte` - Touch targets
+- `unknown_app/src/components/Transport.svelte` - Enhanced tooltips
 - `docs/design/design-tokens.json` - Improved color
 - `docs/README.md` - Enhanced navigation and organization
 

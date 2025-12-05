@@ -21,7 +21,7 @@ User reported four issues with the grid after recent updates:
 
 ### 1. Window Switcher Component (NEW)
 
-**File:** `bloops_app/src/components/WindowSwitcher.svelte`
+**File:** `unknown_app/src/components/WindowSwitcher.svelte`
 
 Created a new component providing manual navigation controls for the windowed grid view:
 
@@ -47,7 +47,7 @@ Created a new component providing manual navigation controls for the windowed gr
 
 ### 2. Grid Contrast Improvements
 
-**File:** `bloops_app/src/components/Grid.svelte` (lines 189-195)
+**File:** `unknown_app/src/components/Grid.svelte` (lines 189-195)
 
 Increased opacity/visibility of grid lines for better rhythm reading:
 
@@ -66,7 +66,7 @@ Increased opacity/visibility of grid lines for better rhythm reading:
 
 ### 3. Empty Space Fix
 
-**File:** `bloops_app/src/components/Grid.svelte` (lines 698-708)
+**File:** `unknown_app/src/components/Grid.svelte` (lines 698-708)
 
 Changed grid wrapper sizing to fit content instead of expanding:
 
@@ -92,7 +92,7 @@ Changed grid wrapper sizing to fit content instead of expanding:
 
 ### 4. Consecutive Note Placement Fix
 
-**File:** `bloops_app/src/components/Grid.svelte` (lines 415-417)
+**File:** `unknown_app/src/components/Grid.svelte` (lines 415-417)
 
 Modified `paintedCells` logic to allow consecutive clicks on same cell:
 
@@ -175,7 +175,7 @@ WindowSwitcher → switch event → App → sets manualWindow → Grid
 
 ### Unit Tests
 
-**File:** `bloops_app/src/__tests__/WindowSwitcher.spec.js`
+**File:** `unknown_app/src/__tests__/WindowSwitcher.spec.js`
 
 11 comprehensive tests covering:
 - Component rendering (prev/next buttons, indicators)
@@ -186,7 +186,7 @@ WindowSwitcher → switch event → App → sets manualWindow → Grid
 
 **Run tests:**
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 ```
 
@@ -336,10 +336,10 @@ No action required. New features work automatically:
 ### Documentation
 - [UX Grid Audit Report](../docs/UX-GRID-AUDIT.md)
 - [Visual Test Guide](../docs/reports/visual-test-guide.md)
-- [WindowSwitcher Tests](../bloops_app/src/__tests__/WindowSwitcher.spec.js)
+- [WindowSwitcher Tests](../unknown_app/src/__tests__/WindowSwitcher.spec.js)
 
 ### Design Tokens
-- [Color Tokens](../bloops_app/src/lib/colorTokens.js)
+- [Color Tokens](../unknown_app/src/lib/colorTokens.js)
 - Spacing scale: 4px, 8px, 12px, 16px, 24px, 32px, 48px
 - Type scale: 0.7rem, 0.75rem, 0.95rem, 1.2rem
 

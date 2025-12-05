@@ -32,7 +32,7 @@ The fix consists of two complementary changes:
 
 ### 1. Enhanced Playback Scanning (App.svelte)
 
-**File**: `bloops_app/src/App.svelte`  
+**File**: `unknown_app/src/App.svelte`  
 **Function**: `scheduleAudio()`
 
 **Change**: Instead of checking only the aligned storage index for each logical step, now scan **all storage indices** within that logical step's range.
@@ -66,7 +66,7 @@ for (let storageIndex = storageStart; storageIndex < storageEnd; storageIndex++)
 
 ### 2. Automatic Articulation Gap (Grid.svelte)
 
-**File**: `bloops_app/src/components/Grid.svelte`  
+**File**: `unknown_app/src/components/Grid.svelte`  
 **Function**: `handlePointer()`
 
 **Change**: When placing notes in single-click mode, reduce note length by 1 storage step to create a gap.
@@ -100,7 +100,7 @@ Reduced the note duration multiplier from 0.95 to 0.90 (10% gate reduction inste
 
 ## Testing
 
-Created comprehensive test suite in `bloops_app/src/__tests__/notePlayback.articulation.spec.js`:
+Created comprehensive test suite in `unknown_app/src/__tests__/notePlayback.articulation.spec.js`:
 
 1. ✅ Two separate 1/8th notes placed side by side are detected correctly
 2. ✅ Multiple notes starting within the same logical step are all triggered

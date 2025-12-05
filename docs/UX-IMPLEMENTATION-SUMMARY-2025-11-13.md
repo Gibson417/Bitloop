@@ -26,7 +26,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 **Impact:** Improved muted text contrast from 4.2:1 to ~5.1:1, exceeding WCAG AA requirements on all backgrounds.
 
 #### 1.2 Typography Scale Consistency
-**File:** `bloops_app/src/App.svelte`
+**File:** `unknown_app/src/App.svelte`
 
 ```diff
 - .brand-tag { font-size: 0.7rem; }
@@ -49,7 +49,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 ### Phase 2: Touch Target Improvements (High Priority) ✅
 
 #### 2.1 Arrow Selector Touch Targets
-**File:** `bloops_app/src/components/ArrowSelector.svelte`
+**File:** `unknown_app/src/components/ArrowSelector.svelte`
 
 ```css
 /* Added touch device improvements */
@@ -62,7 +62,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 ```
 
 #### 2.2 Track Selector Touch Targets
-**File:** `bloops_app/src/components/TrackSelector.svelte`
+**File:** `unknown_app/src/components/TrackSelector.svelte`
 
 ```css
 /* Added touch device improvements */
@@ -85,7 +85,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 ```
 
 #### 2.3 Footer Touch Targets
-**File:** `bloops_app/src/components/Footer.svelte`
+**File:** `unknown_app/src/components/Footer.svelte`
 
 ```css
 /* Added touch device improvements */
@@ -112,7 +112,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 ### Phase 3: Spacing Refinement (Medium Priority) ✅
 
 #### 3.1 Standardized Spacing Values
-**File:** `bloops_app/src/App.svelte`
+**File:** `unknown_app/src/App.svelte`
 
 ```diff
 - .workspace-header { padding: 16px 20px 6px; }
@@ -138,7 +138,7 @@ This implementation addresses findings from the comprehensive UI/UX audit, focus
 ### Phase 4: Keyboard Interaction Enhancements ✅
 
 #### 4.1 Undo/Redo Keyboard Shortcuts
-**File:** `bloops_app/src/App.svelte`
+**File:** `unknown_app/src/App.svelte`
 
 **Added:**
 - `Ctrl+Z` / `Cmd+Z` - Undo
@@ -164,7 +164,7 @@ if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.shiftKey &&
 ```
 
 #### 4.2 Focus-Visible Implementation
-**File:** `bloops_app/src/App.svelte`
+**File:** `unknown_app/src/App.svelte`
 
 ```css
 /* Better focus management - hide focus ring for mouse users, show for keyboard users */
@@ -195,11 +195,11 @@ Added tooltips showing keyboard shortcuts:
 
 ### Core Files
 1. ✅ `docs/design/design-tokens.json` - Updated muted color token
-2. ✅ `bloops_app/src/App.svelte` - Typography, spacing, keyboard shortcuts, focus-visible
-3. ✅ `bloops_app/src/components/ArrowSelector.svelte` - Touch targets
-4. ✅ `bloops_app/src/components/TrackSelector.svelte` - Touch targets
-5. ✅ `bloops_app/src/components/Footer.svelte` - Touch targets
-6. ✅ `bloops_app/src/components/Transport.svelte` - Tooltips
+2. ✅ `unknown_app/src/App.svelte` - Typography, spacing, keyboard shortcuts, focus-visible
+3. ✅ `unknown_app/src/components/ArrowSelector.svelte` - Touch targets
+4. ✅ `unknown_app/src/components/TrackSelector.svelte` - Touch targets
+5. ✅ `unknown_app/src/components/Footer.svelte` - Touch targets
+6. ✅ `unknown_app/src/components/Transport.svelte` - Tooltips
 
 ### Documentation Files Created
 1. ✅ `docs/UX-COMPLETE-AUDIT-2025-11-13.md` - Comprehensive audit report

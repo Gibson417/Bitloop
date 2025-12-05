@@ -8,7 +8,7 @@ This update addresses user feedback regarding grid line visibility and component
 
 ### 1. Grid Lines Redesign ✅
 
-**Location:** `bloops_app/src/components/Grid.svelte`
+**Location:** `unknown_app/src/components/Grid.svelte`
 
 **Requirements Met:**
 - ✅ Removed all horizontal grid lines
@@ -28,7 +28,7 @@ This update addresses user feedback regarding grid line visibility and component
 
 ### 2. Component Width Alignment ✅
 
-**Location:** `bloops_app/src/App.svelte`, `bloops_app/src/components/TrackEffectsPanel.svelte`
+**Location:** `unknown_app/src/App.svelte`, `unknown_app/src/components/TrackEffectsPanel.svelte`
 
 **Requirements Met:**
 - ✅ "Sound shaping" section (TrackEffectsPanel) now matches width of "Scale root note area" (TrackControls)
@@ -90,14 +90,14 @@ for (let col = 0; col <= displayColumns; col++) {
 
 ## Files Modified
 
-1. **bloops_app/src/components/Grid.svelte**
+1. **unknown_app/src/components/Grid.svelte**
    - Lines 115-146: Grid line drawing logic updated
 
-2. **bloops_app/src/App.svelte**
+2. **unknown_app/src/App.svelte**
    - Line ~963: Added `.track-effects-wrapper` container
    - Lines ~1367-1370: Added `.track-effects-wrapper` CSS
 
-3. **bloops_app/src/components/TrackEffectsPanel.svelte**
+3. **unknown_app/src/components/TrackEffectsPanel.svelte**
    - Line 247: Removed `margin-top: 20px`
 
 ## Testing Notes

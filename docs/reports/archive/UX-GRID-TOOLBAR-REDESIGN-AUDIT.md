@@ -28,7 +28,7 @@
 ## Changes Implemented
 
 ### 1. GridToolbar Component
-**File:** `/bloops_app/src/components/GridToolbar.svelte`
+**File:** `/unknown_app/src/components/GridToolbar.svelte`
 
 #### Drawing Tool Buttons - Icon-Only Design
 **Before:**
@@ -59,7 +59,7 @@
 ---
 
 ### 2. WindowSwitcher Component
-**File:** `/bloops_app/src/components/WindowSwitcher.svelte`
+**File:** `/unknown_app/src/components/WindowSwitcher.svelte`
 
 #### Simplified Navigation with Fixed Width
 **Before:**
@@ -100,7 +100,7 @@
 ---
 
 ### 3. App.svelte - Toolbar Visual Anchoring
-**File:** `/bloops_app/src/App.svelte`
+**File:** `/unknown_app/src/App.svelte`
 
 #### Toolbar-Grid Visual Integration
 **Before:**

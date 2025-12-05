@@ -103,15 +103,15 @@ Perform a full UI/UX inspection to evaluate potential changes, visual problems, 
 ## Technical Details
 
 ### Files Modified (9)
-1. `bloops_app/src/lib/colorTokens.js` - Enhanced token system
-2. `bloops_app/src/App.svelte` - Main layout improvements
-3. `bloops_app/src/components/TrackSelector.svelte` - Touch targets + contrast
-4. `bloops_app/src/components/ArrowSelector.svelte` - Touch targets + consistency
-5. `bloops_app/src/components/WindowSwitcher.svelte` - Interaction ergonomics
-6. `bloops_app/src/components/Footer.svelte` - Spacing + sizing
-7. `bloops_app/src/components/Transport.svelte` - Consistency
-8. `bloops_app/src/components/TrackControls.svelte` - Grid + spacing
-9. `bloops_app/src/components/TrackEffectsPanel.svelte` - Typography + spacing
+1. `unknown_app/src/lib/colorTokens.js` - Enhanced token system
+2. `unknown_app/src/App.svelte` - Main layout improvements
+3. `unknown_app/src/components/TrackSelector.svelte` - Touch targets + contrast
+4. `unknown_app/src/components/ArrowSelector.svelte` - Touch targets + consistency
+5. `unknown_app/src/components/WindowSwitcher.svelte` - Interaction ergonomics
+6. `unknown_app/src/components/Footer.svelte` - Spacing + sizing
+7. `unknown_app/src/components/Transport.svelte` - Consistency
+8. `unknown_app/src/components/TrackControls.svelte` - Grid + spacing
+9. `unknown_app/src/components/TrackEffectsPanel.svelte` - Typography + spacing
 
 ### Files Created (2)
 1. `docs/UX-COMPREHENSIVE-AUDIT.md` - 17KB detailed audit (30+ issues documented)

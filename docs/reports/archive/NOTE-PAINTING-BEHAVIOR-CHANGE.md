@@ -31,7 +31,7 @@ Changed the default painting behavior to **always add notes** when clicking/drag
 
 ### Files Changed
 
-1. **bloops_app/src/components/Grid.svelte**
+1. **unknown_app/src/components/Grid.svelte**
    - Added `extendMode` state variable to track Shift key
    - Modified `handlePointerDown` to separate erase and extend modes
    - Updated `handlePointer` logic to:
@@ -42,13 +42,13 @@ Changed the default painting behavior to **always add notes** when clicking/drag
    - Updated aria-label for better accessibility description
    - Updated cursor styles: `crosshair` (default), `cell` (extend mode), `not-allowed` (erase mode)
 
-2. **bloops_app/src/__tests__/Grid.spec.js**
+2. **unknown_app/src/__tests__/Grid.spec.js**
    - Updated test "clicking a filled cell should remove the note" → "clicking a filled cell should still add a note (default paint behavior)"
    - Updated test "holding shift key should enable erase mode" → "holding shift key should enable extend/toggle mode"
    - Added new test "holding shift key on filled cell should toggle (remove note)" to verify toggle behavior
    - All tests now expect `value: true` for default painting behavior
 
-3. **bloops_app/src/components/HowToGuide.svelte**
+3. **unknown_app/src/components/HowToGuide.svelte**
    - Updated Quick Tips section to explain new painting behavior
    - Changed text from "Click on the grid to add or remove notes" to "Click on the grid to paint notes consecutively. Hold Shift to toggle/extend notes, or Alt to erase"
 

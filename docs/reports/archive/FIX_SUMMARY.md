@@ -39,13 +39,13 @@ Applied **minimal, surgical changes** to fix the root cause:
 ## Changes
 
 ### Modified Files
-1. `bloops_app/src/App.svelte` - Enhanced scheduleAudio function
-2. `bloops_app/src/components/Grid.svelte` - Added articulation gap logic
+1. `unknown_app/src/App.svelte` - Enhanced scheduleAudio function
+2. `unknown_app/src/components/Grid.svelte` - Added articulation gap logic
 3. Total: 217 insertions, 29 deletions
 
 ### New Files
-1. `bloops_app/src/__tests__/notePlayback.articulation.spec.js` - 5 unit tests
-2. `bloops_app/src/__tests__/notePlayback.integration.spec.js` - 4 integration tests  
+1. `unknown_app/src/__tests__/notePlayback.articulation.spec.js` - 5 unit tests
+2. `unknown_app/src/__tests__/notePlayback.integration.spec.js` - 4 integration tests  
 3. `NOTE_ARTICULATION_FIX.md` - Technical documentation
 
 ## Technical Details
@@ -81,14 +81,14 @@ The app uses a boolean matrix for note storage. Consecutive `true` values were i
 
 ### Automated Testing
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 # Result: 86 tests passing
 ```
 
 ### Build Verification
 ```bash
-cd bloops_app
+cd unknown_app
 npm run build
 # Result: ✓ built in 1.72s (no errors)
 ```

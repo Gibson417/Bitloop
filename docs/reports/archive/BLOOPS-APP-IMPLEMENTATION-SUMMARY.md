@@ -17,7 +17,7 @@ Successfully implemented fixes for 3 out of 4 reported issues in the Bloops musi
 - Now always visible regardless of scroll position
 
 **Files Modified**:
-- `bloops_app/src/App.svelte` (lines 1835-1843)
+- `unknown_app/src/App.svelte` (lines 1835-1843)
 
 **Visual Proof**: [Dev mode with visible tooltip](https://github.com/user-attachments/assets/255ba6bc-9ad8-4077-9006-49888dd356f5)
 
@@ -38,8 +38,8 @@ Successfully implemented fixes for 3 out of 4 reported issues in the Bloops musi
 - Added tooltip: "Double-click or right-click to reset"
 
 **Files Modified**:
-- `bloops_app/src/components/KnobControl.svelte` (lines 14, 76-100, 110-133)
-- `bloops_app/src/App.svelte` (line 969) - Added defaultValue to volume knob
+- `unknown_app/src/components/KnobControl.svelte` (lines 14, 76-100, 110-133)
+- `unknown_app/src/App.svelte` (line 969) - Added defaultValue to volume knob
 
 **User Interaction**:
 - Double-click any knob → resets to default
@@ -63,7 +63,7 @@ Successfully implemented fixes for 3 out of 4 reported issues in the Bloops musi
 - Enhanced ARIA labels to announce removal capability
 
 **Files Modified**:
-- `bloops_app/src/components/PatternArranger.svelte`:
+- `unknown_app/src/components/PatternArranger.svelte`:
   - Line 8: Import removeBlock
   - Lines 196-209: Handler functions
   - Lines 325-346: UI markup
@@ -151,24 +151,24 @@ All changes follow WCAG 2.1 Level AA guidelines:
 ## Files Changed
 
 ### Modified Files:
-1. `bloops_app/src/App.svelte`
+1. `unknown_app/src/App.svelte`
    - Dev mode tooltip positioning
    - Added defaultValue to volume knob
 
-2. `bloops_app/src/components/KnobControl.svelte`
+2. `unknown_app/src/components/KnobControl.svelte`
    - Reset functionality implementation
 
-3. `bloops_app/src/components/PatternArranger.svelte`
+3. `unknown_app/src/components/PatternArranger.svelte`
    - Block removal UI and logic
 
 ### New Documentation:
-1. `bloops_app/UX-FIXES-IMPLEMENTATION.md`
+1. `unknown_app/UX-FIXES-IMPLEMENTATION.md`
    - Detailed implementation documentation
 
-2. `bloops_app/BARS-3-4-INVESTIGATION.md`
+2. `unknown_app/BARS-3-4-INVESTIGATION.md`
    - Comprehensive investigation report
 
-3. `bloops_app/IMPLEMENTATION-SUMMARY.md`
+3. `unknown_app/IMPLEMENTATION-SUMMARY.md`
    - This file
 
 ---

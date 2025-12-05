@@ -13,7 +13,7 @@ This directory contains test reports and quality assurance documentation for the
 For the most current project status and test results, run:
 
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 ```
 
