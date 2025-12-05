@@ -169,6 +169,17 @@ npm run build       # Build optimized production bundle
 npm run preview     # Preview production build locally
 ```
 
+### Deploying to GitHub Pages
+
+The app automatically deploys to GitHub Pages on every push to `main`. For first-time setup:
+
+1. Go to **Settings → Pages** in your repository
+2. Under **Source**, select **GitHub Actions**
+3. Save the settings
+4. Push to `main` or manually trigger the workflow
+
+The app will be available at `https://<username>.github.io/<repo>/`
+
 ### Downloading the Desktop Application (Windows .exe)
 
 You can download the portable Windows executable directly from [GitHub Releases](https://github.com/Gibson417/Bitloop/releases):
