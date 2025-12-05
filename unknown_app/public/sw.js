@@ -1,5 +1,6 @@
 // Service Worker for UNKNOWN PWA
-const CACHE_NAME = 'unknown-v1';
+// Cache version is updated on each deployment to ensure users get the latest version
+const CACHE_NAME = 'unknown-v2';
 
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
