@@ -3,16 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#101828" />
     <meta name="description" content="A modern, intuitive chiptune loop composer for the browser" />
     <!-- iOS PWA support -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="UNKNOWN" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <title>UNKNOWN</title>
+    <style>
+      /* Update notification toast styles */
+      .update-toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #10b981;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideUp 0.3s ease-out;
+      }
+      .update-toast button {
+        background: white;
+        color: #10b981;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .update-toast button:hover {
+        background: #f0fdf4;
+      }
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -21,14 +59,39 @@
       // Register service worker for PWA support
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('./sw.js')
             .then((registration) => {
               console.log('SW registered:', registration.scope);
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available - show update notification
+                    console.log('New version available! Refresh to update.');
+                    showUpdateNotification();
+                  }
+                });
+              });
             })
             .catch((error) => {
               console.log('SW registration failed:', error);
             });
         });
+      }
+
+      function showUpdateNotification() {
+        // Remove existing notification if any
+        const existing = document.querySelector('.update-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'update-toast';
+        toast.innerHTML = `
+          <span>🎵 A new version is available!</span>
+          <button onclick="window.location.reload()">Update Now</button>
+        `;
+        document.body.appendChild(toast);
       }
     </script>
   </body>

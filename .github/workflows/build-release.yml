@@ -42,11 +42,14 @@ jobs:
         run: npx electron-builder --win --publish never
         working-directory: unknown_app
 
-      - name: Upload Windows portable executable
+      - name: Upload Windows builds
         uses: actions/upload-artifact@v4
         with:
-          name: windows-portable-exe
-          path: unknown_app/release/*.exe
+          name: windows-builds
+          path: |
+            unknown_app/release/*.exe
+            unknown_app/release/*.yml
+            unknown_app/release/*.yaml
           if-no-files-found: error
 
   release:
@@ -57,17 +60,19 @@ jobs:
       contents: write
     
     steps:
-      # Using specific version to avoid CVE in earlier v4 versions
       - name: Download Windows artifact
         uses: actions/download-artifact@v4.1.8
         with:
-          name: windows-portable-exe
+          name: windows-builds
           path: ./release
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./release/*.exe
+          files: |
+            ./release/*.exe
+            ./release/*.yml
+            ./release/*.yaml
           generate_release_notes: true
           draft: false
           prerelease: false
@@ -86,7 +91,7 @@ jobs:
       - name: Download Windows artifact
         uses: actions/download-artifact@v4.1.8
         with:
-          name: windows-portable-exe
+          name: windows-builds
           path: ./release
 
       - name: Delete existing latest release
@@ -103,14 +108,19 @@ jobs:
           tag_name: latest
           name: Latest Build
           body: |
-            This is an automatically updated release containing the latest Windows portable executable built from the main branch.
+            This is an automatically updated release containing the latest Windows builds from the main branch.
+            
+            **Downloads:**
+            - **UNKNOWN-Setup.exe** - Installer version with auto-update support
+            - **UNKNOWN-Portable.exe** - Portable version (no installation required)
             
             **Note:** This is a development build and may contain bugs. For stable releases, please download a versioned release (e.g., v0.1.0).
             
-            **How to use:**
-            1. Download the `.exe` file below
-            2. Run the executable - no installation required!
-          files: ./release/*.exe
+            **Auto-Updates:** The installer version will automatically check for and install updates. The portable version requires manual download of new versions.
+          files: |
+            ./release/*.exe
+            ./release/*.yml
+            ./release/*.yaml
           draft: false
           prerelease: true
         env:

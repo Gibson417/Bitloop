@@ -13,6 +13,8 @@ let mainWindow = null;
 // Configure auto-updater
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
+// Allow checking prerelease versions for updates (the "latest" release is marked as prerelease)
+autoUpdater.allowPrerelease = true;
 
 function createWindow() {
   mainWindow = new BrowserWindow({

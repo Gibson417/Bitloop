@@ -7,21 +7,26 @@
 ## 📥 Download & Install
 
 ### Windows
-**[⬇️ Download UNKNOWN for Windows (.exe)](https://github.com/Gibson417/Bitloop/releases/download/latest/UNKNOWN-Portable.exe)**
+Choose the version that works best for you:
 
-> No installation required - just download and run! This download is automatically updated with the latest build whenever changes are merged to main.
+| Version | Description | Auto-Updates |
+|---------|-------------|--------------|
+| **[⬇️ UNKNOWN Installer](https://github.com/Gibson417/Bitloop/releases/download/latest/UNKNOWN-Setup.exe)** | Standard installer with auto-update support | ✅ Yes |
+| **[⬇️ UNKNOWN Portable](https://github.com/Gibson417/Bitloop/releases/download/latest/UNKNOWN-Portable.exe)** | No installation required, runs anywhere | ❌ Manual |
+
+> **Recommended:** Use the Installer version for automatic updates. The Portable version is perfect for USB drives or computers where you can't install software.
 
 ### Chromebook / Chrome OS
 UNKNOWN is available as a Progressive Web App (PWA) that works great on Chromebooks:
 
-1. Open the app in Chrome: [Launch UNKNOWN](https://gibson417.github.io/Bitloop/) *(or your hosted URL)*
+1. Open the app in Chrome: [Launch UNKNOWN](https://gibson417.github.io/Bitloop/)
 2. Click the **install icon** (⊕) in the address bar, or open Chrome menu (⋮) → "Install UNKNOWN..."
 3. The app will install and appear in your app launcher like a native app
 
-> **Tip:** The PWA works offline after first install and runs in its own window without browser UI.
+> **Tip:** The PWA automatically updates to the latest version whenever you're online. It also works offline after first install and runs in its own window without browser UI.
 
 ### Web Browser
-Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed!
+Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed! The browser version automatically stays up to date.
 
 ---
 
