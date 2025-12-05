@@ -28,7 +28,7 @@ The visual confusion came from mixing 8px and 12px border-radius values across r
 ## Changes Made
 
 ### 1. Note Labels Border-Radius
-**File**: `bloops_app/src/components/Grid.svelte`  
+**File**: `unknown_app/src/components/Grid.svelte`  
 **Line**: 693
 
 ```css
@@ -48,7 +48,7 @@ The visual confusion came from mixing 8px and 12px border-radius values across r
 ---
 
 ### 2. Focus Indicator Border-Radius
-**File**: `bloops_app/src/components/Grid.svelte`  
+**File**: `unknown_app/src/components/Grid.svelte`  
 **Line**: 740
 
 ```css
@@ -159,7 +159,7 @@ All corners align visually with consistent 12px panel-level radius.
 
 ## Files Modified
 
-1. ✅ `bloops_app/src/components/Grid.svelte` (2 CSS values)
+1. ✅ `unknown_app/src/components/Grid.svelte` (2 CSS values)
 2. ✅ `docs/UX-GRID-VISUAL-ALIGNMENT-AUDIT.md` (new audit document)
 3. ✅ `docs/GRID-VISUAL-FIX-SUMMARY.md` (this file)
 

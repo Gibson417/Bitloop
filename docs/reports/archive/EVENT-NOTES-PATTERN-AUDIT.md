@@ -284,7 +284,7 @@ Left Sidebar:
 
 ### Files Modified
 
-#### `bloops_app/src/store/projectStore.js`
+#### `unknown_app/src/store/projectStore.js`
 **Lines 5-8:** Added note event structure documentation  
 **Lines 101-158:** Added event conversion helpers (`booleanToEvents`, `eventsToBooleans`, `getTrackEvents`, `setTrackFromEvents`)  
 **Lines 290-338:** Added pattern management helpers (`createPattern`, `snapshotPattern`, `normalizePattern`, `normalizePatterns`)  
@@ -294,7 +294,7 @@ Left Sidebar:
 
 **Rationale:** Implement pattern-based composition while maintaining backwards compatibility with existing boolean matrix storage.
 
-#### `bloops_app/src/components/Grid.svelte`
+#### `unknown_app/src/components/Grid.svelte`
 **Lines 54-82:** Added `extractNoteEvents()` helper to convert boolean matrix to event array  
 **Lines 186-262:** Replaced cell-by-cell rendering with event-based rendering:
 - Iterate over note events instead of grid cells
@@ -310,7 +310,7 @@ Left Sidebar:
 
 **Rationale:** Visual note duration improves understanding of timing. Zoom-aware grid prevents clutter at default resolution.
 
-#### `bloops_app/src/App.svelte`
+#### `unknown_app/src/App.svelte`
 **Line 15:** Import PatternSelector component  
 **Lines 151-194:** Updated `scheduleAudio()` to detect note start and calculate duration:
 - Only trigger sound at note start (prevents re-triggering)
@@ -323,7 +323,7 @@ Left Sidebar:
 
 **Rationale:** Connect pattern UI to store, implement proper note duration playback.
 
-#### `bloops_app/src/components/PatternSelector.svelte` (NEW)
+#### `unknown_app/src/components/PatternSelector.svelte` (NEW)
 **Lines 1-264:** Complete pattern selector component with:
 - Pattern list with selection highlighting
 - Inline name editing

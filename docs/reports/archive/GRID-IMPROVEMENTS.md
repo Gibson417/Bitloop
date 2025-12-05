@@ -47,7 +47,7 @@ All changes follow design system standards, meet WCAG 2.2 AA accessibility requi
 - Keyboard navigation support
 - Reduced motion support
 
-**Location:** `bloops_app/src/components/WindowSwitcher.svelte`
+**Location:** `unknown_app/src/components/WindowSwitcher.svelte`
 
 ---
 
@@ -60,7 +60,7 @@ All changes follow design system standards, meet WCAG 2.2 AA accessibility requi
 
 **Result:** Grid lines are now clearly visible for rhythm reading while remaining subtle and non-intrusive.
 
-**Files changed:** `bloops_app/src/components/Grid.svelte` (lines 189-195)
+**Files changed:** `unknown_app/src/components/Grid.svelte` (lines 189-195)
 
 ---
 
@@ -83,7 +83,7 @@ All changes follow design system standards, meet WCAG 2.2 AA accessibility requi
 
 **Result:** Grid container now tightly wraps the 16-column canvas with no extra space.
 
-**Files changed:** `bloops_app/src/components/Grid.svelte` (lines 698-708)
+**Files changed:** `unknown_app/src/components/Grid.svelte` (lines 698-708)
 
 ---
 
@@ -100,23 +100,23 @@ if (paintedCells.has(key) && pointerActive) return;
 
 **Result:** Users can now click same cell repeatedly to toggle notes on/off without releasing pointer.
 
-**Files changed:** `bloops_app/src/components/Grid.svelte` (lines 415-417)
+**Files changed:** `unknown_app/src/components/Grid.svelte` (lines 415-417)
 
 ---
 
 ## Files Changed
 
 ### Created (6 files)
-1. `bloops_app/src/components/WindowSwitcher.svelte` - Window navigation component
-2. `bloops_app/src/__tests__/WindowSwitcher.spec.js` - Test suite (11 tests)
+1. `unknown_app/src/components/WindowSwitcher.svelte` - Window navigation component
+2. `unknown_app/src/__tests__/WindowSwitcher.spec.js` - Test suite (11 tests)
 3. `docs/reports/visual-test-guide.md` - Manual testing guide
 4. `docs/reports/grid-window-switcher-summary.md` - Implementation summary
 5. `docs/images/window-switcher-diagram.svg` - Architecture diagram
 6. `docs/images/before-after-comparison.svg` - Before/after visual
 
 ### Modified (3 files)
-1. `bloops_app/src/components/Grid.svelte` - Core grid improvements
-2. `bloops_app/src/App.svelte` - WindowSwitcher integration
+1. `unknown_app/src/components/Grid.svelte` - Core grid improvements
+2. `unknown_app/src/App.svelte` - WindowSwitcher integration
 3. `docs/UX-GRID-AUDIT.md` - Comprehensive audit report
 
 ---
@@ -125,7 +125,7 @@ if (paintedCells.has(key) && pointerActive) return;
 
 ### Automated Tests
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 ```
 
@@ -153,7 +153,7 @@ See `docs/reports/visual-test-guide.md` for 10 detailed test cases covering:
 | [UX-GRID-AUDIT.md](../docs/UX-GRID-AUDIT.md) | Comprehensive audit with grid map, anomalies, accessibility findings |
 | [grid-window-switcher-summary.md](../docs/reports/grid-window-switcher-summary.md) | Implementation overview with architecture details |
 | [visual-test-guide.md](../docs/reports/visual-test-guide.md) | Step-by-step manual testing instructions |
-| [WindowSwitcher.spec.js](../bloops_app/src/__tests__/WindowSwitcher.spec.js) | Full test suite with 11 tests |
+| [WindowSwitcher.spec.js](../unknown_app/src/__tests__/WindowSwitcher.spec.js) | Full test suite with 11 tests |
 
 ---
 

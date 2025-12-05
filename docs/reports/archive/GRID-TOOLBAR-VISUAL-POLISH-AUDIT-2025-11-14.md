@@ -2,7 +2,7 @@
 
 **Date**: 2025-11-14  
 **Auditor**: UI/UX Design QA Specialist  
-**Scope**: Grid toolbar and area above grid in bloops_app  
+**Scope**: Grid toolbar and area above grid in unknown_app  
 **Focus**: Visual polish, clutter reduction, hierarchy, spacing consistency
 
 ---
@@ -185,7 +185,7 @@
 
 ### Files Edited
 
-#### `/home/runner/work/Bitloop/Bitloop/bloops_app/src/App.svelte`
+#### `/home/runner/work/Bitloop/Bitloop/unknown_app/src/App.svelte`
 **Lines 1016-1051** (HTML structure)
 - Added `.toolbar-primary` wrapper for GridToolbar + Note Length
 - Added `.toolbar-secondary` wrapper for ZoomControls + WindowSwitcher
@@ -204,7 +204,7 @@
 - `.toolbar-primary`, `.toolbar-secondary`: Added mobile overrides for vertical stacking
 - `.note-length-group`: Full width on mobile
 
-#### `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/GridToolbar.svelte`
+#### `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/GridToolbar.svelte`
 **Lines 43-60** (Container & label styles)
 - `.grid-toolbar`: padding 8px 12px → 6px 10px, gap 10px → 12px, border opacity 0.08 → 0.06
 - `.toolbar-label`: font-size 0.75rem → 0.7rem, opacity 0.7 → 0.6
@@ -215,14 +215,14 @@
 - `.tool-btn:hover:not(.active)`: background opacity 0.05 → 0.04
 - `.tool-btn.active`: background opacity 0.15 → 0.12, box-shadow reduced
 
-#### `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/ZoomControls.svelte`
+#### `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/ZoomControls.svelte`
 **Lines 69-131** (All styles)
 - `.zoom-controls`: gap 10px → 8px, padding 4px 12px → 4px 10px, border opacity 0.08 → 0.06
 - `.zoom-label`: font-size 0.75rem → 0.7rem, opacity 0.7 → 0.6
 - `.zoom-btn`: width/height 28px → 26px, font-size 1.2rem → 1.1rem
 - `.zoom-level`: font-size 0.85rem → 0.8rem, min-width 32px → 30px
 
-#### `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/WindowSwitcher.svelte`
+#### `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/WindowSwitcher.svelte`
 **Lines 90-203** (All styles)
 - `.window-switcher`: background opacity reduced, border 0.2 → 0.15
 - `.window-nav-btn`: width/height 28px → 26px, border/background/color opacities reduced
@@ -231,7 +231,7 @@
 - `.window-number`: font-size 0.7rem → 0.68rem, opacity 0.9 → 0.85, min-width 36px → 34px
 - `.window-indicator`: min-width/height 28px → 26px
 
-#### `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/TrackControls.svelte`
+#### `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/TrackControls.svelte`
 **Lines 169-207** (Container & label styles)
 - `.track-controls`: padding 20px → 16px 20px, border-radius 16px → 12px, border opacity 0.08 → 0.06
 - `.control:not(.plain)`: border-radius 14px → 12px, border opacity 0.12 → 0.1

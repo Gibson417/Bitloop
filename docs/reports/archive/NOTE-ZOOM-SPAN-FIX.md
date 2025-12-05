@@ -98,8 +98,8 @@ To verify the fix:
 
 ### Automated Tests
 Existing tests in:
-- `bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js`
-- `bloops_app/src/__tests__/Grid.zoom-visible-columns.spec.js`
+- `unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js`
+- `unknown_app/src/__tests__/Grid.zoom-visible-columns.spec.js`
 
 Should continue to pass with this fix.
 

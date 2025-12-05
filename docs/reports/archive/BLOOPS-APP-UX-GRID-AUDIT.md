@@ -2,7 +2,7 @@
 
 **Date:** 2025-11-16  
 **Auditor:** UI/UX Design QA Specialist  
-**Repository:** /home/runner/work/Bitloop/Bitloop/bloops_app
+**Repository:** /home/runner/work/Bitloop/Bitloop/unknown_app
 
 ## Executive Summary
 

@@ -159,7 +159,7 @@ const handleNoteLengthSelect = (value) => {
 
 ### New Tests (5)
 
-**File:** `bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js`
+**File:** `unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js`
 
 1. **Zoom controls grid density independently of note length**
    - Verifies zoom 32 + note length 16 produces correct note duration
@@ -331,7 +331,7 @@ const handleNoteLengthSelect = (value) => {
    - Test coverage
    - Deliverables checklist
 
-3. **bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js**
+3. **unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js**
    - Test suite with 5 comprehensive tests
    - Validates all aspects of separation
 
@@ -537,8 +537,8 @@ const handleNoteLengthSelect = (value) => {
 
 ### Documentation
 - Technical details: [ZOOM-NOTE-LENGTH-SEPARATION.md](./ZOOM-NOTE-LENGTH-SEPARATION.md)
-- Test suite: `bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js`
-- Component: `bloops_app/src/components/Grid.svelte`
+- Test suite: `unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js`
+- Component: `unknown_app/src/components/Grid.svelte`
 
 ### Support
 - Issue: "Note length should not effect grid density"

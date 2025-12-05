@@ -189,13 +189,13 @@
 ## Change Log
 
 ### Files Modified
-1. **`/bloops_app/src/components/ArrowSelector.svelte`**
+1. **`/unknown_app/src/components/ArrowSelector.svelte`**
    - Lines 119-128: Reduced controls padding (6px 8px → 4px 6px), gap (10px → 6px), border-radius (10px → 6px)
    - Lines 135-150: Reduced button size (44×44px → 28×28px), border-radius (8px → 6px), font-size (0.85rem → 0.75rem)
    - Lines 178-186: Reduced value font-size (0.95rem → 0.85rem), min-width (70px → 50px), padding (4px 12px → 4px 8px)
    - Lines 188-204: Updated mobile breakpoint with 40×40px touch targets, consistent padding/gap
 
-2. **`/bloops_app/src/components/WindowSwitcher.svelte`**
+2. **`/unknown_app/src/components/WindowSwitcher.svelte`**
    - Lines 95-103: Reduced padding (6px 10px → 4px 6px), gap (10px → 6px), border-radius (10px → 6px)
    - Lines 105-124: Reduced button size (36×36px → 28×28px), border-radius (8px → 6px), SVG size (18px → 14px)
    - Lines 158-166: Reduced number font-size (0.8rem → 0.7rem), padding (0 6px → 0 4px), min-width (44px → 36px)

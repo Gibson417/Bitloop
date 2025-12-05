@@ -67,7 +67,7 @@
 ## Changes by Component
 
 ### 1. TrackSelector.svelte
-**File:** `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/TrackSelector.svelte`
+**File:** `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/TrackSelector.svelte`
 
 | Element | Property | Before | After | Rationale |
 |---------|----------|--------|-------|-----------|
@@ -97,7 +97,7 @@
 ---
 
 ### 2. WindowSwitcher.svelte
-**File:** `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/WindowSwitcher.svelte`
+**File:** `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/WindowSwitcher.svelte`
 
 | Element | Property | Before | After | Rationale |
 |---------|----------|--------|-------|-----------|
@@ -130,7 +130,7 @@
 ---
 
 ### 3. App.svelte
-**File:** `/home/runner/work/Bitloop/Bitloop/bloops_app/src/App.svelte`
+**File:** `/home/runner/work/Bitloop/Bitloop/unknown_app/src/App.svelte`
 
 | Section | Element | Property | Before | After | Rationale |
 |---------|---------|----------|--------|-------|-----------|

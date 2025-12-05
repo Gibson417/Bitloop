@@ -27,11 +27,11 @@ Comprehensive icon system standardization and WCAG 2.2 Level AA compliance impro
 
 ## Files Modified
 
-1. `/bloops_app/src/components/TrackSelector.svelte` - 6 new SVG icons, button sizing
-2. `/bloops_app/src/components/GridToolbar.svelte` - 2 new SVG icons, button sizing
-3. `/bloops_app/src/components/TrackConfigPanel.svelte` - 2 new SVG icons
-4. `/bloops_app/src/components/SettingsMenu.svelte` - Button sizing
-5. `/bloops_app/src/components/ShareMenu.svelte` - Button sizing
+1. `/unknown_app/src/components/TrackSelector.svelte` - 6 new SVG icons, button sizing
+2. `/unknown_app/src/components/GridToolbar.svelte` - 2 new SVG icons, button sizing
+3. `/unknown_app/src/components/TrackConfigPanel.svelte` - 2 new SVG icons
+4. `/unknown_app/src/components/SettingsMenu.svelte` - Button sizing
+5. `/unknown_app/src/components/ShareMenu.svelte` - Button sizing
 
 ## Documentation Added
 

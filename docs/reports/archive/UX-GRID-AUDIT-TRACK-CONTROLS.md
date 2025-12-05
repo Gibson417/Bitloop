@@ -46,7 +46,7 @@
 
 ## Changes Made
 
-### File: `bloops_app/src/components/ArrowSelector.svelte`
+### File: `unknown_app/src/components/ArrowSelector.svelte`
 
 #### Change 1: Label Styling Consistency
 **Line:** 112-119  
@@ -139,7 +139,7 @@
 
 **Rationale:** Unified focus outline opacity across all interactive elements for consistent visual weight.
 
-### File: `bloops_app/src/components/TrackControls.svelte`
+### File: `unknown_app/src/components/TrackControls.svelte`
 
 #### Change 5: Name Input Flexibility
 **Line:** 218-223  

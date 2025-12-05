@@ -28,25 +28,25 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: bloops_app/package-lock.json
+          cache-dependency-path: unknown_app/package-lock.json
 
       - name: Install dependencies
         run: npm install
-        working-directory: bloops_app
+        working-directory: unknown_app
 
       - name: Build Vite app
         run: npm run build
-        working-directory: bloops_app
+        working-directory: unknown_app
 
       - name: Build Electron app for Windows
         run: npx electron-builder --win --publish never
-        working-directory: bloops_app
+        working-directory: unknown_app
 
       - name: Upload Windows portable executable
         uses: actions/upload-artifact@v4
         with:
           name: windows-portable-exe
-          path: bloops_app/release/*.exe
+          path: unknown_app/release/*.exe
           if-no-files-found: error
 
   release:

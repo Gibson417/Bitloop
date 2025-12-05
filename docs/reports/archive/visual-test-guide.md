@@ -4,7 +4,7 @@
 
 1. Start the development server:
    ```bash
-   cd bloops_app
+   cd unknown_app
    npm install --legacy-peer-deps
    npm run dev
    ```
@@ -185,7 +185,7 @@ Previously, consecutive clicks would not work because `paintedCells` Set prevent
 Run automated tests to verify functionality:
 
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 ```
 

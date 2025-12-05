@@ -98,7 +98,7 @@ Successfully completed a comprehensive UI/UX audit and implementation for the Bl
    - Updated muted color token
    - Lines changed: 1
 
-2. **bloops_app/src/App.svelte**
+2. **unknown_app/src/App.svelte**
    - Typography fixes (4 locations)
    - Spacing refinements (5 locations)
    - Keyboard shortcuts (undo/redo)
@@ -106,19 +106,19 @@ Successfully completed a comprehensive UI/UX audit and implementation for the Bl
    - Tooltip enhancements (2 locations)
    - Lines changed: ~75
 
-3. **bloops_app/src/components/ArrowSelector.svelte**
+3. **unknown_app/src/components/ArrowSelector.svelte**
    - Added touch target media query
    - Lines changed: ~10
 
-4. **bloops_app/src/components/TrackSelector.svelte**
+4. **unknown_app/src/components/TrackSelector.svelte**
    - Added touch target media query  
    - Lines changed: ~15
 
-5. **bloops_app/src/components/Footer.svelte**
+5. **unknown_app/src/components/Footer.svelte**
    - Added touch target media query
    - Lines changed: ~15
 
-6. **bloops_app/src/components/Transport.svelte**
+6. **unknown_app/src/components/Transport.svelte**
    - Added tooltips with keyboard hints
    - Lines changed: ~10
 

@@ -34,7 +34,7 @@ The diagram above illustrates how the bug occurred and how it was fixed.
 
 ### 1. Grid.svelte - Core Fix
 
-**File:** `bloops_app/src/components/Grid.svelte`
+**File:** `unknown_app/src/components/Grid.svelte`
 
 #### Added erase mode state variable
 ```javascript
@@ -118,7 +118,7 @@ window.addEventListener('keyup', handleKeyUpGlobal);
 
 ### 2. Grid.spec.js - Test Coverage
 
-**File:** `bloops_app/src/__tests__/Grid.spec.js`
+**File:** `unknown_app/src/__tests__/Grid.spec.js`
 
 Added comprehensive tests for the new functionality:
 
@@ -195,14 +195,14 @@ No responsive issues introduced. Changes are purely behavioral and do not affect
 ## Change Log
 
 ### Files Modified
-1. `bloops_app/src/components/Grid.svelte`
+1. `unknown_app/src/components/Grid.svelte`
    - Fixed pointerActive flag initialization bug
    - Added eraseMode state and logic
    - Added global keyboard event handlers
    - Updated cursor style and aria-label
    - Removed static cursor from CSS
 
-2. `bloops_app/src/__tests__/Grid.spec.js`
+2. `unknown_app/src/__tests__/Grid.spec.js`
    - Added 4 new test cases for note toggle and erase mode functionality
    - Tests cover: add note, remove note, shift-erase, alt-erase
 
@@ -229,7 +229,7 @@ No responsive issues introduced. Changes are purely behavioral and do not affect
 ### Automated Tests
 Run existing test suite:
 ```bash
-cd bloops_app
+cd unknown_app
 npm test
 ```
 
@@ -420,7 +420,7 @@ From issue report:
 ## Change Log
 
 ### Files Created
-1. **bloops_app/src/components/WindowSwitcher.svelte** (5169 bytes)
+1. **unknown_app/src/components/WindowSwitcher.svelte** (5169 bytes)
    - Rationale: New component for manual grid window navigation
    - Uses design tokens for colors, spacing, and typography
    - Meets WCAG 2.2 AA accessibility standards
@@ -428,7 +428,7 @@ From issue report:
 
 ### Files Modified
 
-#### bloops_app/src/components/Grid.svelte
+#### unknown_app/src/components/Grid.svelte
 **Lines 7-20**: Added `manualWindow` prop
 - Rationale: Support manual window override vs auto-follow playhead
 
@@ -454,7 +454,7 @@ From issue report:
 - Added `width: fit-content` and `max-width: 100%`
 - Rationale: Eliminate empty space to right of grid, size container to content
 
-#### bloops_app/src/App.svelte
+#### unknown_app/src/App.svelte
 **Lines 3-4**: Imported WindowSwitcher component
 
 **Lines 50-53**: Added window state variables
@@ -644,7 +644,7 @@ The implementation follows design system tokens, meets WCAG 2.2 AA standards, an
 
 ### 1. Grid.svelte - Cell Size Calculation
 
-**File:** `bloops_app/src/components/Grid.svelte`
+**File:** `unknown_app/src/components/Grid.svelte`
 
 #### Line 115: Increased Cell Size Bounds
 **Before:**
@@ -725,7 +725,7 @@ const cellSize = Math.max(32, Math.min(96, Math.floor(availableWidth / visibleCo
 
 ### 2. App.svelte - Grid Backdrop Container
 
-**File:** `bloops_app/src/App.svelte`
+**File:** `unknown_app/src/App.svelte`
 
 #### Lines 1546-1558: Enable Flex Layout
 **Before:**
@@ -963,8 +963,8 @@ The grid prominence issue has been resolved with minimal, surgical changes:
 - **Test requirement**: Visual verification across screen sizes recommended
 
 ### Files Modified
-1. `/home/runner/work/Bitloop/Bitloop/bloops_app/src/components/Grid.svelte` (2 changes)
-2. `/home/runner/work/Bitloop/Bitloop/bloops_app/src/App.svelte` (1 change)
+1. `/home/runner/work/Bitloop/Bitloop/unknown_app/src/components/Grid.svelte` (2 changes)
+2. `/home/runner/work/Bitloop/Bitloop/unknown_app/src/App.svelte` (1 change)
 
 **Next Steps**: 
 1. Visual testing across multiple screen sizes

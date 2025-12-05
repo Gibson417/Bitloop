@@ -54,8 +54,8 @@ PR #120 has **merge conflicts** with main because:
 - ⚠️ Has older versions of drawing tool features
 - ⚠️ Missing some accessibility improvements from main
 - ❌ Cannot merge due to conflicts in 3 files:
-  - `bloops_app/src/components/Grid.svelte`
-  - `bloops_app/src/__tests__/Grid.layout.spec.js`
+  - `unknown_app/src/components/Grid.svelte`
+  - `unknown_app/src/__tests__/Grid.layout.spec.js`
   - `MERGE_RESOLUTION.md`
 
 ## Why This Matters
@@ -152,6 +152,6 @@ This means:
 - PR #121: Documentation of merge resolution
 
 ## Files to Fix in New PR
-- `bloops_app/src/components/Grid.svelte` - Use `zoomLevel` for grid resolution
-- `bloops_app/src/__tests__/Grid.layout.spec.js` - Test that zoom works independently
+- `unknown_app/src/components/Grid.svelte` - Use `zoomLevel` for grid resolution
+- `unknown_app/src/__tests__/Grid.layout.spec.js` - Test that zoom works independently
 - Update any documentation about zoom vs note length behavior

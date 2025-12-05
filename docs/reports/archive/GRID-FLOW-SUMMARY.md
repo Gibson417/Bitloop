@@ -53,8 +53,8 @@ Comprehensive audit and testing of the Bloops grid system and musical flow funct
 - `tabindex="0"` and `role="grid"` attributes
 
 **Files Changed:**
-- `bloops_app/src/components/Grid.svelte` (+93 lines)
-- `bloops_app/src/__tests__/Grid.keyboard.spec.js` (new file, 98 lines)
+- `unknown_app/src/components/Grid.svelte` (+93 lines)
+- `unknown_app/src/__tests__/Grid.keyboard.spec.js` (new file, 98 lines)
 
 ### 2. Minimum Note Duration ✅
 **Issue:** Very short notes (< 50ms) could click due to envelope truncation  
@@ -63,22 +63,22 @@ Comprehensive audit and testing of the Bloops grid system and musical flow funct
 - Ensures smooth note start/stop
 
 **Files Changed:**
-- `bloops_app/src/App.svelte` (3 lines)
+- `unknown_app/src/App.svelte` (3 lines)
 
 ### 3. Grid Min-Height Consistency ✅
 **Issue:** Three different min-height values (280px, 256px, 256px)  
 **Fix:** Standardized to 256px (8px × 32 rows, 8pt grid aligned)
 
 **Files Changed:**
-- `bloops_app/src/components/Grid.svelte` (1 line)
+- `unknown_app/src/components/Grid.svelte` (1 line)
 
 ### 4. Disabled Button Contrast ✅
 **Issue:** 0.35 opacity on disabled buttons fails WCAG contrast  
 **Fix:** Increased to 0.5 opacity for better visibility
 
 **Files Changed:**
-- `bloops_app/src/components/Transport.svelte` (1 line)
-- `bloops_app/src/components/ShareMenu.svelte` (1 line)
+- `unknown_app/src/components/Transport.svelte` (1 line)
+- `unknown_app/src/components/ShareMenu.svelte` (1 line)
 
 ---
 
@@ -284,13 +284,13 @@ Comprehensive audit and testing of the Bloops grid system and musical flow funct
 ## Files Changed
 
 ### Modified (4 files)
-- `bloops_app/src/App.svelte` - Minimum gate time fix
-- `bloops_app/src/components/Grid.svelte` - Keyboard navigation + focus
-- `bloops_app/src/components/Transport.svelte` - Disabled button contrast
-- `bloops_app/src/components/ShareMenu.svelte` - Disabled button contrast
+- `unknown_app/src/App.svelte` - Minimum gate time fix
+- `unknown_app/src/components/Grid.svelte` - Keyboard navigation + focus
+- `unknown_app/src/components/Transport.svelte` - Disabled button contrast
+- `unknown_app/src/components/ShareMenu.svelte` - Disabled button contrast
 
 ### Added (4 files)
-- `bloops_app/src/__tests__/Grid.keyboard.spec.js` - Keyboard test suite
+- `unknown_app/src/__tests__/Grid.keyboard.spec.js` - Keyboard test suite
 - `docs/UX-GRID-AUDIT.md` - Comprehensive audit (862 lines)
 - `docs/GRID-FLOW-TEST-REPORT.md` - Test report (500+ lines)
 - `docs/VISUAL-QA-CHECKLIST.md` - QA checklist (350+ lines)

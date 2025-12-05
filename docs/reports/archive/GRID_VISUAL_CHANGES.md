@@ -131,14 +131,14 @@ To verify these changes:
 
 ## Files Modified
 
-1. `bloops_app/src/components/Grid.svelte`
+1. `unknown_app/src/components/Grid.svelte`
    - Modified grid line drawing logic (lines 115-146)
    
-2. `bloops_app/src/App.svelte`
+2. `unknown_app/src/App.svelte`
    - Added `.track-effects-wrapper` container (line ~963)
    - Added `.track-effects-wrapper` CSS rule (after line 1365)
 
-3. `bloops_app/src/components/TrackEffectsPanel.svelte`
+3. `unknown_app/src/components/TrackEffectsPanel.svelte`
    - Removed `margin-top: 20px` from `.track-effects` style (line 247)
 
 ## Performance Considerations

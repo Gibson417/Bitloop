@@ -118,7 +118,7 @@
 ## Change Log
 
 ### Files Edited
-1. **`/home/runner/work/Bitloop/Bitloop/bloops_app/src/App.svelte`**
+1. **`/home/runner/work/Bitloop/Bitloop/unknown_app/src/App.svelte`**
    - **Line 1535:** Changed `.grid-toolbar` from `align-items: center` to `align-items: flex-end`
    - **Rationale:** Aligns ArrowSelector controls box with WindowSwitcher at a common baseline, resolving vertical misalignment caused by the ArrowSelector label sitting above its controls
    - **Impact:** Single CSS property change; zero markup modifications; maintains all accessibility features

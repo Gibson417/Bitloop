@@ -209,23 +209,23 @@ primary-action: 48px; /* Transport play button - already 64px ✅ */
 ## Change Log (Planned)
 
 ### Files to Edit
-1. ✏️ `/bloops_app/src/components/TrackSelector.svelte`
+1. ✏️ `/unknown_app/src/components/TrackSelector.svelte`
    - Add 6 new SVG icons (plus, speaker-off, headphones, x-close)
    - Update button sizing (32→44, 36→44)
    - Unify icon dimensions (20×20)
 
-2. ✏️ `/bloops_app/src/components/GridToolbar.svelte`
+2. ✏️ `/unknown_app/src/components/GridToolbar.svelte`
    - Add 2 new SVG icons (undo, redo)
    - Update button sizing (36→40)
 
-3. ✏️ `/bloops_app/src/components/TrackConfigPanel.svelte`
+3. ✏️ `/unknown_app/src/components/TrackConfigPanel.svelte`
    - Add 2 new SVG icons (sliders, sound-wave)
    - Replace emoji with SVG
 
-4. ✏️ `/bloops_app/src/components/SettingsMenu.svelte` (optional enhancement)
+4. ✏️ `/unknown_app/src/components/SettingsMenu.svelte` (optional enhancement)
    - Increase button size from 40→44px
 
-5. ✏️ `/bloops_app/src/components/ShareMenu.svelte` (optional enhancement)
+5. ✏️ `/unknown_app/src/components/ShareMenu.svelte` (optional enhancement)
    - Increase button size from 40→44px
 
 ### Rationale

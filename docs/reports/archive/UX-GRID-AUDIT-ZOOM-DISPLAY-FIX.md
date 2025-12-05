@@ -195,7 +195,7 @@ const logicalToDisplayScale = zoomLevel / stepsPerBar;
 
 ### Files Modified
 
-**1. bloops_app/src/components/Grid.svelte**
+**1. unknown_app/src/components/Grid.svelte**
 - **Lines 113-119**: Added `logicalToDisplayScale` calculation in `updateLayout()`
 - **Lines 160-182**: Added scale to `draw()` - window and totalWindows calculation
 - **Lines 194-198**: Updated grid line mapping to use inverse scale
@@ -207,7 +207,7 @@ const logicalToDisplayScale = zoomLevel / stepsPerBar;
 
 **Rationale:** All coordinate conversions must consistently use the scale factor to maintain geometric correctness.
 
-**2. bloops_app/src/__tests__/Grid.zoom-visible-columns.spec.js**
+**2. unknown_app/src/__tests__/Grid.zoom-visible-columns.spec.js**
 - **Line 39**: Updated test expectation for zoom 8 (totalWindows: 2 → 1)
 - **Lines 45-86**: Added new test for zoom 8 with 2 bars
 - **Lines 189-254**: Updated multi-zoom test with scale-based calculations
@@ -216,7 +216,7 @@ const logicalToDisplayScale = zoomLevel / stepsPerBar;
 
 ### Files Added
 
-**3. bloops_app/src/__tests__/Grid.zoom-display-fix.spec.js** (210 lines)
+**3. unknown_app/src/__tests__/Grid.zoom-display-fix.spec.js** (210 lines)
 - Test: 4 8th notes in half window at zoom 8 and 16
 - Test: Window offset calculation with playhead
 - Test: Window switching at correct positions
@@ -464,8 +464,8 @@ Display at Zoom 32 (scale = 2.0):
 
 ### Documentation
 - Technical details: [ZOOM-DISPLAY-FIX.md](./ZOOM-DISPLAY-FIX.md)
-- Test suite: `bloops_app/src/__tests__/Grid.zoom-display-fix.spec.js`
-- Component: `bloops_app/src/components/Grid.svelte`
+- Test suite: `unknown_app/src/__tests__/Grid.zoom-display-fix.spec.js`
+- Component: `unknown_app/src/components/Grid.svelte`
 - Original zoom doc: [ZOOM-NOTE-LENGTH-SEPARATION.md](./ZOOM-NOTE-LENGTH-SEPARATION.md)
 
 ### Support

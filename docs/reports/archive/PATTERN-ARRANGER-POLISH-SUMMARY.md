@@ -7,7 +7,7 @@
 
 ## Files Changed
 
-### 1. `/bloops_app/src/components/PatternArranger.svelte`
+### 1. `/unknown_app/src/components/PatternArranger.svelte`
 **Changes:** 16 style and markup improvements
 
 #### Visual Consistency
@@ -30,7 +30,7 @@
 
 ---
 
-### 2. `/bloops_app/src/components/ArrangerTransport.svelte`
+### 2. `/unknown_app/src/components/ArrangerTransport.svelte`
 **Changes:** 10 style and markup improvements
 
 #### Visual Consistency

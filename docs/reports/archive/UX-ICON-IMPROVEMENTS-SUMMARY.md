@@ -96,11 +96,11 @@ All interactive elements now meet or exceed **44×44px minimum**
 
 ## Files Modified
 
-1. `/bloops_app/src/components/TrackSelector.svelte`
-2. `/bloops_app/src/components/GridToolbar.svelte`
-3. `/bloops_app/src/components/TrackConfigPanel.svelte`
-4. `/bloops_app/src/components/SettingsMenu.svelte`
-5. `/bloops_app/src/components/ShareMenu.svelte`
+1. `/unknown_app/src/components/TrackSelector.svelte`
+2. `/unknown_app/src/components/GridToolbar.svelte`
+3. `/unknown_app/src/components/TrackConfigPanel.svelte`
+4. `/unknown_app/src/components/SettingsMenu.svelte`
+5. `/unknown_app/src/components/ShareMenu.svelte`
 
 ---
 

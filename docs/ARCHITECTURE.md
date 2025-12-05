@@ -7,7 +7,7 @@ Bloops is designed with a clear separation between business logic, design tokens
 ## Directory Structure
 
 ```
-bloops_app/src/
+unknown_app/src/
 ├── lib/              # Business logic (platform-agnostic)
 ├── store/            # State management (Svelte stores, but logic is portable)
 ├── components/       # UI components (Svelte-specific)

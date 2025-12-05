@@ -42,7 +42,7 @@ Implemented keyboard modifier support for explicit erase mode:
 ## Files Changed
 
 ### Core Implementation
-1. **`bloops_app/src/components/Grid.svelte`** (30 additions, 4 deletions)
+1. **`unknown_app/src/components/Grid.svelte`** (30 additions, 4 deletions)
    - Fixed `handlePointerDown()` pointer active flag initialization
    - Added `eraseMode` state variable
    - Enhanced `handlePointer()` paint value logic
@@ -51,7 +51,7 @@ Implemented keyboard modifier support for explicit erase mode:
    - Removed static cursor from CSS
 
 ### Tests
-2. **`bloops_app/src/__tests__/Grid.spec.js`** (143 additions)
+2. **`unknown_app/src/__tests__/Grid.spec.js`** (143 additions)
    - Added test: clicking empty cell should add note
    - Added test: clicking filled cell should remove note
    - Added test: holding shift key enables erase mode
@@ -139,7 +139,7 @@ Added 4 new test cases in `Grid.spec.js`:
 
 ### Recommended Testing
 ```bash
-cd bloops_app
+cd unknown_app
 npm install --legacy-peer-deps
 npm run test:run
 ```
@@ -171,8 +171,8 @@ This fix is safe to deploy immediately:
 
 - [UX Grid Audit](../docs/UX-GRID-AUDIT.md) - Comprehensive audit report
 - [Grid Fix Diagram](../docs/images/grid-fix-diagram.svg) - Visual explanation
-- [Grid Component](../bloops_app/src/components/Grid.svelte) - Implementation
-- [Grid Tests](../bloops_app/src/__tests__/Grid.spec.js) - Test coverage
+- [Grid Component](../unknown_app/src/components/Grid.svelte) - Implementation
+- [Grid Tests](../unknown_app/src/__tests__/Grid.spec.js) - Test coverage
 
 ## Credits
 

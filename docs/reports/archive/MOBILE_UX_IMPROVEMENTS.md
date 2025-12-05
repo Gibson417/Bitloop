@@ -144,7 +144,7 @@ Color tokens maintained:
 
 ## Files Modified
 
-- `bloops_app/src/App.svelte` - Main component with layout and responsive styles
+- `unknown_app/src/App.svelte` - Main component with layout and responsive styles
 
 ## Visual Design Preserved
 

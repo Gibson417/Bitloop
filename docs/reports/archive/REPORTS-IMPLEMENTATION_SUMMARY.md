@@ -22,7 +22,7 @@ This PR implements visual improvements to the grid sequencer interface based on 
 - Different line intensities create clear visual hierarchy (bars vs. beats)
 
 **Technical Details:**
-- Modified `bloops_app/src/components/Grid.svelte` lines 115-146
+- Modified `unknown_app/src/components/Grid.svelte` lines 115-146
 - Algorithm intelligently maps display columns to logical musical steps
 - Works correctly across all note lengths (1/64, 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 - Performance improved due to fewer lines being drawn (~16 vs ~200)
@@ -42,17 +42,17 @@ This PR implements visual improvements to the grid sequencer interface based on 
 - Matching widths make the interface feel more cohesive
 
 **Technical Details:**
-- Modified `bloops_app/src/App.svelte` to add wrapper container
-- Modified `bloops_app/src/components/TrackEffectsPanel.svelte` to remove margin-top
+- Modified `unknown_app/src/App.svelte` to add wrapper container
+- Modified `unknown_app/src/components/TrackEffectsPanel.svelte` to remove margin-top
 - Both sections now perfectly align on left and right edges
 
 ## Files Modified
 
 | File | Lines Changed | Purpose |
 |------|---------------|---------|
-| `bloops_app/src/components/Grid.svelte` | 115-146 | Grid line rendering logic |
-| `bloops_app/src/App.svelte` | ~963, ~1367 | TrackEffectsPanel wrapper |
-| `bloops_app/src/components/TrackEffectsPanel.svelte` | 247 | Remove margin-top |
+| `unknown_app/src/components/Grid.svelte` | 115-146 | Grid line rendering logic |
+| `unknown_app/src/App.svelte` | ~963, ~1367 | TrackEffectsPanel wrapper |
+| `unknown_app/src/components/TrackEffectsPanel.svelte` | 247 | Remove margin-top |
 
 ## Documentation Created
 

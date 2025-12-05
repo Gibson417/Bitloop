@@ -119,25 +119,6 @@ The initial version focuses on:
 - Export / import **JSON project files**
 - Smooth WebAudio timing (playhead + requestAnimationFrame sync)
 
-## 🏛️ Architecture
-
-```
-src/
-  components/
-    Grid.svelte          # dot canvas + note editing
-    TrackBar.svelte      # track chips + controls
-    Transport.svelte     # play/stop + follow mode UI
-    Footer.svelte        # BPM, bars, steps, time length display
-  lib/
-    colorTokens.js       # design tokens from spec
-    scales.js            # scale definitions & pitch mapping
-    scheduler.js         # WebAudio timing loop (added in later phase)
-  store/
-    projectStore.js      # project state, tracks, timing
-  App.svelte
-  main.js
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -155,7 +136,7 @@ src/
 
 2. **Install dependencies:**
    ```bash
-   cd bloops_app
+   cd unknown_app
    npm install --legacy-peer-deps
    ```
 
@@ -200,7 +181,7 @@ You can download the portable Windows executable directly from [GitHub Releases]
 If you prefer to build from source, UNKNOWN can be built as a portable Windows application:
 
 ```bash
-# Build for Windows (creates portable .exe in bloops_app/release/)
+# Build for Windows (creates portable .exe in unknown_app/release/)
 npm run electron:build
 
 # Test the Electron app locally (rebuilds and launches)
@@ -211,7 +192,7 @@ npm run electron:dev
 
 **Note:** Building for Windows on a non-Windows platform requires [Wine](https://www.winehq.org/) to be installed.
 
-The portable executable will be created in `bloops_app/release/` directory:
+The portable executable will be created in `unknown_app/release/` directory:
 - Windows: `UNKNOWN-Portable.exe` (portable, no installation required)
 
 ### Auto-Updates
@@ -223,7 +204,7 @@ The desktop application includes integrated auto-update functionality:
 - Click "Restart & Install" to apply the update
 
 Updates are distributed via GitHub Releases. To publish an update:
-1. Update the version in `bloops_app/package.json`
+1. Update the version in `unknown_app/package.json`
 2. Create a new GitHub Release with the portable `.exe` attached
 3. Users running older versions will automatically be notified
 
@@ -231,7 +212,7 @@ Updates are distributed via GitHub Releases. To publish an update:
 
 ```
 Bitloop/
-├── bloops_app/              # Main Svelte application
+├── unknown_app/              # Main Svelte application
 │   ├── src/
 │   │   ├── components/      # UI components (Grid, TrackBar, Transport, etc.)
 │   │   ├── lib/            # Utilities (scales, audio, timing)

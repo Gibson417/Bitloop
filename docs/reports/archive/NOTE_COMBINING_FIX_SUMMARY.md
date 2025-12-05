@@ -173,10 +173,10 @@ Size: 142.47 kB (gzipped: 45.37 kB)
 
 ## Files Modified
 
-1. `bloops_app/src/components/Grid.svelte` - Articulation gap logic
-2. `bloops_app/src/App.svelte` - Intelligent playback compensation
-3. `bloops_app/src/__tests__/Grid.note-combining.spec.js` - New test suite
-4. `bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js` - Updated expectations
+1. `unknown_app/src/components/Grid.svelte` - Articulation gap logic
+2. `unknown_app/src/App.svelte` - Intelligent playback compensation
+3. `unknown_app/src/__tests__/Grid.note-combining.spec.js` - New test suite
+4. `unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js` - Updated expectations
 
 **Total Changes**: 303 insertions, 15 deletions
 

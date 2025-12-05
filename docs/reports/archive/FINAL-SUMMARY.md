@@ -23,9 +23,9 @@ Successfully fixed **3 out of 4** reported UI/UX issues:
 - **Documentation**: See BARS-3-4-INVESTIGATION.md for full analysis
 
 ## Files Modified
-- `bloops_app/src/App.svelte` - Dev mode tooltip, volume knob default
-- `bloops_app/src/components/KnobControl.svelte` - Reset functionality
-- `bloops_app/src/components/PatternArranger.svelte` - Block removal UI
+- `unknown_app/src/App.svelte` - Dev mode tooltip, volume knob default
+- `unknown_app/src/components/KnobControl.svelte` - Reset functionality
+- `unknown_app/src/components/PatternArranger.svelte` - Block removal UI
 
 ## Quality Assurance
 - ✅ WCAG 2.1 AA accessibility compliance

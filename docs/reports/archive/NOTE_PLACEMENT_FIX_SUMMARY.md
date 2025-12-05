@@ -114,11 +114,11 @@ For a 16-step bar with BASE_RESOLUTION=64:
 
 ## Files Modified
 
-1. `bloops_app/src/components/Grid.svelte` - Fixed note length calculation
-2. `bloops_app/src/components/Footer.svelte` - Removed Sessions section
-3. `bloops_app/src/App.svelte` - Removed Steps/bar control and session handlers
-4. `bloops_app/src/__tests__/Grid.zoom-note-separation.spec.js` - Updated test expectations
-5. `bloops_app/src/components/__tests__/Footer.spec.js` - Replaced session tests with pattern tests
+1. `unknown_app/src/components/Grid.svelte` - Fixed note length calculation
+2. `unknown_app/src/components/Footer.svelte` - Removed Sessions section
+3. `unknown_app/src/App.svelte` - Removed Steps/bar control and session handlers
+4. `unknown_app/src/__tests__/Grid.zoom-note-separation.spec.js` - Updated test expectations
+5. `unknown_app/src/components/__tests__/Footer.spec.js` - Replaced session tests with pattern tests
 
 ## Impact
 

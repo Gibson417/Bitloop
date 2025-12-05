@@ -112,11 +112,11 @@ All icons now follow unified specifications:
 ## 📁 Files Modified
 
 ### Core Changes (5 components)
-1. `bloops_app/src/components/TrackSelector.svelte` - 7 icons replaced + sizing
-2. `bloops_app/src/components/GridToolbar.svelte` - 2 icons replaced + sizing
-3. `bloops_app/src/components/TrackConfigPanel.svelte` - 2 icons replaced
-4. `bloops_app/src/components/SettingsMenu.svelte` - Touch target sizing
-5. `bloops_app/src/components/ShareMenu.svelte` - Touch target sizing
+1. `unknown_app/src/components/TrackSelector.svelte` - 7 icons replaced + sizing
+2. `unknown_app/src/components/GridToolbar.svelte` - 2 icons replaced + sizing
+3. `unknown_app/src/components/TrackConfigPanel.svelte` - 2 icons replaced
+4. `unknown_app/src/components/SettingsMenu.svelte` - Touch target sizing
+5. `unknown_app/src/components/ShareMenu.svelte` - Touch target sizing
 
 ### Agent Fix
 6. `.github/agents/ui-guardian.agent.md` - Renamed and verified format

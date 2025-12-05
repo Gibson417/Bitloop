@@ -126,7 +126,7 @@
 
 ### Files Modified
 
-#### 1. `/bloops_app/src/components/Grid.svelte` (Lines 706-719)
+#### 1. `/unknown_app/src/components/Grid.svelte` (Lines 706-719)
 **Change:** Fixed grid wrapper to fill container width
 ```diff
 - flex: 0 1 auto; /* Changed from flex: 1 to prevent unnecessary expansion */
@@ -152,7 +152,7 @@
 
 ---
 
-#### 2. `/bloops_app/src/components/WindowSwitcher.svelte` (Lines 64-66, 159-167)
+#### 2. `/unknown_app/src/components/WindowSwitcher.svelte` (Lines 64-66, 159-167)
 **Change:** Added numeric window position indicator
 
 **HTML Addition (after `.window-indicators`):**

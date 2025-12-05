@@ -74,24 +74,24 @@
 
 ## 🎯 Files Modified
 
-1. **bloops_app/src/App.svelte** (61 lines added)
+1. **unknown_app/src/App.svelte** (61 lines added)
    - ARIA live region
    - Focus styles for buttons
    - Escape key handler
    - Reduced motion support
    - Screen reader utility class
 
-2. **bloops_app/src/components/Transport.svelte** (33 lines added)
+2. **unknown_app/src/components/Transport.svelte** (33 lines added)
    - aria-pressed attributes
    - Focus-visible styles
    - Improved button accessibility
 
-3. **bloops_app/src/components/TrackSelector.svelte** (39 lines modified)
+3. **unknown_app/src/components/TrackSelector.svelte** (39 lines modified)
    - Replaced divs with buttons
    - Added aria-pressed and aria-selected
    - Focus styles for all buttons
 
-4. **bloops_app/src/components/Footer.svelte** (10 lines added)
+4. **unknown_app/src/components/Footer.svelte** (10 lines added)
    - Focus styles for session controls
 
 5. **UI_UX_REVIEW_REPORT.md** (new file)

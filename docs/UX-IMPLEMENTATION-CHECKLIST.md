@@ -85,13 +85,13 @@
 - ✅ `docs/design/design-tokens.json` - Updated muted color
 
 ### Core Application Files  
-- ✅ `bloops_app/src/App.svelte` - Typography, spacing, keyboard shortcuts, focus-visible
+- ✅ `unknown_app/src/App.svelte` - Typography, spacing, keyboard shortcuts, focus-visible
 
 ### Component Files
-- ✅ `bloops_app/src/components/ArrowSelector.svelte` - Touch targets
-- ✅ `bloops_app/src/components/TrackSelector.svelte` - Touch targets
-- ✅ `bloops_app/src/components/Footer.svelte` - Touch targets
-- ✅ `bloops_app/src/components/Transport.svelte` - Tooltips
+- ✅ `unknown_app/src/components/ArrowSelector.svelte` - Touch targets
+- ✅ `unknown_app/src/components/TrackSelector.svelte` - Touch targets
+- ✅ `unknown_app/src/components/Footer.svelte` - Touch targets
+- ✅ `unknown_app/src/components/Transport.svelte` - Tooltips
 
 ### Documentation Files Created
 - ✅ `docs/UX-COMPLETE-AUDIT-2025-11-13.md` - Comprehensive audit report (14.5 KB)

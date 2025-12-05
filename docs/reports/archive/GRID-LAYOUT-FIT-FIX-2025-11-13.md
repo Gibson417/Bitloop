@@ -9,7 +9,7 @@ The grid in the Bloops app did not fit or appear appropriately. There was excess
 
 ### Root Cause
 
-The `.grid-wrapper` CSS in `/bloops_app/src/components/Grid.svelte` (line 713) had `flex: 1` which caused it to expand to fill all available horizontal space, creating unwanted empty space to the right of the actual grid canvas (which only needed space for 16 columns of dots).
+The `.grid-wrapper` CSS in `/unknown_app/src/components/Grid.svelte` (line 713) had `flex: 1` which caused it to expand to fill all available horizontal space, creating unwanted empty space to the right of the actual grid canvas (which only needed space for 16 columns of dots).
 
 ---
 
@@ -19,7 +19,7 @@ Changed the `.grid-wrapper` flexbox behavior from expanding to fit available spa
 
 ### Changes Made
 
-**File:** `/bloops_app/src/components/Grid.svelte` (lines 711-724)
+**File:** `/unknown_app/src/components/Grid.svelte` (lines 711-724)
 
 ```css
 .grid-wrapper {

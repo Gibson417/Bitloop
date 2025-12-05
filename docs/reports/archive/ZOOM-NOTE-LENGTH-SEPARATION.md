@@ -138,10 +138,10 @@ const storageLength = Math.max(1, Math.floor(noteStorageLength * 0.75));
 
 ## Related Files
 
-- `bloops_app/src/components/Grid.svelte`
-- `bloops_app/src/components/ZoomControls.svelte`
-- `bloops_app/src/App.svelte`
-- `bloops_app/src/store/projectStore.js` (BASE_RESOLUTION constant)
+- `unknown_app/src/components/Grid.svelte`
+- `unknown_app/src/components/ZoomControls.svelte`
+- `unknown_app/src/App.svelte`
+- `unknown_app/src/store/projectStore.js` (BASE_RESOLUTION constant)
 
 ## References
 

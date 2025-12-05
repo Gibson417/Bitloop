@@ -64,7 +64,7 @@ Svelte's reactivity system tracks dependencies in reactive statements (`$:`). Wh
 
 ## Changes Made
 
-### File: `bloops_app/src/components/Grid.svelte`
+### File: `unknown_app/src/components/Grid.svelte`
 
 #### 1. Added Import (Line 5)
 ```javascript
@@ -113,7 +113,7 @@ onDestroy(() => {
 
 **Rationale**: Proper cleanup prevents memory leaks from lingering subscriptions.
 
-### File: `bloops_app/src/__tests__/Grid.spec.js`
+### File: `unknown_app/src/__tests__/Grid.spec.js`
 
 #### 1. Added Theme Import (Line 4)
 ```javascript
@@ -360,13 +360,13 @@ Users now experience consistent, immediate theme changes throughout the applicat
 ## Appendix: Related Files
 
 ### Modified Files
-1. `bloops_app/src/components/Grid.svelte` - Canvas component
-2. `bloops_app/src/__tests__/Grid.spec.js` - Unit tests
+1. `unknown_app/src/components/Grid.svelte` - Canvas component
+2. `unknown_app/src/__tests__/Grid.spec.js` - Unit tests
 
 ### Related Files (Not Modified)
-1. `bloops_app/src/store/themeStore.js` - Theme management
-2. `bloops_app/src/components/ThemeSelector.svelte` - Theme UI
-3. `bloops_app/src/components/SettingsMenu.svelte` - Settings UI
+1. `unknown_app/src/store/themeStore.js` - Theme management
+2. `unknown_app/src/components/ThemeSelector.svelte` - Theme UI
+3. `unknown_app/src/components/SettingsMenu.svelte` - Settings UI
 
 ### Documentation
 1. This report: `docs/reports/THEME_CANVAS_UPDATE_FIX.md`

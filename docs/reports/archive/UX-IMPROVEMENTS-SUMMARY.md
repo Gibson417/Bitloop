@@ -15,7 +15,7 @@ This implementation addresses critical and high-priority UI/UX issues identified
 
 ### 1. Design Token System Enhancement
 
-**File:** `bloops_app/src/lib/colorTokens.js`
+**File:** `unknown_app/src/lib/colorTokens.js`
 
 #### Improvements:
 - ✅ **Improved note-inactive color** from `#3C4450` to `#4a5060` for better contrast (1.8:1 → 2.4:1)
@@ -181,15 +181,15 @@ Improved layouts at all breakpoints.
 ## Files Changed Summary
 
 ### Modified (8 files)
-1. ✅ `bloops_app/src/lib/colorTokens.js` - Enhanced token system
-2. ✅ `bloops_app/src/App.svelte` - Typography, spacing, touch targets, contrast
-3. ✅ `bloops_app/src/components/TrackSelector.svelte` - Touch targets, visual hierarchy
-4. ✅ `bloops_app/src/components/ArrowSelector.svelte` - Touch targets
-5. ✅ `bloops_app/src/components/WindowSwitcher.svelte` - Touch targets, UX improvements
-6. ✅ `bloops_app/src/components/Footer.svelte` - Touch targets, spacing, typography
-7. ✅ `bloops_app/src/components/Transport.svelte` - Touch targets, contrast
-8. ✅ `bloops_app/src/components/TrackControls.svelte` - Spacing consistency
-9. ✅ `bloops_app/src/components/TrackEffectsPanel.svelte` - Spacing, typography
+1. ✅ `unknown_app/src/lib/colorTokens.js` - Enhanced token system
+2. ✅ `unknown_app/src/App.svelte` - Typography, spacing, touch targets, contrast
+3. ✅ `unknown_app/src/components/TrackSelector.svelte` - Touch targets, visual hierarchy
+4. ✅ `unknown_app/src/components/ArrowSelector.svelte` - Touch targets
+5. ✅ `unknown_app/src/components/WindowSwitcher.svelte` - Touch targets, UX improvements
+6. ✅ `unknown_app/src/components/Footer.svelte` - Touch targets, spacing, typography
+7. ✅ `unknown_app/src/components/Transport.svelte` - Touch targets, contrast
+8. ✅ `unknown_app/src/components/TrackControls.svelte` - Spacing consistency
+9. ✅ `unknown_app/src/components/TrackEffectsPanel.svelte` - Spacing, typography
 
 ### Created (2 files)
 1. ✅ `docs/UX-COMPREHENSIVE-AUDIT.md` - Full audit report
@@ -247,7 +247,7 @@ Improved layouts at all breakpoints.
 All existing tests should pass without modification. No breaking changes introduced.
 
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test:run
 ```
 

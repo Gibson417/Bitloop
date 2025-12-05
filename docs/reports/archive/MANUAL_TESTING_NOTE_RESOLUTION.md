@@ -198,7 +198,7 @@ Previously, when users changed the note resolution selector (e.g., from 1/16 to 
 Run existing test suite to ensure no features broken:
 
 ```bash
-cd bloops_app
+cd unknown_app
 npm run test
 ```
 

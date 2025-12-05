@@ -11,7 +11,7 @@ This branch was created to resolve merge conflicts related to the note extension
 ## Resolution Details
 
 ### Files Affected
-- `bloops_app/src/components/Grid.svelte`
+- `unknown_app/src/components/Grid.svelte`
 
 ### Features Included in Resolution
 1. **Extended Note Mode**: 
