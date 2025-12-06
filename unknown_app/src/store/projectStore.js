@@ -309,7 +309,7 @@ const snapshotPatterns = (patterns) => patterns.map(snapshotPattern);
 const normalizePattern = (pattern, rows, bpm, stateBars = null) => {
   // Use stateBars if provided (when synchronizing with global state), otherwise use pattern's own bars
   const patternBars = stateBars !== null ? stateBars : pattern.bars;
-  const bars = ensureBarsWithinLimit(bpm, ensurePositiveInteger(patternBars, DEFAULT_BARS, 1, 512));
+  const bars = ensureBarsWithinLimit(bpm, ensurePositiveInteger(patternBars, DEFAULT_BARS, 2, 512));
   const storageSteps = bars * BASE_RESOLUTION;
   const tracks = normalizeTracks(pattern.tracks, rows, storageSteps);
   return {
@@ -364,7 +364,7 @@ const normalizeState = (state) => {
   const rows = ensurePositiveInteger(state.rows, DEFAULT_ROWS, 1, 32);
   // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
   const stepsPerBar = coerceStepsPerBar(state.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
-  const desiredBars = ensurePositiveInteger(state.bars, DEFAULT_BARS, 1, 512);
+  const desiredBars = ensurePositiveInteger(state.bars, DEFAULT_BARS, 2, 512);
   const bars = ensureBarsWithinLimit(bpm, desiredBars);
   // internal storage uses BASE_RESOLUTION per bar
   const storageSteps = bars * BASE_RESOLUTION;
@@ -721,7 +721,7 @@ const createProjectStore = () => {
     setBars(value) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 1, 512));
+        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 2, 512));
         return normalizeState({ ...state, bars });
       });
       const nextSnapshot = toSnapshot(get(store));
