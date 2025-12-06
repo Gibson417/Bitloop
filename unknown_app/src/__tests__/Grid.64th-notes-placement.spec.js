@@ -17,15 +17,15 @@ describe('Grid - 64th Note Placement', () => {
 
   it('should place multiple 64th notes side by side when dragging on 64-step grid', async () => {
     // Setup: 64-step grid (zoom level 64), 64th note duration
-    // A 64th note = 64/64 = 1 storage step
-    // On a 64-step grid, each column = 1 storage step
-    // We should be able to place 64th notes side by side
+    // With BASE_RESOLUTION=128, a 64th note = 128/64 = 2 storage steps
+    // After articulation gap reduction: 2 - 1 = 1 storage step
+    // This leaves a 1-step gap between notes, preventing them from combining
     
     const rows = 8;
     const columns = 16; // 16 logical columns
     const stepsPerBar = 16;
     const zoomLevel = 64; // 64-step grid for highest resolution
-    const storageColumns = columns * (BASE_RESOLUTION / stepsPerBar); // 64 storage steps
+    const storageColumns = columns * (BASE_RESOLUTION / stepsPerBar); // 128 storage steps
     
     const notes = Array.from({ length: rows }, () => Array(storageColumns).fill(false));
     
@@ -63,7 +63,8 @@ describe('Grid - 64th Note Placement', () => {
     canvas.getBoundingClientRect = () => rect;
 
     // Drag across 4 columns to place 4 adjacent 64th notes
-    // Column 0, 1, 2, 3 should each get a 64th note
+    // With BASE_RESOLUTION=128, each display column maps to 2 storage steps
+    // Column 0 → storage 0, Column 1 → storage 2, Column 2 → storage 4, Column 3 → storage 6
     await fireEvent.pointerDown(canvas, {
       clientX: rect.left + cellSize * 0.5,
       clientY: rect.top + cellSize * 0.5,
@@ -90,26 +91,25 @@ describe('Grid - 64th Note Placement', () => {
 
     await fireEvent.pointerUp(canvas, { pointerId: 1 });
 
-    // Expected: 4 notes should be placed
-    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=64:
-    // storagePerDisplay = 64/64 = 1
-    // 64th notes occupy exactly 1 storage step (the smallest time unit)
-    // Column 0: storageStart = 0
-    // Column 1: storageStart = 1
-    // Column 2: storageStart = 2
-    // Column 3: storageStart = 3
+    // Expected: 4 notes should be placed with gaps
+    // With BASE_RESOLUTION=128, stepsPerBar=16, zoomLevel=64:
+    // storagePerDisplay = 128/64 = 2
+    // 64th notes: 128/64 = 2 storage steps, reduced by 1 = 1 step
+    // Column 0: storageStart = 0, length = 1 (gap at position 1)
+    // Column 1: storageStart = 2, length = 1 (gap at position 3)
+    // Column 2: storageStart = 4, length = 1 (gap at position 5)
+    // Column 3: storageStart = 6, length = 1 (gap at position 7)
     
     console.log('Dispatched events:', dispatchedEvents);
     
-    // All 4 notes should be placed side by side
+    // All 4 notes should be placed side by side with gaps
     expect(dispatchedEvents.length).toBe(4);
     
     for (let i = 0; i < 4; i++) {
       const note = dispatchedEvents[i];
-      expect(note.start).toBe(i); // Each at its own storage position
+      expect(note.start).toBe(i * 2); // Notes at even positions (0, 2, 4, 6)
       expect(note.value).toBe(true);
-      // For 64th notes (1 storage step), we can't reduce by 1
-      // So length should be 1
+      // With BASE_RESOLUTION=128, 64th notes are 2 steps, reduced by 1 for articulation = 1 step
       expect(note.length).toBe(1);
     }
   });
@@ -117,6 +117,7 @@ describe('Grid - 64th Note Placement', () => {
   it('should place separate 64th notes without combining them on consecutive clicks', async () => {
     // Test that separate click actions can place 64th notes side by side
     // (not dragging, but individual clicks)
+    // With BASE_RESOLUTION=128, 64th notes have proper gaps built in
     
     const rows = 8;
     const columns = 16;
@@ -155,7 +156,7 @@ describe('Grid - 64th Note Placement', () => {
     const rect = { left: 0, top: 0, width: 8 * cellSize, height: rows * cellSize };
     canvas.getBoundingClientRect = () => rect;
 
-    // Place first 64th note at column 0
+    // Place first 64th note at column 0 (storage position 0)
     await fireEvent.pointerDown(canvas, {
       clientX: rect.left + cellSize * 0.5,
       clientY: rect.top + cellSize * 0.5,
@@ -166,11 +167,11 @@ describe('Grid - 64th Note Placement', () => {
     const firstNote = dispatchedEvents[0];
     expect(firstNote.start).toBe(0);
     expect(firstNote.value).toBe(true);
-    expect(firstNote.length).toBe(1); // 64th note is 1 storage step
+    expect(firstNote.length).toBe(1); // With BASE_RESOLUTION=128: 128/64 = 2, reduced by 1 = 1
 
     dispatchedEvents = [];
 
-    // Place second 64th note at column 1 (adjacent)
+    // Place second 64th note at column 1 (storage position 2 with BASE_RESOLUTION=128)
     await fireEvent.pointerDown(canvas, {
       clientX: rect.left + cellSize * 1.5,
       clientY: rect.top + cellSize * 0.5,
@@ -182,7 +183,7 @@ describe('Grid - 64th Note Placement', () => {
     // paintedRanges is cleared on each pointerDown
     expect(dispatchedEvents.length).toBe(1);
     const secondNote = dispatchedEvents[0];
-    expect(secondNote.start).toBe(1);
+    expect(secondNote.start).toBe(2); // Column 1 maps to storage position 2
     expect(secondNote.value).toBe(true);
     expect(secondNote.length).toBe(1);
   });

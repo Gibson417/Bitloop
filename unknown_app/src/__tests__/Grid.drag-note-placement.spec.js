@@ -60,7 +60,7 @@ describe('Grid drag note placement', () => {
     // We should NOT place a note at column 1 (dot 2) because that would overlap
     // with the note starting at column 0
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // With BASE_RESOLUTION=128, stepsPerBar=16, zoomLevel=16:
     // storagePerDisplay = 64/16 = 4
     // 8th note = 64/8 = 8 storage steps (with gap: 7 storage steps)
     // Column 0: storageStart = 0, noteEnd = 7
@@ -73,11 +73,11 @@ describe('Grid drag note placement', () => {
     const call1 = noteChange.mock.calls[1][0].detail;
     
     expect(call0.start).toBe(0); // Column 0
-    expect(call0.length).toBe(7); // 8th note with articulation gap
+    expect(call0.length).toBe(15); // 8th note with articulation gap (128/8 = 16, -1 = 15)
     expect(call0.value).toBe(true);
     
-    expect(call1.start).toBe(8); // Column 2 (skipped column 1 due to overlap)
-    expect(call1.length).toBe(7);
+    expect(call1.start).toBe(16); // Column 2 (skipped column 1 due to overlap) - doubled with BASE_RESOLUTION=128
+    expect(call1.length).toBe(15);
     expect(call1.value).toBe(true);
   });
 
@@ -132,7 +132,7 @@ describe('Grid drag note placement', () => {
     // 
     // We should NOT place notes at columns 1, 2, 3, 5, 6, 7
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // With BASE_RESOLUTION=128, stepsPerBar=16, zoomLevel=16:
     // storagePerDisplay = 64/16 = 4
     // Quarter note = 64/4 = 16 storage steps (with gap: 15 storage steps)
     // Column 0: storageStart = 0, noteEnd = 15
@@ -146,11 +146,11 @@ describe('Grid drag note placement', () => {
     const call1 = noteChange.mock.calls[1][0].detail;
     
     expect(call0.start).toBe(0); // Column 0
-    expect(call0.length).toBe(15); // Quarter note with articulation gap
+    expect(call0.length).toBe(31); // Quarter note with articulation gap (128/4 = 32, -1 = 31)
     expect(call0.value).toBe(true);
     
-    expect(call1.start).toBe(16); // Column 4
-    expect(call1.length).toBe(15);
+    expect(call1.start).toBe(32); // Column 4 - doubled with BASE_RESOLUTION=128
+    expect(call1.length).toBe(31);
     expect(call1.value).toBe(true);
   });
   
@@ -197,7 +197,7 @@ describe('Grid drag note placement', () => {
     // A 16th note spans 1 logical column (16/16 = 1)
     // So when dragging across 4 columns, we should place 4 separate notes
     
-    // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=16:
+    // With BASE_RESOLUTION=128, stepsPerBar=16, zoomLevel=16:
     // storagePerDisplay = 64/16 = 4
     // 16th note = 64/16 = 4 storage steps (with gap: 3 storage steps)
     // Column 0: storageStart = 0
@@ -209,8 +209,8 @@ describe('Grid drag note placement', () => {
     
     for (let i = 0; i < 4; i++) {
       const call = noteChange.mock.calls[i][0].detail;
-      expect(call.start).toBe(i * 4); // Column i → storage i*4
-      expect(call.length).toBe(3); // 16th note with articulation gap
+      expect(call.start).toBe(i * 8); // Column i → storage i*8 (doubled with BASE_RESOLUTION=128)
+      expect(call.length).toBe(7); // 16th note with articulation gap (128/16 = 8, -1 = 7)
       expect(call.value).toBe(true);
     }
   });

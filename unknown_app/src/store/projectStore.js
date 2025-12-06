@@ -3,10 +3,11 @@ import { scales, isValidCustomScale } from '../lib/scales.js';
 
 export const MAX_LOOP_SECONDS = 300;
 // Base resolution per bar for internal storage. All notes are stored at this resolution.
-export const BASE_RESOLUTION = 64;
+// Doubled from 64 to 128 to allow 64th notes to have articulation gaps (128/64 = 2 steps, reduced by 1 = 1 step)
+export const BASE_RESOLUTION = 128;
 
 // Note event structure: { row: number, start: number, length: number }
-// start and length are in 64th-note storage steps (0..bars*BASE_RESOLUTION-1)
+// start and length are in 128th-note storage steps (0..bars*BASE_RESOLUTION-1)
 
 const DEFAULT_NAME = 'Untitled loop';
 const DEFAULT_ROWS = 8;
@@ -344,7 +345,7 @@ const coerceStepsPerBar = (value) => {
 };
 
 const toSnapshot = (state) => ({
-  version: 4, // Increment version for pattern support
+  version: 5, // Increment version for BASE_RESOLUTION change (64 → 128)
   name: state.name,
   rows: state.rows,
   bars: state.bars,

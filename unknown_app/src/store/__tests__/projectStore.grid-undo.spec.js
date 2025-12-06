@@ -121,7 +121,7 @@ describe('project store grid-specific undo/redo', () => {
     // Verify all notes are set
     let state = get(project);
     for (let row = 0; row < 5; row++) {
-      const storageIndex = row * 2 * 4; // Convert logical to storage index
+      const storageIndex = row * 2 * 8; // Convert logical to storage index (8 storage steps per logical step with BASE_RESOLUTION=128)
       expect(state.tracks[0].notes[row][storageIndex]).toBe(true);
     }
     
@@ -133,7 +133,7 @@ describe('project store grid-specific undo/redo', () => {
     // Verify all notes are cleared
     state = get(project);
     for (let row = 0; row < 5; row++) {
-      const storageIndex = row * 2 * 4;
+      const storageIndex = row * 2 * 8;
       expect(state.tracks[0].notes[row][storageIndex]).toBe(false);
     }
     
@@ -148,7 +148,7 @@ describe('project store grid-specific undo/redo', () => {
     // Verify all notes are restored
     state = get(project);
     for (let row = 0; row < 5; row++) {
-      const storageIndex = row * 2 * 4;
+      const storageIndex = row * 2 * 8;
       expect(state.tracks[0].notes[row][storageIndex]).toBe(true);
     }
   });

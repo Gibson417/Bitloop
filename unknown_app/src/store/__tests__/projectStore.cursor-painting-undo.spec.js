@@ -74,7 +74,7 @@ describe('cursor painting with undo', () => {
 
   it('should handle undo after erasing with cursor', () => {
     // First paint some notes (logical indices 0-7)
-    // With stepsPerBar=16 and BASE_RESOLUTION=64, storagePerLogical=4
+    // With stepsPerBar=16 and BASE_RESOLUTION=128, storagePerLogical=8
     // So logical 0-7 maps to storage indices 0-31
     project.setNoteRange(0, 0, 0, 8, true);
     
@@ -89,16 +89,16 @@ describe('cursor painting with undo', () => {
     project.setNoteRange(0, 0, 2, 3, false);
     
     const afterErase = get(project);
-    // Storage 0-7 (logical 0-1) should still be true
-    for (let i = 0; i < 8; i++) {
+    // Storage 0-15 (logical 0-1) should still be true (8 storage steps per logical step with BASE_RESOLUTION=128)
+    for (let i = 0; i < 16; i++) {
       expect(afterErase.tracks[0].notes[0][i]).toBe(true);
     }
-    // Storage 8-19 (logical 2-4) should be false (erased)
-    for (let i = 8; i < 20; i++) {
+    // Storage 16-39 (logical 2-4) should be false (erased)
+    for (let i = 16; i < 40; i++) {
       expect(afterErase.tracks[0].notes[0][i]).toBe(false);
     }
-    // Storage 20-31 (logical 5-7) should still be true
-    for (let i = 20; i < 32; i++) {
+    // Storage 40-63 (logical 5-7) should still be true
+    for (let i = 40; i < 64; i++) {
       expect(afterErase.tracks[0].notes[0][i]).toBe(true);
     }
     
