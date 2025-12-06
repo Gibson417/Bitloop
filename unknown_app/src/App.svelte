@@ -17,7 +17,7 @@
   import ArrowSelector from './components/ArrowSelector.svelte';
   import UpdateNotification from './components/UpdateNotification.svelte';
   import { Scheduler } from './lib/scheduler.js';
-  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION } from './store/projectStore.js';
+  import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION, DEFAULT_STEPS_PER_BAR_VALUE } from './store/projectStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
@@ -493,7 +493,10 @@
       const roundedValue = Math.round(value / 4) * 4;
       const clampedValue = Math.max(4, Math.min(64, roundedValue));
       project.setStepsPerBar(clampedValue);
-      console.warn(`Steps/Bar should be divisible by 4 for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
+      // Log warning in dev mode only
+      if (devModeEnabled) {
+        console.warn(`Steps/Bar should be divisible by 4 for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
+      }
     } else {
       project.setStepsPerBar(value);
     }
@@ -790,7 +793,7 @@
           stepsPerBar: projectState.stepsPerBar,
           totalSteps: projectState.bars * projectState.stepsPerBar,
           bpm: projectState.bpm,
-          defaultStepsPerBar: 16 // Expected default
+          defaultStepsPerBar: DEFAULT_STEPS_PER_BAR_VALUE
         });
       }
     };

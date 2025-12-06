@@ -1156,6 +1156,7 @@ const createProjectStore = () => {
 };
 
 export const TRACK_LIMIT = MAX_TRACKS;
+export const DEFAULT_STEPS_PER_BAR_VALUE = DEFAULT_STEPS_PER_BAR;
 
 export const project = createProjectStore();
 export const historyStatus = historyStatusStore;
