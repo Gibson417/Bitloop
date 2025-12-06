@@ -22,6 +22,9 @@
 
   const dispatch = createEventDispatcher();
 
+  // Articulation gap: reserve one extra storage step after each note to prevent merging
+  const ARTICULATION_GAP = 1;
+
   let canvas;
   let scroller;
   let ctx;
@@ -564,7 +567,7 @@
       // For articulation: reserve one extra storage step after the note as a gap
       // This ensures adjacent notes don't merge, even for 1/64th notes
       // The gap is visual only - it's not painted, just reserved in the range tracking
-      const reservedEnd = noteEnd + 1;
+      const reservedEnd = noteEnd + ARTICULATION_GAP;
       
       // Check if the new note would overlap with any existing painted range
       const overlaps = rowRanges.some(range => {
