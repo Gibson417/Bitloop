@@ -9,6 +9,7 @@
     blocksWithPattern,
     moveBlock,
     removeBlock,
+    swapBlocks,
     patterns as arrangerPatterns,
     playback
   } from '../store/arrangerStore.js';
@@ -202,23 +203,60 @@
       id: block.id,
       lane: block.lane,
       rect,
-      offset: pointerBeat - block.startBeat
+      offset: pointerBeat - block.startBeat,
+      initialStartBeat: block.startBeat
     };
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
   };
 
+  let swapTargetBlockId = null;
+
   const handlePointerMove = (event) => {
     if (!dragContext) return;
     const beat = (event.clientX - dragContext.rect.left) / PIXELS_PER_BEAT - dragContext.offset;
     const snapped = snapBeat(beat);
-    moveBlock(dragContext.id, { startBeat: snapped });
+    
+    // Find if we're hovering over another block to swap with
+    const draggedBlock = $blocksWithPattern.find(b => b.id === dragContext.id);
+    const draggedPattern = draggedBlock?.pattern;
+    const draggedLength = draggedPattern?.lengthInBeats ?? 0;
+    const draggedMidpoint = snapped + draggedLength / 2;
+    
+    // Find blocks in the same lane
+    const laneBlocks = $blocksWithPattern.filter(b => 
+      b.lane === dragContext.lane && b.id !== dragContext.id
+    );
+    
+    // Check if dragged block's midpoint is over another block
+    let newSwapTarget = null;
+    for (const otherBlock of laneBlocks) {
+      const otherLength = otherBlock.pattern?.lengthInBeats ?? 0;
+      if (draggedMidpoint >= otherBlock.startBeat && 
+          draggedMidpoint < otherBlock.startBeat + otherLength) {
+        newSwapTarget = otherBlock.id;
+        break;
+      }
+    }
+    
+    swapTargetBlockId = newSwapTarget;
+    
+    // Only move block if not hovering over a swap target
+    if (!swapTargetBlockId) {
+      moveBlock(dragContext.id, { startBeat: snapped });
+    }
   };
 
   const handlePointerUp = () => {
+    if (swapTargetBlockId && dragContext) {
+      // Perform the swap
+      swapBlocks(dragContext.id, swapTargetBlockId);
+    }
+    
     window.removeEventListener('pointermove', handlePointerMove);
     window.removeEventListener('pointerup', handlePointerUp);
     dragContext = null;
+    swapTargetBlockId = null;
   };
 
   const handleLaneDragOver = (event) => {
@@ -402,7 +440,7 @@
             >
               {#each laneBlockMap[laneIndex] as block (block.id)}
                 <div
-                  class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''}`}
+                  class={`arranger__block ${isBlockActive(block) ? 'arranger__block--active' : ''} ${swapTargetBlockId === block.id ? 'arranger__block--swap-target' : ''} ${dragContext?.id === block.id ? 'arranger__block--dragging' : ''}`}
                   style={`width: ${beatsToPixels(block.pattern?.lengthInBeats ?? 0)}px; transform: translateX(${beatsToPixels(block.startBeat)}px); background: ${block.pattern?.color ?? '#78D2B9'};`}
                   on:pointerdown={(event) => handleBlockPointerDown(event, block)}
                   on:mouseenter={() => hoveredBlockId = block.id}
@@ -410,7 +448,7 @@
                   on:keydown={(event) => handleBlockKeydown(event, block.id)}
                   role="button"
                   tabindex="0"
-                  aria-label={`${block.pattern?.name ?? 'Pattern'} block in lane ${block.lane + 1}, starting at beat ${block.startBeat}. Click and drag to reposition. Press Delete or Backspace to remove.`}
+                  aria-label={`${block.pattern?.name ?? 'Pattern'} block in lane ${block.lane + 1}, starting at beat ${block.startBeat}. Click and drag to reposition or swap with other blocks. Press Delete or Backspace to remove.`}
                 >
                   <span class="block-label">{block.pattern?.name ?? 'Pattern'}</span>
                   {#if hoveredBlockId === block.id}
@@ -569,6 +607,17 @@
   .pattern-item:focus-visible {
     outline: 2px solid rgba(var(--color-accent-rgb), 0.8);
     outline-offset: 2px;
+  }
+
+  .pattern-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
+
+  .pattern-item.drop-target {
+    border-color: rgba(var(--color-accent-rgb), 0.8);
+    background: rgba(var(--color-accent-rgb), 0.25);
+    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.4);
   }
 
   .pattern-main {
@@ -830,6 +879,29 @@
     outline-offset: -1px;
     color: var(--color-background);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(var(--color-accent-bright-rgb), 0.4);
+  }
+
+  .arranger__block--dragging {
+    cursor: grabbing;
+    opacity: 0.7;
+    z-index: 100;
+  }
+
+  .arranger__block--swap-target {
+    outline: 3px dashed rgba(var(--color-accent-rgb), 0.8);
+    outline-offset: -1px;
+    animation: pulse-swap 0.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse-swap {
+    0%, 100% {
+      outline-color: rgba(var(--color-accent-rgb), 0.8);
+      filter: brightness(1.1);
+    }
+    50% {
+      outline-color: rgba(var(--color-accent-rgb), 1);
+      filter: brightness(1.2);
+    }
   }
 
   .arranger__playhead {

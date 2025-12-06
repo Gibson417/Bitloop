@@ -604,6 +604,11 @@
     project.renamePattern(index, name);
   };
 
+  const handlePatternReorder = (event) => {
+    const { fromIndex, toIndex } = event.detail;
+    project.reorderPattern(fromIndex, toIndex);
+  };
+
   const handleRenderWav = async () => {
     try {
       const snapshot = project.toSnapshot();
@@ -1222,6 +1227,7 @@
           on:patternduplicate={handlePatternDuplicate}
           on:patternremove={handlePatternRemove}
           on:patternrename={handlePatternRename}
+          on:patternreorder={handlePatternReorder}
         />
       {/if}
     </div>
