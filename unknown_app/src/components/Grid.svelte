@@ -564,7 +564,7 @@
       // For articulation: reserve one extra storage step after the note as a gap
       // This ensures adjacent notes don't merge, even for 1/64th notes
       // The gap is visual only - it's not painted, just reserved in the range tracking
-      const reservedEnd = cellPaintValue && noteStorageLength >= 1 ? noteEnd + 1 : noteEnd;
+      const reservedEnd = noteEnd + 1;
       
       // Check if the new note would overlap with any existing painted range
       const overlaps = rowRanges.some(range => {
