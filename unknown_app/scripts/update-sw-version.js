@@ -15,6 +15,7 @@ const __dirname = path.dirname(__filename);
 
 // Path to the service worker file in dist folder
 const swPath = path.join(__dirname, '../dist/sw.js');
+const indexPath = path.join(__dirname, '../dist/index.html');
 
 // Generate a unique cache version based on timestamp and git commit (if available)
 function generateCacheVersion() {
@@ -58,4 +59,31 @@ if (updatedContent === swContent || !updatedContent.includes(newCacheVersion)) {
 // Write the updated service worker back to dist
 fs.writeFileSync(swPath, updatedContent, 'utf8');
 
+// Also update index.html to add cache-busting parameter to service worker registration
+if (!fs.existsSync(indexPath)) {
+  console.error('❌ Error: dist/index.html not found.');
+  process.exit(1);
+}
+
+let indexContent = fs.readFileSync(indexPath, 'utf8');
+
+// Add cache-busting parameter to service worker registration
+// Replace: navigator.serviceWorker.register('./sw.js'
+// With: navigator.serviceWorker.register('./sw.js?v=VERSION'
+const swRegisterRegex = /navigator\.serviceWorker\.register\(['"]\.\/sw\.js(?:\?v=[^'"]*)?['"]/;
+const updatedIndexContent = indexContent.replace(
+  swRegisterRegex,
+  `navigator.serviceWorker.register('./sw.js?v=${newCacheVersion}'`
+);
+
+// Verify the replacement was successful
+if (updatedIndexContent === indexContent || !updatedIndexContent.includes(`sw.js?v=${newCacheVersion}`)) {
+  console.error('❌ Error: Failed to update service worker registration in index.html');
+  process.exit(1);
+}
+
+// Write the updated index.html back to dist
+fs.writeFileSync(indexPath, updatedIndexContent, 'utf8');
+
 console.log(`✅ Service worker cache version updated to: ${newCacheVersion}`);
+console.log(`✅ Service worker registration updated with cache-busting parameter`);

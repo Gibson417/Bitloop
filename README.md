@@ -24,11 +24,16 @@ UNKNOWN is available as a Progressive Web App (PWA) that works great on Chromebo
 3. The app will install and appear in your app launcher like a native app
 
 > **Tip:** The PWA automatically checks for updates every 60 seconds when the app is open. When a new version is available, you'll see a notification prompting you to update. The app also works offline after first install and runs in its own window without browser UI.
+>
+> **If you're stuck on an old version:** Uninstall the PWA (right-click the app → Uninstall), then hard refresh the web page with Ctrl+Shift+R before reinstalling. This ensures you get the latest version.
 
 ### Web Browser
 Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed! The browser version automatically checks for updates every 60 seconds and will notify you when a new version is available.
 
-> **Troubleshooting:** If you see a blank page or the README instead of the app, try clearing your browser cache or opening in an incognito/private window. Repository owners: make sure GitHub Pages is configured to deploy from "GitHub Actions" in Settings → Pages.
+> **Troubleshooting:** 
+> - **Seeing an old version?** Hard refresh the page with Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac) to clear the cache and load the latest version.
+> - **Blank page or README instead of the app?** Try clearing your browser cache or opening in an incognito/private window. 
+> - **Repository owners:** Make sure GitHub Pages is configured to deploy from "GitHub Actions" in Settings → Pages.
 
 ---
 
