@@ -336,18 +336,11 @@ const coerceStepsPerBar = (value) => {
   const numValue = ensurePositiveInteger(value, DEFAULT_STEPS_PER_BAR, 8, 64);
   
   // Find the closest valid value
-  let closest = validValues[0];
-  let minDiff = Math.abs(numValue - closest);
-  
-  for (const validValue of validValues) {
-    const diff = Math.abs(numValue - validValue);
-    if (diff < minDiff) {
-      minDiff = diff;
-      closest = validValue;
-    }
-  }
-  
-  return closest;
+  return validValues.reduce((closest, validValue) => {
+    const currentDiff = Math.abs(numValue - validValue);
+    const closestDiff = Math.abs(numValue - closest);
+    return currentDiff < closestDiff ? validValue : closest;
+  }, validValues[0]);
 };
 
 const toSnapshot = (state) => ({

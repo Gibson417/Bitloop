@@ -29,6 +29,7 @@
 
   // Note: stepsPerBar is now automatically synced with zoom level (8, 16, 32, or 64)
   // to ensure proper 4/4 time alignment
+  const BEATS_PER_BAR = 4; // 4/4 time signature
 
   let projectState;
   let historyState;
@@ -83,11 +84,11 @@
     }
     await audioContext.resume();
     if (!scheduler) {
-      scheduler = new Scheduler(audioContext, projectState.bpm, projectState.stepsPerBar / 4);
+      scheduler = new Scheduler(audioContext, projectState.bpm, projectState.stepsPerBar / BEATS_PER_BAR);
       scheduler.onStep = handleStep;
     } else {
       scheduler.setTempo(projectState.bpm);
-      scheduler.setStepsPerBeat(projectState.stepsPerBar / 4);
+      scheduler.setStepsPerBeat(projectState.stepsPerBar / BEATS_PER_BAR);
       scheduler.onStep = handleStep;
     }
     return true;
@@ -257,7 +258,7 @@
     project.resetPlayhead();
     project.setPlaying(true);
     scheduler.setTempo(projectState.bpm);
-    scheduler.setStepsPerBeat(projectState.stepsPerBar / 4);
+    scheduler.setStepsPerBeat(projectState.stepsPerBar / BEATS_PER_BAR);
     scheduler.start();
     if (animationId) cancelAnimationFrame(animationId);
     animationId = requestAnimationFrame(animatePlayhead);
@@ -367,7 +368,7 @@
     // This ensures stepsPerBar is always 8, 16, 32, or 64
     project.setStepsPerBar(zoomLevel);
     if (scheduler) {
-      scheduler.setStepsPerBeat(zoomLevel / 4);
+      scheduler.setStepsPerBeat(zoomLevel / BEATS_PER_BAR);
     }
     
     // When zoom changes, reset manual window to ensure it's valid
@@ -528,7 +529,7 @@
         stopPlayback();
         if (scheduler) {
           scheduler.setTempo(get(project).bpm);
-          scheduler.setStepsPerBeat(get(project).stepsPerBar / 4);
+          scheduler.setStepsPerBeat(get(project).stepsPerBar / BEATS_PER_BAR);
         }
         library.renameCurrent(project.getName());
       }
@@ -782,7 +783,7 @@
       if (!disposed) {
         project.setStepsPerBar(zoomLevel);
         if (scheduler) {
-          scheduler.setStepsPerBeat(zoomLevel / 4);
+          scheduler.setStepsPerBeat(zoomLevel / BEATS_PER_BAR);
         }
       }
       
