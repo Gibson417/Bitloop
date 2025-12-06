@@ -7,7 +7,7 @@
     <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#101828" />
     <meta name="description" content="A modern, intuitive chiptune loop composer for the browser" />
-    <!-- Prevent service worker caching -->
+    <!-- Prevent HTML caching to ensure latest service worker registration code is executed -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -63,6 +63,7 @@
       // Register service worker for PWA support
       if ('serviceWorker' in navigator) {
         let registration = null;
+        let updateCheckInterval = null;
         
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js', {
@@ -77,7 +78,8 @@
               registration.update();
               
               // Set up periodic update checks (every 60 seconds)
-              setInterval(() => {
+              // Store interval ID for cleanup
+              updateCheckInterval = setInterval(() => {
                 console.log('Checking for service worker updates...');
                 registration.update();
               }, 60000);
@@ -97,6 +99,13 @@
             .catch((error) => {
               console.log('SW registration failed:', error);
             });
+        });
+        
+        // Clean up interval when page is unloaded
+        window.addEventListener('beforeunload', () => {
+          if (updateCheckInterval) {
+            clearInterval(updateCheckInterval);
+          }
         });
       }
 
