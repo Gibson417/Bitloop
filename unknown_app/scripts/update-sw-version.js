@@ -68,17 +68,19 @@ if (!fs.existsSync(indexPath)) {
 let indexContent = fs.readFileSync(indexPath, 'utf8');
 
 // Add cache-busting parameter to service worker registration
-// Replace: navigator.serviceWorker.register('./sw.js'
+// Replace: navigator.serviceWorker.register('./sw.js' or navigator.serviceWorker.register('./sw.js?v=...'
 // With: navigator.serviceWorker.register('./sw.js?v=VERSION'
-const swRegisterRegex = /navigator\.serviceWorker\.register\(['"]\.\/sw\.js(?:\?v=[^'"]*)?['"]/;
+const swRegisterRegex = /(navigator\.serviceWorker\.register\()['"]\.\/sw\.js(?:\?v=[^'"]*)?['"]/;
 const updatedIndexContent = indexContent.replace(
   swRegisterRegex,
-  `navigator.serviceWorker.register('./sw.js?v=${newCacheVersion}'`
+  `$1'./sw.js?v=${newCacheVersion}'`
 );
 
-// Verify the replacement was successful
-if (updatedIndexContent === indexContent || !updatedIndexContent.includes(`sw.js?v=${newCacheVersion}`)) {
+// Verify the replacement was successful using a precise regex check
+const verifyRegex = new RegExp(`navigator\\.serviceWorker\\.register\\(['"]\\.\\/sw\\.js\\?v=${newCacheVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`);
+if (!verifyRegex.test(updatedIndexContent)) {
   console.error('❌ Error: Failed to update service worker registration in index.html');
+  console.error('Expected to find: navigator.serviceWorker.register(\'./sw.js?v=' + newCacheVersion + '\')');
   process.exit(1);
 }
 
