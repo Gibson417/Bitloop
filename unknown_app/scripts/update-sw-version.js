@@ -42,13 +42,20 @@ let swContent = fs.readFileSync(swPath, 'utf8');
 // Generate new cache version
 const newCacheVersion = generateCacheVersion();
 
-// Replace the cache version
-swContent = swContent.replace(
-  /const CACHE_NAME = ['"]unknown-[^'"]*['"]/,
+// Replace the cache version with a more robust regex
+const cacheNameRegex = /const CACHE_NAME = ['"][^'"]*['"]/;
+const updatedContent = swContent.replace(
+  cacheNameRegex,
   `const CACHE_NAME = '${newCacheVersion}'`
 );
 
+// Verify the replacement was successful
+if (updatedContent === swContent || !updatedContent.includes(newCacheVersion)) {
+  console.error('❌ Error: Failed to update cache version. The CACHE_NAME constant may not exist in sw.js');
+  process.exit(1);
+}
+
 // Write the updated service worker back to dist
-fs.writeFileSync(swPath, swContent, 'utf8');
+fs.writeFileSync(swPath, updatedContent, 'utf8');
 
 console.log(`✅ Service worker cache version updated to: ${newCacheVersion}`);
