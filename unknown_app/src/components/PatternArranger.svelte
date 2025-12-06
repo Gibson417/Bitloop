@@ -20,7 +20,7 @@
   const dispatch = createEventDispatcher();
 
   const LANE_COUNT = 1;
-  const PIXELS_PER_BEAT = 32;
+  const PIXELS_PER_BEAT = 16;
 
   const beatsToPixels = (beats) => beats * PIXELS_PER_BEAT;
 
@@ -698,7 +698,7 @@
 
   .arranger__lane {
     position: relative;
-    height: 70px;
+    height: 120px;
     border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
   }
 
@@ -714,8 +714,8 @@
 
   .arranger__block {
     position: absolute;
-    top: 12px;
-    height: 46px;
+    top: 10px;
+    height: 100px;
     border-radius: 8px;
     color: var(--color-background);
     display: flex;

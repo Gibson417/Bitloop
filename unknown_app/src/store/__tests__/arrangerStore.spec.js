@@ -124,4 +124,63 @@ describe('arrangerStore - sequential pattern placement', () => {
     expect(updated.lane).toBe(2);
     expect(updated.startBeat).toBe(4);
   });
+
+  it('should prevent blocks from overlapping when dragging', () => {
+    // Add two patterns at beats 0 and 8
+    addPatternToLane('p1', 0, 0);  // 8 beats long, at beat 0
+    addPatternToLane('p2', 0, 8);  // 8 beats long, at beat 8
+    
+    const currentBlocks = get(blocks);
+    const block1 = currentBlocks[0];
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to beat 4 (would overlap with block1 which ends at beat 8)
+    moveBlock(block2.id, { startBeat: 4 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Block should either be placed at beat 0 (before block1) or stay at beat 8 (after block1)
+    // It should NOT be at beat 4 which would cause overlap
+    expect(movedBlock.startBeat === 0 || movedBlock.startBeat >= 8).toBe(true);
+    expect(movedBlock.startBeat).not.toBe(4);
+  });
+
+  it('should allow swapping block positions when dragging', () => {
+    // Add two patterns
+    addPatternToLane('p1', 0, 0);  // at beat 0
+    addPatternToLane('p2', 0, 8);  // at beat 8
+    
+    const currentBlocks = get(blocks);
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to a position that overlaps with block1
+    moveBlock(block2.id, { startBeat: 0 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Since there's no space before block1, block2 should remain at beat 8
+    // This prevents overlap while keeping blocks in valid positions
+    expect(movedBlock.startBeat).toBe(8);
+  });
+
+  it('should swap positions when there is enough space', () => {
+    // Add pattern at beat 16 with gap before it
+    addPatternToLane('p1', 0, 16);  // 8 beats long, at beat 16
+    addPatternToLane('p2', 0, 24);  // 8 beats long, at beat 24
+    
+    const currentBlocks = get(blocks);
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to beat 12 (would overlap with block1 at 16-24)
+    // There's enough space before block1 (0-16), so it should fit at beat 8
+    moveBlock(block2.id, { startBeat: 12 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Block2 should be placed before block1, at beat 8 (16 - 8)
+    expect(movedBlock.startBeat).toBe(8);
+  });
 });

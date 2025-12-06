@@ -101,18 +101,54 @@ export const addPatternToLane = (patternId, lane = 0, explicitStartBeat = null) 
 };
 
 export const moveBlock = (blockId, { startBeat, lane } = {}) => {
-  blocks.update((current) =>
-    current.map((block) => {
-      if (block.id !== blockId) return block;
-      const nextLane = lane ?? block.lane;
-      const desiredStart = startBeat ?? block.startBeat;
-      const snappedStart = snapBeat(desiredStart);
-
-      // Moving a block should honor the requested position while snapping to the beat grid.
-      // Avoid auto-shifting to the end of overlapping blocks so manual moves behave predictably.
-      return { ...block, lane: nextLane, startBeat: snappedStart };
-    })
-  );
+  blocks.update((current) => {
+    const block = current.find((b) => b.id === blockId);
+    if (!block) return current;
+    
+    const nextLane = lane ?? block.lane;
+    const desiredStart = startBeat ?? block.startBeat;
+    const snappedStart = snapBeat(desiredStart);
+    
+    const pattern = getPatternById(block.patternId);
+    const patternLength = pattern?.lengthInBeats ?? 0;
+    
+    // Check for overlaps and find safe position
+    const laneBlocks = current
+      .filter((b) => b.lane === nextLane && b.id !== blockId)
+      .sort((a, b) => a.startBeat - b.startBeat);
+    
+    let finalStart = Math.max(0, snappedStart);
+    
+    // Check if the desired position overlaps with any existing block
+    for (const otherBlock of laneBlocks) {
+      const otherPattern = getPatternById(otherBlock.patternId);
+      const otherLength = otherPattern?.lengthInBeats ?? 0;
+      const otherEnd = otherBlock.startBeat + otherLength;
+      
+      // Check if blocks overlap
+      const overlaps = finalStart < otherEnd && finalStart + patternLength > otherBlock.startBeat;
+      
+      if (overlaps) {
+        // Try to swap positions instead of pushing to the end
+        const gapBefore = otherBlock.startBeat;
+        const gapAfter = otherEnd;
+        
+        // If there's enough space before this block, place it there
+        if (gapBefore >= patternLength) {
+          finalStart = Math.max(0, gapBefore - patternLength);
+          break;
+        }
+        // Otherwise, place it after this block
+        else {
+          finalStart = gapAfter;
+        }
+      }
+    }
+    
+    return current.map((b) => 
+      b.id === blockId ? { ...b, lane: nextLane, startBeat: finalStart } : b
+    );
+  });
 };
 
 export const removeBlock = (blockId) => {
