@@ -104,6 +104,7 @@
   const MIN_VISIBLE_COLUMNS = 8; // Minimum columns to show (half bar of 16th notes)
   const MAX_CELL_SIZE = 96; // Maximum cell size for optimal visual balance
   const MOBILE_BREAKPOINT = 768; // Width threshold for mobile vs desktop cell sizing
+  const BOUNDARY_TOLERANCE = 0.01; // Floating-point tolerance for detecting bar/beat boundaries
 
   const updateLayout = () => {
     if (!canvas || !scroller) {
@@ -134,11 +135,24 @@
     const totalDisplayColumns = Math.floor(logicalColumns * logicalToDisplayScale);
     
     // Visible columns is constrained by screen width, not zoom level
-    // Must be divisible by 4 for proper 4/4 time signature alignment (quarter notes)
+    // Must be divisible by stepsPerBar for proper 4/4 time signature alignment (complete bars)
+    // If that's not possible, fall back to quarter-note alignment (divisible by 4)
     let rawVisibleColumns = Math.max(MIN_VISIBLE_COLUMNS, Math.min(maxColumnsForWidth, totalDisplayColumns));
-    let visibleColumns = Math.floor(rawVisibleColumns / 4) * 4; // Round down to nearest multiple of 4
+    let visibleColumns = Math.floor(rawVisibleColumns / stepsPerBarSafe) * stepsPerBarSafe; // Round down to nearest multiple of stepsPerBar
     if (visibleColumns < MIN_VISIBLE_COLUMNS) {
-      visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
+      // If we can't fit a complete bar, fall back to quarter-note alignment (if stepsPerBar is divisible by 4)
+      if (stepsPerBarSafe % 4 === 0) {
+        const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
+        visibleColumns = Math.floor(rawVisibleColumns / stepsPerQuarterBar) * stepsPerQuarterBar;
+      } else if (stepsPerBarSafe % 2 === 0) {
+        // Fall back to half-bar alignment if quarter-bar doesn't divide evenly
+        const stepsPerHalfBar = Math.max(1, Math.floor(stepsPerBarSafe / 2));
+        visibleColumns = Math.floor(rawVisibleColumns / stepsPerHalfBar) * stepsPerHalfBar;
+      }
+      // Ensure we still meet minimum visible columns requirement
+      if (visibleColumns < MIN_VISIBLE_COLUMNS) {
+        visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
+      }
     }
     
     const cellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
@@ -211,15 +225,15 @@
       // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
       const isZoomed = zoom && zoom > stepsPerBarSafe;
       
-      for (let col = 0; col <= visibleColumns; col++) {
+      for (let col = 0; col < visibleColumns; col++) {
         // Map displayed column back to logical step using inverse scale
         // Display column → logical step
         const displayCol = windowOffset + col;
         const logicalStep = displayCol / logicalToDisplayScale;
         
         // Check if this logical step aligns with bar or quarter-bar boundaries
-        const isBarBoundary = Math.abs(logicalStep % stepsPerBarSafe) < 0.01;
-        const isQuarterBarBoundary = Math.abs(logicalStep % stepsPerQuarterBar) < 0.01;
+        const isBarBoundary = Math.abs(logicalStep % stepsPerBarSafe) < BOUNDARY_TOLERANCE;
+        const isQuarterBarBoundary = Math.abs(logicalStep % stepsPerQuarterBar) < BOUNDARY_TOLERANCE;
         
         // In zoomed mode, draw sub-beat ticks for all columns
         // In normal mode, only draw lines at quarter-bar increments or bar boundaries
@@ -240,6 +254,22 @@
           continue; // Skip non-boundary lines in normal view
         }
         
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, layout.height);
+        ctx.stroke();
+      }
+      
+      // Draw closing line at right edge only if it aligns with a bar boundary
+      // This prevents showing partial bars at the edge of the visible area
+      // The main loop stops at visibleColumns-1 to avoid drawing the closing line unconditionally
+      const rightEdgeDisplayCol = windowOffset + visibleColumns;
+      const rightEdgeLogicalStep = rightEdgeDisplayCol / logicalToDisplayScale;
+      const isRightEdgeBarBoundary = Math.abs(rightEdgeLogicalStep % stepsPerBarSafe) < BOUNDARY_TOLERANCE;
+      
+      if (isRightEdgeBarBoundary) {
+        const x = visibleColumns * cellSize + 0.5;
+        ctx.strokeStyle = hexToRgba(trackColor, 0.75);
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, layout.height);
