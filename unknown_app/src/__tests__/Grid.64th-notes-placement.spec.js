@@ -93,7 +93,7 @@ describe('Grid - 64th Note Placement', () => {
     // Expected: 4 notes should be placed
     // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=64:
     // storagePerDisplay = 64/64 = 1
-    // For 64th notes (1 storage step), length remains 1
+    // 64th notes occupy exactly 1 storage step (the smallest time unit)
     // Column 0: storageStart = 0
     // Column 1: storageStart = 1
     // Column 2: storageStart = 2
