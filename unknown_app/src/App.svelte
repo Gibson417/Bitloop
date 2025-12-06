@@ -494,9 +494,9 @@
     const value = Number(event.detail?.value ?? event.target?.value);
     // Validate that value is divisible by STEPS_PER_BAR_STEP for proper 4/4 time alignment
     if (value % STEPS_PER_BAR_STEP !== 0) {
-      // Round to nearest multiple of STEPS_PER_BAR_STEP
+      // Round to nearest multiple of STEPS_PER_BAR_STEP, ensuring minimum value
       const roundedValue = Math.round(value / STEPS_PER_BAR_STEP) * STEPS_PER_BAR_STEP;
-      const clampedValue = Math.max(STEPS_PER_BAR_MIN, Math.min(STEPS_PER_BAR_MAX, roundedValue));
+      const clampedValue = Math.max(STEPS_PER_BAR_MIN, Math.min(STEPS_PER_BAR_MAX, roundedValue || STEPS_PER_BAR_MIN));
       project.setStepsPerBar(clampedValue);
       // Log warning in dev mode only
       if (devModeEnabled) {
