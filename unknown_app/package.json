@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "node scripts/update-sw-version.js",
     "preview": "vite preview",
     "check": "svelte-check",
     "test": "vitest",
