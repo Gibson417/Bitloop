@@ -1180,7 +1180,7 @@
             <input
               id="tempo-bar-bars"
               type="number"
-              min="1"
+              min="2"
               max={maxBarsValue}
               value={totalBars}
               on:change={handleBarsChange}

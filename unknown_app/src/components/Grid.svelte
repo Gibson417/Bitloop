@@ -561,18 +561,23 @@
       const rowRanges = paintedRanges.get(row) || [];
       const noteEnd = storageStart + storageLength;
       
+      // For articulation: reserve one extra storage step after the note as a gap
+      // This ensures adjacent notes don't merge, even for 1/64th notes
+      // The gap is visual only - it's not painted, just reserved in the range tracking
+      const reservedEnd = cellPaintValue && noteStorageLength >= 1 ? noteEnd + 1 : noteEnd;
+      
       // Check if the new note would overlap with any existing painted range
       const overlaps = rowRanges.some(range => {
         // Two ranges overlap if: start1 < end2 && start2 < end1
-        return storageStart < range.end && noteEnd > range.start;
+        return storageStart < range.end && reservedEnd > range.start;
       });
       
       if (overlaps) {
         return; // Skip this note - it would overlap with a previously placed note
       }
       
-      // Add this range to the painted ranges for this row
-      rowRanges.push({ start: storageStart, end: noteEnd });
+      // Add this range (including gap) to the painted ranges for this row
+      rowRanges.push({ start: storageStart, end: reservedEnd });
       paintedRanges.set(row, rowRanges);
     }
     
