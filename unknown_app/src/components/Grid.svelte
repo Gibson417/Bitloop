@@ -261,6 +261,8 @@
       }
       
       // Draw closing line at right edge only if it aligns with a bar boundary
+      // This prevents showing partial bars at the edge of the visible area
+      // The main loop stops at visibleColumns-1 to avoid drawing the closing line unconditionally
       const rightEdgeDisplayCol = windowOffset + visibleColumns;
       const rightEdgeLogicalStep = rightEdgeDisplayCol / logicalToDisplayScale;
       const isRightEdgeBarBoundary = Math.abs(rightEdgeLogicalStep % stepsPerBarSafe) < BOUNDARY_TOLERANCE;
