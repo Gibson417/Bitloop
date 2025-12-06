@@ -70,12 +70,12 @@ let indexContent = fs.readFileSync(indexPath, 'utf8');
 // Add cache-busting parameter to service worker registration
 // Replace: navigator.serviceWorker.register('./sw.js' or navigator.serviceWorker.register('./sw.js?v=...'
 // With: navigator.serviceWorker.register('./sw.js?v=VERSION'
-const swRegisterRegex = /(navigator\.serviceWorker\.register\()(['"])\.\/sw\.js(?:\?v=[^'"]*)?(['"])/;
+// Preserves the original quote type (single or double) and ensures quotes match
+const swRegisterRegex = /(navigator\.serviceWorker\.register\()(['"])\.\/sw\.js(?:\?v=[^'"]*)?(\2)/;
 const updatedIndexContent = indexContent.replace(
   swRegisterRegex,
-  (match, openParen, openQuote, closeQuote) => {
-    // Use the same quote type as the original
-    const quote = openQuote;
+  (match, openParen, quote) => {
+    // Use the same quote type as the original (captured in group 2)
     return `${openParen}${quote}./sw.js?v=${newCacheVersion}${quote}`;
   }
 );
