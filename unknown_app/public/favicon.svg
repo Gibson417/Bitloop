@@ -7,18 +7,19 @@
   </defs>
   <rect width="96" height="96" rx="22" fill="url(#bg)"/>
   <g fill="#7BD6F4">
+    <!-- Left column (4 dots, uniform 16-unit vertical spacing) -->
     <circle cx="28" cy="20" r="5"/>
     <circle cx="28" cy="36" r="5"/>
     <circle cx="28" cy="52" r="5"/>
     <circle cx="28" cy="68" r="5"/>
 
-    <circle cx="38" cy="68" r="5"/>
-    <circle cx="48" cy="68" r="5"/>
-    <circle cx="58" cy="68" r="5"/>
+    <!-- Bottom middle (1 dot, uniform 16-unit horizontal spacing) -->
+    <circle cx="44" cy="68" r="5"/>
 
-    <circle cx="68" cy="20" r="5"/>
-    <circle cx="68" cy="36" r="5"/>
-    <circle cx="68" cy="52" r="5"/>
-    <circle cx="68" cy="68" r="5"/>
+    <!-- Right column (4 dots, uniform 16-unit vertical spacing) -->
+    <circle cx="60" cy="20" r="5"/>
+    <circle cx="60" cy="36" r="5"/>
+    <circle cx="60" cy="52" r="5"/>
+    <circle cx="60" cy="68" r="5"/>
   </g>
 </svg>
