@@ -492,7 +492,9 @@
 
   const handleStepsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
-    // Validate that value is divisible by STEPS_PER_BAR_STEP for proper 4/4 time alignment
+    // UI-level validation for 4/4 time alignment (in addition to store's bounds checking)
+    // The store validates min/max (4-64), but we also want to ensure values are
+    // multiples of 4 for proper beat alignment in 4/4 time signature
     if (value % STEPS_PER_BAR_STEP !== 0) {
       // Round to nearest multiple of STEPS_PER_BAR_STEP, ensuring minimum value
       const roundedValue = Math.round(value / STEPS_PER_BAR_STEP) * STEPS_PER_BAR_STEP;
