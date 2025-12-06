@@ -135,10 +135,17 @@
     
     // Visible columns is constrained by screen width, not zoom level
     // Must be divisible by stepsPerBar for proper 4/4 time signature alignment (complete bars)
+    // If that's not possible, fall back to quarter-note alignment (divisible by 4)
     let rawVisibleColumns = Math.max(MIN_VISIBLE_COLUMNS, Math.min(maxColumnsForWidth, totalDisplayColumns));
     let visibleColumns = Math.floor(rawVisibleColumns / stepsPerBarSafe) * stepsPerBarSafe; // Round down to nearest multiple of stepsPerBar
     if (visibleColumns < MIN_VISIBLE_COLUMNS) {
-      visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
+      // If we can't fit a complete bar, fall back to quarter-note alignment
+      const stepsPerQuarterBar = Math.max(1, Math.floor(stepsPerBarSafe / 4));
+      visibleColumns = Math.floor(rawVisibleColumns / stepsPerQuarterBar) * stepsPerQuarterBar;
+      // Ensure we still meet minimum visible columns requirement
+      if (visibleColumns < MIN_VISIBLE_COLUMNS) {
+        visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
+      }
     }
     
     const cellSize = Math.max(minCellSize, Math.min(MAX_CELL_SIZE, Math.floor(availableWidth / visibleColumns)));
