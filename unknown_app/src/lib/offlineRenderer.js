@@ -124,7 +124,7 @@ export const renderProjectToWav = async (snapshot) => {
   const stepsPerBar = snapshot.stepsPerBar ?? 16;
   const bpm = snapshot.bpm ?? 120;
   const rows = snapshot.rows ?? 8;
-  const BASE_RESOLUTION = 64; // Must match projectStore.js
+  const BASE_RESOLUTION = 128; // Must match projectStore.js
   const totalStorageSteps = bars * BASE_RESOLUTION;
   const secondsPerBar = (240 / bpm) || 2;
   const durationPerStorageCell = secondsPerBar / BASE_RESOLUTION;

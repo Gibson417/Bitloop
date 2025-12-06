@@ -69,8 +69,8 @@ describe('Grid - Note Combining Prevention', () => {
     expect(firstNote.start).toBe(0);
     expect(firstNote.value).toBe(true);
     // The key: length should be LESS than 8 to create a gap
-    expect(firstNote.length).toBeLessThan(8);
-    expect(firstNote.length).toBeGreaterThanOrEqual(7); // At least 7 to maintain visual appearance
+    expect(firstNote.length).toBeLessThan(16);
+    expect(firstNote.length).toBeGreaterThanOrEqual(15); // At least 7 to maintain visual appearance
 
     dispatchedEvents = [];
 
@@ -84,15 +84,15 @@ describe('Grid - Note Combining Prevention', () => {
 
     expect(dispatchedEvents.length).toBeGreaterThan(0);
     const secondNote = dispatchedEvents[0];
-    expect(secondNote.start).toBe(8); // Starts at column 2
+    expect(secondNote.start).toBe(16); // Starts at column 2 (doubled with BASE_RESOLUTION=128)
     expect(secondNote.value).toBe(true);
-    // Same gap requirement
-    expect(secondNote.length).toBeLessThan(8);
-    expect(secondNote.length).toBeGreaterThanOrEqual(7);
+    // Same gap requirement (128/8 = 16, -1 = 15)
+    expect(secondNote.length).toBeLessThan(16);
+    expect(secondNote.length).toBeGreaterThanOrEqual(15);
 
     // Critical: There should be a gap between notes
-    // First note ends at: 0 + firstNote.length (should be 7 or less)
-    // Second note starts at: 8
+    // First note ends at: 0 + firstNote.length (should be 15 or less)
+    // Second note starts at: 16
     // Gap should be at least 1 storage step
     const firstNoteEnd = firstNote.start + firstNote.length;
     expect(secondNote.start).toBeGreaterThan(firstNoteEnd);
@@ -148,8 +148,8 @@ describe('Grid - Note Combining Prevention', () => {
     const firstNote = dispatchedEvents[0];
     expect(firstNote.start).toBe(0);
     expect(firstNote.value).toBe(true);
-    expect(firstNote.length).toBeLessThan(4); // Should have gap
-    expect(firstNote.length).toBeGreaterThanOrEqual(3);
+    expect(firstNote.length).toBeLessThan(8); // Should have gap
+    expect(firstNote.length).toBeGreaterThanOrEqual(7);
 
     dispatchedEvents = [];
 
@@ -162,10 +162,10 @@ describe('Grid - Note Combining Prevention', () => {
     await fireEvent.pointerUp(canvas, { pointerId: 2 });
 
     const secondNote = dispatchedEvents[0];
-    expect(secondNote.start).toBe(4);
+    expect(secondNote.start).toBe(8); // Doubled with BASE_RESOLUTION=128
     expect(secondNote.value).toBe(true);
-    expect(secondNote.length).toBeLessThan(4);
-    expect(secondNote.length).toBeGreaterThanOrEqual(3);
+    expect(secondNote.length).toBeLessThan(8);
+    expect(secondNote.length).toBeGreaterThanOrEqual(7);
 
     // Verify gap exists
     const firstNoteEnd = firstNote.start + firstNote.length;

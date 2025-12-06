@@ -45,9 +45,9 @@ describe('Zoom and Note Length Separation', () => {
     const event = noteChange.mock.calls[0][0];
     
     // Note duration should be based on noteLengthDenominator (16), not zoomLevel (32)
-    // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
+    // With BASE_RESOLUTION=128 and noteLengthDenominator=16:
     // noteStorageLength = 64/16 = 4, but reduced by 1 for articulation gap = 3
-    expect(event.detail.length).toBe(3);
+    expect(event.detail.length).toBe(7);
     expect(event.detail.value).toBe(true);
     expect(event.detail.storage).toBe(true);
   });
@@ -118,9 +118,9 @@ describe('Zoom and Note Length Separation', () => {
 
     // Both should have same note length despite different zoom levels
     expect(length1).toBe(length2);
-    // With BASE_RESOLUTION=64 and noteLengthDenominator=32:
-    // noteStorageLength = 64/32 = 2, reduced by 1 for articulation gap = 1
-    expect(length1).toBe(1);
+    // With BASE_RESOLUTION=128 and noteLengthDenominator=32:
+    // noteStorageLength = 128/32 = 4, reduced by 1 for articulation gap = 3
+    expect(length1).toBe(3);
   });
 
   it('note length should determine note duration independently of zoom', async () => {
@@ -191,10 +191,10 @@ describe('Zoom and Note Length Separation', () => {
     // Note length 8 should produce longer notes than note length 64
     expect(length1).toBeGreaterThan(length2);
     
-    // With BASE_RESOLUTION=64:
-    // noteLengthDenominator=8: noteStorageLength=64/8 = 8, reduced by 1 for gap = 7
-    // noteLengthDenominator=64: noteStorageLength=64/64 = 1 (cannot reduce, minimum is 1)
-    expect(length1).toBe(7);
+    // With BASE_RESOLUTION=128:
+    // noteLengthDenominator=8: noteStorageLength=128/8 = 16, reduced by 1 for gap = 15
+    // noteLengthDenominator=64: noteStorageLength=128/64 = 2, reduced by 1 = 1
+    expect(length1).toBe(15);
     expect(length2).toBe(1);
   });
 
@@ -243,8 +243,8 @@ describe('Zoom and Note Length Separation', () => {
     expect(results[0]).toBe(results[1]);
     expect(results[1]).toBe(results[2]);
     expect(results[2]).toBe(results[3]);
-    // With BASE_RESOLUTION=64 and noteLengthDenominator=16:
-    // noteStorageLength = 64/16 = 4, reduced by 1 for articulation gap = 3
-    expect(results[0]).toBe(3);
+    // With BASE_RESOLUTION=128 and noteLengthDenominator=16:
+    // noteStorageLength = 128/16 = 8, reduced by 1 for articulation gap = 7
+    expect(results[0]).toBe(7);
   });
 });
