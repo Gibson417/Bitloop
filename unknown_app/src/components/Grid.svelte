@@ -565,10 +565,10 @@
       const noteEnd = storageStart + storageLength;
       
       // For articulation: reserve one extra storage step after the note as a gap
-      // Only apply gap when note storage length is greater than 1 step
-      // For 1-step notes (64th notes), no gap is needed since they are the smallest time unit
-      // This allows placing 64th notes side by side while preventing longer notes from merging
-      const reservedEnd = noteStorageLength > 1 ? noteEnd + ARTICULATION_GAP : noteEnd;
+      // Apply gap to all notes, including 64th notes (noteStorageLength === 1)
+      // This prevents notes from combining during drag operations while still allowing
+      // individual clicks to place notes adjacently if needed
+      const reservedEnd = noteEnd + ARTICULATION_GAP;
       
       // Check if the new note would overlap with any existing painted range
       const overlaps = rowRanges.some(range => {
