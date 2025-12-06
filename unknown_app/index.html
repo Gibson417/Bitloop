@@ -7,6 +7,10 @@
     <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#101828" />
     <meta name="description" content="A modern, intuitive chiptune loop composer for the browser" />
+    <!-- Prevent HTML caching to ensure latest service worker registration code is executed -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <!-- iOS PWA support -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -58,10 +62,28 @@
     <script>
       // Register service worker for PWA support
       if ('serviceWorker' in navigator) {
+        let registration = null;
+        let updateCheckInterval = null;
+        
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then((registration) => {
+          navigator.serviceWorker.register('./sw.js', {
+            // Force browser to check for updates by bypassing HTTP cache
+            updateViaCache: 'none'
+          })
+            .then((reg) => {
+              registration = reg;
               console.log('SW registered:', registration.scope);
+              
+              // Check for updates immediately after registration
+              registration.update();
+              
+              // Set up periodic update checks (every 60 seconds)
+              // Store interval ID for cleanup
+              updateCheckInterval = setInterval(() => {
+                console.log('Checking for service worker updates...');
+                registration.update();
+              }, 60000);
+              
               // Check for updates
               registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
@@ -77,6 +99,13 @@
             .catch((error) => {
               console.log('SW registration failed:', error);
             });
+        });
+        
+        // Clean up interval when page is unloaded
+        window.addEventListener('beforeunload', () => {
+          if (updateCheckInterval) {
+            clearInterval(updateCheckInterval);
+          }
         });
       }
 
