@@ -329,6 +329,20 @@ const normalizePatterns = (patterns, rows, bpm, stateBars = null) => {
   return patterns.map(p => normalizePattern(p, rows, bpm, stateBars));
 };
 
+// Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
+// If the value is not one of these, round to the nearest valid value
+const coerceStepsPerBar = (value) => {
+  const validValues = [8, 16, 32, 64];
+  const numValue = ensurePositiveInteger(value, DEFAULT_STEPS_PER_BAR, 8, 64);
+  
+  // Find the closest valid value
+  return validValues.reduce((closest, validValue) => {
+    const currentDiff = Math.abs(numValue - validValue);
+    const closestDiff = Math.abs(numValue - closest);
+    return currentDiff < closestDiff ? validValue : closest;
+  }, validValues[0]);
+};
+
 const toSnapshot = (state) => ({
   version: 4, // Increment version for pattern support
   name: state.name,
@@ -348,7 +362,8 @@ const toSnapshot = (state) => ({
 const normalizeState = (state) => {
   const bpm = clamp(state.bpm ?? DEFAULT_BPM, 30, 260);
   const rows = ensurePositiveInteger(state.rows, DEFAULT_ROWS, 1, 32);
-  const stepsPerBar = ensurePositiveInteger(state.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
+  // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
+  const stepsPerBar = coerceStepsPerBar(state.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
   const desiredBars = ensurePositiveInteger(state.bars, DEFAULT_BARS, 1, 512);
   const bars = ensureBarsWithinLimit(bpm, desiredBars);
   // internal storage uses BASE_RESOLUTION per bar
@@ -717,7 +732,8 @@ const createProjectStore = () => {
     setStepsPerBar(value) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        const stepsPerBar = ensurePositiveInteger(value, state.stepsPerBar, 4, 64);
+        // Coerce to valid values (8, 16, 32, 64) for proper 4/4 time alignment
+        const stepsPerBar = coerceStepsPerBar(value);
         return normalizeState({ ...state, stepsPerBar });
       });
       const nextSnapshot = toSnapshot(get(store));
@@ -1019,7 +1035,8 @@ const createProjectStore = () => {
       const bpm = clamp(payload.bpm ?? DEFAULT_BPM, 30, 260);
       const maxBars = calculateMaxBars(bpm);
       const bars = clamp(payload.bars ?? DEFAULT_BARS, 1, maxBars);
-      const stepsPerBar = ensurePositiveInteger(payload.stepsPerBar, DEFAULT_STEPS_PER_BAR, 4, 64);
+      // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
+      const stepsPerBar = coerceStepsPerBar(payload.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
       const patternsPayload = Array.isArray(payload.patterns) && payload.patterns.length > 0 ? payload.patterns : undefined;
       
