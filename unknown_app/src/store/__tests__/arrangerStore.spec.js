@@ -183,4 +183,43 @@ describe('arrangerStore - sequential pattern placement', () => {
     // Block2 should be placed before block1, at beat 8 (16 - 8)
     expect(movedBlock.startBeat).toBe(8);
   });
+
+  it('should handle multiple overlapping blocks correctly', () => {
+    // Create a densely packed lane: blocks at 0-8, 8-16, 16-24
+    addPatternToLane('p1', 0, 0);   // at beat 0
+    addPatternToLane('p2', 0, 8);   // at beat 8
+    addPatternToLane('p3', 0, 16);  // at beat 16
+    
+    const currentBlocks = get(blocks);
+    const block3 = currentBlocks[2];  // The block at beat 16
+    
+    // Try to move block3 to beat 4 (would overlap with both block1 and block2)
+    moveBlock(block3.id, { startBeat: 4 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block3.id);
+    
+    // Block3 should stay at a safe position that doesn't overlap
+    // Since moving to beat 4 overlaps with block2 (8-16), and there's no space
+    // before block1 (would need to be at -4), it should place after block2 at beat 16
+    expect(movedBlock.startBeat).toBe(16);
+    
+    // Verify no overlaps exist
+    const allBlocks = get(blocks);
+    for (let i = 0; i < allBlocks.length; i++) {
+      for (let j = i + 1; j < allBlocks.length; j++) {
+        const b1 = allBlocks[i];
+        const b2 = allBlocks[j];
+        if (b1.lane !== b2.lane) continue;
+        
+        const p1 = get(patterns).find(p => p.id === b1.patternId);
+        const p2 = get(patterns).find(p => p.id === b2.patternId);
+        const b1End = b1.startBeat + (p1?.lengthInBeats ?? 0);
+        const b2End = b2.startBeat + (p2?.lengthInBeats ?? 0);
+        
+        const overlaps = b1.startBeat < b2End && b1End > b2.startBeat;
+        expect(overlaps).toBe(false);
+      }
+    }
+  });
 });

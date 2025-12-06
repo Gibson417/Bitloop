@@ -119,28 +119,44 @@ export const moveBlock = (blockId, { startBeat, lane } = {}) => {
     
     let finalStart = Math.max(0, snappedStart);
     
-    // Check if the desired position overlaps with any existing block
-    for (const otherBlock of laneBlocks) {
-      const otherPattern = getPatternById(otherBlock.patternId);
-      const otherLength = otherPattern?.lengthInBeats ?? 0;
-      const otherEnd = otherBlock.startBeat + otherLength;
-      
-      // Check if blocks overlap
-      const overlaps = finalStart < otherEnd && finalStart + patternLength > otherBlock.startBeat;
-      
-      if (overlaps) {
-        // Try to swap positions instead of pushing to the end
-        const gapBefore = otherBlock.startBeat;
-        const gapAfter = otherEnd;
-        
-        // If there's enough space before this block, place it there
-        if (gapBefore >= patternLength) {
-          finalStart = Math.max(0, gapBefore - patternLength);
-          break;
+    // Helper to check if a position overlaps with any block
+    const hasOverlap = (start) => {
+      for (const otherBlock of laneBlocks) {
+        const otherPattern = getPatternById(otherBlock.patternId);
+        const otherLength = otherPattern?.lengthInBeats ?? 0;
+        const otherEnd = otherBlock.startBeat + otherLength;
+        if (start < otherEnd && start + patternLength > otherBlock.startBeat) {
+          return true;
         }
-        // Otherwise, place it after this block
-        else {
-          finalStart = gapAfter;
+      }
+      return false;
+    };
+    
+    // If the desired position has overlap, find a safe position
+    if (hasOverlap(finalStart)) {
+      // Try to find the first overlapping block
+      for (const otherBlock of laneBlocks) {
+        const otherPattern = getPatternById(otherBlock.patternId);
+        const otherLength = otherPattern?.lengthInBeats ?? 0;
+        const otherEnd = otherBlock.startBeat + otherLength;
+        
+        const overlaps = finalStart < otherEnd && finalStart + patternLength > otherBlock.startBeat;
+        
+        if (overlaps) {
+          // Try to place before this block if there's enough space
+          const candidateBefore = otherBlock.startBeat - patternLength;
+          if (candidateBefore >= 0 && !hasOverlap(candidateBefore)) {
+            finalStart = candidateBefore;
+            break;
+          }
+          // Otherwise, try placing after this block
+          const candidateAfter = otherEnd;
+          if (!hasOverlap(candidateAfter)) {
+            finalStart = candidateAfter;
+            break;
+          }
+          // If after also overlaps, continue to push further
+          finalStart = candidateAfter;
         }
       }
     }
