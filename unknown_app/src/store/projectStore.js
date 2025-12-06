@@ -1172,11 +1172,13 @@ const createProjectStore = () => {
     },
     reorderPattern(fromIndex, toIndex) {
       const prevSnapshot = toSnapshot(get(store));
+      let didChange = false;
       update((state) => {
         if (fromIndex < 0 || fromIndex >= state.patterns.length) return state;
         if (toIndex < 0 || toIndex >= state.patterns.length) return state;
         if (fromIndex === toIndex) return state;
 
+        didChange = true;
         const patterns = [...state.patterns];
         const [movedPattern] = patterns.splice(fromIndex, 1);
         patterns.splice(toIndex, 0, movedPattern);
@@ -1193,7 +1195,9 @@ const createProjectStore = () => {
 
         return normalizeState({ ...state, patterns, selectedPattern: newSelectedPattern });
       });
-      pushHistory(prevSnapshot);
+      if (didChange) {
+        pushHistory(prevSnapshot);
+      }
     }
   };
 };
