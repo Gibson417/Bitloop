@@ -565,9 +565,10 @@
       const noteEnd = storageStart + storageLength;
       
       // For articulation: reserve one extra storage step after the note as a gap
-      // This ensures adjacent notes don't merge, even for 1/64th notes
-      // The gap is visual only - it's not painted, just reserved in the range tracking
-      const reservedEnd = noteEnd + ARTICULATION_GAP;
+      // Only apply gap when note length was reduced (noteStorageLength > 1)
+      // For 1-step notes (64th notes), no gap is needed as they can't be reduced further
+      // This allows placing 64th notes side by side while preventing longer notes from merging
+      const reservedEnd = noteStorageLength > 1 ? noteEnd + ARTICULATION_GAP : noteEnd;
       
       // Check if the new note would overlap with any existing painted range
       const overlaps = rowRanges.some(range => {
