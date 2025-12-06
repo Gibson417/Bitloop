@@ -565,7 +565,7 @@
       const noteEnd = storageStart + storageLength;
       
       // For articulation: reserve one extra storage step after the note as a gap
-      // Only apply gap when note length was reduced (noteStorageLength > 1)
+      // Only apply gap when note storage length is greater than 1 step
       // For 1-step notes (64th notes), no gap is needed as they can't be reduced further
       // This allows placing 64th notes side by side while preventing longer notes from merging
       const reservedEnd = noteStorageLength > 1 ? noteEnd + ARTICULATION_GAP : noteEnd;

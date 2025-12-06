@@ -93,7 +93,7 @@ describe('Grid - 64th Note Placement', () => {
     // Expected: 4 notes should be placed
     // With BASE_RESOLUTION=64, stepsPerBar=16, zoomLevel=64:
     // storagePerDisplay = 64/64 = 1
-    // 64th note = 64/64 = 1 storage step (with gap would be 0, but minimum is 1)
+    // For 64th notes (1 storage step), length remains 1
     // Column 0: storageStart = 0
     // Column 1: storageStart = 1
     // Column 2: storageStart = 2
@@ -101,9 +101,7 @@ describe('Grid - 64th Note Placement', () => {
     
     console.log('Dispatched events:', dispatchedEvents);
     
-    // CURRENT ISSUE: Due to ARTICULATION_GAP, only the first note gets placed
-    // because each note reserves 1 extra step, preventing adjacent placement
-    // EXPECTED: All 4 notes should be placed
+    // All 4 notes should be placed side by side
     expect(dispatchedEvents.length).toBe(4);
     
     for (let i = 0; i < 4; i++) {
