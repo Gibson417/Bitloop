@@ -149,22 +149,47 @@
 
   let dragContext = null;
   let draggedPatternId = null;
+  let draggedPatternIndex = null;
   let laneDragOver = false;
+  let dropTargetIndex = null;
 
   const snapBeat = (beat) => Math.round(beat / BEAT_SNAP) * BEAT_SNAP;
 
-  const handlePatternDragStart = (event, patternId) => {
+  const handlePatternDragStart = (event, patternId, index) => {
     draggedPatternId = patternId;
+    draggedPatternIndex = index;
     laneDragOver = false;
     if (event.dataTransfer) {
       event.dataTransfer.setData('text/plain', patternId);
-      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.effectAllowed = 'copyMove';
     }
   };
 
   const handlePatternDragEnd = () => {
     draggedPatternId = null;
+    draggedPatternIndex = null;
     laneDragOver = false;
+    dropTargetIndex = null;
+  };
+
+  const handlePatternDragOver = (event, index) => {
+    if (draggedPatternIndex === null) return;
+    event.preventDefault();
+    dropTargetIndex = index;
+  };
+
+  const handlePatternDragLeave = () => {
+    if (draggedPatternIndex !== null) {
+      dropTargetIndex = null;
+    }
+  };
+
+  const handlePatternDrop = (event, index) => {
+    event.preventDefault();
+    if (draggedPatternIndex !== null && draggedPatternIndex !== index) {
+      dispatch('patternreorder', { fromIndex: draggedPatternIndex, toIndex: index });
+    }
+    dropTargetIndex = null;
   };
 
   const handleBlockPointerDown = (event, block) => {
@@ -281,13 +306,18 @@
           <div 
             class="pattern-item"
             class:selected={index === selectedPattern}
+            class:dragging={draggedPatternIndex === index}
+            class:drop-target={dropTargetIndex === index && draggedPatternIndex !== index}
             role="button"
             tabindex="0"
             on:click={() => handlePatternSelect(index)}
             on:keydown={(e) => handleKeyNavigation(e, index)}
             draggable="true"
-            on:dragstart={(event) => handlePatternDragStart(event, pattern.id)}
+            on:dragstart={(event) => handlePatternDragStart(event, pattern.id, index)}
             on:dragend={handlePatternDragEnd}
+            on:dragover={(event) => handlePatternDragOver(event, index)}
+            on:dragleave={handlePatternDragLeave}
+            on:drop={(event) => handlePatternDrop(event, index)}
             aria-label="Pattern {index + 1}: {pattern.name}"
           >
             <div class="pattern-main">

@@ -1169,6 +1169,31 @@ const createProjectStore = () => {
       if (snapshotSignature(prevSnapshot) !== snapshotSignature(nextSnapshot)) {
         pushHistory(prevSnapshot);
       }
+    },
+    reorderPattern(fromIndex, toIndex) {
+      const prevSnapshot = toSnapshot(get(store));
+      update((state) => {
+        if (fromIndex < 0 || fromIndex >= state.patterns.length) return state;
+        if (toIndex < 0 || toIndex >= state.patterns.length) return state;
+        if (fromIndex === toIndex) return state;
+
+        const patterns = [...state.patterns];
+        const [movedPattern] = patterns.splice(fromIndex, 1);
+        patterns.splice(toIndex, 0, movedPattern);
+
+        // Update selectedPattern to follow the pattern that was selected
+        let newSelectedPattern = state.selectedPattern;
+        if (state.selectedPattern === fromIndex) {
+          newSelectedPattern = toIndex;
+        } else if (fromIndex < state.selectedPattern && toIndex >= state.selectedPattern) {
+          newSelectedPattern = state.selectedPattern - 1;
+        } else if (fromIndex > state.selectedPattern && toIndex <= state.selectedPattern) {
+          newSelectedPattern = state.selectedPattern + 1;
+        }
+
+        return normalizeState({ ...state, patterns, selectedPattern: newSelectedPattern });
+      });
+      pushHistory(prevSnapshot);
     }
   };
 };
