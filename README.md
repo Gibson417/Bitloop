@@ -23,10 +23,10 @@ UNKNOWN is available as a Progressive Web App (PWA) that works great on Chromebo
 2. Click the **install icon** (⊕) in the address bar, or open Chrome menu (⋮) → "Install UNKNOWN..."
 3. The app will install and appear in your app launcher like a native app
 
-> **Tip:** The PWA automatically updates to the latest version whenever you're online. It also works offline after first install and runs in its own window without browser UI.
+> **Tip:** The PWA automatically checks for updates every 60 seconds when the app is open. When a new version is available, you'll see a notification prompting you to update. The app also works offline after first install and runs in its own window without browser UI.
 
 ### Web Browser
-Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed! The browser version automatically stays up to date.
+Simply open [UNKNOWN in your browser](https://gibson417.github.io/Bitloop/) - no installation needed! The browser version automatically checks for updates every 60 seconds and will notify you when a new version is available.
 
 > **Troubleshooting:** If you see a blank page or the README instead of the app, try clearing your browser cache or opening in an incognito/private window. Repository owners: make sure GitHub Pages is configured to deploy from "GitHub Actions" in Settings → Pages.
 
@@ -184,7 +184,7 @@ The app will be available at `https://<username>.github.io/<repo>/`
 
 > **Important:** If you see the README rendered instead of the app, GitHub Pages is likely configured incorrectly. Go to Settings → Pages and change the Source to "GitHub Actions".
 
-**PWA Auto-Updates:** The service worker cache version is automatically updated during each build to ensure users receive the latest version. When users visit the PWA, they will be notified of available updates and prompted to refresh.
+**PWA Auto-Updates:** The service worker cache version is automatically updated during each build to ensure users receive the latest version. The app checks for updates every 60 seconds while running, and when a new version is available, users are notified with a toast message and prompted to refresh. The `updateViaCache: 'none'` option ensures the browser doesn't cache the service worker file itself, guaranteeing fresh update checks.
 
 ### Downloading the Desktop Application (Windows .exe)
 
