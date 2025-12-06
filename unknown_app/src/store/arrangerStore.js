@@ -178,6 +178,26 @@ export const removeBlock = (blockId) => {
   blocks.update((current) => current.filter((block) => block.id !== blockId));
 };
 
+export const swapBlocks = (blockId1, blockId2) => {
+  blocks.update((current) => {
+    const block1 = current.find((b) => b.id === blockId1);
+    const block2 = current.find((b) => b.id === blockId2);
+    
+    if (!block1 || !block2) return current;
+    if (block1.lane !== block2.lane) return current;
+    
+    // Swap the startBeat values of the two blocks
+    return current.map((b) => {
+      if (b.id === blockId1) {
+        return { ...b, startBeat: block2.startBeat };
+      } else if (b.id === blockId2) {
+        return { ...b, startBeat: block1.startBeat };
+      }
+      return b;
+    });
+  });
+};
+
 export const setLoopLength = (beats) => {
   playback.update((state) => ({ ...state, loopLengthBeats: Math.max(beats, state.beatsPerBar) }));
 };

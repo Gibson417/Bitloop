@@ -223,3 +223,77 @@ describe('arrangerStore - sequential pattern placement', () => {
     }
   });
 });
+
+describe('arrangerStore - block swapping', () => {
+  beforeEach(() => {
+    resetArrangerState();
+    patterns.set([
+      { id: 'p1', name: 'Pattern 1', color: '#78d2b9', lengthInBeats: 8 },
+      { id: 'p2', name: 'Pattern 2', color: '#ff6b9d', lengthInBeats: 8 }
+    ]);
+  });
+
+  it('should swap positions of two blocks in the same lane', async () => {
+    const { swapBlocks } = await import('../arrangerStore.js');
+    
+    addPatternToLane('p1', 0, 0);   // at beat 0
+    addPatternToLane('p2', 0, 8);   // at beat 8
+    
+    const currentBlocks = get(blocks);
+    const block1 = currentBlocks[0];
+    const block2 = currentBlocks[1];
+    
+    expect(block1.startBeat).toBe(0);
+    expect(block2.startBeat).toBe(8);
+    
+    // Swap the blocks
+    swapBlocks(block1.id, block2.id);
+    
+    const swappedBlocks = get(blocks);
+    const swappedBlock1 = swappedBlocks.find(b => b.id === block1.id);
+    const swappedBlock2 = swappedBlocks.find(b => b.id === block2.id);
+    
+    expect(swappedBlock1.startBeat).toBe(8);
+    expect(swappedBlock2.startBeat).toBe(0);
+  });
+
+  it('should not swap blocks in different lanes', async () => {
+    const { swapBlocks } = await import('../arrangerStore.js');
+    
+    addPatternToLane('p1', 0, 0);   // lane 0, beat 0
+    addPatternToLane('p2', 1, 0);   // lane 1, beat 0
+    
+    const currentBlocks = get(blocks);
+    const block1 = currentBlocks[0];
+    const block2 = currentBlocks[1];
+    
+    const initialBlock1Start = block1.startBeat;
+    const initialBlock2Start = block2.startBeat;
+    
+    // Try to swap blocks from different lanes
+    swapBlocks(block1.id, block2.id);
+    
+    const afterBlocks = get(blocks);
+    const afterBlock1 = afterBlocks.find(b => b.id === block1.id);
+    const afterBlock2 = afterBlocks.find(b => b.id === block2.id);
+    
+    // Positions should not change
+    expect(afterBlock1.startBeat).toBe(initialBlock1Start);
+    expect(afterBlock2.startBeat).toBe(initialBlock2Start);
+  });
+
+  it('should handle swapping non-existent blocks gracefully', async () => {
+    const { swapBlocks } = await import('../arrangerStore.js');
+    
+    addPatternToLane('p1', 0, 0);
+    
+    const currentBlocks = get(blocks);
+    const blocksBefore = currentBlocks.length;
+    
+    // Try to swap with a non-existent block
+    swapBlocks(currentBlocks[0].id, 'non-existent-id');
+    
+    const afterBlocks = get(blocks);
+    expect(afterBlocks.length).toBe(blocksBefore);
+  });
+});
