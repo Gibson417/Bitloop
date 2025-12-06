@@ -70,17 +70,23 @@ let indexContent = fs.readFileSync(indexPath, 'utf8');
 // Add cache-busting parameter to service worker registration
 // Replace: navigator.serviceWorker.register('./sw.js' or navigator.serviceWorker.register('./sw.js?v=...'
 // With: navigator.serviceWorker.register('./sw.js?v=VERSION'
-const swRegisterRegex = /(navigator\.serviceWorker\.register\()['"]\.\/sw\.js(?:\?v=[^'"]*)?['"]/;
+const swRegisterRegex = /(navigator\.serviceWorker\.register\()(['"])\.\/sw\.js(?:\?v=[^'"]*)?(['"])/;
 const updatedIndexContent = indexContent.replace(
   swRegisterRegex,
-  `$1'./sw.js?v=${newCacheVersion}'`
+  (match, openParen, openQuote, closeQuote) => {
+    // Use the same quote type as the original
+    const quote = openQuote;
+    return `${openParen}${quote}./sw.js?v=${newCacheVersion}${quote}`;
+  }
 );
 
 // Verify the replacement was successful using a precise regex check
-const verifyRegex = new RegExp(`navigator\\.serviceWorker\\.register\\(['"]\\.\\/sw\\.js\\?v=${newCacheVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`);
+// The verification pattern matches the actual output format and uses backreference for quote matching
+const escapedVersion = newCacheVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const verifyRegex = new RegExp(`navigator\\.serviceWorker\\.register\\((['"])\\.\\/sw\\.js\\?v=${escapedVersion}\\1`);
 if (!verifyRegex.test(updatedIndexContent)) {
   console.error('❌ Error: Failed to update service worker registration in index.html');
-  console.error('Expected to find: navigator.serviceWorker.register(\'./sw.js?v=' + newCacheVersion + '\')');
+  console.error('Expected to find: navigator.serviceWorker.register(\'./sw.js?v=' + newCacheVersion + '\') or with double quotes');
   process.exit(1);
 }
 
