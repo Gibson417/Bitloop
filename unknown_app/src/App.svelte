@@ -27,6 +27,11 @@
   import { getRowNoteNames } from './lib/notes.js';
   import { devMode } from './store/devModeStore.js';
 
+  // Constants for Steps/Bar validation
+  const STEPS_PER_BAR_MIN = 4;
+  const STEPS_PER_BAR_MAX = 64;
+  const STEPS_PER_BAR_STEP = 4; // For 4/4 time alignment
+
   let projectState;
   let historyState;
   let gridHistoryState;
@@ -487,15 +492,15 @@
 
   const handleStepsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
-    // Validate that value is divisible by 4 for proper 4/4 time alignment
-    if (value % 4 !== 0) {
-      // Round to nearest multiple of 4
-      const roundedValue = Math.round(value / 4) * 4;
-      const clampedValue = Math.max(4, Math.min(64, roundedValue));
+    // Validate that value is divisible by STEPS_PER_BAR_STEP for proper 4/4 time alignment
+    if (value % STEPS_PER_BAR_STEP !== 0) {
+      // Round to nearest multiple of STEPS_PER_BAR_STEP
+      const roundedValue = Math.round(value / STEPS_PER_BAR_STEP) * STEPS_PER_BAR_STEP;
+      const clampedValue = Math.max(STEPS_PER_BAR_MIN, Math.min(STEPS_PER_BAR_MAX, roundedValue));
       project.setStepsPerBar(clampedValue);
       // Log warning in dev mode only
       if (devModeEnabled) {
-        console.warn(`Steps/Bar should be divisible by 4 for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
+        console.warn(`Steps/Bar should be divisible by ${STEPS_PER_BAR_STEP} for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
       }
     } else {
       project.setStepsPerBar(value);
@@ -1189,13 +1194,13 @@
             <input
               id="tempo-bar-steps"
               type="number"
-              min="4"
-              max="64"
-              step="4"
+              min={STEPS_PER_BAR_MIN}
+              max={STEPS_PER_BAR_MAX}
+              step={STEPS_PER_BAR_STEP}
               value={stepsPerBar}
               on:change={handleStepsChange}
               class="tempo-bar-input"
-              title="Steps per bar (must be divisible by 4 for 4/4 time)"
+              title="Steps per bar (must be divisible by {STEPS_PER_BAR_STEP} for 4/4 time)"
             />
           </div>
           <div class="tempo-bar-field">
