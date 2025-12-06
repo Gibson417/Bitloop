@@ -134,9 +134,9 @@
     const totalDisplayColumns = Math.floor(logicalColumns * logicalToDisplayScale);
     
     // Visible columns is constrained by screen width, not zoom level
-    // Must be divisible by 4 for proper 4/4 time signature alignment (quarter notes)
+    // Must be divisible by stepsPerBar for proper 4/4 time signature alignment (complete bars)
     let rawVisibleColumns = Math.max(MIN_VISIBLE_COLUMNS, Math.min(maxColumnsForWidth, totalDisplayColumns));
-    let visibleColumns = Math.floor(rawVisibleColumns / 4) * 4; // Round down to nearest multiple of 4
+    let visibleColumns = Math.floor(rawVisibleColumns / stepsPerBarSafe) * stepsPerBarSafe; // Round down to nearest multiple of stepsPerBar
     if (visibleColumns < MIN_VISIBLE_COLUMNS) {
       visibleColumns = MIN_VISIBLE_COLUMNS; // MIN_VISIBLE_COLUMNS is 8, which is divisible by 4
     }
@@ -211,7 +211,7 @@
       // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
       const isZoomed = zoom && zoom > stepsPerBarSafe;
       
-      for (let col = 0; col <= visibleColumns; col++) {
+      for (let col = 0; col < visibleColumns; col++) {
         // Map displayed column back to logical step using inverse scale
         // Display column → logical step
         const displayCol = windowOffset + col;
@@ -240,6 +240,20 @@
           continue; // Skip non-boundary lines in normal view
         }
         
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, layout.height);
+        ctx.stroke();
+      }
+      
+      // Draw closing line at right edge only if it aligns with a bar boundary
+      const rightEdgeDisplayCol = windowOffset + visibleColumns;
+      const rightEdgeLogicalStep = rightEdgeDisplayCol / logicalToDisplayScale;
+      const isRightEdgeBarBoundary = Math.abs(rightEdgeLogicalStep % stepsPerBarSafe) < 0.01;
+      
+      if (isRightEdgeBarBoundary) {
+        const x = visibleColumns * cellSize + 0.5;
+        ctx.strokeStyle = hexToRgba(trackColor, 0.75);
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, layout.height);
