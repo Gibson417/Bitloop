@@ -101,18 +101,77 @@ export const addPatternToLane = (patternId, lane = 0, explicitStartBeat = null) 
 };
 
 export const moveBlock = (blockId, { startBeat, lane } = {}) => {
-  blocks.update((current) =>
-    current.map((block) => {
-      if (block.id !== blockId) return block;
-      const nextLane = lane ?? block.lane;
-      const desiredStart = startBeat ?? block.startBeat;
-      const snappedStart = snapBeat(desiredStart);
-
-      // Moving a block should honor the requested position while snapping to the beat grid.
-      // Avoid auto-shifting to the end of overlapping blocks so manual moves behave predictably.
-      return { ...block, lane: nextLane, startBeat: snappedStart };
-    })
-  );
+  blocks.update((current) => {
+    const block = current.find((b) => b.id === blockId);
+    if (!block) return current;
+    
+    const nextLane = lane ?? block.lane;
+    const desiredStart = startBeat ?? block.startBeat;
+    const snappedStart = snapBeat(desiredStart);
+    
+    const pattern = getPatternById(block.patternId);
+    const patternLength = pattern?.lengthInBeats ?? 0;
+    
+    // Check for overlaps and find safe position
+    const laneBlocks = current
+      .filter((b) => b.lane === nextLane && b.id !== blockId)
+      .sort((a, b) => a.startBeat - b.startBeat);
+    
+    // Cache pattern lengths to avoid repeated lookups
+    const blockLengths = new Map();
+    for (const otherBlock of laneBlocks) {
+      const otherPattern = getPatternById(otherBlock.patternId);
+      blockLengths.set(otherBlock.id, otherPattern?.lengthInBeats ?? 0);
+    }
+    
+    let finalStart = Math.max(0, snappedStart);
+    
+    // Helper to check if two blocks overlap
+    const blocksOverlap = (start1, length1, start2, length2) => {
+      return start1 < start2 + length2 && start1 + length1 > start2;
+    };
+    
+    // Helper to check if a position overlaps with any block
+    const hasOverlap = (start) => {
+      for (const otherBlock of laneBlocks) {
+        const otherLength = blockLengths.get(otherBlock.id) ?? 0;
+        if (blocksOverlap(start, patternLength, otherBlock.startBeat, otherLength)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    
+    // If the desired position has overlap, find a safe position
+    if (hasOverlap(finalStart)) {
+      // Try to find the first overlapping block
+      for (const otherBlock of laneBlocks) {
+        const otherLength = blockLengths.get(otherBlock.id) ?? 0;
+        const otherEnd = otherBlock.startBeat + otherLength;
+        
+        if (blocksOverlap(finalStart, patternLength, otherBlock.startBeat, otherLength)) {
+          // Try to place before this block if there's enough space
+          const candidateBefore = otherBlock.startBeat - patternLength;
+          if (candidateBefore >= 0 && !hasOverlap(candidateBefore)) {
+            finalStart = candidateBefore;
+            break;
+          }
+          // Otherwise, try placing after this block
+          const candidateAfter = otherEnd;
+          if (!hasOverlap(candidateAfter)) {
+            finalStart = candidateAfter;
+            break;
+          }
+          // If after also overlaps, keep trying with next overlapping block
+          // This ensures we eventually find a non-overlapping position
+        }
+      }
+    }
+    
+    return current.map((b) => 
+      b.id === blockId ? { ...b, lane: nextLane, startBeat: finalStart } : b
+    );
+  });
 };
 
 export const removeBlock = (blockId) => {

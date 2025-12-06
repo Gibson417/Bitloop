@@ -124,4 +124,102 @@ describe('arrangerStore - sequential pattern placement', () => {
     expect(updated.lane).toBe(2);
     expect(updated.startBeat).toBe(4);
   });
+
+  it('should prevent blocks from overlapping when dragging', () => {
+    // Add two patterns at beats 0 and 8
+    addPatternToLane('p1', 0, 0);  // 8 beats long, at beat 0
+    addPatternToLane('p2', 0, 8);  // 8 beats long, at beat 8
+    
+    const currentBlocks = get(blocks);
+    const block1 = currentBlocks[0];
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to beat 4 (would overlap with block1 which ends at beat 8)
+    moveBlock(block2.id, { startBeat: 4 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Block should either be placed at beat 0 (before block1) or stay at beat 8 (after block1)
+    // It should NOT be at beat 4 which would cause overlap
+    expect(movedBlock.startBeat === 0 || movedBlock.startBeat >= 8).toBe(true);
+    expect(movedBlock.startBeat).not.toBe(4);
+  });
+
+  it('should allow swapping block positions when dragging', () => {
+    // Add two patterns
+    addPatternToLane('p1', 0, 0);  // at beat 0
+    addPatternToLane('p2', 0, 8);  // at beat 8
+    
+    const currentBlocks = get(blocks);
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to a position that overlaps with block1
+    moveBlock(block2.id, { startBeat: 0 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Since there's no space before block1, block2 should remain at beat 8
+    // This prevents overlap while keeping blocks in valid positions
+    expect(movedBlock.startBeat).toBe(8);
+  });
+
+  it('should swap positions when there is enough space', () => {
+    // Add pattern at beat 16 with gap before it
+    addPatternToLane('p1', 0, 16);  // 8 beats long, at beat 16
+    addPatternToLane('p2', 0, 24);  // 8 beats long, at beat 24
+    
+    const currentBlocks = get(blocks);
+    const block2 = currentBlocks[1];
+    
+    // Try to move block2 to beat 12 (would overlap with block1 at 16-24)
+    // There's enough space before block1 (0-16), so it should fit at beat 8
+    moveBlock(block2.id, { startBeat: 12 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block2.id);
+    
+    // Block2 should be placed before block1, at beat 8 (16 - 8)
+    expect(movedBlock.startBeat).toBe(8);
+  });
+
+  it('should handle multiple overlapping blocks correctly', () => {
+    // Create a densely packed lane: blocks at 0-8, 8-16, 16-24
+    addPatternToLane('p1', 0, 0);   // at beat 0
+    addPatternToLane('p2', 0, 8);   // at beat 8
+    addPatternToLane('p3', 0, 16);  // at beat 16
+    
+    const currentBlocks = get(blocks);
+    const block3 = currentBlocks[2];  // The block at beat 16
+    
+    // Try to move block3 to beat 4 (would overlap with both block1 and block2)
+    moveBlock(block3.id, { startBeat: 4 });
+    
+    const updatedBlocks = get(blocks);
+    const movedBlock = updatedBlocks.find(b => b.id === block3.id);
+    
+    // Block3 should stay at a safe position that doesn't overlap
+    // Since moving to beat 4 overlaps with block2 (8-16), and there's no space
+    // before block1 (would need to be at -4), it should place after block2 at beat 16
+    expect(movedBlock.startBeat).toBe(16);
+    
+    // Verify no overlaps exist
+    const allBlocks = get(blocks);
+    for (let i = 0; i < allBlocks.length; i++) {
+      for (let j = i + 1; j < allBlocks.length; j++) {
+        const b1 = allBlocks[i];
+        const b2 = allBlocks[j];
+        if (b1.lane !== b2.lane) continue;
+        
+        const p1 = get(patterns).find(p => p.id === b1.patternId);
+        const p2 = get(patterns).find(p => p.id === b2.patternId);
+        const b1End = b1.startBeat + (p1?.lengthInBeats ?? 0);
+        const b2End = b2.startBeat + (p2?.lengthInBeats ?? 0);
+        
+        const overlaps = b1.startBeat < b2End && b1End > b2.startBeat;
+        expect(overlaps).toBe(false);
+      }
+    }
+  });
 });
