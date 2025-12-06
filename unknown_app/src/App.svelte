@@ -774,6 +774,16 @@
       if (!disposed) {
         await attemptLoadSharedSnapshot();
       }
+      // Log project settings for debugging deployment issues
+      if (!disposed && projectState) {
+        console.log('UNKNOWN App - Project Settings:', {
+          bars: projectState.bars,
+          stepsPerBar: projectState.stepsPerBar,
+          totalSteps: projectState.bars * projectState.stepsPerBar,
+          bpm: projectState.bpm,
+          defaultStepsPerBar: 16 // Expected default
+        });
+      }
     };
     // Run boot and surface any errors to the UI so we don't leave the user on a white screen.
     boot().catch((err) => {
@@ -1160,6 +1170,20 @@
               value={totalBars}
               on:change={handleBarsChange}
               class="tempo-bar-input"
+            />
+          </div>
+          <div class="tempo-bar-field">
+            <label for="tempo-bar-steps" class="tempo-bar-label">Steps/Bar</label>
+            <input
+              id="tempo-bar-steps"
+              type="number"
+              min="4"
+              max="64"
+              step="4"
+              value={stepsPerBar}
+              on:change={handleStepsChange}
+              class="tempo-bar-input"
+              title="Steps per bar (must be divisible by 4 for 4/4 time)"
             />
           </div>
           <div class="tempo-bar-field">
