@@ -1,5 +1,6 @@
 // Service Worker for UNKNOWN PWA
-// Cache version is updated on each deployment to ensure users get the latest version
+// Cache version is automatically updated during build to ensure users get the latest version
+// Note: The version below is a placeholder - it will be replaced with a unique version during npm run build
 const CACHE_NAME = 'unknown-v3';
 
 // Install event - cache core assets

@@ -184,6 +184,8 @@ The app will be available at `https://<username>.github.io/<repo>/`
 
 > **Important:** If you see the README rendered instead of the app, GitHub Pages is likely configured incorrectly. Go to Settings → Pages and change the Source to "GitHub Actions".
 
+**PWA Auto-Updates:** The service worker cache version is automatically updated during each build to ensure users receive the latest version. When users visit the PWA, they will be notified of available updates and prompted to refresh.
+
 ### Downloading the Desktop Application (Windows .exe)
 
 You can download the portable Windows executable directly from [GitHub Releases](https://github.com/Gibson417/Bitloop/releases):
