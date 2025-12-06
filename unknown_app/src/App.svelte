@@ -27,10 +27,8 @@
   import { getRowNoteNames } from './lib/notes.js';
   import { devMode } from './store/devModeStore.js';
 
-  // Constants for Steps/Bar validation
-  const STEPS_PER_BAR_MIN = 4;
-  const STEPS_PER_BAR_MAX = 64;
-  const STEPS_PER_BAR_STEP = 4; // For 4/4 time alignment
+  // Note: stepsPerBar is now automatically synced with zoom level (8, 16, 32, or 64)
+  // to ensure proper 4/4 time alignment
 
   let projectState;
   let historyState;
@@ -365,6 +363,13 @@
       selectedNoteLength = zoomAlignedLength;
     }
     
+    // Automatically sync stepsPerBar with zoom level for proper 4/4 time alignment
+    // This ensures stepsPerBar is always 8, 16, 32, or 64
+    project.setStepsPerBar(zoomLevel);
+    if (scheduler) {
+      scheduler.setStepsPerBeat(zoomLevel / 4);
+    }
+    
     // When zoom changes, reset manual window to ensure it's valid
     // If we're in manual mode, try to keep approximately the same position
     if (manualWindow !== null && oldZoom !== zoomLevel) {
@@ -488,28 +493,6 @@
   const handleBarsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
     project.setBars(value);
-  };
-
-  const handleStepsChange = (event) => {
-    const value = Number(event.detail?.value ?? event.target?.value);
-    // UI-level validation for 4/4 time alignment (in addition to store's bounds checking)
-    // The store validates min/max (4-64), but we also want to ensure values are
-    // multiples of 4 for proper beat alignment in 4/4 time signature
-    if (value % STEPS_PER_BAR_STEP !== 0) {
-      // Round to nearest multiple of STEPS_PER_BAR_STEP, ensuring minimum value
-      const roundedValue = Math.round(value / STEPS_PER_BAR_STEP) * STEPS_PER_BAR_STEP;
-      const clampedValue = Math.max(STEPS_PER_BAR_MIN, Math.min(STEPS_PER_BAR_MAX, roundedValue || STEPS_PER_BAR_MIN));
-      project.setStepsPerBar(clampedValue);
-      // Log warning in dev mode only
-      if (devModeEnabled) {
-        console.warn(`Steps/Bar should be divisible by ${STEPS_PER_BAR_STEP} for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
-      }
-    } else {
-      project.setStepsPerBar(value);
-    }
-    if (scheduler) {
-      scheduler.setStepsPerBeat(get(project).stepsPerBar / 4);
-    }
   };
 
   const handleNoteLengthSelect = (value) => {
@@ -793,6 +776,16 @@
       if (!disposed) {
         await attemptLoadSharedSnapshot();
       }
+      
+      // Initialize stepsPerBar to match zoom level for proper 4/4 time alignment
+      // This ensures backward compatibility when loading projects with different stepsPerBar values
+      if (!disposed) {
+        project.setStepsPerBar(zoomLevel);
+        if (scheduler) {
+          scheduler.setStepsPerBeat(zoomLevel / 4);
+        }
+      }
+      
       // Log project settings for debugging deployment issues (dev mode only)
       if (!disposed && projectState && devModeEnabled) {
         console.log('UNKNOWN App - Project Settings:', {
@@ -1191,20 +1184,6 @@
               value={totalBars}
               on:change={handleBarsChange}
               class="tempo-bar-input"
-            />
-          </div>
-          <div class="tempo-bar-field">
-            <label for="tempo-bar-steps" class="tempo-bar-label">Steps/Bar</label>
-            <input
-              id="tempo-bar-steps"
-              type="number"
-              min={STEPS_PER_BAR_MIN}
-              max={STEPS_PER_BAR_MAX}
-              step={STEPS_PER_BAR_STEP}
-              value={stepsPerBar}
-              on:change={handleStepsChange}
-              class="tempo-bar-input"
-              title="Steps per bar (must be divisible by {STEPS_PER_BAR_STEP} for 4/4 time)"
             />
           </div>
           <div class="tempo-bar-field">
