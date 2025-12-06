@@ -487,7 +487,16 @@
 
   const handleStepsChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
-    project.setStepsPerBar(value);
+    // Validate that value is divisible by 4 for proper 4/4 time alignment
+    if (value % 4 !== 0) {
+      // Round to nearest multiple of 4
+      const roundedValue = Math.round(value / 4) * 4;
+      const clampedValue = Math.max(4, Math.min(64, roundedValue));
+      project.setStepsPerBar(clampedValue);
+      console.warn(`Steps/Bar should be divisible by 4 for 4/4 time. Adjusted ${value} to ${clampedValue}.`);
+    } else {
+      project.setStepsPerBar(value);
+    }
     if (scheduler) {
       scheduler.setStepsPerBeat(get(project).stepsPerBar / 4);
     }
@@ -774,8 +783,8 @@
       if (!disposed) {
         await attemptLoadSharedSnapshot();
       }
-      // Log project settings for debugging deployment issues
-      if (!disposed && projectState) {
+      // Log project settings for debugging deployment issues (dev mode only)
+      if (!disposed && projectState && devModeEnabled) {
         console.log('UNKNOWN App - Project Settings:', {
           bars: projectState.bars,
           stepsPerBar: projectState.stepsPerBar,
