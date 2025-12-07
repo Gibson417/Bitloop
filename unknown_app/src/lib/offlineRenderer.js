@@ -12,8 +12,9 @@ const getMidiForCell = (track, rowIndex, totalRows) => {
   const indexFromBottom = totalRows - 1 - rowIndex;
   const octaveOffset = Math.floor(indexFromBottom / degrees);
   const degree = scalePattern[indexFromBottom % degrees];
+  const rootNote = track.rootNote ?? 0;
   const octave = Math.min(Math.max((track.octave ?? 4) + octaveOffset, 1), 7);
-  const midi = 12 * (octave + 1) + degree;
+  const midi = 12 * (octave + 1) + degree + rootNote;
   return Math.min(Math.max(midi, 21), 108);
 };
 
@@ -175,6 +176,103 @@ export const renderProjectToWav = async (snapshot) => {
         addTone(context, trackGain, track, frequency, startTime, noteDuration * 0.95);
       }
     }
+  });
+
+  const buffer = await context.startRendering();
+  return encodeWav(buffer);
+};
+
+export const renderArrangerToWav = async (arrangerData, projectPatterns, projectRows, projectBpm) => {
+  if (!arrangerData || !arrangerData.blocks || arrangerData.blocks.length === 0) {
+    throw new Error('No arranger blocks to render');
+  }
+  if (typeof OfflineAudioContext === 'undefined') {
+    throw new Error('Offline audio rendering is not supported in this environment');
+  }
+
+  const blocks = arrangerData.blocks;
+  const bpm = projectBpm ?? 120;
+  const rows = projectRows ?? 8;
+  const beatsPerBar = arrangerData.beatsPerBar ?? 4;
+  const loopLengthBeats = arrangerData.loopLengthBeats ?? 64;
+  const BASE_RESOLUTION = 128; // Must match projectStore.js
+
+  // Calculate total duration
+  const secondsPerBeat = 60 / bpm;
+  const totalSeconds = loopLengthBeats * secondsPerBeat;
+  const beatDuration = secondsPerBeat;
+  const sampleRate = 44100;
+  const frameCount = Math.ceil(totalSeconds * sampleRate);
+  const context = new OfflineAudioContext(2, frameCount, sampleRate);
+
+  const masterGain = context.createGain();
+  masterGain.gain.setValueAtTime(0.8, 0);
+  masterGain.connect(context.destination);
+
+  // Process each block
+  blocks.forEach((block) => {
+    const pattern = projectPatterns.find(p => p.id === block.patternId);
+    if (!pattern || !pattern.tracks) return;
+
+    const blockStartBeat = block.startBeat;
+    const patternBars = pattern.bars || 2;
+    const patternBeats = patternBars * beatsPerBar;
+    const blockEndBeat = Math.min(blockStartBeat + patternBeats, loopLengthBeats);
+
+    // Get audible tracks from the pattern
+    const audibleTracks = pattern.tracks.some((track) => track.solo)
+      ? pattern.tracks.filter((track) => track.solo)
+      : pattern.tracks.filter((track) => !track.mute);
+
+    audibleTracks.forEach((track) => {
+      const trackGain = context.createGain();
+      trackGain.gain.setValueAtTime(track.volume ?? 0.7, 0);
+      trackGain.connect(masterGain);
+
+      // Schedule notes for this block
+      for (let beat = blockStartBeat; beat < blockEndBeat; beat++) {
+        const beatInPattern = beat - blockStartBeat;
+        const loopedBeat = beatInPattern % patternBeats;
+        const stepsPerBeat = BASE_RESOLUTION / beatsPerBar;
+        const stepInPattern = Math.floor(loopedBeat * stepsPerBeat);
+        const maxPatternSteps = patternBars * BASE_RESOLUTION;
+        const storageEnd = Math.min(Math.ceil(stepInPattern + stepsPerBeat), maxPatternSteps);
+        const storageStepDuration = beatDuration / (storageEnd - stepInPattern);
+
+        for (let row = 0; row < rows; row++) {
+          const rowNotes = track.notes?.[row] ?? [];
+
+          for (let storageIndex = stepInPattern; storageIndex < storageEnd; storageIndex++) {
+            if (rowNotes[storageIndex]) {
+              const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : -1;
+              const isNoteStart = prevStorageIndex < 0 || !rowNotes[prevStorageIndex];
+
+              if (isNoteStart) {
+                let noteLength = 1;
+                let nextIndex = storageIndex + 1;
+                while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+                  noteLength++;
+                  nextIndex++;
+                }
+
+                const hasGapAfter = nextIndex < rowNotes.length && !rowNotes[nextIndex];
+                const isLikelyShortened = hasGapAfter && noteLength > 1;
+                const playbackLength = isLikelyShortened ? noteLength + 1 : noteLength;
+                const noteDuration = playbackLength * storageStepDuration;
+
+                const frequency = midiToFrequency(getMidiForCell(track, row, rows));
+                const noteStartOffset = (storageIndex - stepInPattern) * storageStepDuration;
+                const noteTime = beat * secondsPerBeat + noteStartOffset;
+                const minDuration = 0.05;
+                const safeDuration = Math.max(noteDuration, minDuration);
+
+                addTone(context, trackGain, track, frequency, noteTime, safeDuration * 0.95);
+              }
+            }
+          }
+        }
+      }
+    });
   });
 
   const buffer = await context.startRendering();

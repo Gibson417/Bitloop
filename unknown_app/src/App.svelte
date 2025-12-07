@@ -17,14 +17,15 @@
   import PatternArranger from './components/PatternArranger.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
   import UpdateNotification from './components/UpdateNotification.svelte';
+  import RenderDialog from './components/RenderDialog.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION, DEFAULT_STEPS_PER_BAR_VALUE } from './store/projectStore.js';
-  import { playback as arrangerPlayback, blocksWithPattern, stopPlayback as stopArrangerPlayback } from './store/arrangerStore.js';
+  import { playback as arrangerPlayback, blocksWithPattern, stopPlayback as stopArrangerPlayback, blocks as arrangerBlocksStore } from './store/arrangerStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
-  import { renderProjectToWav } from './lib/offlineRenderer.js';
-  import { renderProjectToMidi } from './lib/midiExporter.js';
+  import { renderProjectToWav, renderArrangerToWav } from './lib/offlineRenderer.js';
+  import { renderProjectToMidi, renderArrangerToMidi } from './lib/midiExporter.js';
   import { getCustomWave, connectTrackEffects, buildShareUrl, decodeShareSnapshot, SHARE_TEXT } from './lib/sound.js';
   import { getRowNoteNames } from './lib/notes.js';
   import { devMode } from './store/devModeStore.js';
@@ -44,6 +45,10 @@
   let hoveredComponent = '';
   let arrangerPlaybackState;
   let arrangerBlocks = [];
+  // Render dialog state
+  let renderDialogOpen = false;
+  let renderDialogType = 'wav'; // 'wav' or 'midi'
+  let arrangerBlocksCount = 0;
 
   const unsubscribers = [
     project.subscribe((value) => (projectState = value)),
@@ -55,7 +60,8 @@
     library.subscribe((value) => (libraryState = value)),
     devMode.subscribe((value) => (devModeEnabled = value)),
     arrangerPlayback.subscribe((value) => (arrangerPlaybackState = value)),
-    blocksWithPattern.subscribe((value) => (arrangerBlocks = value))
+    blocksWithPattern.subscribe((value) => (arrangerBlocks = value)),
+    arrangerBlocksStore.subscribe((value) => (arrangerBlocksCount = value.length))
   ];
 
   let audioContext;
@@ -722,30 +728,42 @@
   };
 
   const handleRenderWav = async () => {
-    try {
-      const snapshot = project.toSnapshot();
-      const blob = await renderProjectToWav(snapshot);
-      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.wav`;
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = filename;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to render WAV', error);
-      // eslint-disable-next-line no-alert
-      alert('Unable to render audio at this time.');
+    // Show dialog if there are arranger blocks, otherwise render pattern directly
+    if (arrangerBlocksCount > 0) {
+      renderDialogType = 'wav';
+      renderDialogOpen = true;
+    } else {
+      await renderPattern('wav');
     }
   };
 
   const handleRenderMidi = async () => {
+    // Show dialog if there are arranger blocks, otherwise render pattern directly
+    if (arrangerBlocksCount > 0) {
+      renderDialogType = 'midi';
+      renderDialogOpen = true;
+    } else {
+      await renderPattern('midi');
+    }
+  };
+
+  const handleRenderDialogSelection = async (event) => {
+    const { source } = event.detail;
+    if (source === 'pattern') {
+      await renderPattern(renderDialogType);
+    } else if (source === 'arranger') {
+      await renderArranger(renderDialogType);
+    }
+  };
+
+  const renderPattern = async (type) => {
     try {
       const snapshot = project.toSnapshot();
-      const blob = renderProjectToMidi(snapshot);
-      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.mid`;
+      const blob = type === 'wav' 
+        ? await renderProjectToWav(snapshot)
+        : renderProjectToMidi(snapshot);
+      const extension = type === 'wav' ? 'wav' : 'mid';
+      const filename = `${snapshot.name.replace(/\s+/g, '-').toLowerCase()}-loop.${extension}`;
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
@@ -755,9 +773,41 @@
       document.body.removeChild(anchor);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to render MIDI', error);
+      console.error(`Failed to render ${type.toUpperCase()}`, error);
       // eslint-disable-next-line no-alert
-      alert('Unable to render MIDI at this time.');
+      alert(`Unable to render ${type.toUpperCase()} at this time.`);
+    }
+  };
+
+  const renderArranger = async (type) => {
+    try {
+      const arrangerData = {
+        blocks: get(arrangerBlocksStore),
+        beatsPerBar: arrangerPlaybackState.beatsPerBar ?? 4,
+        loopLengthBeats: arrangerPlaybackState.loopLengthBeats ?? 64
+      };
+      const patterns = projectState?.patterns ?? [];
+      const rows = projectState?.rows ?? 8;
+      const bpm = projectState?.bpm ?? 120;
+      
+      const blob = type === 'wav'
+        ? await renderArrangerToWav(arrangerData, patterns, rows, bpm)
+        : renderArrangerToMidi(arrangerData, patterns, rows, bpm);
+      
+      const extension = type === 'wav' ? 'wav' : 'mid';
+      const filename = `${projectState?.name.replace(/\s+/g, '-').toLowerCase()}-song.${extension}`;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Failed to render arranger ${type.toUpperCase()}`, error);
+      // eslint-disable-next-line no-alert
+      alert(`Unable to render arranger ${type.toUpperCase()} at this time.`);
     }
   };
 
@@ -1028,7 +1078,7 @@
   });
 
   // Handle arranger playback state changes
-  $: if (arrangerPlaybackState?.isPlaying && audioContext) {
+  $: if (arrangerPlaybackState?.isPlaying) {
     startArrangerPlayback();
   } else if (!arrangerPlaybackState?.isPlaying && arrangerScheduler) {
     stopLocalArrangerPlayback();
@@ -1396,6 +1446,12 @@
     <Footer />
   </section>
   <UpdateNotification />
+  <RenderDialog
+    bind:isOpen={renderDialogOpen}
+    renderType={renderDialogType}
+    hasArrangerBlocks={arrangerBlocksCount > 0}
+    on:render={handleRenderDialogSelection}
+  />
 </main>
 
 <style>
