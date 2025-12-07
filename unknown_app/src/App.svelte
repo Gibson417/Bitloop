@@ -782,7 +782,7 @@
   const renderArranger = async (type) => {
     try {
       const arrangerData = {
-        blocks: get(arrangerBlocks),
+        blocks: get(arrangerBlocksStore),
         beatsPerBar: arrangerPlaybackState.beatsPerBar ?? 4,
         loopLengthBeats: arrangerPlaybackState.loopLengthBeats ?? 64
       };
