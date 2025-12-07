@@ -354,11 +354,13 @@
       }
       
       // Draw ghost notes from other tracks (transparent overlay)
+      const GHOST_DOT_OPACITY = 0.2;
+      const GHOST_BAR_OPACITY = 0.15;
+      
       for (const ghostTrack of ghostTracks) {
         // Pre-calculate ghost colors for performance
-        const ghostDotColor = hexToRgba(ghostTrack.color, 0.2);
-        const ghostBarColor = hexToRgba(ghostTrack.color, 0.15);
-        const ghostCapColor = hexToRgba(ghostTrack.color, 0.2);
+        const ghostDotColor = hexToRgba(ghostTrack.color, GHOST_DOT_OPACITY);
+        const ghostBarColor = hexToRgba(ghostTrack.color, GHOST_BAR_OPACITY);
         
         const ghostNoteEvents = extractNoteEvents(ghostTrack.notes, rows);
         
@@ -410,7 +412,7 @@
               ctx.fillRect(barStartX, barY - barHeight / 2, barWidth, barHeight);
               
               // Draw end cap
-              ctx.fillStyle = ghostCapColor;
+              ctx.fillStyle = ghostDotColor; // Same opacity as dot
               ctx.beginPath();
               ctx.arc(barEndX, barY, barHeight / 2, 0, Math.PI * 2);
               ctx.fill();
