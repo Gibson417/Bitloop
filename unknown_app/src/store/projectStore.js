@@ -401,9 +401,10 @@ const normalizeState = (state) => {
     // Use current pattern's tracks
     tracks = patterns[selectedPattern].tracks;
   } else {
-    // Legacy single-track model (backwards compatibility)
+    // No patterns or legacy single-track model (backwards compatibility)
     tracks = normalizeTracks(state.tracks, rows, storageSteps);
-    patterns = [createPattern('A', 'Pattern A', bars, rows, storageSteps, tracks)];
+    // Initialize with empty patterns array instead of default pattern - patterns are now captured via UI interaction
+    patterns = [];
     selectedPattern = 0;
   }
   
@@ -1118,7 +1119,12 @@ const createProjectStore = () => {
         const newId = `pattern-${Date.now()}`;
         const newName = `Pattern ${String.fromCharCode(65 + state.patterns.length)}`;
         const storageSteps = state.bars * BASE_RESOLUTION;
-        const newPattern = createPattern(newId, newName, state.bars, state.rows, storageSteps);
+        // Capture current tracks (clone them to avoid reference issues)
+        const capturedTracks = state.tracks.map(track => ({
+          ...track,
+          notes: track.notes.map(row => [...row])
+        }));
+        const newPattern = createPattern(newId, newName, state.bars, state.rows, storageSteps, capturedTracks);
         const patterns = [...state.patterns, newPattern];
         return normalizeState({ 
           ...state, 
@@ -1160,9 +1166,20 @@ const createProjectStore = () => {
     removePattern(index) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        if (state.patterns.length <= 1) return state;
+        // Allow removing patterns even if it's the last one - users can now work with an empty pattern state and capture new patterns as needed
         if (index < 0 || index >= state.patterns.length) return state;
         const patterns = state.patterns.filter((_, idx) => idx !== index);
+        
+        // If no patterns remain, keep the current tracks
+        if (patterns.length === 0) {
+          return normalizeState({ 
+            ...state, 
+            patterns: [],
+            selectedPattern: 0
+            // Keep current tracks unchanged so user can continue working with the grid
+          });
+        }
+        
         const selectedPattern = clamp(
           state.selectedPattern >= index ? state.selectedPattern - 1 : state.selectedPattern,
           0,

@@ -1124,6 +1124,7 @@
             {canRedo}
             on:undo={handleUndo}
             on:redo={handleRedo}
+            on:capturepattern={handlePatternAdd}
           />
           <div class="toolbar-divider" aria-hidden="true"></div>
           <div class="note-length-group">

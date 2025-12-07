@@ -10,6 +10,9 @@ describe('Track operations with patterns', () => {
   });
 
   it('should update patterns when adding a track', () => {
+    // First capture a pattern so we have one to test with
+    project.addPattern();
+    
     const before = get(project);
     const tracksBefore = before.tracks.length;
     const patternsBefore = before.patterns.length;
@@ -37,6 +40,9 @@ describe('Track operations with patterns', () => {
   });
 
   it('should update patterns when duplicating a track', () => {
+    // First capture a pattern so we have one to test with
+    project.addPattern();
+    
     const before = get(project);
     const tracksBefore = before.tracks.length;
     const patternTracksBefore = before.patterns[0].tracks.length;
@@ -68,6 +74,9 @@ describe('Track operations with patterns', () => {
   });
 
   it('should update patterns when removing a track', () => {
+    // First capture a pattern so we have one to test with
+    project.addPattern();
+    
     // Add a track first so we have more than minimum
     project.addTrack();
     
