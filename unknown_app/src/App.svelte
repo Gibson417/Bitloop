@@ -18,6 +18,7 @@
   import UpdateNotification from './components/UpdateNotification.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION, DEFAULT_STEPS_PER_BAR_VALUE } from './store/projectStore.js';
+  import { playback as arrangerPlayback, blocksWithPattern, stopPlayback as stopArrangerPlayback } from './store/arrangerStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
@@ -40,6 +41,8 @@
   let maxBarsValue = 0;
   let devModeEnabled = false;
   let hoveredComponent = '';
+  let arrangerPlaybackState;
+  let arrangerBlocks = [];
 
   const unsubscribers = [
     project.subscribe((value) => (projectState = value)),
@@ -49,13 +52,17 @@
     historyStatus.subscribe((value) => (historyState = value)),
     gridHistoryStatus.subscribe((value) => (gridHistoryState = value)),
     library.subscribe((value) => (libraryState = value)),
-    devMode.subscribe((value) => (devModeEnabled = value))
+    devMode.subscribe((value) => (devModeEnabled = value)),
+    arrangerPlayback.subscribe((value) => (arrangerPlaybackState = value)),
+    blocksWithPattern.subscribe((value) => (arrangerBlocks = value))
   ];
 
   let audioContext;
   let scheduler;
+  let arrangerScheduler;
   let masterGain;
   let animationId;
+  let arrangerAnimationId;
   let shareStatus = 'idle';
   let shareMessage = '';
   let shareLink = '';
@@ -239,6 +246,105 @@
     scheduleAudio(stepIndex, time, duration, state);
   };
 
+  // Arranger-specific audio scheduling
+  const getActiveArrangerBlock = (playheadBeat, blocks) => {
+    if (!blocks || blocks.length === 0) return null;
+    for (const block of blocks) {
+      if (!block.pattern) continue;
+      const blockStart = block.startBeat;
+      const blockEnd = block.startBeat + block.pattern.lengthInBeats;
+      if (playheadBeat >= blockStart && playheadBeat < blockEnd) {
+        return block;
+      }
+    }
+    return null;
+  };
+
+  const scheduleArrangerAudio = (beat, time, beatDuration) => {
+    const state = get(project);
+    const activeBlock = getActiveArrangerBlock(beat, arrangerBlocks);
+    
+    if (!activeBlock || !activeBlock.pattern) return;
+    
+    // Find the pattern in projectState.patterns
+    const pattern = state.patterns?.find(p => p.id === activeBlock.patternId);
+    if (!pattern || !pattern.tracks) return;
+    
+    // Calculate position within the pattern
+    const beatInPattern = beat - activeBlock.startBeat;
+    const beatsPerBar = arrangerPlaybackState.beatsPerBar || 4;
+    const patternBars = pattern.bars || 2;
+    const patternBeats = patternBars * beatsPerBar;
+    
+    // Handle pattern looping if the block is longer than the pattern
+    const loopedBeat = beatInPattern % patternBeats;
+    
+    // Convert beat to step within the pattern
+    // Pattern uses BASE_RESOLUTION steps per bar
+    const stepsPerBeat = BASE_RESOLUTION / beatsPerBar;
+    const stepInPattern = Math.floor(loopedBeat * stepsPerBeat);
+    
+    // Schedule audio from the pattern's tracks
+    const rows = state.rows;
+    const audibleTracks = pattern.tracks.some((track) => track.solo)
+      ? pattern.tracks.filter((track) => track.solo)
+      : pattern.tracks.filter((track) => !track.mute);
+
+    audibleTracks.forEach((track) => {
+      // Calculate the range of storage indices for this beat
+      const storageStart = stepInPattern;
+      const storageEnd = Math.ceil(stepInPattern + stepsPerBeat);
+      const storageStepDuration = beatDuration / (storageEnd - storageStart);
+      
+      for (let row = 0; row < rows; row += 1) {
+        const rowNotes = track.notes?.[row] ?? [];
+        
+        // Check each storage index within this beat for note starts
+        for (let storageIndex = storageStart; storageIndex < storageEnd; storageIndex++) {
+          if (rowNotes[storageIndex]) {
+            // Only trigger if this is the start of a note
+            const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : -1;
+            const isNoteStart = prevStorageIndex < 0 || !rowNotes[prevStorageIndex];
+            
+            if (isNoteStart) {
+              // Find note length
+              let noteLength = 1;
+              let nextIndex = storageIndex + 1;
+              while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+                noteLength++;
+                nextIndex++;
+              }
+              
+              // Calculate note duration
+              const hasGapAfter = nextIndex < rowNotes.length && !rowNotes[nextIndex];
+              const isLikelyShortened = hasGapAfter && noteLength > 1;
+              const playbackLength = isLikelyShortened ? noteLength + 1 : noteLength;
+              const noteDuration = playbackLength * storageStepDuration;
+              
+              const midi = getMidiForCell(track, row);
+              const frequency = midiToFrequency(midi);
+              
+              // Calculate when to start this note
+              const noteStartOffset = (storageIndex - storageStart) * storageStepDuration;
+              const noteTime = time + noteStartOffset;
+              
+              const minDuration = 0.05;
+              const safeDuration = Math.max(noteDuration, minDuration);
+              
+              playTone(track, frequency, noteTime, safeDuration);
+            }
+          }
+        }
+      }
+    });
+  };
+
+  const handleArrangerStep = (step, time, duration) => {
+    // Each step represents one beat in the arranger
+    const beat = step % (arrangerPlaybackState.loopLengthBeats || 64);
+    scheduleArrangerAudio(beat, time, duration);
+  };
+
   const animatePlayhead = () => {
     if (!projectState?.playing || !audioContext) return;
     const state = get(project);
@@ -254,6 +360,11 @@
   };
 
   const startPlayback = async () => {
+    // Stop arranger playback if it's running
+    if (arrangerPlaybackState?.isPlaying) {
+      stopArrangerPlayback();
+    }
+    
     if (!(await ensureAudio())) return;
     project.resetPlayhead();
     project.setPlaying(true);
@@ -905,7 +1016,53 @@
     library.dispose();
     unsubscribers.forEach((unsubscribe) => unsubscribe?.());
     clearShareFeedback();
+    // Clean up arranger scheduler
+    if (arrangerScheduler) {
+      arrangerScheduler.stop();
+    }
+    if (arrangerAnimationId) {
+      cancelAnimationFrame(arrangerAnimationId);
+    }
   });
+
+  // Handle arranger playback state changes
+  $: if (arrangerPlaybackState?.isPlaying && audioContext) {
+    startArrangerPlayback();
+  } else if (!arrangerPlaybackState?.isPlaying && arrangerScheduler) {
+    stopLocalArrangerPlayback();
+  }
+
+  const startArrangerPlayback = async () => {
+    // Stop grid playback if it's running
+    if (projectState?.playing) {
+      stopPlayback();
+    }
+    
+    if (!(await ensureAudio())) return;
+    
+    if (!arrangerScheduler) {
+      const bpm = arrangerPlaybackState.bpm || 110;
+      // 1 step per beat for arranger
+      arrangerScheduler = new Scheduler(audioContext, bpm, 1);
+      arrangerScheduler.onStep = handleArrangerStep;
+    } else {
+      arrangerScheduler.setTempo(arrangerPlaybackState.bpm || 110);
+      arrangerScheduler.setStepsPerBeat(1);
+      arrangerScheduler.onStep = handleArrangerStep;
+    }
+    
+    arrangerScheduler.start();
+  };
+
+  const stopLocalArrangerPlayback = () => {
+    if (arrangerScheduler) {
+      arrangerScheduler.stop();
+    }
+    if (arrangerAnimationId) {
+      cancelAnimationFrame(arrangerAnimationId);
+      arrangerAnimationId = null;
+    }
+  };
 
   $: activeTrack = projectState?.tracks?.[projectState?.selectedTrack ?? 0];
   $: columns = Math.max(totalStepsValue || 64, 1);
