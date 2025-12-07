@@ -34,6 +34,42 @@ describe('project store', () => {
     expect(seconds).toBeLessThanOrEqual(300);
   });
 
+  it('ensures bars are always even numbers', () => {
+    // Test odd numbers are rounded up to even
+    project.setBars(3);
+    expect(get(project).bars).toBe(4);
+    
+    project.setBars(5);
+    expect(get(project).bars).toBe(6);
+    
+    project.setBars(7);
+    expect(get(project).bars).toBe(8);
+    
+    // Test even numbers stay the same
+    project.setBars(2);
+    expect(get(project).bars).toBe(2);
+    
+    project.setBars(4);
+    expect(get(project).bars).toBe(4);
+    
+    project.setBars(10);
+    expect(get(project).bars).toBe(10);
+  });
+
+  it('ensures loaded projects have even bars', () => {
+    const snapshot = {
+      name: 'Test Project',
+      rows: 8,
+      bars: 3, // odd number
+      stepsPerBar: 16,
+      bpm: 120,
+      tracks: []
+    };
+    project.load(snapshot);
+    const state = get(project);
+    expect(state.bars).toBe(4); // should be rounded up to 4
+  });
+
   it('enforces solo exclusivity', () => {
     // Add a second track for testing solo exclusivity
     project.addTrack();

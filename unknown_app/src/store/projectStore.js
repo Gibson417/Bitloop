@@ -258,9 +258,19 @@ const calculateMaxBars = (bpm) => {
   return Math.max(1, Math.floor(MAX_LOOP_SECONDS / secondsPerBar));
 };
 
+const ensureEvenBars = (bars, min = 2) => {
+  const rounded = Math.round(bars);
+  // If odd, round up to next even number
+  return rounded % 2 === 0 ? rounded : rounded + 1;
+};
+
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
   const maxBars = calculateMaxBars(bpm);
-  return Math.min(desiredBars, maxBars);
+  const clampedBars = Math.min(desiredBars, maxBars);
+  // Ensure the result is an even number
+  const evenBars = ensureEvenBars(clampedBars);
+  // If rounding up exceeds maxBars, round down instead
+  return evenBars > maxBars ? evenBars - 2 : evenBars;
 };
 
 const ensurePositiveInteger = (value, fallback, min = 1, max = Number.POSITIVE_INFINITY) => {
