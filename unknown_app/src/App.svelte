@@ -602,6 +602,12 @@
     project.setTrackSetting(index, 'solo', !currentValue);
   };
 
+  const handleTrackToggleGhost = (event) => {
+    const { index } = event.detail;
+    const currentValue = projectState?.tracks?.[index]?.ghostVisible ?? false;
+    project.setTrackSetting(index, 'ghostVisible', !currentValue);
+  };
+
   const handleVolumeChange = (event) => {
     const value = Number(event.detail?.value ?? event.target?.value);
     if (Number.isNaN(value)) return;
@@ -1120,6 +1126,16 @@
   $: columns = Math.max(totalStepsValue || 64, 1);
   $: rows = Math.max(projectState?.rows || 8, 1);
   $: gridNotes = activeTrack?.notes ?? [];
+  $: ghostTracks = (projectState?.tracks ?? [])
+    .map((track, idx) => ({
+      ...track,
+      index: idx
+    }))
+    .filter((track) => track.ghostVisible && track.index !== (projectState?.selectedTrack ?? 0))
+    .map((track) => ({
+      notes: track.notes ?? [],
+      color: track.color ?? colors.accent
+    }));
   $: trackColor = activeTrack?.color ?? colors.accent;
   $: normalizedTrackColor = normalizeHex(trackColor);
   $: noteChipGlow = normalizedTrackColor ? hexToRgba(normalizedTrackColor, 0.32) ?? DEFAULT_NOTE_GLOW : DEFAULT_NOTE_GLOW;
@@ -1274,6 +1290,7 @@
         on:remove={handleTrackRemove}
         on:togglemute={handleTrackToggleMute}
         on:togglesolo={handleTrackToggleSolo}
+        on:toggleghost={handleTrackToggleGhost}
       />
     </div>
   </aside>
@@ -1361,6 +1378,7 @@
           {rows}
           {columns}
           notes={gridNotes}
+          {ghostTracks}
           noteLabels={noteLabels}
           playheadStep={projectState?.playheadStep ?? 0}
           playheadProgress={projectState?.playheadProgress ?? 0}

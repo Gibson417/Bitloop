@@ -220,6 +220,7 @@ const normalizeTracks = (tracks, rows, storageSteps) => {
         rootNote,
         mute: !!track.mute,
         solo: !!track.solo,
+        ghostVisible: !!track.ghostVisible,
         notes: track.notes ?? createEmptyPattern(rows, storageSteps)
       },
       rows,
@@ -245,6 +246,7 @@ const createTrack = (index, rows, storageSteps) =>
       rootNote: 0,
       mute: false,
       solo: false,
+      ghostVisible: false,
       notes: createEmptyPattern(rows, storageSteps)
     },
     rows,
@@ -818,7 +820,7 @@ const createProjectStore = () => {
             changed = true;
             return { ...track, adsr: nextAdsr };
           }
-          if (key === 'mute' || key === 'solo') {
+          if (key === 'mute' || key === 'solo' || key === 'ghostVisible') {
             const next = !!value;
             if (track[key] === next) return track;
             changed = true;
