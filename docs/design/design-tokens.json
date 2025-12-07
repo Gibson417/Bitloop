@@ -77,6 +77,24 @@
         "enter": { "value": "cubic-bezier(0.34, 1.56, 0.64, 1)" },
         "exit": { "value": "cubic-bezier(0.3, 0, 0.4, 1)" }
       }
+    },
+    "opacity": {
+      "subtle": { "value": "0.08" },
+      "muted": { "value": "0.15" },
+      "medium": { "value": "0.25" },
+      "strong": { "value": "0.4" },
+      "intense": { "value": "0.7" }
+    },
+    "components": {
+      "trackItem": {
+        "stripWidth": { "value": "4px" },
+        "minHeight": { "value": "56px" },
+        "controlSize": { "value": "36px" },
+        "iconSize": { "value": "18px" }
+      },
+      "touchTarget": {
+        "minimum": { "value": "44px" }
+      }
     }
   }
 }
