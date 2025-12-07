@@ -12,8 +12,9 @@ const getMidiForCell = (track, rowIndex, totalRows) => {
   const indexFromBottom = totalRows - 1 - rowIndex;
   const octaveOffset = Math.floor(indexFromBottom / degrees);
   const degree = scalePattern[indexFromBottom % degrees];
+  const rootNote = track.rootNote ?? 0;
   const octave = Math.min(Math.max((track.octave ?? 4) + octaveOffset, 1), 7);
-  const midi = 12 * (octave + 1) + degree;
+  const midi = 12 * (octave + 1) + degree + rootNote;
   return Math.min(Math.max(midi, 21), 108);
 };
 
@@ -236,7 +237,7 @@ export const renderArrangerToWav = async (arrangerData, projectPatterns, project
         const stepInPattern = Math.floor(loopedBeat * stepsPerBeat);
         const maxPatternSteps = patternBars * BASE_RESOLUTION;
         const storageEnd = Math.min(Math.ceil(stepInPattern + stepsPerBeat), maxPatternSteps);
-        const storageStepDuration = beatDuration / Math.max(storageEnd - stepInPattern, 1);
+        const storageStepDuration = beatDuration / (storageEnd - stepInPattern);
 
         for (let row = 0; row < rows; row++) {
           const rowNotes = track.notes?.[row] ?? [];

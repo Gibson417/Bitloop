@@ -1,7 +1,10 @@
 import { scales } from './scales.js';
 
 const getMidiForCell = (track, rowIndex, totalRows) => {
-  const scalePattern = scales[track.scale] ?? scales.major;
+  // Use custom scale if available, otherwise use named scale
+  const scalePattern = track.scale === 'custom' && track.customScale
+    ? track.customScale
+    : (scales[track.scale] ?? scales.major);
   const degrees = scalePattern.length;
   const indexFromBottom = totalRows - 1 - rowIndex;
   const octaveOffset = Math.floor(indexFromBottom / degrees);
