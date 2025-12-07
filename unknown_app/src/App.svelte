@@ -1183,6 +1183,7 @@
               id="tempo-bar-bars"
               type="number"
               min="2"
+              step="2"
               max={maxBarsValue}
               value={totalBars}
               on:change={handleBarsChange}

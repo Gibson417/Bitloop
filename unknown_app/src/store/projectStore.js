@@ -258,9 +258,30 @@ const calculateMaxBars = (bpm) => {
   return Math.max(1, Math.floor(MAX_LOOP_SECONDS / secondsPerBar));
 };
 
+const ensureEvenBars = (bars, min = 2, max = Number.POSITIVE_INFINITY) => {
+  // Ensure min is even to guarantee we always return even numbers
+  const evenMin = min % 2 === 0 ? min : min + 1;
+  
+  const rounded = Math.round(bars);
+  // Ensure at least the minimum (which is now guaranteed to be even)
+  const clamped = Math.max(rounded, evenMin);
+  // If odd, round up to next even number
+  const even = clamped % 2 === 0 ? clamped : clamped + 1;
+  // If rounding up exceeds max, round down to largest even number <= max
+  if (even > max) {
+    // Find largest even number that doesn't exceed max
+    const largestEven = Math.floor(max / 2) * 2;
+    // If largestEven < evenMin, no valid value exists; return evenMin (constraint violation)
+    // In practice this shouldn't happen with our min=2 and reasonable max values
+    return largestEven >= evenMin ? largestEven : evenMin;
+  }
+  return even;
+};
+
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
   const maxBars = calculateMaxBars(bpm);
-  return Math.min(desiredBars, maxBars);
+  // Use ensureEvenBars with both min and max constraints
+  return ensureEvenBars(desiredBars, 2, maxBars);
 };
 
 const ensurePositiveInteger = (value, fallback, min = 1, max = Number.POSITIVE_INFINITY) => {
@@ -722,7 +743,8 @@ const createProjectStore = () => {
     setBars(value) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 2, 512));
+        // ensureBarsWithinLimit handles min/max constraints and ensures even numbers
+        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 1, 512));
         return normalizeState({ ...state, bars });
       });
       const nextSnapshot = toSnapshot(get(store));
@@ -1035,7 +1057,8 @@ const createProjectStore = () => {
       const rows = ensurePositiveInteger(payload.rows, DEFAULT_ROWS, 1, 32);
       const bpm = clamp(payload.bpm ?? DEFAULT_BPM, 30, 260);
       const maxBars = calculateMaxBars(bpm);
-      const bars = clamp(payload.bars ?? DEFAULT_BARS, 1, maxBars);
+      // Ensure bars are even numbers (increments of 2) within valid range
+      const bars = ensureEvenBars(payload.bars ?? DEFAULT_BARS, 2, maxBars);
       // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
       const stepsPerBar = coerceStepsPerBar(payload.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
