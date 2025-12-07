@@ -146,7 +146,7 @@
     }
   };
 
-  $: canRemovePattern = patterns.length > 1;
+  $: canRemovePattern = patterns.length > 0;
 
   let dragContext = null;
   let draggedPatternId = null;

@@ -14,6 +14,10 @@
   const handleRedo = () => {
     dispatch('redo');
   };
+
+  const handleCapturePattern = () => {
+    dispatch('capturepattern');
+  };
 </script>
 
 <div class="grid-toolbar" data-component="GridToolbar">
@@ -32,6 +36,19 @@
         <path d="M2 2l7.586 7.586"/>
         <circle cx="11" cy="11" r="2"/>
       </svg>
+    </button>
+    <button
+      type="button"
+      class="tool-btn capture-btn"
+      on:click={handleCapturePattern}
+      title="Capture current pattern to arranger"
+      aria-label="Capture pattern"
+    >
+      <svg class="tool-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <span class="btn-text">Capture</span>
     </button>
   </div>
   <div class="history-buttons">
@@ -130,6 +147,23 @@
     width: 20px;
     height: 20px;
     line-height: 1;
+  }
+
+  .btn-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .capture-btn {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .capture-btn:hover:not(.active) {
+    background: rgba(var(--color-accent-bright-rgb), 0.08);
+    border-color: rgba(var(--color-accent-bright-rgb), 0.5);
+    color: rgba(var(--color-accent-bright-rgb), 1);
   }
 
   .history-buttons {
