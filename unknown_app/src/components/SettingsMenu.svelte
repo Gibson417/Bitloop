@@ -149,7 +149,6 @@
             <polyline points="16 18 22 12 16 6"/>
             <polyline points="8 6 2 12 8 18"/>
           </svg>
-          <span>{devModeEnabled ? 'Dev Mode: ON' : 'Dev Mode: OFF'}</span>
         </button>
         <button 
           type="button" 
@@ -163,7 +162,6 @@
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
             <path d="M3 3v5h5"/>
           </svg>
-          <span>Reset App</span>
         </button>
       </div>
     </div>
@@ -230,13 +228,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 12px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     background: var(--color-panel);
     backdrop-filter: blur(10px);
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
-    min-width: 220px;
+    min-width: auto;
+    width: max-content;
     z-index: 20;
   }
 
@@ -255,17 +254,12 @@
   .settings-section.button-row {
     flex-direction: row;
     gap: 8px;
+    justify-content: center;
   }
 
-  /* Buttons in row should flex to share space */
+  /* Buttons in row should maintain their square size */
   .settings-section.button-row .menu-item {
-    flex: 1;
-    min-width: 0; /* Allow buttons to shrink below content width */
-  }
-
-  /* Adjust text handling for button labels */
-  .settings-section.button-row .menu-item span {
-    white-space: nowrap;
+    flex: 0 0 auto;
   }
 
   .section-title {
@@ -286,23 +280,21 @@
   .menu-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 12px 14px;
+    justify-content: center;
+    width: 44px; /* WCAG 2.2 AA touch target minimum - square */
+    height: 44px;
+    padding: 0;
     border: 1px solid rgba(var(--color-accent-rgb), 0.2);
     border-radius: 8px;
     background: rgba(var(--color-accent-rgb), 0.05);
     color: var(--color-text);
-    font-size: 0.9rem;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: left;
   }
 
   .menu-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     color: rgba(var(--color-accent-rgb), 0.8);
     flex-shrink: 0;
     transition: color 0.2s ease;
@@ -367,15 +359,10 @@
       width: max-content; /* Fit content width */
     }
 
-    /* Stack buttons vertically on very small screens */
+    /* Keep buttons side-by-side on mobile since they're small icons */
     .settings-section.button-row {
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Allow text to wrap on mobile */
-    .settings-section.button-row .menu-item span {
-      white-space: normal;
+      flex-direction: row;
+      gap: 8px;
     }
   }
 </style>
