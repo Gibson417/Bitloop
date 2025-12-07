@@ -1,37 +1,35 @@
-// Scale definitions for UNKNOWN.
+// Scale definitions for UNKNOWN - optimized for video game music.
 
 // Each array is a list of semitone offsets from the root note.
-// For example, the minor pentatonic scale uses [0, 3, 5, 7, 10].
+// Scales are selected for their effectiveness in chiptune and video game composition.
 
 export const scales = {
-  // Pentatonic scales
-  minorPent: [0, 3, 5, 7, 10],
-  majorPent: [0, 2, 4, 7, 9],
+  // Pentatonic scales - Perfect for catchy, memorable melodies
+  minorPent: [0, 3, 5, 7, 10],           // Most common in games
+  majorPent: [0, 2, 4, 7, 9],            // Upbeat, happy themes
   
-  // Diatonic modes
-  major: [0, 2, 4, 5, 7, 9, 11],
-  minor: [0, 2, 3, 5, 7, 8, 10],
-  dorian: [0, 2, 3, 5, 7, 9, 10],
-  phrygian: [0, 1, 3, 5, 7, 8, 10],
-  lydian: [0, 2, 4, 6, 7, 9, 11],
-  mixolydian: [0, 2, 4, 5, 7, 9, 10],
-  locrian: [0, 1, 3, 5, 6, 8, 10],
+  // Basic diatonic scales
+  major: [0, 2, 4, 5, 7, 9, 11],         // Classic major scale
+  minor: [0, 2, 3, 5, 7, 8, 10],         // Natural minor
   
-  // Melodic minor scales
-  harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
-  melodicMinor: [0, 2, 3, 5, 7, 9, 11],
+  // Common modes for game music
+  dorian: [0, 2, 3, 5, 7, 9, 10],        // Fantasy/medieval themes
+  mixolydian: [0, 2, 4, 5, 7, 9, 10],    // Rock-influenced, upbeat
+  phrygianDom: [0, 1, 4, 5, 7, 8, 10],   // Exotic/mysterious (Spanish Phrygian)
   
-  // Other common scales
-  blues: [0, 3, 5, 6, 7, 10],
-  wholeTone: [0, 2, 4, 6, 8, 10],
-  diminished: [0, 2, 3, 5, 6, 8, 9, 11],
-  augmented: [0, 3, 4, 7, 8, 11],
+  // Dramatic scales for boss battles and tension
+  harmonicMinor: [0, 2, 3, 5, 7, 8, 11], // Classic dramatic sound
+  hungarianMinor: [0, 2, 3, 6, 7, 8, 11], // Eastern European/intense
   
-  // World scales
-  japanese: [0, 1, 5, 7, 8],
-  arabic: [0, 1, 4, 5, 7, 8, 11],
+  // World/ethnic scales popular in games
+  hirajoshi: [0, 2, 3, 7, 8],            // Japanese traditional
+  inSen: [0, 1, 5, 7, 10],               // Japanese meditative
   
-  // Special
+  // Experimental/atmospheric scales
+  wholeTone: [0, 2, 4, 6, 8, 10],        // Sci-fi/dreamlike
+  blues: [0, 3, 5, 6, 7, 10],            // Blues flavor
+  
+  // Full control
   chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 };
 
