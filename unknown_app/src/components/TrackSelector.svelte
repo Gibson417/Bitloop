@@ -374,20 +374,17 @@
     align-items: center;
     opacity: 0;
     transition: opacity 200ms ease;
-    pointer-events: none;
   }
 
   .track-item:hover .track-controls,
   .track-item.selected .track-controls {
     opacity: 1;
-    pointer-events: auto;
   }
 
   .toggle-btn {
-    min-width: 36px; /* components.trackItem.controlSize - smaller for less visual weight */
-    min-height: 36px;
-    padding: 8px; /* spacing.xs - ensure 44px touch target with margin */
-    margin: 4px; /* Extends touch target to 44px total */
+    min-width: 44px; /* components.touchTarget.minSize - WCAG 2.2 AA compliant */
+    min-height: 44px;
+    padding: 0; /* No padding needed with 44px size */
     border-radius: 4px; /* radius.sm - more subtle */
     border: 1px solid rgba(255, 255, 255, 0.15); /* opacity.muted */
     background: rgba(255, 255, 255, 0.08); /* opacity.subtle */
@@ -432,10 +429,9 @@
 
   /* Remove button - only visible on hover, not when selected */
   .remove-button {
-    min-width: 36px;
-    min-height: 36px;
-    padding: 8px;
-    margin: 4px; /* Extends touch target to 44px total */
+    min-width: 44px; /* components.touchTarget.minSize - WCAG 2.2 AA compliant */
+    min-height: 44px;
+    padding: 0; /* No padding needed with 44px size */
     border-radius: 4px; /* radius.sm */
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(255, 255, 255, 0.08);
@@ -447,18 +443,18 @@
     transition: all 200ms ease;
     flex-shrink: 0;
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
   }
 
   .track-item:hover .remove-button {
     opacity: 1;
-    pointer-events: auto;
+    visibility: visible;
   }
 
   /* Don't show remove on selected tracks - keep focus on controls */
   .track-item.selected .remove-button {
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
   }
 
   .remove-icon {
@@ -479,5 +475,15 @@
     outline-offset: 2px;
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* Accessibility: Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .track-controls,
+    .remove-button,
+    .toggle-btn,
+    .track-item {
+      transition: none;
+    }
   }
 </style>
