@@ -23,18 +23,19 @@
 
   const toggleSettingsMenu = async (event) => {
     event?.stopPropagation?.();
+    const willBeOpen = !settingsMenuOpen;
+    
     if (settingsMenuOpen) {
       closeAllMenus();
     } else {
       setOpenMenu('settings');
     }
     
-    if (!settingsMenuOpen) {
+    if (willBeOpen) {
       // Wait for next tick, then add the click listener
       await tick();
       setTimeout(() => {
-        const currentOpen = settingsMenuOpen;
-        if (currentOpen) {
+        if (settingsMenuOpen) {
           document.addEventListener('click', closeOnClickOutside, { once: false });
         }
       }, 0);

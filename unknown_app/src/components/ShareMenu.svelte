@@ -19,18 +19,19 @@
 
   const toggleShareMenu = async (event) => {
     event?.stopPropagation?.();
+    const willBeOpen = !shareMenuOpen;
+    
     if (shareMenuOpen) {
       closeAllMenus();
     } else {
       setOpenMenu('share');
     }
     
-    if (!shareMenuOpen) {
+    if (willBeOpen) {
       // Wait for next tick, then add the click listener
       await tick();
       setTimeout(() => {
-        const currentOpen = shareMenuOpen;
-        if (currentOpen) {
+        if (shareMenuOpen) {
           document.addEventListener('click', closeOnClickOutside, { once: false });
         }
       }, 0);

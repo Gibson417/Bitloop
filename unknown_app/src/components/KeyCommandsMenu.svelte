@@ -12,18 +12,19 @@
 
   const toggleKeyCommandsMenu = async (event) => {
     event?.stopPropagation?.();
+    const willBeOpen = !keyCommandsMenuOpen;
+    
     if (keyCommandsMenuOpen) {
       closeAllMenus();
     } else {
       setOpenMenu('keycommands');
     }
     
-    if (!keyCommandsMenuOpen) {
+    if (willBeOpen) {
       // Wait for next tick, then add the click listener
       await tick();
       setTimeout(() => {
-        const currentOpen = keyCommandsMenuOpen;
-        if (currentOpen) {
+        if (keyCommandsMenuOpen) {
           document.addEventListener('click', closeOnClickOutside);
         }
       }, 0);
