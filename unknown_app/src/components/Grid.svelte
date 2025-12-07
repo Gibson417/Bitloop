@@ -355,6 +355,11 @@
       
       // Draw ghost notes from other tracks (transparent overlay)
       for (const ghostTrack of ghostTracks) {
+        // Pre-calculate ghost colors for performance
+        const ghostDotColor = hexToRgba(ghostTrack.color, 0.2);
+        const ghostBarColor = hexToRgba(ghostTrack.color, 0.15);
+        const ghostCapColor = hexToRgba(ghostTrack.color, 0.2);
+        
         const ghostNoteEvents = extractNoteEvents(ghostTrack.notes, rows);
         
         for (const event of ghostNoteEvents) {
@@ -385,7 +390,7 @@
           
           ctx.shadowColor = 'transparent';
           ctx.shadowBlur = 0;
-          ctx.fillStyle = hexToRgba(ghostTrack.color, 0.2); // Very transparent
+          ctx.fillStyle = ghostDotColor;
           ctx.beginPath();
           ctx.arc(startX, cy, radius, 0, Math.PI * 2);
           ctx.fill();
@@ -401,11 +406,11 @@
             
             if (barWidth > 0) {
               // Draw duration bar
-              ctx.fillStyle = hexToRgba(ghostTrack.color, 0.15);
+              ctx.fillStyle = ghostBarColor;
               ctx.fillRect(barStartX, barY - barHeight / 2, barWidth, barHeight);
               
               // Draw end cap
-              ctx.fillStyle = hexToRgba(ghostTrack.color, 0.2);
+              ctx.fillStyle = ghostCapColor;
               ctx.beginPath();
               ctx.arc(barEndX, barY, barHeight / 2, 0, Math.PI * 2);
               ctx.fill();
