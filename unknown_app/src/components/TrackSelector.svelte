@@ -43,6 +43,11 @@
     event.stopPropagation();
     dispatch('togglesolo', { index: idx });
   };
+
+  const handleToggleGhost = (event, idx) => {
+    event.stopPropagation();
+    dispatch('toggleghost', { index: idx });
+  };
 </script>
 
 <div class="track-selector" data-component="TrackSelector">
@@ -141,6 +146,19 @@
           <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
             <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="toggle-btn ghost {track.ghostVisible ? 'active' : ''}"
+          aria-label={track.ghostVisible ? `Hide ghost notes from ${track.name}` : `Show ghost notes from ${track.name}`}
+          aria-pressed={track.ghostVisible}
+          title={track.ghostVisible ? 'Hide ghost notes' : 'Show ghost notes'}
+          on:click={(event) => handleToggleGhost(event, idx)}
+        >
+          <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
         {#if canRemoveTrack(idx)}

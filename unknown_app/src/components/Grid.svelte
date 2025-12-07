@@ -5,6 +5,7 @@
   import { theme } from '../store/themeStore.js';
 
   export let notes = [];
+  export let ghostTracks = []; // Array of { notes: [][], color: string }
   export let rows = 8;
   export let columns = 16;
   export let stepsPerBar = 16;
@@ -348,6 +349,67 @@
             ctx.beginPath();
             ctx.arc(barEndX, barY, barHeight / 2, 0, Math.PI * 2);
             ctx.fill();
+          }
+        }
+      }
+      
+      // Draw ghost notes from other tracks (transparent overlay)
+      for (const ghostTrack of ghostTracks) {
+        const ghostNoteEvents = extractNoteEvents(ghostTrack.notes, rows);
+        
+        for (const event of ghostNoteEvents) {
+          const { row, start, length } = event;
+          
+          // Convert storage coordinates to logical coordinates
+          const logicalStartCol = (start * logicalColumns) / storageColumns;
+          const logicalEndCol = ((start + length) * logicalColumns) / storageColumns;
+          
+          // Convert logical coordinates to display coordinates using scale factor
+          const displayStartCol = logicalStartCol * logicalToDisplayScale;
+          const displayEndCol = logicalEndCol * logicalToDisplayScale;
+          
+          // Skip if note is outside current window
+          if (displayStartCol >= windowOffset + visibleColumns || displayEndCol <= windowOffset) continue;
+          
+          // Adjust display position relative to window
+          const windowDisplayStartCol = displayStartCol - windowOffset;
+          const windowDisplayEndCol = displayEndCol - windowOffset;
+          
+          // Skip if note is completely outside visible area
+          if (windowDisplayStartCol >= visibleColumns || windowDisplayEndCol <= 0) continue;
+          
+          // Draw ghost note start dot with transparency
+          const startX = windowDisplayStartCol * cellSize + cellSize / 2;
+          const cy = row * cellSize + cellSize / 2;
+          const radius = cellSize * 0.15;
+          
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = hexToRgba(ghostTrack.color, 0.2); // Very transparent
+          ctx.beginPath();
+          ctx.arc(startX, cy, radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Draw duration bar if note spans multiple cells
+          const displayLength = windowDisplayEndCol - windowDisplayStartCol;
+          if (displayLength > 1) {
+            const barY = cy;
+            const barHeight = cellSize * 0.15;
+            const barStartX = startX + radius;
+            const barEndX = (windowDisplayEndCol * cellSize) - cellSize / 2;
+            const barWidth = Math.max(0, barEndX - barStartX);
+            
+            if (barWidth > 0) {
+              // Draw duration bar
+              ctx.fillStyle = hexToRgba(ghostTrack.color, 0.15);
+              ctx.fillRect(barStartX, barY - barHeight / 2, barWidth, barHeight);
+              
+              // Draw end cap
+              ctx.fillStyle = hexToRgba(ghostTrack.color, 0.2);
+              ctx.beginPath();
+              ctx.arc(barEndX, barY, barHeight / 2, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
         }
       }
