@@ -403,7 +403,7 @@ const normalizeState = (state) => {
   } else {
     // No patterns or legacy single-track model (backwards compatibility)
     tracks = normalizeTracks(state.tracks, rows, storageSteps);
-    // Initialize with empty patterns array - user will capture patterns via UI
+    // Initialize with empty patterns array instead of default pattern - patterns are now captured via UI interaction
     patterns = [];
     selectedPattern = 0;
   }
@@ -1166,7 +1166,7 @@ const createProjectStore = () => {
     removePattern(index) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        // Allow removing patterns even if it's the last one
+        // Allow removing patterns even if it's the last one - users can now work with an empty pattern state and capture new patterns as needed
         if (index < 0 || index >= state.patterns.length) return state;
         const patterns = state.patterns.filter((_, idx) => idx !== index);
         
@@ -1176,7 +1176,7 @@ const createProjectStore = () => {
             ...state, 
             patterns: [],
             selectedPattern: 0
-            // tracks remain unchanged
+            // Keep current tracks unchanged so user can continue working with the grid
           });
         }
         
