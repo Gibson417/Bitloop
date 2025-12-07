@@ -442,7 +442,9 @@
     visibility: visible;
   }
 
-  /* Don't show remove on selected tracks - keep focus on controls */
+  /* Don't show remove on selected tracks - keep focus on controls
+     Note: Users can still delete selected track via header Delete button
+     or by hovering over the track item to reveal the remove button */
   .track-item.selected .remove-button {
     opacity: 0;
     visibility: hidden;
