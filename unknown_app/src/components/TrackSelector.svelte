@@ -293,15 +293,6 @@
     min-height: 56px; /* components.trackItem.minHeight */
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .track-item,
-    .action-button,
-    .toggle-btn,
-    .remove-button {
-      transition: none;
-    }
-  }
-
   .track-item:hover {
     border-color: rgba(var(--color-accent-rgb), 0.4);
     background: rgba(var(--color-background, 17, 20, 29), 0.85);
@@ -474,7 +465,6 @@
     outline: 2px solid rgba(255, 80, 80, 0.8);
     outline-offset: 2px;
     opacity: 1;
-    pointer-events: auto;
   }
 
   /* Accessibility: Respect user's motion preferences */
@@ -482,8 +472,16 @@
     .track-controls,
     .remove-button,
     .toggle-btn,
-    .track-item {
+    .track-item,
+    .action-button {
       transition: none;
+    }
+    
+    /* Disable hover transforms that create motion */
+    .action-button:hover,
+    .toggle-btn:hover,
+    .remove-button:hover {
+      transform: none;
     }
   }
 </style>
