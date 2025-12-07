@@ -181,3 +181,145 @@ export const renderProjectToMidi = (snapshot) => {
   
   return new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 };
+
+export const renderArrangerToMidi = (arrangerData, projectPatterns, projectRows, projectBpm) => {
+  if (!arrangerData || !arrangerData.blocks || arrangerData.blocks.length === 0) {
+    throw new Error('No arranger blocks to render');
+  }
+
+  const blocks = arrangerData.blocks;
+  const bpm = projectBpm ?? 120;
+  const rows = projectRows ?? 8;
+  const beatsPerBar = arrangerData.beatsPerBar ?? 4;
+  const loopLengthBeats = arrangerData.loopLengthBeats ?? 64;
+  const BASE_RESOLUTION = 128; // Must match projectStore.js
+
+  // MIDI timing
+  const ticksPerQuarter = 480;
+  const ticksPerBeat = ticksPerQuarter;
+  const ticksPerStorageCell = (ticksPerQuarter * 4) / BASE_RESOLUTION;
+
+  // Collect all unique tracks from all patterns
+  const trackMap = new Map();
+  
+  blocks.forEach((block) => {
+    const pattern = projectPatterns.find(p => p.id === block.patternId);
+    if (!pattern || !pattern.tracks) return;
+
+    const blockStartBeat = block.startBeat;
+    const patternBars = pattern.bars || 2;
+    const patternBeats = patternBars * beatsPerBar;
+    const blockEndBeat = Math.min(blockStartBeat + patternBeats, loopLengthBeats);
+
+    // Get audible tracks
+    const audibleTracks = pattern.tracks.some((track) => track.solo)
+      ? pattern.tracks.filter((track) => track.solo)
+      : pattern.tracks.filter((track) => !track.mute);
+
+    audibleTracks.forEach((track, trackIndex) => {
+      const trackKey = `${pattern.id}-${trackIndex}`;
+      if (!trackMap.has(trackKey)) {
+        trackMap.set(trackKey, {
+          name: track.name || `Track ${trackIndex + 1}`,
+          track,
+          events: []
+        });
+      }
+
+      const trackInfo = trackMap.get(trackKey);
+      const stepsPerBeat = BASE_RESOLUTION / beatsPerBar;
+
+      // Schedule notes for this block
+      for (let beat = blockStartBeat; beat < blockEndBeat; beat++) {
+        const beatInPattern = beat - blockStartBeat;
+        const loopedBeat = beatInPattern % patternBeats;
+        const stepInPattern = Math.floor(loopedBeat * stepsPerBeat);
+        const maxPatternSteps = patternBars * BASE_RESOLUTION;
+        const storageEnd = Math.min(Math.ceil(stepInPattern + stepsPerBeat), maxPatternSteps);
+
+        for (let row = 0; row < rows; row++) {
+          const rowNotes = track.notes?.[row] ?? [];
+
+          for (let storageIndex = stepInPattern; storageIndex < storageEnd; storageIndex++) {
+            if (rowNotes[storageIndex]) {
+              const prevStorageIndex = storageIndex > 0 ? storageIndex - 1 : -1;
+              const isNoteStart = prevStorageIndex < 0 || !rowNotes[prevStorageIndex];
+
+              if (isNoteStart) {
+                let noteLength = 1;
+                let nextIndex = storageIndex + 1;
+                while (nextIndex < rowNotes.length && rowNotes[nextIndex]) {
+                  noteLength++;
+                  nextIndex++;
+                }
+
+                const globalStorageIndex = beat * stepsPerBeat + (storageIndex - stepInPattern);
+                const midiNote = getMidiForCell(track, row, rows);
+                const velocity = Math.floor((track.volume ?? 0.7) * 127);
+                const tickPosition = Math.floor(globalStorageIndex * ticksPerStorageCell);
+                const tickDuration = noteLength * ticksPerStorageCell;
+
+                trackInfo.events.push({
+                  tick: tickPosition,
+                  type: 'noteOn',
+                  note: midiNote,
+                  velocity
+                });
+
+                trackInfo.events.push({
+                  tick: tickPosition + tickDuration,
+                  type: 'noteOff',
+                  note: midiNote
+                });
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+  // Convert to MIDI format
+  const midiBytes = [];
+  const numTracks = trackMap.size + 1; // +1 for tempo track
+  
+  // Header
+  midiBytes.push(...createMidiHeader(numTracks, ticksPerQuarter));
+  
+  // Tempo track
+  const tempoTrack = [
+    ...createTrackNameEvent('Tempo Track'),
+    ...createTempoEvent(bpm),
+    0x00, 0xff, 0x2f, 0x00 // End of Track
+  ];
+  midiBytes.push(...createTrackChunk(tempoTrack));
+  
+  // Note tracks
+  trackMap.forEach((trackInfo) => {
+    const trackData = [
+      ...createTrackNameEvent(trackInfo.name)
+    ];
+
+    // Sort events by tick
+    const sortedEvents = trackInfo.events.sort((a, b) => a.tick - b.tick);
+    
+    let currentTick = 0;
+    sortedEvents.forEach((event) => {
+      const delta = event.tick - currentTick;
+      trackData.push(...writeVarLen(delta));
+
+      if (event.type === 'noteOn') {
+        trackData.push(0x90, event.note, event.velocity);
+      } else if (event.type === 'noteOff') {
+        trackData.push(0x80, event.note, 0x40);
+      }
+
+      currentTick = event.tick;
+    });
+
+    trackData.push(...writeVarLen(0), 0xff, 0x2f, 0x00); // End of Track
+    midiBytes.push(...createTrackChunk(trackData));
+  });
+  
+  return new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
+};
