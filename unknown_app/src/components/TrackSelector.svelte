@@ -165,20 +165,6 @@
             </svg>
           </button>
         </div>
-        
-        {#if canRemoveTrack(idx)}
-          <button
-            type="button"
-            class="remove-button"
-            aria-label={`Remove ${track.name}`}
-            on:click={(event) => handleRemoveTrack(event, idx)}
-          >
-            <svg class="remove-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        {/if}
       </div>
     {/each}
   </div>
@@ -304,6 +290,11 @@
     box-shadow: 0 4px 16px rgba(var(--color-accent-rgb), 0.25);
   }
 
+  .track-item.selected .track-name {
+    color: var(--color-text); /* Ensure selected track name is highly visible */
+    font-weight: 700; /* Make selected track name bolder */
+  }
+
   .track-strip {
     width: 4px; /* components.trackItem.stripWidth - more subtle */
     height: 100%;
@@ -343,12 +334,13 @@
 
   .track-name {
     font-weight: 600; /* typography.weight.semibold */
-    font-size: 0.9rem;
+    font-size: 1rem; /* Increased from 0.9rem for better visibility */
     letter-spacing: 0.02em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.25; /* typography.lineHeight.tight */
+    color: var(--color-text); /* Ensure full contrast instead of inheriting potentially muted color */
   }
 
   .track-meta {
@@ -418,61 +410,9 @@
     box-shadow: 0 0 8px rgba(255, 100, 100, 0.3);
   }
 
-  /* Remove button - only visible on hover, not when selected */
-  .remove-button {
-    min-width: 44px; /* components.touchTarget.minSize - WCAG 2.2 AA compliant */
-    min-height: 44px;
-    padding: 0; /* No padding needed with 44px size */
-    border-radius: 4px; /* radius.sm */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 200ms ease;
-    flex-shrink: 0;
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .track-item:hover .remove-button {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Don't show remove on selected tracks - keep focus on controls
-     Note: Users can still delete selected track via header Delete button
-     or by hovering over the track item to reveal the remove button */
-  .track-item.selected .remove-button {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .remove-icon {
-    width: 18px;
-    height: 18px;
-    display: block;
-  }
-
-  .remove-button:hover {
-    background: rgba(255, 80, 80, 0.3);
-    border-color: rgba(255, 80, 80, 0.5);
-    color: var(--color-text);
-    transform: scale(1.08);
-  }
-
-  .remove-button:focus-visible {
-    outline: 2px solid rgba(255, 80, 80, 0.8);
-    outline-offset: 2px;
-    opacity: 1;
-  }
-
   /* Accessibility: Respect user's motion preferences */
   @media (prefers-reduced-motion: reduce) {
     .track-controls,
-    .remove-button,
     .toggle-btn,
     .track-item,
     .action-button {
@@ -481,8 +421,7 @@
     
     /* Disable hover transforms that create motion */
     .action-button:hover,
-    .toggle-btn:hover,
-    .remove-button:hover {
+    .toggle-btn:hover {
       transform: none;
     }
   }
