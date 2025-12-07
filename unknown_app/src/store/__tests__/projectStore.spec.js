@@ -32,6 +32,8 @@ describe('project store', () => {
     const seconds = get(loopDuration);
     expect(state.bars).toBeLessThanOrEqual(300);
     expect(seconds).toBeLessThanOrEqual(300);
+    // Ensure the clamped value is also even
+    expect(state.bars % 2).toBe(0);
   });
 
   it('ensures bars are always even numbers', () => {

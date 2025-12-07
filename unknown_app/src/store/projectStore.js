@@ -258,24 +258,24 @@ const calculateMaxBars = (bpm) => {
   return Math.max(1, Math.floor(MAX_LOOP_SECONDS / secondsPerBar));
 };
 
-const ensureEvenBars = (bars, min = 2) => {
+const ensureEvenBars = (bars, min = 2, max = Number.POSITIVE_INFINITY) => {
   const rounded = Math.round(bars);
   // Ensure at least the minimum
   const clamped = Math.max(rounded, min);
   // If odd, round up to next even number
-  return clamped % 2 === 0 ? clamped : clamped + 1;
+  const even = clamped % 2 === 0 ? clamped : clamped + 1;
+  // If rounding up exceeds max, round down to largest even number <= max
+  if (even > max) {
+    // Find largest even number that doesn't exceed max and is >= min
+    return Math.max(Math.floor(max / 2) * 2, min);
+  }
+  return even;
 };
 
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
   const maxBars = calculateMaxBars(bpm);
-  const clampedBars = Math.min(desiredBars, maxBars);
-  // Ensure the result is an even number
-  const evenBars = ensureEvenBars(clampedBars, 2);
-  // If rounding up exceeds maxBars, round down instead (ensuring we stay >= 2)
-  if (evenBars > maxBars) {
-    return Math.max(evenBars - 2, 2);
-  }
-  return evenBars;
+  // Use ensureEvenBars with both min and max constraints
+  return ensureEvenBars(desiredBars, 2, maxBars);
 };
 
 const ensurePositiveInteger = (value, fallback, min = 1, max = Number.POSITIVE_INFINITY) => {
@@ -1050,9 +1050,8 @@ const createProjectStore = () => {
       const rows = ensurePositiveInteger(payload.rows, DEFAULT_ROWS, 1, 32);
       const bpm = clamp(payload.bpm ?? DEFAULT_BPM, 30, 260);
       const maxBars = calculateMaxBars(bpm);
-      const clampedBars = clamp(payload.bars ?? DEFAULT_BARS, 2, maxBars);
-      // Ensure bars are even numbers (increments of 2)
-      const bars = ensureEvenBars(clampedBars, 2);
+      // Ensure bars are even numbers (increments of 2) within valid range
+      const bars = ensureEvenBars(payload.bars ?? DEFAULT_BARS, 2, maxBars);
       // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
       const stepsPerBar = coerceStepsPerBar(payload.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
