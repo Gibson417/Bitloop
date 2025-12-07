@@ -279,7 +279,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     width: 44px; /* WCAG 2.2 AA touch target minimum - square */
     height: 44px;
     padding: 0;
@@ -287,11 +286,8 @@
     border-radius: 8px;
     background: rgba(var(--color-accent-rgb), 0.05);
     color: var(--color-text);
-    font-size: 0.9rem;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: left;
   }
 
   .menu-icon {
