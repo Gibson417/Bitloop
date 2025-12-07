@@ -1101,6 +1101,9 @@
     
     if (!(await ensureAudio())) return;
     
+    // Set guard before starting to prevent race conditions
+    arrangerSchedulerRunning = true;
+    
     if (!arrangerScheduler) {
       const bpm = arrangerPlaybackState.bpm || 110;
       // 1 step per beat for arranger
@@ -1113,7 +1116,6 @@
     }
     
     arrangerScheduler.start();
-    arrangerSchedulerRunning = true; // Set guard after starting
   };
 
   const stopLocalArrangerPlayback = () => {
