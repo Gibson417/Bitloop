@@ -20,7 +20,7 @@
   import RenderDialog from './components/RenderDialog.svelte';
   import { Scheduler } from './lib/scheduler.js';
   import { project, totalSteps, loopDuration, maxBars, TRACK_LIMIT, historyStatus, gridHistoryStatus, BASE_RESOLUTION, DEFAULT_STEPS_PER_BAR_VALUE } from './store/projectStore.js';
-  import { playback as arrangerPlayback, blocksWithPattern, stopPlayback as stopArrangerPlayback, blocks as arrangerBlocks } from './store/arrangerStore.js';
+  import { playback as arrangerPlayback, blocksWithPattern, stopPlayback as stopArrangerPlayback, blocks as arrangerBlocksStore } from './store/arrangerStore.js';
   import { scales } from './lib/scales.js';
   import { colors } from './lib/colorTokens.js';
   import { library } from './store/libraryStore.js';
@@ -45,6 +45,10 @@
   let hoveredComponent = '';
   let arrangerPlaybackState;
   let arrangerBlocks = [];
+  // Render dialog state
+  let renderDialogOpen = false;
+  let renderDialogType = 'wav'; // 'wav' or 'midi'
+  let arrangerBlocksCount = 0;
 
   const unsubscribers = [
     project.subscribe((value) => (projectState = value)),
@@ -57,7 +61,7 @@
     devMode.subscribe((value) => (devModeEnabled = value)),
     arrangerPlayback.subscribe((value) => (arrangerPlaybackState = value)),
     blocksWithPattern.subscribe((value) => (arrangerBlocks = value)),
-    arrangerBlocks.subscribe((value) => (arrangerBlocksCount = value.length))
+    arrangerBlocksStore.subscribe((value) => (arrangerBlocksCount = value.length))
   ];
 
   let audioContext;
@@ -80,10 +84,6 @@
   let zoomLevel = 16; // Grid resolution denominator: 8, 16, 32, 64 (default 1/16)
   // Pattern Arranger visibility state
   let arrangerVisible = false;
-  // Render dialog state
-  let renderDialogOpen = false;
-  let renderDialogType = 'wav'; // 'wav' or 'midi'
-  let arrangerBlocksCount = 0;
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -808,9 +808,6 @@
       console.error(`Failed to render arranger ${type.toUpperCase()}`, error);
       // eslint-disable-next-line no-alert
       alert(`Unable to render arranger ${type.toUpperCase()} at this time.`);
-    }
-  };
-      alert('Unable to render MIDI at this time.');
     }
   };
 
