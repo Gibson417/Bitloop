@@ -259,15 +259,19 @@ const calculateMaxBars = (bpm) => {
 };
 
 const ensureEvenBars = (bars, min = 2, max = Number.POSITIVE_INFINITY) => {
+  // Ensure min is even to guarantee we always return even numbers
+  const evenMin = min % 2 === 0 ? min : min + 1;
+  
   const rounded = Math.round(bars);
-  // Ensure at least the minimum
-  const clamped = Math.max(rounded, min);
+  // Ensure at least the minimum (which is now guaranteed to be even)
+  const clamped = Math.max(rounded, evenMin);
   // If odd, round up to next even number
   const even = clamped % 2 === 0 ? clamped : clamped + 1;
   // If rounding up exceeds max, round down to largest even number <= max
   if (even > max) {
-    // Find largest even number that doesn't exceed max and is >= min
-    return Math.max(Math.floor(max / 2) * 2, min);
+    // Find largest even number that doesn't exceed max and is >= evenMin
+    const largestEven = Math.floor(max / 2) * 2;
+    return Math.max(largestEven, evenMin);
   }
   return even;
 };
@@ -737,7 +741,8 @@ const createProjectStore = () => {
     setBars(value) {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
-        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 2, 512));
+        // ensureBarsWithinLimit handles min/max constraints and ensures even numbers
+        const bars = ensureBarsWithinLimit(state.bpm, ensurePositiveInteger(value, state.bars, 1, 512));
         return normalizeState({ ...state, bars });
       });
       const nextSnapshot = toSnapshot(get(store));
