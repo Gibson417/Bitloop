@@ -263,18 +263,19 @@ const ensureEvenBars = (bars, min = 2) => {
   // Ensure at least the minimum
   const clamped = Math.max(rounded, min);
   // If odd, round up to next even number
-  const even = clamped % 2 === 0 ? clamped : clamped + 1;
-  // Ensure we still meet the minimum after rounding
-  return Math.max(even, min);
+  return clamped % 2 === 0 ? clamped : clamped + 1;
 };
 
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
   const maxBars = calculateMaxBars(bpm);
   const clampedBars = Math.min(desiredBars, maxBars);
   // Ensure the result is an even number
-  const evenBars = ensureEvenBars(clampedBars);
-  // If rounding up exceeds maxBars, round down instead
-  return evenBars > maxBars ? evenBars - 2 : evenBars;
+  const evenBars = ensureEvenBars(clampedBars, 2);
+  // If rounding up exceeds maxBars, round down instead (ensuring we stay >= 2)
+  if (evenBars > maxBars) {
+    return Math.max(evenBars - 2, 2);
+  }
+  return evenBars;
 };
 
 const ensurePositiveInteger = (value, fallback, min = 1, max = Number.POSITIVE_INFINITY) => {

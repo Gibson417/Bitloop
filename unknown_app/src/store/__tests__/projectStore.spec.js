@@ -54,6 +54,13 @@ describe('project store', () => {
     
     project.setBars(10);
     expect(get(project).bars).toBe(10);
+    
+    // Test minimum is enforced (bars cannot be less than 2)
+    project.setBars(0);
+    expect(get(project).bars).toBe(2);
+    
+    project.setBars(1);
+    expect(get(project).bars).toBe(2);
   });
 
   it('ensures loaded projects have even bars', () => {
