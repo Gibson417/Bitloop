@@ -12,6 +12,7 @@
   import SettingsMenu from './components/SettingsMenu.svelte';
   import VolumeSlider from './components/VolumeSlider.svelte';
   import ShareMenu from './components/ShareMenu.svelte';
+  import KeyCommandsMenu from './components/KeyCommandsMenu.svelte';
   import FollowToggle from './components/FollowToggle.svelte';
   import PatternArranger from './components/PatternArranger.svelte';
   import ArrowSelector from './components/ArrowSelector.svelte';
@@ -1157,6 +1158,7 @@
             on:export={handleShareMenuExport}
             on:import={handleShareMenuImport}
           />
+          <KeyCommandsMenu />
           <SettingsMenu />
         </div>
       </div>
@@ -1261,6 +1263,7 @@
             on:export={handleShareMenuExport}
             on:import={handleShareMenuImport}
           />
+          <KeyCommandsMenu />
           <SettingsMenu />
         </div>
       </div>
@@ -1385,6 +1388,8 @@
           on:patternremove={handlePatternRemove}
           on:patternrename={handlePatternRename}
           on:patternreorder={handlePatternReorder}
+          on:render={handleShareMenuRender}
+          on:rendermidi={handleShareMenuRenderMidi}
         />
       {/if}
     </div>

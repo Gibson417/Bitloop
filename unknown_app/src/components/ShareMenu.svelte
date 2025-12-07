@@ -39,21 +39,6 @@
     document.removeEventListener('click', closeOnClickOutside);
   };
 
-  const handleShare = () => {
-    closeShareMenu();
-    dispatch('share');
-  };
-
-  const handleRenderWav = () => {
-    closeShareMenu();
-    dispatch('render');
-  };
-
-  const handleRenderMidi = () => {
-    closeShareMenu();
-    dispatch('rendermidi');
-  };
-
   const handleExport = () => {
     closeShareMenu();
     dispatch('export');
@@ -110,33 +95,23 @@
     disabled={shareStatus === 'working'}
     aria-haspopup="true"
     aria-expanded={shareMenuOpen}
-    aria-label="Share or Export"
-    title="Share or Export"
+    aria-label="Project Menu"
+    title="Project Menu"
   >
     <svg class="share-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="18" cy="5" r="3"/>
-      <circle cx="6" cy="12" r="3"/>
-      <circle cx="18" cy="19" r="3"/>
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="12" y1="18" x2="12" y2="12"/>
+      <line x1="9" y1="15" x2="15" y2="15"/>
     </svg>
   </button>
   {#if shareMenuOpen}
     <div class="share-dropdown" role="menu">
-      <button type="button" role="menuitem" on:click={handleShare} disabled={shareStatus === 'working'}>
-        <span>Share loop</span>
-      </button>
-      <button type="button" role="menuitem" on:click={handleRenderWav}>
-        <span>Render WAV</span>
-      </button>
-      <button type="button" role="menuitem" on:click={handleRenderMidi}>
-        <span>Render MIDI</span>
-      </button>
       <button type="button" role="menuitem" on:click={handleExport}>
-        <span>Export JSON</span>
+        <span>Save Project</span>
       </button>
       <button type="button" role="menuitem" on:click={triggerImport}>
-        <span>Import JSON</span>
+        <span>Load Project</span>
       </button>
     </div>
   {/if}
