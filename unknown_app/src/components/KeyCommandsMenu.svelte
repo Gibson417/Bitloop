@@ -13,7 +13,7 @@
       await tick();
       setTimeout(() => {
         if (keyCommandsMenuOpen) {
-          document.addEventListener('click', closeOnClickOutside, { once: false });
+          document.addEventListener('click', closeOnClickOutside);
         }
       }, 0);
     }
