@@ -269,9 +269,11 @@ const ensureEvenBars = (bars, min = 2, max = Number.POSITIVE_INFINITY) => {
   const even = clamped % 2 === 0 ? clamped : clamped + 1;
   // If rounding up exceeds max, round down to largest even number <= max
   if (even > max) {
-    // Find largest even number that doesn't exceed max and is >= evenMin
+    // Find largest even number that doesn't exceed max
     const largestEven = Math.floor(max / 2) * 2;
-    return Math.max(largestEven, evenMin);
+    // If largestEven < evenMin, no valid value exists; return evenMin (constraint violation)
+    // In practice this shouldn't happen with our min=2 and reasonable max values
+    return largestEven >= evenMin ? largestEven : evenMin;
   }
   return even;
 };
