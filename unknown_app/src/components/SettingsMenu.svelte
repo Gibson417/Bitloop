@@ -134,7 +134,7 @@
         <ThemeSelector />
       </div>
       <div class="settings-divider"></div>
-      <div class="settings-section">
+      <div class="settings-section button-row">
         <button 
           type="button" 
           class="menu-item toggle-btn"
@@ -251,6 +251,25 @@
     align-items: center;
   }
 
+  /* Button row layout for side-by-side buttons */
+  .settings-section.button-row {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  /* Buttons in row should flex to share space */
+  .settings-section.button-row .menu-item {
+    flex: 1;
+    min-width: 0; /* Allow buttons to shrink below content width */
+  }
+
+  /* Adjust text to wrap or truncate if needed */
+  .settings-section.button-row .menu-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .section-title {
     font-size: 0.75rem;
     font-weight: 700;
@@ -348,6 +367,18 @@
       max-width: calc(100vw - 32px); /* Ensure dropdown doesn't exceed viewport width with padding */
       min-width: auto; /* Override min-width on mobile */
       width: max-content; /* Fit content width */
+    }
+
+    /* Stack buttons vertically on very small screens */
+    .settings-section.button-row {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .settings-section.button-row .menu-item span {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
     }
   }
 </style>
