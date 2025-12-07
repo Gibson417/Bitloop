@@ -273,7 +273,6 @@
       animationId = null;
     }
     project.setPlaying(false);
-    project.resetPlayhead();
   };
 
   const handleTogglePlay = async () => {
