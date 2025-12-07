@@ -67,6 +67,7 @@
   let audioContext;
   let scheduler;
   let arrangerScheduler;
+  let arrangerSchedulerRunning = false; // Guard to prevent re-triggering scheduler start
   let masterGain;
   let animationId;
   let arrangerAnimationId;
@@ -1081,12 +1082,14 @@
     if (arrangerAnimationId) {
       cancelAnimationFrame(arrangerAnimationId);
     }
+    arrangerSchedulerRunning = false; // Clear guard on cleanup
   });
 
   // Handle arranger playback state changes
-  $: if (arrangerPlaybackState?.isPlaying) {
+  // Only start/stop when transitioning between states to avoid infinite loops
+  $: if (arrangerPlaybackState?.isPlaying && !arrangerSchedulerRunning) {
     startArrangerPlayback();
-  } else if (!arrangerPlaybackState?.isPlaying && arrangerScheduler) {
+  } else if (!arrangerPlaybackState?.isPlaying && arrangerSchedulerRunning) {
     stopLocalArrangerPlayback();
   }
 
@@ -1097,6 +1100,9 @@
     }
     
     if (!(await ensureAudio())) return;
+    
+    // Set guard before starting to prevent race conditions
+    arrangerSchedulerRunning = true;
     
     if (!arrangerScheduler) {
       const bpm = arrangerPlaybackState.bpm || 110;
@@ -1120,6 +1126,7 @@
       cancelAnimationFrame(arrangerAnimationId);
       arrangerAnimationId = null;
     }
+    arrangerSchedulerRunning = false; // Clear guard after stopping
   };
 
   $: activeTrack = projectState?.tracks?.[projectState?.selectedTrack ?? 0];
