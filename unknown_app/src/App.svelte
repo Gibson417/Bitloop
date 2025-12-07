@@ -977,9 +977,7 @@
               <circle cx="8" cy="20" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="8" cy="32" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="8" cy="44" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="14" cy="44" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="20" cy="44" r="4" fill="currentColor" opacity="0.9" />
-              <circle cx="26" cy="44" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="32" cy="8" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="32" cy="20" r="4" fill="currentColor" opacity="0.9" />
               <circle cx="32" cy="32" r="4" fill="currentColor" opacity="0.9" />
