@@ -263,11 +263,9 @@
     min-width: 0; /* Allow buttons to shrink below content width */
   }
 
-  /* Adjust text to wrap or truncate if needed */
+  /* Adjust text handling for button labels */
   .settings-section.button-row .menu-item span {
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .section-title {
@@ -375,10 +373,9 @@
       gap: 12px;
     }
 
+    /* Allow text to wrap on mobile */
     .settings-section.button-row .menu-item span {
       white-space: normal;
-      overflow: visible;
-      text-overflow: clip;
     }
   }
 </style>
