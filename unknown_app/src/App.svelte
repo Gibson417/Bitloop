@@ -293,8 +293,9 @@
     audibleTracks.forEach((track) => {
       // Calculate the range of storage indices for this beat
       const storageStart = stepInPattern;
-      const storageEnd = Math.ceil(stepInPattern + stepsPerBeat);
-      const storageStepDuration = beatDuration / (storageEnd - storageStart);
+      const maxPatternSteps = patternBars * BASE_RESOLUTION;
+      const storageEnd = Math.min(Math.ceil(stepInPattern + stepsPerBeat), maxPatternSteps);
+      const storageStepDuration = beatDuration / Math.max(storageEnd - storageStart, 1);
       
       for (let row = 0; row < rows; row += 1) {
         const rowNotes = track.notes?.[row] ?? [];
