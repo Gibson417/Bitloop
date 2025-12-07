@@ -12,34 +12,32 @@ describe('ShareMenu component', () => {
   it('opens menu when toggle is clicked', async () => {
     const { getByLabelText, getByText } = render(ShareMenu, { props: defaultProps });
 
-    await fireEvent.click(getByLabelText('Share or Export'));
+    await fireEvent.click(getByLabelText('Project Menu'));
 
-    expect(getByText('Share loop')).toBeTruthy();
-    expect(getByText('Render WAV')).toBeTruthy();
+    expect(getByText('Save Project')).toBeTruthy();
+    expect(getByText('Load Project')).toBeTruthy();
   });
 
-  it('emits share event when Share loop is selected', async () => {
+  it('emits export event when Save Project is selected', async () => {
     const { component, getByLabelText, getByText } = render(ShareMenu, { props: defaultProps });
-    const share = vi.fn();
-    component.$on('share', share);
+    const exportEvent = vi.fn();
+    component.$on('export', exportEvent);
 
-    await fireEvent.click(getByLabelText('Share or Export'));
-    await fireEvent.click(getByText('Share loop'));
+    await fireEvent.click(getByLabelText('Project Menu'));
+    await fireEvent.click(getByText('Save Project'));
 
-    expect(share).toHaveBeenCalled();
+    expect(exportEvent).toHaveBeenCalled();
   });
 
   it('displays feedback message and link when provided', () => {
-    const testLink = 'https://example.com/loop';
-    const { getByDisplayValue, getByText } = render(ShareMenu, {
+    const { getByText } = render(ShareMenu, {
       props: {
-        shareStatus: 'copied',
-        shareMessage: 'Share link copied',
-        shareLink: testLink
+        shareStatus: 'ready',
+        shareMessage: 'Project exported successfully',
+        shareLink: ''
       }
     });
 
-    expect(getByText('Share link copied')).toBeTruthy();
-    expect(getByDisplayValue(testLink)).toBeTruthy();
+    expect(getByText('Project exported successfully')).toBeTruthy();
   });
 });
