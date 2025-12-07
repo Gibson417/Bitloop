@@ -4,6 +4,7 @@
   import HowToGuide from './HowToGuide.svelte';
   import { devMode } from '../store/devModeStore.js';
   import { resetAll } from '../lib/persistence.js';
+  import { openMenu, setOpenMenu, closeAllMenus } from '../store/menuCoordinator.js';
 
   let settingsMenuOpen = false;
   let settingsMenuEl;
@@ -15,15 +16,25 @@
     devModeEnabled = value;
   });
 
+  // Subscribe to menu coordinator
+  const unsubscribeMenuCoordinator = openMenu.subscribe((currentOpenMenu) => {
+    settingsMenuOpen = currentOpenMenu === 'settings';
+  });
+
   const toggleSettingsMenu = async (event) => {
     event?.stopPropagation?.();
-    settingsMenuOpen = !settingsMenuOpen;
-    
     if (settingsMenuOpen) {
+      closeAllMenus();
+    } else {
+      setOpenMenu('settings');
+    }
+    
+    if (!settingsMenuOpen) {
       // Wait for next tick, then add the click listener
       await tick();
       setTimeout(() => {
-        if (settingsMenuOpen) {
+        const currentOpen = settingsMenuOpen;
+        if (currentOpen) {
           document.addEventListener('click', closeOnClickOutside, { once: false });
         }
       }, 0);
@@ -33,13 +44,13 @@
   const closeOnClickOutside = (event) => {
     const target = event.target;
     if (settingsMenuEl && !settingsMenuEl.contains(target)) {
-      settingsMenuOpen = false;
+      closeAllMenus();
       document.removeEventListener('click', closeOnClickOutside);
     }
   };
 
   const closeSettingsMenu = () => {
-    settingsMenuOpen = false;
+    closeAllMenus();
     document.removeEventListener('click', closeOnClickOutside);
   };
 
@@ -78,7 +89,7 @@
     if (event.key === 'Escape' && settingsMenuOpen) {
       event.preventDefault();
       event.stopPropagation();
-      settingsMenuOpen = false;
+      closeAllMenus();
       document.removeEventListener('click', closeOnClickOutside);
     }
   };
@@ -96,6 +107,7 @@
       document.removeEventListener('keydown', handleDocumentKeydown);
     }
     unsubscribeDevMode();
+    unsubscribeMenuCoordinator();
   });
 </script>
 
@@ -121,22 +133,7 @@
         <ThemeSelector />
       </div>
       <div class="settings-divider"></div>
-      <button 
-        type="button" 
-        class="menu-item how-to-btn"
-        on:click={openGuide}
-        role="menuitem"
-      >
-        <svg class="menu-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        <span>How To / Guide</span>
-      </button>
-      <div class="settings-divider"></div>
       <div class="settings-section">
-        <div class="section-title">Developer Mode</div>
         <button 
           type="button" 
           class="menu-item toggle-btn"

@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onMount, onDestroy, tick } from 'svelte';
+  import { openMenu, setOpenMenu, closeAllMenus } from '../store/menuCoordinator.js';
 
   export let shareStatus = 'idle';
   export let shareMessage = '';
@@ -11,15 +12,25 @@
   let shareMenuEl;
   let importInput;
 
+  // Subscribe to menu coordinator
+  const unsubscribeMenuCoordinator = openMenu.subscribe((currentOpenMenu) => {
+    shareMenuOpen = currentOpenMenu === 'share';
+  });
+
   const toggleShareMenu = async (event) => {
     event?.stopPropagation?.();
-    shareMenuOpen = !shareMenuOpen;
-    
     if (shareMenuOpen) {
+      closeAllMenus();
+    } else {
+      setOpenMenu('share');
+    }
+    
+    if (!shareMenuOpen) {
       // Wait for next tick, then add the click listener
       await tick();
       setTimeout(() => {
-        if (shareMenuOpen) {
+        const currentOpen = shareMenuOpen;
+        if (currentOpen) {
           document.addEventListener('click', closeOnClickOutside, { once: false });
         }
       }, 0);
@@ -29,13 +40,13 @@
   const closeOnClickOutside = (event) => {
     const target = event.target;
     if (shareMenuEl && !shareMenuEl.contains(target)) {
-      shareMenuOpen = false;
+      closeAllMenus();
       document.removeEventListener('click', closeOnClickOutside);
     }
   };
 
   const closeShareMenu = () => {
-    shareMenuOpen = false;
+    closeAllMenus();
     document.removeEventListener('click', closeOnClickOutside);
   };
 
@@ -63,7 +74,7 @@
     if (event.key === 'Escape' && shareMenuOpen) {
       event.preventDefault();
       event.stopPropagation();
-      shareMenuOpen = false;
+      closeAllMenus();
       document.removeEventListener('click', closeOnClickOutside);
     }
   };
@@ -84,6 +95,7 @@
       document.removeEventListener('click', closeOnClickOutside);
       document.removeEventListener('keydown', handleDocumentKeydown);
     }
+    unsubscribeMenuCoordinator();
   });
 </script>
 
