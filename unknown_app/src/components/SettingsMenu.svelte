@@ -228,13 +228,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 12px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     background: var(--color-panel);
     backdrop-filter: blur(10px);
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
-    min-width: 220px;
+    min-width: auto;
+    width: max-content;
     z-index: 20;
   }
 
@@ -253,6 +254,7 @@
   .settings-section.button-row {
     flex-direction: row;
     gap: 8px;
+    justify-content: center;
   }
 
   /* Buttons in row should maintain their square size */
