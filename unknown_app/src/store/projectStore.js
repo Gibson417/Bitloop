@@ -260,8 +260,12 @@ const calculateMaxBars = (bpm) => {
 
 const ensureEvenBars = (bars, min = 2) => {
   const rounded = Math.round(bars);
+  // Ensure at least the minimum
+  const clamped = Math.max(rounded, min);
   // If odd, round up to next even number
-  return rounded % 2 === 0 ? rounded : rounded + 1;
+  const even = clamped % 2 === 0 ? clamped : clamped + 1;
+  // Ensure we still meet the minimum after rounding
+  return Math.max(even, min);
 };
 
 const ensureBarsWithinLimit = (bpm, desiredBars) => {
@@ -1045,7 +1049,9 @@ const createProjectStore = () => {
       const rows = ensurePositiveInteger(payload.rows, DEFAULT_ROWS, 1, 32);
       const bpm = clamp(payload.bpm ?? DEFAULT_BPM, 30, 260);
       const maxBars = calculateMaxBars(bpm);
-      const bars = clamp(payload.bars ?? DEFAULT_BARS, 1, maxBars);
+      const clampedBars = clamp(payload.bars ?? DEFAULT_BARS, 2, maxBars);
+      // Ensure bars are even numbers (increments of 2)
+      const bars = ensureEvenBars(clampedBars, 2);
       // Coerce stepsPerBar to valid values (8, 16, 32, 64) for proper 4/4 time alignment
       const stepsPerBar = coerceStepsPerBar(payload.stepsPerBar ?? DEFAULT_STEPS_PER_BAR);
       const tracksPayload = Array.isArray(payload.tracks) && payload.tracks.length > 0 ? payload.tracks : undefined;
