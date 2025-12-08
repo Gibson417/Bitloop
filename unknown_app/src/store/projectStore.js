@@ -229,21 +229,26 @@ const normalizeTracks = (tracks, rows, storageSteps) => {
   });
 };
 
-const createTrack = (index, rows, storageSteps) =>
-  resizeTrack(
+const createTrack = (index, rows, storageSteps, scaleSettings = null) => {
+  // Use scaleSettings from an existing track if provided, otherwise use defaults
+  const scale = scaleSettings?.scale ?? 'major';
+  const customScale = scaleSettings?.customScale ?? null;
+  const rootNote = scaleSettings?.rootNote ?? 0;
+  
+  return resizeTrack(
     {
       id: index + 1,
       name: `Track ${index + 1}`,
       color: TRACK_COLORS[index % TRACK_COLORS.length],
       waveform: 'square',
-      scale: 'major',
-      customScale: null,
+      scale,
+      customScale,
       octave: 4,
       volume: 0.7,
       customShape: DEFAULT_CUSTOM_SHAPE,
       effects: { ...DEFAULT_EFFECTS },
       adsr: { ...DEFAULT_ADSR },
-      rootNote: 0,
+      rootNote,
       mute: false,
       solo: false,
       ghostVisible: false,
@@ -252,6 +257,7 @@ const createTrack = (index, rows, storageSteps) =>
     rows,
     storageSteps
   );
+};
 
 const calculateSecondsPerBar = (bpm) => 240 / bpm;
 
@@ -348,7 +354,7 @@ const normalizePatterns = (patterns, rows, bpm, stateBars = null) => {
   if (!Array.isArray(patterns) || patterns.length === 0) {
     const defaultBars = stateBars !== null ? stateBars : ensureBarsWithinLimit(bpm, DEFAULT_BARS);
     const storageSteps = defaultBars * BASE_RESOLUTION;
-    return [createPattern('A', 'Pattern A', defaultBars, rows, storageSteps)];
+    return [createPattern('A', 'P1', defaultBars, rows, storageSteps)];
   }
   return patterns.map(p => normalizePattern(p, rows, bpm, stateBars));
 };
@@ -904,7 +910,17 @@ const createProjectStore = () => {
       update((state) => {
         if (state.tracks.length >= MAX_TRACKS) return state;
         const storageSteps = state.bars * BASE_RESOLUTION;
-        const tracks = [...state.tracks, createTrack(state.tracks.length, state.rows, storageSteps)];
+        
+        // Get scale settings from the first existing track if any exist
+        const scaleSettings = state.tracks.length > 0 
+          ? { 
+              scale: state.tracks[0].scale, 
+              customScale: state.tracks[0].customScale,
+              rootNote: state.tracks[0].rootNote
+            }
+          : null;
+        
+        const tracks = [...state.tracks, createTrack(state.tracks.length, state.rows, storageSteps, scaleSettings)];
         changed = true;
         
         // Update patterns if they exist
@@ -1119,7 +1135,7 @@ const createProjectStore = () => {
       const prevSnapshot = toSnapshot(get(store));
       update((state) => {
         const newId = `pattern-${Date.now()}`;
-        const newName = `Pattern ${String.fromCharCode(65 + state.patterns.length)}`;
+        const newName = `P${state.patterns.length + 1}`;
         const storageSteps = state.bars * BASE_RESOLUTION;
         // Capture current tracks (clone them to avoid reference issues)
         const capturedTracks = state.tracks.map(track => ({
