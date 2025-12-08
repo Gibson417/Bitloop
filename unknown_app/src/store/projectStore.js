@@ -354,7 +354,7 @@ const normalizePatterns = (patterns, rows, bpm, stateBars = null) => {
   if (!Array.isArray(patterns) || patterns.length === 0) {
     const defaultBars = stateBars !== null ? stateBars : ensureBarsWithinLimit(bpm, DEFAULT_BARS);
     const storageSteps = defaultBars * BASE_RESOLUTION;
-    return [createPattern('A', 'P1', defaultBars, rows, storageSteps)];
+    return [createPattern('pattern-1', 'P1', defaultBars, rows, storageSteps)];
   }
   return patterns.map(p => normalizePattern(p, rows, bpm, stateBars));
 };
