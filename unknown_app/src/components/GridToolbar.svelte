@@ -4,6 +4,7 @@
   export const trackColor = '#78d2b9';
   export let canUndo = false;
   export let canRedo = false;
+  export let activeTool = 'draw'; // 'draw' or 'cut'
 
   const dispatch = createEventDispatcher();
 
@@ -18,6 +19,10 @@
   const handleCapturePattern = () => {
     dispatch('capturepattern');
   };
+
+  const handleToolChange = (tool) => {
+    dispatch('toolchange', { tool });
+  };
 </script>
 
 <div class="grid-toolbar" data-component="GridToolbar">
@@ -25,16 +30,33 @@
   <div class="tool-buttons">
     <button
       type="button"
-      class="tool-btn active"
+      class="tool-btn {activeTool === 'draw' ? 'active' : ''}"
       title="Draw - Click to toggle notes, drag to paint/erase"
       aria-label="Draw tool"
-      aria-pressed="true"
+      aria-pressed={activeTool === 'draw'}
+      on:click={() => handleToolChange('draw')}
     >
       <svg class="tool-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 19l7-7 3 3-7 7-3-3z"/>
         <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
         <path d="M2 2l7.586 7.586"/>
         <circle cx="11" cy="11" r="2"/>
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="tool-btn {activeTool === 'cut' ? 'active' : ''}"
+      title="Cut - Click on a note to split it into two shorter notes"
+      aria-label="Cut tool"
+      aria-pressed={activeTool === 'cut'}
+      on:click={() => handleToolChange('cut')}
+    >
+      <svg class="tool-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="3"/>
+        <circle cx="6" cy="18" r="3"/>
+        <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+        <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+        <line x1="8.12" y1="8.12" x2="12" y2="12"/>
       </svg>
     </button>
     <button
