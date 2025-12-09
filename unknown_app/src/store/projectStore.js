@@ -973,7 +973,11 @@ const createProjectStore = () => {
         if (index < 0 || index >= state.tracks.length) return state;
         const tracks = state.tracks.filter((_, idx) => idx !== index);
         changed = true;
-        const selectedTrack = tracks.length > 0 ? clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1) : 0;
+        // When no tracks remain, selectedTrack should be 0 (will be invalid but safe)
+        // When tracks remain, adjust selectedTrack appropriately
+        const selectedTrack = tracks.length > 0 
+          ? clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1)
+          : 0;
         
         // Update patterns if they exist
         if (state.patterns && Array.isArray(state.patterns)) {

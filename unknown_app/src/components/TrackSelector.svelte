@@ -83,7 +83,7 @@
         class="action-button"
         type="button"
         on:click={handleDeleteTrack}
-        disabled={tracks.length === 0}
+        disabled={!canRemoveTrack(selected)}
         aria-label="Delete track"
         title="Delete track"
       >
