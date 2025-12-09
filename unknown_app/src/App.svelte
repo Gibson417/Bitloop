@@ -377,7 +377,14 @@
     }
     
     if (!(await ensureAudio())) return;
-    project.resetPlayhead();
+    
+    // Only reset playhead if we're at the end of the sequence
+    const totalSteps = projectState.bars * projectState.stepsPerBar;
+    const currentStep = projectState.playheadStep || 0;
+    if (currentStep >= totalSteps - 1) {
+      project.resetPlayhead();
+    }
+    
     project.setPlaying(true);
     scheduler.setTempo(projectState.bpm);
     scheduler.setStepsPerBeat(projectState.stepsPerBar / BEATS_PER_BAR);
@@ -394,6 +401,18 @@
       cancelAnimationFrame(animationId);
       animationId = null;
     }
+    
+    // Snap playhead to the start of the current bar when pausing
+    if (projectState) {
+      const stepsPerBar = projectState.stepsPerBar || 16;
+      const currentStep = projectState.playheadStep || 0;
+      const barStartStep = Math.floor(currentStep / stepsPerBar) * stepsPerBar;
+      
+      if (currentStep !== barStartStep) {
+        project.registerStep(barStartStep, audioContext?.currentTime || 0, 0);
+      }
+    }
+    
     project.setPlaying(false);
   };
 
