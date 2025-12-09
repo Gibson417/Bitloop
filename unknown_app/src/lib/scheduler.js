@@ -34,7 +34,7 @@ export class Scheduler {
   start() {
     if (this.isPlaying) return;
     this.isPlaying = true;
-    this.currentStep = 0;
+    // Don't reset currentStep here - it should be set via setCurrentStep() before calling start()
     this.nextStepTime = this.context.currentTime;
     this.schedule();
   }
