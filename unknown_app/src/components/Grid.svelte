@@ -298,6 +298,7 @@
         ctx.moveTo(x, 0);
         ctx.lineTo(x, layout.height);
         ctx.stroke();
+        ctx.lineWidth = 1; // Reset for clarity (will be restored by ctx.restore() anyway)
       }
       
       ctx.restore();
