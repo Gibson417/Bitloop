@@ -370,6 +370,11 @@
     animationId = requestAnimationFrame(animatePlayhead);
   };
 
+  // Helper function to get the start step of the bar containing the given step
+  const getBarStartStep = (step, stepsPerBar) => {
+    return Math.floor(step / stepsPerBar) * stepsPerBar;
+  };
+
   const startPlayback = async () => {
     // Stop arranger playback if it's running
     if (arrangerPlaybackState?.isPlaying) {
@@ -404,9 +409,9 @@
     
     // Snap playhead to the start of the current bar when pausing
     if (projectState) {
-      const stepsPerBar = projectState.stepsPerBar || 16;
+      const stepsPerBar = projectState.stepsPerBar || DEFAULT_STEPS_PER_BAR_VALUE;
       const currentStep = projectState.playheadStep || 0;
-      const barStartStep = Math.floor(currentStep / stepsPerBar) * stepsPerBar;
+      const barStartStep = getBarStartStep(currentStep, stepsPerBar);
       
       if (currentStep !== barStartStep) {
         project.registerStep(barStartStep, audioContext?.currentTime || 0, 0);
@@ -426,10 +431,10 @@
 
   const handleSkip = () => {
     if (projectState) {
-      const stepsPerBar = projectState.stepsPerBar || 16;
+      const stepsPerBar = projectState.stepsPerBar || DEFAULT_STEPS_PER_BAR_VALUE;
       const totalSteps = projectState.bars * stepsPerBar;
       const currentStep = projectState.playheadStep || 0;
-      const nextBarStep = Math.floor(currentStep / stepsPerBar) * stepsPerBar + stepsPerBar;
+      const nextBarStep = getBarStartStep(currentStep, stepsPerBar) + stepsPerBar;
       const targetStep = nextBarStep >= totalSteps ? 0 : nextBarStep;
 
       project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
@@ -443,10 +448,10 @@
 
   const handleSkipBack = () => {
     if (projectState) {
-      const stepsPerBar = projectState.stepsPerBar || 16;
+      const stepsPerBar = projectState.stepsPerBar || DEFAULT_STEPS_PER_BAR_VALUE;
       const totalSteps = projectState.bars * stepsPerBar;
       const currentStep = projectState.playheadStep || 0;
-      const currentBarStart = Math.floor(currentStep / stepsPerBar) * stepsPerBar;
+      const currentBarStart = getBarStartStep(currentStep, stepsPerBar);
 
       let targetStep = currentBarStart;
 
