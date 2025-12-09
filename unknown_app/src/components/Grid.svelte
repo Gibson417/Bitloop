@@ -229,6 +229,22 @@
       // Determine if we're in a "zoomed" view (showing more than default 1/16 resolution)
       const isZoomed = zoom && zoom > stepsPerBarSafe;
       
+      // Always draw bar line at the start of the window (left edge)
+      const leftEdgeDisplayCol = windowOffset;
+      const leftEdgeLogicalStep = leftEdgeDisplayCol / logicalToDisplayScale;
+      const isLeftEdgeBarBoundary = Math.abs(leftEdgeLogicalStep % stepsPerBarSafe) < BOUNDARY_TOLERANCE;
+      
+      if (isLeftEdgeBarBoundary) {
+        const x = 0.5;
+        ctx.strokeStyle = hexToRgba(trackColor, 0.85);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, layout.height);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+      }
+      
       for (let col = 0; col < visibleColumns; col++) {
         // Map displayed column back to logical step using inverse scale
         // Display column → logical step
@@ -249,11 +265,14 @@
         
         // Use different opacity/color for bar boundaries vs quarter-bar boundaries vs sub-beats
         if (isBarBoundary) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.75); // Increased for better visibility
+          ctx.strokeStyle = hexToRgba(trackColor, 0.85); // Increased from 0.75 for better visibility
+          ctx.lineWidth = 2; // Thicker line for bar boundaries
         } else if (isQuarterBarBoundary) {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)'; // Increased for better visibility
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'; // Increased from 0.28 for better visibility
+          ctx.lineWidth = 1;
         } else if (isZoomed) {
-          ctx.strokeStyle = hexToRgba(trackColor, 0.18); // Increased for better visibility
+          ctx.strokeStyle = hexToRgba(trackColor, 0.22); // Increased from 0.18 for better visibility
+          ctx.lineWidth = 1;
         } else {
           continue; // Skip non-boundary lines in normal view
         }
@@ -264,16 +283,16 @@
         ctx.stroke();
       }
       
-      // Draw closing line at right edge only if it aligns with a bar boundary
-      // This prevents showing partial bars at the edge of the visible area
-      // The main loop stops at visibleColumns-1 to avoid drawing the closing line unconditionally
+      // Always draw bar line at the right edge if it aligns with a bar boundary
+      // This ensures bar boundaries are visible at both ends of the window
       const rightEdgeDisplayCol = windowOffset + visibleColumns;
       const rightEdgeLogicalStep = rightEdgeDisplayCol / logicalToDisplayScale;
       const isRightEdgeBarBoundary = Math.abs(rightEdgeLogicalStep % stepsPerBarSafe) < BOUNDARY_TOLERANCE;
       
       if (isRightEdgeBarBoundary) {
         const x = visibleColumns * cellSize + 0.5;
-        ctx.strokeStyle = hexToRgba(trackColor, 0.75);
+        ctx.strokeStyle = hexToRgba(trackColor, 0.85);
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, layout.height);
