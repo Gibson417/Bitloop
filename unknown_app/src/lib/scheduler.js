@@ -27,6 +27,10 @@ export class Scheduler {
     this.stepsPerBeat = stepsPerBeat;
   }
 
+  setCurrentStep(step) {
+    this.currentStep = step;
+  }
+
   start() {
     if (this.isPlaying) return;
     this.isPlaying = true;

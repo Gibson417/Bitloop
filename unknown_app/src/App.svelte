@@ -388,6 +388,10 @@
     const currentStep = projectState.playheadStep || 0;
     if (currentStep >= totalSteps - 1) {
       project.resetPlayhead();
+      scheduler.setCurrentStep(0);
+    } else {
+      // Resume from current playhead position
+      scheduler.setCurrentStep(currentStep);
     }
     
     project.setPlaying(true);
@@ -440,6 +444,7 @@
       project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
 
       if (projectState.playing && scheduler) {
+        scheduler.setCurrentStep(targetStep);
         scheduler.stop();
         scheduler.start();
       }
@@ -462,6 +467,7 @@
       project.registerStep(targetStep, audioContext?.currentTime || 0, 0);
 
       if (projectState.playing && scheduler) {
+        scheduler.setCurrentStep(targetStep);
         scheduler.stop();
         scheduler.start();
       }
