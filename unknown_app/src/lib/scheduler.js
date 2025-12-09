@@ -28,7 +28,10 @@ export class Scheduler {
   }
 
   setCurrentStep(step) {
-    this.currentStep = step;
+    if (typeof step !== 'number' || step < 0 || !Number.isFinite(step)) {
+      throw new Error('Step must be a non-negative finite number');
+    }
+    this.currentStep = Math.floor(step);
   }
 
   start() {

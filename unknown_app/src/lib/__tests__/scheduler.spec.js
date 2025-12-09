@@ -18,6 +18,18 @@ describe('Scheduler setCurrentStep functionality', () => {
     expect(scheduler.currentStep).toBe(16);
   });
 
+  it('should validate step parameter in setCurrentStep', () => {
+    expect(() => scheduler.setCurrentStep(-1)).toThrow('Step must be a non-negative finite number');
+    expect(() => scheduler.setCurrentStep(NaN)).toThrow('Step must be a non-negative finite number');
+    expect(() => scheduler.setCurrentStep(Infinity)).toThrow('Step must be a non-negative finite number');
+    expect(() => scheduler.setCurrentStep('16')).toThrow('Step must be a non-negative finite number');
+  });
+
+  it('should floor fractional step values', () => {
+    scheduler.setCurrentStep(16.7);
+    expect(scheduler.currentStep).toBe(16);
+  });
+
   it('should maintain set step position when starting scheduler', () => {
     const stepsCalled = [];
     scheduler.onStep = (step) => {
@@ -94,8 +106,8 @@ describe('Scheduler playback from custom position', () => {
     mockContext.currentTime = 2.0;
     scheduler.schedule();
     
-    // The scheduler resets to 0 on start(), but we set it to 16 before
-    // In practice, the App.svelte code needs to call setCurrentStep() BEFORE start()
+    // The scheduler now preserves the position set via setCurrentStep()
+    // In practice, the App.svelte code calls setCurrentStep() before start()
     // to have the scheduler start from the desired position
   });
 });
