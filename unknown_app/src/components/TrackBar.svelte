@@ -7,7 +7,7 @@
   export let maxTracks = 10;
 
   const canAddMore = () => tracks.length < maxTracks;
-  const canRemoveTrack = (index) => tracks.length > 1 && index >= 0 && index < tracks.length;
+  const canRemoveTrack = (index) => index >= 0 && index < tracks.length;
 
   const dispatch = createEventDispatcher();
 

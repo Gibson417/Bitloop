@@ -27,10 +27,17 @@ export class Scheduler {
     this.stepsPerBeat = stepsPerBeat;
   }
 
+  setCurrentStep(step) {
+    if (typeof step !== 'number' || step < 0 || !Number.isFinite(step)) {
+      throw new Error('Step must be a non-negative finite number');
+    }
+    this.currentStep = Math.floor(step);
+  }
+
   start() {
     if (this.isPlaying) return;
     this.isPlaying = true;
-    this.currentStep = 0;
+    // Don't reset currentStep here - it should be set via setCurrentStep() before calling start()
     this.nextStepTime = this.context.currentTime;
     this.schedule();
   }
