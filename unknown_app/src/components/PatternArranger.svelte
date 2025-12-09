@@ -548,11 +548,6 @@
     flex-wrap: wrap;
   }
 
-  .arranger__header h2 {
-    margin: 0;
-    font-size: 1.2rem;
-  }
-
   .arranger__header-title {
     display: flex;
     flex-direction: column;
