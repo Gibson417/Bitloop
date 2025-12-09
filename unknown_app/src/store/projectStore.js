@@ -177,8 +177,8 @@ const resizeTrack = (track, rows, storageSteps) => {
 
 const normalizeTracks = (tracks, rows, storageSteps) => {
   const safeTracks = Array.isArray(tracks) && tracks.length > 0 ? tracks.slice(0, MAX_TRACKS) : [];
-  const fallback = safeTracks.length ? safeTracks : [createTrack(0, rows, storageSteps)];
-  return fallback.map((track, index) => {
+  // Allow empty tracks array - don't create a fallback track
+  return safeTracks.map((track, index) => {
     const color = track.color ?? TRACK_COLORS[index % TRACK_COLORS.length];
     const waveform = track.waveform ?? 'square';
     
@@ -456,9 +456,7 @@ const initialState = normalizeState({
   playheadProgress: 0,
   lastStepTime: 0,
   nextStepTime: 0,
-  tracks: [
-    createTrack(0, DEFAULT_ROWS, DEFAULT_BARS * BASE_RESOLUTION)
-  ]
+  tracks: []
 });
 
 const snapshotSignature = (snapshot) => JSON.stringify(snapshot);
@@ -972,11 +970,10 @@ const createProjectStore = () => {
       const prevSnapshot = toSnapshot(get(store));
       let changed = false;
       update((state) => {
-        if (state.tracks.length <= 1) return state;
         if (index < 0 || index >= state.tracks.length) return state;
         const tracks = state.tracks.filter((_, idx) => idx !== index);
         changed = true;
-        const selectedTrack = clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1);
+        const selectedTrack = tracks.length > 0 ? clamp(state.selectedTrack >= index ? state.selectedTrack - 1 : state.selectedTrack, 0, tracks.length - 1) : 0;
         
         // Update patterns if they exist
         if (state.patterns && Array.isArray(state.patterns)) {

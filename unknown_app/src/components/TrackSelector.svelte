@@ -6,7 +6,7 @@
   export let maxTracks = 10;
 
   const canAddMore = () => tracks.length < maxTracks;
-  const canRemoveTrack = (index) => tracks.length > 1 && index >= 0 && index < tracks.length;
+  const canRemoveTrack = (index) => index >= 0 && index < tracks.length;
 
   const dispatch = createEventDispatcher();
 
@@ -24,7 +24,6 @@
   };
 
   const handleDeleteTrack = () => {
-    if (tracks.length <= 1) return;
     dispatch('remove', { index: selected });
   };
 
@@ -71,7 +70,7 @@
         class="action-button"
         type="button"
         on:click={handleDuplicateTrack}
-        disabled={!canAddMore()}
+        disabled={!canAddMore() || tracks.length === 0}
         aria-label="Duplicate track"
         title="Duplicate track"
       >
@@ -84,7 +83,7 @@
         class="action-button"
         type="button"
         on:click={handleDeleteTrack}
-        disabled={tracks.length <= 1}
+        disabled={tracks.length === 0}
         aria-label="Delete track"
         title="Delete track"
       >
@@ -355,13 +354,17 @@
     display: flex;
     gap: 4px; /* spacing.xxs */
     align-items: center;
-    opacity: 0;
-    transition: opacity 200ms ease;
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+    transition: width 200ms ease, visibility 0s 200ms;
   }
 
   .track-item:hover .track-controls,
   .track-item.selected .track-controls {
-    opacity: 1;
+    visibility: visible;
+    width: auto;
+    transition: width 200ms ease, visibility 0s 0s;
   }
 
   .toggle-btn {
@@ -423,6 +426,12 @@
     .action-button:hover,
     .toggle-btn:hover {
       transform: none;
+    }
+
+    /* Instant visibility changes without transitions */
+    .track-item:hover .track-controls,
+    .track-item.selected .track-controls {
+      transition: none;
     }
   }
 </style>

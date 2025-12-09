@@ -92,7 +92,7 @@ describe('Track operations with patterns', () => {
     expect(after.patterns[after.selectedPattern].tracks.length).toBe(tracksBefore - 1); // Pattern should have updated tracks
   });
 
-  it('should not remove last track', () => {
+  it('should allow removing last track', () => {
     // Load a state with only 1 track
     project.load({
       name: 'Test',
@@ -106,11 +106,11 @@ describe('Track operations with patterns', () => {
     const before = get(project);
     expect(before.tracks.length).toBe(1);
 
-    // Try to remove the only track
+    // Remove the only track
     project.removeTrack(0);
 
     const after = get(project);
-    expect(after.tracks.length).toBe(1); // Should still have 1 track
+    expect(after.tracks.length).toBe(0); // Should now have 0 tracks
   });
 
   it('should not exceed MAX_TRACKS limit', () => {

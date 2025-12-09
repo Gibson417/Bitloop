@@ -1173,6 +1173,7 @@
   $: currentNoteLabel = selectedNoteOption?.label ?? NOTE_LENGTH_OPTIONS[0].label;
   $: noteLengthSteps = Math.max(1, Math.round((stepsPerBar || 1) / selectedNoteLengthValue));
   $: displayNoteLabel = currentNoteLabel ?? NOTE_LENGTH_OPTIONS[0].label;
+  $: hasTracks = (projectState?.tracks?.length ?? 0) > 0;
 </script>
 
 <main class="app" class:dev-mode={devModeEnabled}>
@@ -1389,26 +1390,40 @@
         </div>
       </div>
         <div class="grid-backdrop" data-component="GridBackdrop">
-          <Grid
-          {rows}
-          {columns}
-          notes={gridNotes}
-          {ghostTracks}
-          noteLabels={noteLabels}
-          playheadStep={projectState?.playheadStep ?? 0}
-          playheadProgress={projectState?.playheadProgress ?? 0}
-          trackColor={trackColor}
-          follow={isFollowing}
-          isPlaying={isPlaying}
-          stepsPerBar={stepsPerBar}
-          noteLengthDenominator={selectedNoteLengthValue}
-          manualWindow={manualWindow}
-          {zoomLevel}
-          {activeTool}
-          on:notechange={handleNoteChange}
-          on:windowinfo={handleWindowInfo}
-        />
-      </div>
+          {#if hasTracks}
+            <Grid
+              {rows}
+              {columns}
+              notes={gridNotes}
+              {ghostTracks}
+              noteLabels={noteLabels}
+              playheadStep={projectState?.playheadStep ?? 0}
+              playheadProgress={projectState?.playheadProgress ?? 0}
+              trackColor={trackColor}
+              follow={isFollowing}
+              isPlaying={isPlaying}
+              stepsPerBar={stepsPerBar}
+              noteLengthDenominator={selectedNoteLengthValue}
+              manualWindow={manualWindow}
+              {zoomLevel}
+              {activeTool}
+              on:notechange={handleNoteChange}
+              on:windowinfo={handleWindowInfo}
+            />
+          {:else}
+            <div class="grid-empty-state" data-component="GridEmptyState">
+              <div class="empty-state-content">
+                <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 18V5l12-2v13"/>
+                  <circle cx="6" cy="18" r="3"/>
+                  <circle cx="18" cy="16" r="3"/>
+                </svg>
+                <h3 class="empty-state-title">No Tracks Yet</h3>
+                <p class="empty-state-message">Add a track to start creating music</p>
+              </div>
+            </div>
+          {/if}
+        </div>
       <div class="grid-controls-bar" data-component="GridControlsBar">
         <div class="tempo-bar-section" data-component="TempoBar">
           <div class="tempo-bar-field">
@@ -1962,6 +1977,46 @@
 
   .grid-backdrop :global(.grid-wrapper) {
     height: auto;
+  }
+
+  .grid-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+  }
+
+  .empty-state-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 32px;
+  }
+
+  .empty-state-icon {
+    width: 64px;
+    height: 64px;
+    color: rgba(var(--color-accent-rgb), 0.4);
+    stroke-width: 1.5;
+  }
+
+  .empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .empty-state-message {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 300px;
   }
 
   .grid-controls-bar {
