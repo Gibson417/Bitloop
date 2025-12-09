@@ -85,6 +85,8 @@
   let zoomLevel = 16; // Grid resolution denominator: 8, 16, 32, 64 (default 1/16)
   // Pattern Arranger visibility state
   let arrangerVisible = false;
+  // Active tool state
+  let activeTool = 'draw'; // 'draw' or 'cut'
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -678,6 +680,10 @@
 
   const handleRedo = () => {
     project.gridRedo();
+  };
+
+  const handleToolChange = (event) => {
+    activeTool = event.detail.tool;
   };
 
   const handleProjectRename = (event) => {
@@ -1357,9 +1363,11 @@
             {trackColor}
             {canUndo}
             {canRedo}
+            {activeTool}
             on:undo={handleUndo}
             on:redo={handleRedo}
             on:capturepattern={handlePatternAdd}
+            on:toolchange={handleToolChange}
           />
           <div class="toolbar-divider" aria-hidden="true"></div>
           <div class="note-length-group">
@@ -1396,6 +1404,7 @@
           noteLengthDenominator={selectedNoteLengthValue}
           manualWindow={manualWindow}
           {zoomLevel}
+          {activeTool}
           on:notechange={handleNoteChange}
           on:windowinfo={handleWindowInfo}
         />

@@ -20,6 +20,7 @@
   export let noteLengthDenominator = undefined;
   export let manualWindow = null; // Manual window override (null = auto-follow playhead)
   export let zoomLevel = 1; // Grid resolution denominator: 1, 2, 4, 8, 16, 32, 64 (controls grid density)
+  export let activeTool = 'draw'; // 'draw' or 'cut'
 
   const dispatch = createEventDispatcher();
 
@@ -49,8 +50,8 @@
     currentTheme = value;
   });
 
-  // Compute cursor style based on erase mode and extend mode
-  $: cursorStyle = eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : 'crosshair';
+  // Compute cursor style based on active tool, erase mode and extend mode
+  $: cursorStyle = activeTool === 'cut' ? 'crosshair' : eraseMode ? 'not-allowed' : extendMode ? 'col-resize' : 'crosshair';
 
 
   const hexToRgba = (hex, alpha = 1) => {
@@ -528,6 +529,13 @@
   const handlePointerDown = (event) => {
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
+    
+    // In cut mode, only handle single clicks (no dragging)
+    if (activeTool === 'cut') {
+      handleCutClick(event);
+      return;
+    }
+    
     // Check if shift or alt key is held for explicit erase mode
     eraseMode = event.shiftKey || event.altKey;
     // Check if ctrl/cmd key is held for note extension mode
@@ -536,6 +544,72 @@
     paintedCells = new Set(); // Clear painted cells for new gesture
     paintedRanges = new Map(); // Clear painted ranges for new gesture
     handlePointer(event);
+  };
+
+  const handleCutClick = (event) => {
+    if (!canvas || !scroller) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const col = Math.floor(x / layout.cellSize);
+    const row = Math.floor(y / layout.cellSize);
+    
+    const sourceColumns = Math.max(columns || 16, 1);
+    const stepsPerBarSafe = Math.max(stepsPerBar || 16, 1);
+    const zoom = Number(zoomLevel) || 16;
+    const visibleColumns = Math.floor(layout.width / layout.cellSize);
+    if (row < 0 || row >= rows || col < 0 || col >= visibleColumns) return;
+
+    const logicalToDisplayScale = zoom / stepsPerBarSafe;
+    const currentWindow = manualWindow !== null ? manualWindow : (follow ? Math.floor((playheadStep * logicalToDisplayScale) / visibleColumns) : 0);
+    const windowOffset = currentWindow * visibleColumns;
+    
+    const displayCol = windowOffset + col;
+    const logicalCol = displayCol / logicalToDisplayScale;
+    if (logicalCol >= sourceColumns) return;
+
+    const storagePerDisplay = BASE_RESOLUTION / Math.max(1, zoom);
+    const storageStart = Math.max(0, Math.floor(displayCol * storagePerDisplay));
+    
+    // Find if there's a note at this position
+    const rowNotes = notes?.[row] ?? [];
+    if (!rowNotes[storageStart]) return; // No note to cut
+    
+    // Find the start and end of the note containing this position
+    let noteStart = storageStart;
+    let noteEnd = storageStart;
+    
+    // Find note start
+    while (noteStart > 0 && rowNotes[noteStart - 1]) {
+      noteStart--;
+    }
+    
+    // Find note end
+    while (noteEnd < rowNotes.length && rowNotes[noteEnd]) {
+      noteEnd++;
+    }
+    
+    const noteLength = noteEnd - noteStart;
+    
+    // Don't cut notes that are too short (less than 2 steps)
+    if (noteLength < 2) return;
+    
+    // Don't cut at the exact start or end of the note
+    if (storageStart === noteStart || storageStart === noteEnd - 1) return;
+    
+    // Calculate the two new note lengths
+    const firstNoteLength = storageStart - noteStart;
+    const secondNoteLength = noteEnd - storageStart;
+    
+    // Clear the original note
+    dispatch('notechange', { row, start: noteStart, length: noteLength, value: false, storage: true });
+    
+    // Add the first part (before the cut)
+    dispatch('notechange', { row, start: noteStart, length: firstNoteLength, value: true, storage: true });
+    
+    // Add the second part (after the cut), leaving one step gap for articulation
+    dispatch('notechange', { row, start: storageStart + 1, length: secondNoteLength - 1, value: true, storage: true });
   };
 
   const handlePointer = (event) => {
