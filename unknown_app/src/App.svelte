@@ -517,13 +517,13 @@
   };
 
   const NOTE_LENGTH_OPTIONS = [
-    { label: '1/64', value: 64 },
-    { label: '1/32', value: 32 },
-    { label: '1/16', value: 16 },
-    { label: '1/8', value: 8 },
-    { label: '1/4', value: 4 },
+    { label: '1', value: 1 },
     { label: '1/2', value: 2 },
-    { label: '1', value: 1 }
+    { label: '1/4', value: 4 },
+    { label: '1/8', value: 8 },
+    { label: '1/16', value: 16 },
+    { label: '1/32', value: 32 },
+    { label: '1/64', value: 64 }
   ];
 
   const DEFAULT_NOTE_LENGTH = `${NOTE_LENGTH_OPTIONS.find((option) => option.label === '1/8')?.value ?? NOTE_LENGTH_OPTIONS[0].value}`;
