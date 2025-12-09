@@ -149,10 +149,6 @@
     height: 26px;
   }
 
-  .selector-controls:focus-within {
-    box-shadow: 0 0 0 1px rgba(var(--color-accent-rgb), 0.2), 0 6px 18px rgba(0, 0, 0, 0.32);
-  }
-
   .arrow-button {
     display: flex;
     align-items: center;
