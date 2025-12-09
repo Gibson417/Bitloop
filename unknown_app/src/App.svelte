@@ -1340,28 +1340,6 @@
   </aside>
   <section class="workspace" data-component="Workspace">
     <div class="workspace-header" data-component="WorkspaceHeader">
-      <div class="project-info">
-        <label class="project-label" for="project-name-input">
-          <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="12" y1="18" x2="12" y2="12"/>
-            <line x1="9" y1="15" x2="15" y2="15"/>
-          </svg>
-          <span class="project-eyebrow">Project Name</span>
-        </label>
-        <input
-          id="project-name-input"
-          class="project-name-input"
-          type="text"
-          value={projectName}
-          on:change={handleProjectRename}
-          on:blur={handleProjectRename}
-          placeholder="Untitled loop"
-          title="Click to edit project name"
-          aria-label="Project name"
-        />
-      </div>
       <div class="header-actions">
         <div class="utility-buttons">
           <ShareMenu
@@ -1511,12 +1489,14 @@
         <PatternArranger
           {patterns}
           {selectedPattern}
+          {projectName}
           on:patternselect={handlePatternSelect}
           on:patternadd={handlePatternAdd}
           on:patternduplicate={handlePatternDuplicate}
           on:patternremove={handlePatternRemove}
           on:patternrename={handlePatternRename}
           on:patternreorder={handlePatternReorder}
+          on:projectrename={handleProjectRename}
           on:render={handleShareMenuRender}
           on:rendermidi={handleShareMenuRenderMidi}
         />

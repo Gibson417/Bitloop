@@ -17,6 +17,7 @@
   // Props for pattern management from projectStore
   export let patterns = [];
   export let selectedPattern = 0;
+  export let projectName = 'Untitled loop';
 
   const dispatch = createEventDispatcher();
 
@@ -78,6 +79,13 @@
     const newName = event.target.value;
     if (newName && newName.trim()) {
       dispatch('patternrename', { index, name: newName });
+    }
+  };
+
+  const handleProjectRename = (event) => {
+    const newName = event.target.value;
+    if (newName && newName.trim()) {
+      dispatch('projectrename', { value: newName });
     }
   };
 
@@ -312,8 +320,17 @@
 
 <section class="arranger" data-component="PatternArranger">
   <header class="arranger__header">
-    <div>
-      <h2>Pattern Arranger</h2>
+    <div class="arranger__header-title">
+      <input
+        type="text"
+        class="project-name-input"
+        value={projectName}
+        on:change={handleProjectRename}
+        on:blur={handleProjectRename}
+        placeholder="Untitled loop"
+        title="Click to edit project name"
+        aria-label="Project name"
+      />
       <p>Manage patterns and create a linear arrangement with drag-and-drop blocks.</p>
     </div>
     <div class="arranger__header-controls">
@@ -534,6 +551,33 @@
   .arranger__header h2 {
     margin: 0;
     font-size: 1.2rem;
+  }
+
+  .arranger__header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .project-name-input {
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin: -4px -8px;
+  }
+
+  .project-name-input:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .project-name-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .arranger__header p {
