@@ -1273,28 +1273,6 @@
         </div>
       </div>
       <div class="playback-control-card" data-component="PlaybackControlCard">
-        <div class="mobile-project-name playback-card-section">
-          <label class="project-label" for="project-name-mobile">
-            <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="12" y1="18" x2="12" y2="12"/>
-              <line x1="9" y1="15" x2="15" y2="15"/>
-            </svg>
-            <span class="project-eyebrow">Project Name</span>
-          </label>
-          <input
-            id="project-name-mobile"
-            class="project-name-input"
-            type="text"
-            value={projectName}
-            on:change={handleProjectRename}
-            on:blur={handleProjectRename}
-            placeholder="Untitled loop"
-            title="Click to edit project name"
-            aria-label="Project name"
-          />
-        </div>
         <div class="transport-wrapper playback-card-section">
           <Transport
             playing={isPlaying}
@@ -1340,28 +1318,6 @@
   </aside>
   <section class="workspace" data-component="Workspace">
     <div class="workspace-header" data-component="WorkspaceHeader">
-      <div class="project-info">
-        <label class="project-label" for="project-name-input">
-          <svg class="project-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="12" y1="18" x2="12" y2="12"/>
-            <line x1="9" y1="15" x2="15" y2="15"/>
-          </svg>
-          <span class="project-eyebrow">Project Name</span>
-        </label>
-        <input
-          id="project-name-input"
-          class="project-name-input"
-          type="text"
-          value={projectName}
-          on:change={handleProjectRename}
-          on:blur={handleProjectRename}
-          placeholder="Untitled loop"
-          title="Click to edit project name"
-          aria-label="Project name"
-        />
-      </div>
       <div class="header-actions">
         <div class="utility-buttons">
           <ShareMenu
@@ -1511,12 +1467,14 @@
         <PatternArranger
           {patterns}
           {selectedPattern}
+          {projectName}
           on:patternselect={handlePatternSelect}
           on:patternadd={handlePatternAdd}
           on:patternduplicate={handlePatternDuplicate}
           on:patternremove={handlePatternRemove}
           on:patternrename={handlePatternRename}
           on:patternreorder={handlePatternReorder}
+          on:projectrename={handleProjectRename}
           on:render={handleShareMenuRender}
           on:rendermidi={handleShareMenuRenderMidi}
         />
@@ -1733,74 +1691,6 @@
     box-sizing: border-box;
   }
 
-  .project-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-
-  .project-icon {
-    width: 18px;
-    height: 18px;
-    color: rgba(var(--color-accent-rgb), 0.75);
-    transition: color 0.2s ease;
-  }
-
-  .project-eyebrow {
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: rgba(var(--color-accent-rgb), 0.7);
-    transition: color 0.2s ease;
-  }
-
-  .project-label:hover .project-icon,
-  .project-label:hover .project-eyebrow {
-    color: rgba(var(--color-accent-rgb), 0.95);
-  }
-
-  .project-name-input {
-    margin: 0;
-    padding: 7px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--color-text, #fff);
-    font-family: inherit;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100%;
-    max-width: 420px;
-    cursor: text;
-  }
-
-  .project-name-input::placeholder {
-    color: var(--color-text-muted, rgba(255, 255, 255, 0.35));
-  }
-
-  .project-name-input:hover {
-    background: rgba(var(--color-accent-rgb), 0.08);
-    border-color: rgba(var(--color-accent-rgb), 0.25);
-    cursor: text;
-  }
-
-  .project-name-input:focus {
-    outline: none;
-    background: rgba(var(--color-accent-rgb), 0.12);
-    border-color: rgba(var(--color-accent-rgb), 0.4);
-    box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.15);
-  }
-
   .header-actions {
     display: flex;
     align-items: flex-start;
@@ -1883,13 +1773,6 @@
     gap: 16px;
     align-items: center;
     text-align: center;
-  }
-
-  .mobile-project-name {
-    display: none;
-    width: 100%;
-    gap: 6px;
-    text-align: left;
   }
 
   .transport-wrapper {
@@ -2164,19 +2047,6 @@
       gap: 16px;
     }
 
-    .mobile-project-name {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-      padding: 0 8px;
-    }
-
-    /* Hide duplicate project title in workspace header on mobile */
-    .workspace-header .project-info {
-      display: none;
-    }
-
     .grid-shell {
       padding: 0 16px 16px;
     }
@@ -2241,11 +2111,6 @@
 
     .app-rail {
       padding: 18px;
-    }
-
-    .project-name-input {
-      font-size: 1.2rem;
-      max-width: 100%;
     }
     
     .header-actions {
