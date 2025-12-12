@@ -1685,7 +1685,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 6px;
+    padding: 16px 20px 16px;
     gap: 18px;
     width: 100%;
     box-sizing: border-box;

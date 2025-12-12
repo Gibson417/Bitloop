@@ -7,6 +7,9 @@
 
   const canAddMore = () => tracks.length < maxTracks;
   const canRemoveTrack = (index) => index >= 0 && index < tracks.length;
+  
+  // Reactive variable for the delete button state - must reference tracks directly for reactivity
+  $: canDeleteSelected = tracks.length > 0 && selected >= 0 && selected < tracks.length;
 
   const dispatch = createEventDispatcher();
 
@@ -83,7 +86,7 @@
         class="action-button"
         type="button"
         on:click={handleDeleteTrack}
-        disabled={!canRemoveTrack(selected)}
+        disabled={!canDeleteSelected}
         aria-label="Delete track"
         title="Delete track"
       >
