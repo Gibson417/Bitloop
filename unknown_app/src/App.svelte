@@ -87,6 +87,7 @@
   let arrangerVisible = false;
   // Active tool state
   let activeTool = 'draw'; // 'draw' or 'cut'
+  let mobilePanel = 'grid'; // 'grid', 'tracks', or 'sound'
 
   const ensureAudio = async () => {
     if (!projectState) return false;
@@ -1206,7 +1207,7 @@
   $: hasTracks = (projectState?.tracks?.length ?? 0) > 0;
 </script>
 
-<main class="app" class:dev-mode={devModeEnabled}>
+<main class="app mobile-panel-{mobilePanel}" class:dev-mode={devModeEnabled}>
   {#if devModeEnabled}
     <div class="dev-mode-indicator">
       <span>DEV MODE</span>
@@ -1302,18 +1303,20 @@
           </div>
         {/if}
       </div>
-      <TrackSelector
-        tracks={projectState?.tracks ?? []}
-        selected={projectState?.selectedTrack ?? 0}
-        maxTracks={TRACK_LIMIT}
-        on:select={handleTrackSelect}
-        on:add={handleTrackAdd}
-        on:duplicate={handleTrackDuplicate}
-        on:remove={handleTrackRemove}
-        on:togglemute={handleTrackToggleMute}
-        on:togglesolo={handleTrackToggleSolo}
-        on:toggleghost={handleTrackToggleGhost}
-      />
+      <div class="mobile-panel-content track-panel">
+        <TrackSelector
+          tracks={projectState?.tracks ?? []}
+          selected={projectState?.selectedTrack ?? 0}
+          maxTracks={TRACK_LIMIT}
+          on:select={handleTrackSelect}
+          on:add={handleTrackAdd}
+          on:duplicate={handleTrackDuplicate}
+          on:remove={handleTrackRemove}
+          on:togglemute={handleTrackToggleMute}
+          on:togglesolo={handleTrackToggleSolo}
+          on:toggleghost={handleTrackToggleGhost}
+        />
+      </div>
     </div>
   </aside>
   <section class="workspace" data-component="Workspace">
@@ -1335,14 +1338,14 @@
         </div>
       </div>
     </div>
-    <div class="track-config-wrapper" data-component="TrackConfigWrapper">
+    <div class="track-config-wrapper mobile-panel-content sound-panel" data-component="TrackConfigWrapper">
       <TrackConfigPanel
         track={activeTrack}
         trackIndex={projectState?.selectedTrack ?? 0}
         on:update={handleTrackUpdate}
       />
     </div>
-    <div class="grid-shell" data-component="GridShell">
+    <div class="grid-shell mobile-panel-content grid-panel" data-component="GridShell">
       <div class="grid-toolbar" data-component="GridToolbar">
         <!-- Primary tools: Drawing tools, note length, and zoom (left side) -->
         <div class="toolbar-primary">
@@ -1482,6 +1485,23 @@
     </div>
     <Footer />
   </section>
+  <nav class="mobile-dock" aria-label="Mobile workspace">
+    <button type="button" class:active={mobilePanel === 'tracks'} aria-pressed={mobilePanel === 'tracks'} on:click={() => mobilePanel = 'tracks'}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></svg>
+      <span>Tracks</span>
+    </button>
+    <div class="mobile-transport">
+      <Transport playing={isPlaying} on:toggleplay={handleTogglePlay} on:skipback={handleSkipBack} on:skip={handleSkip} />
+    </div>
+    <button type="button" class:active={mobilePanel === 'grid'} aria-pressed={mobilePanel === 'grid'} on:click={() => mobilePanel = 'grid'}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+      <span>Grid</span>
+    </button>
+    <button type="button" class:active={mobilePanel === 'sound'} aria-pressed={mobilePanel === 'sound'} on:click={() => mobilePanel = 'sound'}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M7 14v6"/></svg>
+      <span>Sound</span>
+    </button>
+  </nav>
   <UpdateNotification />
   <RenderDialog
     bind:isOpen={renderDialogOpen}
@@ -2007,60 +2027,190 @@
     color: var(--color-text, #fff);
   }
 
+  .mobile-dock {
+    display: none;
+  }
+
   @media (max-width: 960px) {
     .app {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
     }
 
     .app-rail {
       border-right: none;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(22px);
     }
     
     .rail-inner {
       max-width: 100%;
+      gap: 16px;
     }
 
-    /* Show utility buttons in brand wrapper on mobile */
     .brand-utility-buttons {
       display: flex;
       gap: 6px;
       align-items: center;
     }
 
-    /* Hide utility buttons from workspace header on mobile */
-    .workspace-header .utility-buttons {
+    .workspace-header,
+    .workspace-header .utility-buttons,
+    .playback-control-card {
       display: none;
     }
 
-    /* Tablet: slightly tighter toolbar spacing */
-    .toolbar-primary {
-      gap: 12px;
+    .workspace {
+      min-height: auto;
+      flex: 1;
+      overflow: visible;
+      background: transparent;
+    }
+
+    .mobile-panel-content {
+      display: none;
+    }
+
+    .mobile-panel-tracks .track-panel,
+    .mobile-panel-grid .grid-panel,
+    .mobile-panel-sound .sound-panel {
+      display: block;
+    }
+
+    .track-panel {
+      padding: 8px 0 4px;
+    }
+
+    .track-panel :global(.track-list) {
+      max-height: none;
+    }
+
+    .track-config-wrapper {
+      padding: 16px;
+      margin: 0;
+    }
+
+    .grid-shell {
+      padding: 16px;
+      min-height: 0;
+    }
+
+    .arranger-panel {
+      display: none;
+    }
+
+    .mobile-panel-grid .arranger-panel {
+      display: block;
+      padding: 0 16px 16px;
+    }
+
+    .mobile-dock {
+      position: fixed;
+      z-index: 50;
+      left: 10px;
+      right: 10px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 1fr 132px 1fr 1fr;
+      align-items: center;
+      gap: 4px;
+      padding: 8px;
+      border: 1px solid rgba(var(--color-accent-rgb), 0.24);
+      border-radius: 22px;
+      background: rgba(18, 21, 30, 0.94);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(24px);
+    }
+
+    .mobile-dock > button {
+      min-width: 0;
+      min-height: 58px;
+      border: 0;
+      border-radius: 15px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.58);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font: inherit;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .mobile-dock > button.active {
+      color: var(--color-accent);
+      background: rgba(var(--color-accent-rgb), 0.13);
+    }
+
+    .mobile-dock > button svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mobile-transport {
+      display: flex;
+      justify-content: center;
+    }
+
+    .mobile-transport :global(.transport-buttons) {
+      gap: 4px;
+    }
+
+    .mobile-transport :global(.play-button) {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+    }
+
+    .mobile-transport :global(.control-button) {
+      min-width: 32px;
+      min-height: 48px;
+      border: 0;
+      background: transparent;
+    }
+
+    .brand-mark {
+      font-size: 1.1rem;
+    }
+
+    .brand-tag {
+      display: none;
+    }
+
+    .logo-icon {
+      width: 38px;
     }
   }
 
   @media (max-width: 720px) {
-    .workspace-header {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 20px 20px 12px;
-      gap: 16px;
-    }
-
     .grid-shell {
-      padding: 0 16px 16px;
+      padding: 12px;
     }
 
-    /* Mobile: Horizontal scrolling toolbar for better space efficiency */
     .grid-toolbar {
-      padding: 10px 12px;
-      border-radius: 12px 12px 0 0;
+      padding: 8px;
+      border-radius: 14px 14px 0 0;
       overflow-x: auto;
       overflow-y: hidden;
-      /* Smooth scrolling on touch devices */
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: rgba(var(--color-accent-rgb), 0.3) transparent;
+      scroll-snap-type: x proximity;
     }
 
     /* Webkit scrollbar styling for better mobile UX */
@@ -2081,17 +2231,16 @@
       background: rgba(var(--color-accent-rgb), 0.5);
     }
 
-    /* Keep toolbar horizontal with compact spacing */
     .toolbar-primary {
       flex-direction: row;
-      gap: 8px; /* Reduced from 16px - using design token xs */
+      gap: 8px;
       min-width: min-content;
       flex-wrap: nowrap;
     }
 
-    /* Ensure toolbar items don't shrink below touch target size */
     .toolbar-primary > * {
       flex-shrink: 0;
+      scroll-snap-align: start;
     }
 
     .note-length-group {
@@ -2103,25 +2252,18 @@
     }
 
     .grid-backdrop {
-      padding: 12px;
+      padding: 8px;
       border-radius: 0;
       border-top: none;
       border-bottom: none;
+      min-height: 0;
     }
 
-    .app-rail {
-      padding: 18px;
-    }
-    
-    .header-actions {
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    /* Mobile: stack tempo and navigation sections vertically */
     .grid-controls-bar {
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 0 0 14px 14px;
     }
 
     .tempo-bar-section {
@@ -2147,49 +2289,33 @@
       width: 100%;
       min-width: 60px;
       max-width: 100px;
+      min-height: 44px;
+      font-size: 1rem;
     }
 
     .grid-nav-section {
       width: 100%;
-      justify-content: space-around;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
   }
 
   /* Small mobile devices (iPhone SE, etc.) */
   @media (max-width: 560px) {
-    .grid-shell {
-      padding: 0 12px 12px;
+    .brand-wrapper {
+      gap: 8px;
     }
 
-    .grid-toolbar {
-      padding: 8px 10px;
-      gap: 12px;
+    .mobile-dock {
+      grid-template-columns: 1fr 116px 1fr 1fr;
+      left: 6px;
+      right: 6px;
     }
 
-    .toolbar-primary {
-      gap: 6px; /* Even tighter spacing on small screens */
-    }
-    
-    .app-rail {
-      padding: 12px;
-    }
-    
-    .brand-logo {
-      max-width: 160px;
-    }
-
-    .grid-controls-bar {
-      padding: 10px 12px;
-      gap: 10px;
-    }
-
-    .tempo-bar-section {
-      gap: 10px;
-    }
-
-    .tempo-bar-input {
-      font-size: 0.9rem;
-      padding: 5px 8px;
+    .mobile-transport :global(.play-button) {
+      width: 54px;
+      height: 54px;
     }
   }
 

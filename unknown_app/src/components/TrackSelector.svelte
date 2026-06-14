@@ -416,6 +416,24 @@
     box-shadow: 0 0 8px rgba(255, 100, 100, 0.3);
   }
 
+  @media (hover: none), (max-width: 960px) {
+    .track-controls {
+      visibility: visible;
+      width: auto;
+      overflow: visible;
+      transition: none;
+    }
+
+    .track-item {
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .track-main {
+      min-width: 76px;
+    }
+  }
+
   /* Accessibility: Respect user's motion preferences */
   @media (prefers-reduced-motion: reduce) {
     .track-controls,
